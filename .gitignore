@@ -1,9 +1,13 @@
 # Maven target folder
 /journal2/target/
+/target/
 
 # Eclipse, IntelliJ IDEA, and VSCode specific files
+/journal2/.idea/
 /.idea/
+/journal2/.vscode/
 /.vscode/
+/journal2/*.iml
 /*.iml
 
 # Log files

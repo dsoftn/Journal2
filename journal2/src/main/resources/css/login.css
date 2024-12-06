@@ -1,0 +1,7 @@
+.label-title-extra-large {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgb(225, 194, 243);
+    -fx-font-size: 40px;
+    -fx-font-weight: normal;
+    -fx-font-style: italic;
+}
