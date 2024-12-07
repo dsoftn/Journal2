@@ -1,7 +1,68 @@
+.root {
+    -fx-background-color: rgb(15, 15, 15);
+}
+
 .label-title-extra-large {
     -fx-background-color: transparent;
     -fx-text-fill: rgb(225, 194, 243);
     -fx-font-size: 40px;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 4, 0.5, 1, 1);
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.label-title-normal {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgb(225, 194, 243);
+    -fx-font-size: 30px;
     -fx-font-weight: normal;
     -fx-font-style: italic;
+}
+
+.combo-box-user-name {
+    -fx-background-color: rgb(6, 1, 26);
+    -fx-text-fill: #ffff00;
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-border-color: rgb(28, 25, 165);
+    -fx-border-width: 1px;
+}
+
+.combo-box-language {
+    -fx-background-color: transparent;
+    -fx-text-fill: #a0f1ff;
+    -fx-font-size: 14;
+    -fx-border-color: rgb(34, 33, 95);
+    -fx-border-width: 1px;
+}
+
+.text-field-user-password {
+    -fx-background-color: rgb(6, 1, 26);
+    -fx-text-fill: rgb(189, 189, 189);
+    -fx-prompt-text-fill: rgb(77, 75, 75);
+    -fx-font-size: 22;
+    -fx-border-color: rgb(28, 25, 165);
+    -fx-border-width: 1px;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #43237e, #240d57);
+    -fx-text-fill: rgb(189, 189, 189);
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-color: rgb(28, 25, 165);
+    -fx-border-width: 2px;
+    -fx-border-radius: 5;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #5e38b8, #3c0f8f);
+    -fx-border-color: rgb(75, 62, 204);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #240d57, #43237e);
+    -fx-border-color: rgb(50, 42, 165);
 }
