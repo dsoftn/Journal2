@@ -45,6 +45,16 @@
     -fx-border-width: 1px;
 }
 
+.text-field-user-name {
+    -fx-background-color: rgb(6, 1, 26);
+    -fx-text-fill: #ffff00;
+    -fx-font-size: 24;
+    -fx-font-weight: bold;
+    -fx-border-color: rgb(28, 25, 165);
+    -fx-border-width: 1px;
+    -fx-prompt-text-fill: rgb(77, 75, 75);
+}
+
 .button {
     -fx-background-color: linear-gradient(to bottom, #43237e, #240d57);
     -fx-text-fill: rgb(189, 189, 189);
@@ -65,4 +75,25 @@
 .button:pressed {
     -fx-background-color: linear-gradient(to bottom, #240d57, #43237e);
     -fx-border-color: rgb(50, 42, 165);
+}
+
+.button-small {
+    -fx-background-color: linear-gradient(to bottom, #237e28, #0d5719);
+    -fx-text-fill: rgb(242, 253, 202);
+    -fx-font-size: 12px;
+    -fx-background-radius: 5;
+    -fx-border-color: rgb(77, 114, 18);
+    -fx-border-width: 2px;
+    -fx-border-radius: 5;
+    -fx-cursor: hand;
+}
+
+.button-small:hover {
+    -fx-background-color: linear-gradient(to bottom, #0d5719, #237e28);
+    -fx-border-color: rgb(111, 165, 25);
+}
+
+.button-small:pressed {
+    -fx-background-color: linear-gradient(to bottom, #158b29, #36ac3c);
+    -fx-border-color: rgb(77, 114, 18);
 }

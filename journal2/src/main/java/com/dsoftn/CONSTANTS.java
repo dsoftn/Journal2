@@ -1,4 +1,4 @@
-package com.dsoftn.Settings;
+package com.dsoftn;
 
 public class CONSTANTS {
 
