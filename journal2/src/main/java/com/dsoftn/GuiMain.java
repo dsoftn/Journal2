@@ -54,7 +54,9 @@ public class GuiMain extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle(CONSTANTS.APPLICATION_NAME);
 
-        controller.startMe(primaryStage);
+        controller.setStage(primaryStage);
+
+        controller.startMe();
 
         return controller;
     }
@@ -68,13 +70,14 @@ public class GuiMain extends Application {
         Scene scene = new Scene(root);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle(CONSTANTS.APPLICATION_NAME);
 
         primaryStage.setOnCloseRequest(event -> {
             onWindowClose(event, controller);
         });
 
-        primaryStage.show();
+        controller.setStage(primaryStage);
+
+        controller.startMe();
     }
 
     private boolean isSettingsAndLanguageFilesExist() {
@@ -112,7 +115,7 @@ public class GuiMain extends Application {
     }
 
     private void onWindowClose(WindowEvent event, MainWinController controller) {
-        // Implement saving Settings
+        // TODO: Implement saving Settings
     }
     
 }

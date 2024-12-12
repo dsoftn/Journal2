@@ -30,7 +30,7 @@ import com.google.gson.reflect.TypeToken;
 //
 // Language:
 // { "available_languages": [ [ "code": "en", "name": "English" ],
-//                            [ "code": "de", "name": "Deutsch" ],
+//                            [ "code": "de", "name": "German" ],
 //                            ...],
 //  "active_language": "en",
 //  "data": { "langCode1": { "key1":"value1", "key2":"value2", ... },

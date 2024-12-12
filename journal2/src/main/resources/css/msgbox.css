@@ -1,0 +1,39 @@
+.app-basic {
+    -fx-background-color: rgb(20, 20, 20);
+}
+
+/* SEPARATOR WIDGET -------------------------------------------------------------------------------- */
+
+.separator {
+    -fx-background-color: transparent;
+}
+
+.separator .line {
+    -fx-border-color: rgb(65, 65, 65);
+    -fx-border-width: 1;
+}
+
+
+/* BUTTON WIDGET -------------------------------------------------------------------------------- */
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #43237e, #240d57);
+    -fx-text-fill: rgb(189, 189, 189);
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-color: rgb(28, 25, 165);
+    -fx-border-width: 2px;
+    -fx-border-radius: 5;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #5e38b8, #3c0f8f);
+    -fx-border-color: rgb(75, 62, 204);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #240d57, #43237e);
+    -fx-border-color: rgb(50, 42, 165);
+}

@@ -1,6 +1,9 @@
 package com.dsoftn.controllers;
 
 import javafx.stage.Stage;
+
+import com.dsoftn.Interfaces.IBaseController;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -10,10 +13,10 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 
-public class LoginController {
+public class LoginController implements IBaseController {
 
     // Variables
-    Stage stage;
+    private Stage stage;
 
     // FXML widgets
     @FXML
@@ -53,18 +56,29 @@ public class LoginController {
 
 
     
-    // Public methods
+    // Interface IBaseController methods
     
-    public void startMe (Stage stage) {
+    @Override
+    public void setStage (Stage stage) {
         this.stage = stage;
-
+    }
+    
+    @Override
+    public void startMe () {
         showExistingUserWindow();
         
         stage.setHeight(470);
         stage.showAndWait();
     }
 
-    public String getAuthenticatedUser () {
+    @Override
+    public void closeMe () {
+        stage.close();
+    }
+
+    // Public methods
+
+    public String getAuthenticatedUser() {
         return "result";
     }
 
