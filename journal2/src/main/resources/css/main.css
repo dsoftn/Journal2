@@ -1,3 +1,156 @@
-.app-basic {
-    -fx-background-color: rgb(20, 20, 20);
+.root {
+    -fx-background-color: rgb(15, 15, 15);
+
+    /*Default properties for all labels*/
+        /*normal*/
+    -fx-background-color-label-default: transparent;
+    -fx-text-fill-label-default: #b1b1b1;
+        /*disabled*/
+    -fx-text-fill-label-disabled-default: #364257;
+        /*label-title*/
+    -fx-background-color-label-title-default: transparent;
+    -fx-text-fill-label-title-default: #00f5d4;
+    
+
+    /* Default properties for all input widgets */
+        /*normal*/
+    -fx-background-color-input-default: #051923;
+    -fx-text-fill-input-default: #00a6fb;
+    -fx-prompt-text-fill-input-default: #364257;
+    -fx-border-color-input-default: #2f6690;
+        /*hover*/
+    -fx-border-color-input-hover-default: #266ba0;
+        /*focused*/
+    -fx-border-color-input-focused-default: #078fdf;
+        /*disabled*/
+    -fx-background-color-input-disabled-default: #2c2c2c;
+    -fx-text-fill-input-disabled-default: #a68a64;
+    -fx-border-color-input-disabled-default: #936639;
+    
+    /*Default properties for all buttons*/
+        /*normal*/
+    -fx-background-color-button-default: linear-gradient(to bottom, #003554, #051923);
+    -fx-text-fill-button-default: #00a6fb;
+    -fx-border-color-button-default: #0582ca;
+        /*hover*/
+    -fx-background-color-button-hover-default: linear-gradient(to bottom, #051923, #003554);
+    -fx-border-color-button-hover-default: #00a6fb;
+        /*pressed*/
+    -fx-background-color-button-pressed-default: linear-gradient(to bottom, #003554, #006494);
+    -fx-border-color-button-pressed-default: #00a6fb;
+        /*disabled*/
+    -fx-background-color-button-disabled-default: transparent;
+    -fx-text-fill-button-disabled-default: #a68a64;
+    -fx-border-color-button-disabled-default: #936639;
+
 }
+
+
+/* Default properties for all labels */
+.label-default {
+    -fx-background-color: -fx-background-color-label-default;
+    -fx-text-fill: -fx-text-fill-label-default;
+    -fx-font-size: 12px;
+}
+
+.label-default:disabled {
+    -fx-text-fill: -fx-text-fill-label-disabled-default;
+}
+
+.label-title-default {
+    -fx-background-color: -fx-background-color-label-title-default;
+    -fx-text-fill: -fx-text-fill-label-title-default;
+    -fx-font-size: 30px;
+    -fx-font-weight: normal;
+    -fx-font-style: italic;
+}
+
+/* Default properties for all input widgets */
+    /*Combo box*/
+.combo-box-default {
+    -fx-background-color: -fx-background-color-input-default;
+    -fx-background-radius: 5px;
+    -fx-text-fill: -fx-text-fill-input-default;
+    -fx-font-size: 12px;
+    -fx-border-color: -fx-border-color-input-default;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+    -fx-border-radius: 5px;
+}
+
+.combo-box-default .text {
+    -fx-fill: -fx-prompt-text-fill-input-default;
+}
+
+.combo-box-default:hover {
+    -fx-border-color: -fx-border-color-input-hover-default;
+}
+
+.combo-box-default:focused {
+    -fx-border-color: -fx-border-color-input-focused-default;
+    -fx-border-style: solid;
+}
+
+.combo-box-default:disabled {
+    -fx-background-color: -fx-background-color-input-disabled-default;
+    -fx-text-fill: -fx-text-fill-input-disabled-default;
+    -fx-border-color: -fx-border-color-input-disabled-default;
+}
+
+    /*Text field*/
+.text-field-default {
+    -fx-background-color: -fx-background-color-input-default;
+    -fx-background-radius: 5px;
+    -fx-text-fill: -fx-text-fill-input-default;
+    -fx-font-size: 12px;
+    -fx-prompt-text-fill: -fx-prompt-text-fill-input-default;
+    -fx-border-color: -fx-border-color-input-default;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+    -fx-border-radius: 5px;
+}
+
+.text-field-default:hover {
+    -fx-border-color: -fx-border-color-input-hover-default;
+}
+
+.text-field-default:focused {
+    -fx-border-color: -fx-border-color-input-focused-default;
+    -fx-border-style: solid;
+}
+
+.text-field-default:disabled {
+    -fx-background-color: -fx-background-color-input-disabled-default;
+    -fx-text-fill: -fx-text-fill-input-disabled-default;
+    -fx-border-color: -fx-border-color-input-disabled-default;
+}
+
+
+/* Default properties for all buttons */
+.button-default {
+    -fx-background-color: -fx-background-color-button-default;
+    -fx-text-fill: -fx-text-fill-button-default;
+    -fx-font-size: 12px;
+    -fx-background-radius: 5px;
+    -fx-border-color: -fx-border-color-button-default;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.button-default:hover {
+    -fx-background-color: -fx-background-color-button-hover-default;
+    -fx-border-color: -fx-border-color-button-hover-default;
+}
+
+.button-default:pressed {
+    -fx-background-color: -fx-background-color-button-pressed-default;
+    -fx-border-color: -fx-border-color-button-pressed-default;
+}
+
+.button-default:disabled {
+    -fx-background-color: -fx-background-color-button-disabled-default;
+    -fx-text-fill: -fx-text-fill-button-disabled-default;
+    -fx-border-color: -fx-border-color-button-disabled-default;
+}
+

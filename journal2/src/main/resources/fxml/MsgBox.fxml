@@ -17,7 +17,7 @@
             <Region prefHeight="10.0" />
             <VBox fx:id="vBoxHeader">
                <children>
-                  <HBox>
+                  <HBox alignment="CENTER_LEFT">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -27,6 +27,7 @@
                               <Insets right="15.0" />
                            </HBox.margin>
                         </Label>
+                        <Region prefWidth="20.0" />
                      </children>
                   </HBox>
                   <Separator>
@@ -41,13 +42,14 @@
             </VBox>
             <VBox fx:id="vBoxContent">
                <children>
-                  <HBox>
+                  <HBox alignment="CENTER_LEFT">
                      <children>
                         <Label fx:id="lblIconContent" text="Label">
                            <HBox.margin>
                               <Insets right="15.0" />
                            </HBox.margin>
                         </Label>
+                        <Region prefWidth="20.0" />
                      </children>
                   </HBox>
                   <Separator>
@@ -71,6 +73,9 @@
                         <Button fx:id="btnOk" mnemonicParsing="false" text="Ok" />
                         <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel" />
                      </children>
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin>
                   </HBox>
                </children>
                <VBox.margin>
