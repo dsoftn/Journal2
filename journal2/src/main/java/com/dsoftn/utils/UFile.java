@@ -1,8 +1,17 @@
 package com.dsoftn.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.dsoftn.OBJECTS;
+
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class UFile {
 
@@ -101,6 +110,134 @@ public class UFile {
             return Path.of(filePath).toAbsolutePath().toString();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /**
+     * Open file dialog
+     * @param title
+     * @param lastDir
+     * @param stage Owner stage or null
+     * @return Absolute path of file or null
+     */
+    public static String getOpenFileDialog(String title, String lastDir, Stage stage) {
+        return getOpenFileDialog(title, lastDir, stage, null);
+    }
+
+    /**
+     * Open file dialog
+     * @param title
+     * @param lastDir
+     * @param stage Owner stage or null
+     * @param filters List of file filters stings in format "name|extension"
+     * @return Absolute path of file or null
+     */
+    public static String getOpenFileDialog(String title, String lastDir, Stage stage, List<String> filters) {
+        FileChooser fileChooser = new FileChooser();
+        
+        if (filters != null) {
+            for (String filter : filters) {
+                String name = filter.split("\\|")[0];
+                String extension = filter.split("\\|")[1];
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(name, extension));
+            }
+        }
+
+        fileChooser.setTitle(title);
+
+        if (lastDir == null) {
+            lastDir =   OBJECTS.SETTINGS.isUserSettingExists("lastOpenFileDirectory")
+                        ? OBJECTS.SETTINGS.getvSTRING("lastOpenFileDirectory")
+                        :  "";
+        }
+
+        if (!lastDir.isEmpty()) {
+            fileChooser.setInitialDirectory(new File(lastDir));
+        }
+        
+        File selectedFile;
+        if (stage == null) {
+            selectedFile = fileChooser.showOpenDialog(null);
+        }
+        else {
+            selectedFile = fileChooser.showOpenDialog(stage);
+        }
+        
+        if (selectedFile == null) {
+            return null;
+        }
+        else {
+            if (OBJECTS.SETTINGS.isUserSettingExists("lastOpenFileDirectory")) {
+                OBJECTS.SETTINGS.setv("lastOpenFileDirectory", selectedFile.getParent());
+            }
+            return selectedFile.getAbsolutePath();
+        }
+    }
+
+    /**
+     * Save file dialog
+     * @param title
+     * @param lastDir
+     * @param stage Owner stage or null
+     * @param fileName Initial file name
+     * @return Absolute path of file or null
+     */
+    public static String getFileSaveDialog(String title, String lastDir, Stage stage, String fileName) {
+        return getFileSaveDialog(title, lastDir, stage, fileName, null);
+    }
+
+    /**
+     * Save file dialog
+     * @param title
+     * @param lastDir
+     * @param stage Owner stage or null
+     * @param fileName Initial file name
+     * @param filters List of file filters stings in format "name|extension"
+     * @return Absolute path of file or null
+     */
+    public static String getFileSaveDialog(String title, String lastDir, Stage stage, String fileName, List<String> filters) {
+        FileChooser fileChooser = new FileChooser();
+
+        if (filters != null) {
+            for (String filter : filters) {
+                String name = filter.split("\\|")[0];
+                String extension = filter.split("\\|")[1];
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(name, extension));
+            }
+        }
+
+        fileChooser.setTitle(title);
+
+        if (lastDir == null) {
+            lastDir =   OBJECTS.SETTINGS.isUserSettingExists("lastSaveFileDirectory")
+                        ? OBJECTS.SETTINGS.getvSTRING("lastSaveFileDirectory")
+                        :  "";
+        }
+
+        if (!lastDir.isEmpty()) {
+            fileChooser.setInitialDirectory(new File(lastDir));
+        }
+
+        if (fileName != null && !fileName.isEmpty()) {
+            fileChooser.setInitialFileName(fileName);
+        }
+
+        File selectedFile;
+        if (stage == null) {
+            selectedFile = fileChooser.showSaveDialog(null);
+        }
+        else {
+            selectedFile = fileChooser.showSaveDialog(stage);
+        }
+
+        if (selectedFile == null) {
+            return null;
+        }
+        else {
+            if (OBJECTS.SETTINGS.isUserSettingExists("lastSaveFileDirectory")) {
+                OBJECTS.SETTINGS.setv("lastSaveFileDirectory", selectedFile.getParent());
+            }
+            return selectedFile.getAbsolutePath();
         }
     }
 
