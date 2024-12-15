@@ -1,0 +1,11 @@
+.label-msg-box-header {
+    -fx-text-fill: #80ed99;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.label-msg-box-content {
+    -fx-text-fill: #c7f9cc;
+    -fx-font-size: 18px;
+}

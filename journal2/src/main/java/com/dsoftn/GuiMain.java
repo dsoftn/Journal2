@@ -9,6 +9,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
 import com.dsoftn.controllers.MainWinController;
+import com.dsoftn.controllers.MsgBoxController;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
+import com.dsoftn.utils.UFile;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 
 import java.io.File;
 
@@ -21,7 +25,16 @@ public class GuiMain extends Application {
     public void start(Stage primaryStage) throws Exception {
         // If settings or languages files do not exist, exit program with error message
         if (!isSettingsAndLanguageFilesExist()) {
-            // TODO: Inform user that settings or languages files are needed for the application to run
+            MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
+            msgBoxController.setTitleText("Configuration Error");
+            msgBoxController.setHeaderText("Missing Settings and/or Language File");
+            msgBoxController.setHeaderIcon(MsgBoxIcon.ERROR);
+            msgBoxController.setContentText("The settings and/or language file is required for the application to run.\nPlease copy the settings and/or language file in 'data/app/settings' and try again.\nOr reinstall the application.");
+            msgBoxController.setContentIcon(MsgBoxIcon.FILE_ERROR);
+            msgBoxController.setButtons(MsgBoxButton.OK);
+            msgBoxController.setDefaultButton(MsgBoxButton.OK);
+            msgBoxController.startMe();
+
             Platform.exit();
             return;
         }
@@ -99,16 +112,122 @@ public class GuiMain extends Application {
             settingsDir.mkdir();
         }
 
-        // Check if file "/data/app/settings/settings.json" exists, if not, create it
-        File settingsFile = new File("data/app/settings/settings.json");
-        if (!settingsFile.exists() || !settingsFile.isFile()) {
-            // TODO: Ask user to find file, otherwise exit program with error message
+        // Check if file "/data/app/settings/settings.json" exists
+        if (!UFile.isFile("data/app/settings/settings.json")) {
+            // Let user find file
+            MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
+            msgBoxController.setTitleText("Required File");
+            msgBoxController.setHeaderText("Missing Settings File");
+            msgBoxController.setHeaderIcon(MsgBoxIcon.FILE_ERROR);
+            msgBoxController.setContentText("The settings file is required for the application to run.\nPlease find the settings file and try again.");
+            msgBoxController.setContentIcon(MsgBoxIcon.FILE_SEARCH);
+            msgBoxController.setButtons(MsgBoxButton.FIND_FILE, MsgBoxButton.CANCEL);
+            msgBoxController.setDefaultButton(MsgBoxButton.FIND_FILE);
+            msgBoxController.startMe();
+            
+            // If user did not find file, exit program
+            if (msgBoxController.getSelectedButton() != MsgBoxButton.FIND_FILE || msgBoxController.getResult().isEmpty()) {
+                return false;
+            }
+
+            // If user found file, copy it to "/data/app/settings/settings.json"
+            boolean success = UFile.copyFile(msgBoxController.getResult(), "data/app/settings/settings.json");
+            if (!success) {
+                MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
+                msgBoxFailed.setTitleText("Error");
+                msgBoxFailed.setHeaderText("Failed to Copy File");
+                msgBoxFailed.setHeaderIcon(MsgBoxIcon.ERROR);
+                msgBoxFailed.setContentText("Failed to copy settings file.\nApplication will now exit.");
+                msgBoxFailed.setContentIcon(MsgBoxIcon.COPY);
+                msgBoxFailed.setButtons(MsgBoxButton.OK);
+                msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
+                msgBoxFailed.startMe();
+                return false;
+            }
+
+            // Check if file "/data/app/settings/settings.json" is valid
+            OBJECTS.SETTINGS.clearErrorString();
+            OBJECTS.SETTINGS.userSettingsFilePath = "data/app/settings/settings.json";
+            boolean loadSuccess = OBJECTS.SETTINGS.load(true, false, false);
+            if (!loadSuccess || !OBJECTS.SETTINGS.getLastErrorString().isEmpty()) {
+                MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
+                msgBoxFailed.setTitleText("Error");
+                msgBoxFailed.setHeaderText("Corrupted Settings File");
+                msgBoxFailed.setHeaderIcon(MsgBoxIcon.ERROR);
+                String msgContent = "Failed to load settings file.\nSelected file may be corrupted or invalid.";
+                if (!OBJECTS.SETTINGS.getLastErrorString().isEmpty()) {
+                    msgContent += "\n\nSettings object reported error:\n" + OBJECTS.SETTINGS.getLastErrorString();
+                }
+                msgBoxFailed.setContentText(msgContent);
+                msgBoxFailed.setContentIcon(MsgBoxIcon.FILE_ERROR);
+                msgBoxFailed.setButtons(MsgBoxButton.OK);
+                msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
+                msgBoxFailed.startMe();
+                // Delete corrupted file
+                UFile.deleteFile("data/app/settings/settings.json");
+                return false;
+            }
+
+            // Reset settings to clear new file data. Settings object will be properly loaded later
+            OBJECTS.SETTINGS.reset();
         }
 
-        // Check if file "/data/app/settings/languages.json" exists, if not, create it
-        File languagesFile = new File("data/app/settings/languages.json");
-        if (!languagesFile.exists() || !languagesFile.isFile()) {
-            // TODO: Ask user to find file, otherwise exit program with error message
+
+        // Check if file "/data/app/settings/languages.json" exists
+        if (!UFile.isFile("data/app/settings/languages.json")) {
+            // Let user find file
+            MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
+            msgBoxController.setTitleText("Required File");
+            msgBoxController.setHeaderText("Missing Languages File");
+            msgBoxController.setHeaderIcon(MsgBoxIcon.FILE_ERROR);
+            msgBoxController.setContentText("The languages file is required for the application to run.\nPlease find the languages file and try again.");
+            msgBoxController.setContentIcon(MsgBoxIcon.FILE_SEARCH);
+            msgBoxController.setButtons(MsgBoxButton.FIND_FILE, MsgBoxButton.CANCEL);
+            msgBoxController.setDefaultButton(MsgBoxButton.FIND_FILE);
+            msgBoxController.startMe();
+            
+            // If user did not find file, exit program
+            if (msgBoxController.getSelectedButton() != MsgBoxButton.FIND_FILE || msgBoxController.getResult().isEmpty()) {
+                return false;
+            }
+
+            // If user found file, copy it to "/data/app/settings/languages.json"
+            boolean success = UFile.copyFile(msgBoxController.getResult(), "data/app/settings/languages.json");
+            if (!success) {
+                MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
+                msgBoxFailed.setTitleText("Error");
+                msgBoxFailed.setHeaderText("Failed to Copy File");
+                msgBoxFailed.setHeaderIcon(MsgBoxIcon.ERROR);
+                msgBoxFailed.setContentText("Failed to copy languages file.\nApplication will now exit.");
+                msgBoxFailed.setContentIcon(MsgBoxIcon.COPY);
+                msgBoxFailed.setButtons(MsgBoxButton.OK);
+                msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
+                msgBoxFailed.startMe();
+                return false;
+            }
+
+            // Check if file "/data/app/settings/languages.json" is valid
+            OBJECTS.SETTINGS.clearErrorString();
+            OBJECTS.SETTINGS.languagesFilePath = "data/app/settings/languages.json";
+            boolean loadSuccess = OBJECTS.SETTINGS.load(false, true, false);
+            if (!loadSuccess || !OBJECTS.SETTINGS.getLastErrorString().isEmpty()) {
+                MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
+                msgBoxFailed.setTitleText("Error");
+                msgBoxFailed.setHeaderText("Corrupted Languages File");
+                msgBoxFailed.setHeaderIcon(MsgBoxIcon.ERROR);
+                String msgContent  = "Failed to load languages file.\nSelected file may be corrupted or invalid.";
+                if (!OBJECTS.SETTINGS.getLastErrorString().isEmpty()) {
+                    msgContent += "\n\nSettings object reported error:\n" + OBJECTS.SETTINGS.getLastErrorString();
+                }
+                msgBoxFailed.setContentText(msgContent);
+                msgBoxFailed.setContentIcon(MsgBoxIcon.FILE_ERROR);
+                msgBoxFailed.setButtons(MsgBoxButton.OK);
+                msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
+                msgBoxFailed.startMe();
+                // Delete corrupted file
+                UFile.deleteFile("data/app/settings/languages.json");
+                return false;
+            }
         }
 
         return true;

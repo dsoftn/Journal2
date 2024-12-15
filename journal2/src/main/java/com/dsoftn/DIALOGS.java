@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class DIALOGS {
 
-    public static MsgBoxController main() {
+    public static MsgBoxController getMsgBoxController(Stage parentStage) {
         Stage stage = new Stage();
 
         FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/MsgBox.fxml"));
@@ -20,6 +20,9 @@ public class DIALOGS {
             MsgBoxController controller = loader.getController();
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            if (parentStage != null) {
+                stage.initOwner(parentStage);
+            }
             controller.setStage(stage);
             return controller;
         } catch (Exception e) {

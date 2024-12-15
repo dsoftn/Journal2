@@ -1257,6 +1257,17 @@ public class Settings {
         lastErrorString = "";
     }
 
+    public void reset() {
+        data = new PyDict();
+        lang = new PyDict();
+        appData = new PyDict();
+        activeLanguage = "";
+        lastErrorString = "";
+        userSettingsFilePath = "";
+        languagesFilePath = "";
+        appDataFilePath = "";
+    }
+
     // Private methods
 
     /**

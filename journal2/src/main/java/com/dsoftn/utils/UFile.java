@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.dsoftn.OBJECTS;
@@ -238,6 +238,36 @@ public class UFile {
                 OBJECTS.SETTINGS.setv("lastSaveFileDirectory", selectedFile.getParent());
             }
             return selectedFile.getAbsolutePath();
+        }
+    }
+
+    public static boolean copyFile(String source, String destination) {
+        source = getAbsolutePath(source);
+        destination = getAbsolutePath(destination);
+
+        if (source == null || destination == null) {
+            return false;
+        }
+        
+        try {
+            Files.copy(Paths.get(source), Paths.get(destination));
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public static boolean deleteFile(String path) {
+        path = getAbsolutePath(path);
+        if (path == null) {
+            return false;
+        }
+        
+        try {
+            Files.deleteIfExists(Paths.get(path));
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 
