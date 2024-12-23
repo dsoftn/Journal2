@@ -67,7 +67,7 @@
                   <HBox spacing="10.0">
                      <children>
                         <Region HBox.hgrow="SOMETIMES" />
-                        <Button fx:id="btnFind" mnemonicParsing="false" styleClass="button-default" text="Find File" />
+                        <Button fx:id="btnFindFile" mnemonicParsing="false" styleClass="button-default" text="Find File" />
                         <Button fx:id="btnYes" mnemonicParsing="false" styleClass="button-default" text="Yes" />
                         <Button fx:id="btnNo" mnemonicParsing="false" styleClass="button-default" text="No" />
                         <Button fx:id="btnOk" mnemonicParsing="false" styleClass="button-default" text="Ok" />

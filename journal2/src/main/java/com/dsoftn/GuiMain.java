@@ -23,6 +23,9 @@ public class GuiMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Check directory if structure exists, if not, create it
+        createDirectoryStructure();
+        
         // If settings or languages files do not exist, exit program with error message
         if (!isSettingsAndLanguageFilesExist()) {
             MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
@@ -93,25 +96,33 @@ public class GuiMain extends Application {
         controller.startMe();
     }
 
-    private boolean isSettingsAndLanguageFilesExist() {
+    private void createDirectoryStructure() {
         // Check if directory "data" exists, if not, create it
-        File dataDir = new File("data");
+        File dataDir = new File(CONSTANTS.FOLDER_DATA);
         if (!dataDir.exists() || !dataDir.isDirectory()) {
             dataDir.mkdir();
         }
 
         // Check if directory "data/app" exists, if not, create it
-        File appDir = new File("data/app");
+        File appDir = new File(CONSTANTS.FOLDER_DATA_APP);
         if (!appDir.exists() || !appDir.isDirectory()) {
             appDir.mkdir();
         }
 
         // Check if directory "data/app/settings" exists, if not, create it
-        File settingsDir = new File("data/app/settings");
+        File settingsDir = new File(CONSTANTS.FOLDER_DATA_APP_SETTINGS);
         if (!settingsDir.exists() || !settingsDir.isDirectory()) {
             settingsDir.mkdir();
         }
 
+        // Check if directory "data/users" exists, if not, create it
+        File usersDir = new File(CONSTANTS.FOLDER_DATA_USERS);
+        if (!usersDir.exists() || !usersDir.isDirectory()) {
+            usersDir.mkdir();
+        };
+    }
+
+    private boolean isSettingsAndLanguageFilesExist() {
         // Check if file "/data/app/settings/settings.json" exists
         if (!UFile.isFile("data/app/settings/settings.json")) {
             // Let user find file

@@ -64,10 +64,6 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>com.dsoftn.Main</mainClass>
-                    <jvmArgs>
-                        --module-path "C:/Program Files/Java/javafx-sdk-21.0.4/lib" 
-                        --add-modules javafx.controls,javafx.fxml
-                    </jvmArgs>                    
                 </configuration>
             </plugin>
             <plugin>

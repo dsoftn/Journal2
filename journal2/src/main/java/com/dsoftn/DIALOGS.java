@@ -11,7 +11,6 @@ public class DIALOGS {
 
     public static MsgBoxController getMsgBoxController(Stage parentStage) {
         Stage stage = new Stage();
-
         FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/MsgBox.fxml"));
         
         Parent root;

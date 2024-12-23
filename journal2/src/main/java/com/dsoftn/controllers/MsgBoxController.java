@@ -83,7 +83,7 @@ public class MsgBoxController implements IBaseController {
     private boolean showHeader = false;
     private MsgBoxIcon headerIcon = MsgBoxIcon.APP;
     private String headerText = "";
-    private boolean showContent = true;
+    private boolean showContent = false;
     private MsgBoxIcon contentIcon = MsgBoxIcon.APP;
     private String contentText = "";
 
@@ -105,7 +105,7 @@ public class MsgBoxController implements IBaseController {
     @FXML
     private HBox hBoxContentContent; // This layout contains Image label, text label should be placed here
     @FXML
-    private Button btnFind; // Find button
+    private Button btnFindFile; // Find button
     @FXML
     private Button btnYes; // Yes button
     @FXML
@@ -198,20 +198,20 @@ public class MsgBoxController implements IBaseController {
     // Private methods
 
     private void setupWidgetText () {
-        if (OBJECTS.SETTINGS.isLanguageKeyExists("MsgBox_btnFind_text")) {
-            btnFind.setText(OBJECTS.SETTINGS.getl("MsgBox_btnFind_text"));
+        if (OBJECTS.SETTINGS.isLanguageKeyExists("text_FindFile")) {
+            btnFindFile.setText(OBJECTS.SETTINGS.getl("text_FindFile"));
         }
-        if (OBJECTS.SETTINGS.isLanguageKeyExists("MsgBox_btnYes_text")) {
-            btnYes.setText(OBJECTS.SETTINGS.getl("MsgBox_btnYes_text"));
+        if (OBJECTS.SETTINGS.isLanguageKeyExists("text_Yes")) {
+            btnYes.setText(OBJECTS.SETTINGS.getl("text_Yes"));
         }
-        if (OBJECTS.SETTINGS.isLanguageKeyExists("MsgBox_btnNo_text")) {
-            btnNo.setText(OBJECTS.SETTINGS.getl("MsgBox_btnNo_text"));
+        if (OBJECTS.SETTINGS.isLanguageKeyExists("text_No")) {
+            btnNo.setText(OBJECTS.SETTINGS.getl("text_No"));
         }
-        if (OBJECTS.SETTINGS.isLanguageKeyExists("MsgBox_btnOk_text")) {
-            btnOk.setText(OBJECTS.SETTINGS.getl("MsgBox_btnOk_text"));
+        if (OBJECTS.SETTINGS.isLanguageKeyExists("text_Ok")) {
+            btnOk.setText(OBJECTS.SETTINGS.getl("text_Ok"));
         }
-        if (OBJECTS.SETTINGS.isLanguageKeyExists("MsgBox_btnCancel_text")) {
-            btnCancel.setText(OBJECTS.SETTINGS.getl("MsgBox_btnCancel_text"));
+        if (OBJECTS.SETTINGS.isLanguageKeyExists("text_Cancel")) {
+            btnCancel.setText(OBJECTS.SETTINGS.getl("text_Cancel"));
         }
     }
 
@@ -249,8 +249,8 @@ public class MsgBoxController implements IBaseController {
     }
 
     private void setupButtons () {
-        btnFind.setVisible(false);
-        btnFind.setManaged(false);
+        btnFindFile.setVisible(false);
+        btnFindFile.setManaged(false);
         btnYes.setVisible(false);
         btnYes.setManaged(false);
         btnNo.setVisible(false);
@@ -263,13 +263,13 @@ public class MsgBoxController implements IBaseController {
         for (MsgBoxButton button : buttons) {
             switch (button) {
                 case FIND_FILE:
-                    btnFind.setVisible(true);
-                    btnFind.setManaged(true);
+                    btnFindFile.setVisible(true);
+                    btnFindFile.setManaged(true);
                     if (defaultButton == button) {
-                        btnFind.requestFocus();
-                        btnFind.setStyle("-fx-underline: true;");
+                        btnFindFile.requestFocus();
+                        btnFindFile.setStyle("-fx-underline: true;");
                     }
-                    btnFind.setOnAction(event -> {
+                    btnFindFile.setOnAction(event -> {
                         selectFile();
                     });
                     break;

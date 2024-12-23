@@ -3,13 +3,13 @@ package com.dsoftn.Settings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.io.FileWriter;
 import java.io.File;
 import java.util.stream.Collectors;
 import java.lang.reflect.Type;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
@@ -30,7 +30,7 @@ import com.google.gson.reflect.TypeToken;
 //
 // Language:
 // { "available_languages": [ [ "code": "en", "name": "English" ],
-//                            [ "code": "de", "name": "German" ],
+//                            [ "code": "de", "name": "Deutsch" ],
 //                            ...],
 //  "active_language": "en",
 //  "data": { "langCode1": { "key1":"value1", "key2":"value2", ... },
@@ -494,7 +494,7 @@ public class Settings {
 
     /**
      * <p><b>User Settings</b></p>
-     * <p>Returns Map Object (PyDict|HashMap) representation of value</p>
+     * <p>Returns Map Object (PyDict|LinkedHashMap) representation of value</p>
      * @param key - <b>String</b> <i>key</i> - key of setting
      * @return <b>Object</b> <i>value</i> - Returns User settings value for specified key
      * @throws RuntimeException if key not found
@@ -505,7 +505,7 @@ public class Settings {
 
     /**
      * <p><b>User Settings</b></p>
-     * <p>Returns PyDict Object (PyDict|HashMap) representation of value</p>
+     * <p>Returns PyDict Object (PyDict|LinkedHashMap) representation of value</p>
      * @param key - <b>String</b> <i>key</i> - key of setting
      * @return <b>Object</b> <i>value</i> - Returns User settings value for specified key
      * @throws RuntimeException if key not found
@@ -790,7 +790,7 @@ public class Settings {
 
     /**
      * <p><b>Application Settings</b></p>
-     * <p>Returns Map Object (PyDict|HashMap) representation of value</p>
+     * <p>Returns Map Object (PyDict|LinkedHashMap) representation of value</p>
      * @param key - <b>String</b> <i>key</i> - key of setting
      * @return <b>Object</b> <i>value</i> - Returns User settings value for specified key
      * @throws RuntimeException if key not found
@@ -801,7 +801,7 @@ public class Settings {
 
     /**
      * <p><b>Application Settings</b></p>
-     * <p>Returns PyDict Object (PyDict|HashMap) representation of value</p>
+     * <p>Returns PyDict Object (PyDict|LinkedHashMap) representation of value</p>
      * @param key - <b>String</b> <i>key</i> - key of setting
      * @return <b>Object</b> <i>value</i> - Returns User settings value for specified key
      * @throws RuntimeException if key not found
@@ -1312,9 +1312,9 @@ public class Settings {
             .create();
             
         String json = gson.toJson(translatedData);
-        // Write data to file
-        try (FileWriter file = new FileWriter(filePath)) {
-            file.write(json);
+        // Write data to file, encoding to UTF-8
+        try {
+            Files.write(Path.of(filePath), json.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             printError("Error saving data: " + e.getMessage());
             throw new RuntimeException(e);
@@ -1366,8 +1366,8 @@ public class Settings {
             
         String json = gson.toJson(translatedData);
         // Write data to file
-        try (FileWriter file = new FileWriter(filePath)) {
-            file.write(json);
+        try {
+            Files.write(Path.of(filePath), json.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             printError("Error saving data: " + e.getMessage());
             throw new RuntimeException(e);
@@ -1431,8 +1431,8 @@ public class Settings {
             
         String json = gson.toJson(translatedData);
         // Write data to file
-        try (FileWriter file = new FileWriter(filePath)) {
-            file.write(json);
+        try {
+            Files.write(Path.of(filePath), json.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             printError("Error saving data: " + e.getMessage());
             throw new RuntimeException(e);
@@ -1521,7 +1521,7 @@ public class Settings {
 
         Gson gson = new Gson();
         try {
-            String json = new String(Files.readAllBytes(Path.of(filePath)));
+            String json = new String(Files.readAllBytes(Path.of(filePath)), StandardCharsets.UTF_8);
             Type type = new TypeToken<Map<String, Object>>(){}.getType();
             Map<String, Object> loadedData = gson.fromJson(json, type);
             if (convertToSettingsItems) {

@@ -17,26 +17,18 @@
    <children>
       <VBox alignment="TOP_CENTER" layoutX="293.0" layoutY="93.0" prefHeight="543.0" prefWidth="800.0" styleClass="root" AnchorPane.bottomAnchor="-0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="lblTitle" text="My Journal 2.0">
+            <Label fx:id="lblTitle" styleClass="label-title-extra-large" text="My Journal 2.0">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
-               <styleClass>
-                  <String fx:value="label-default" />
-                  <String fx:value="label-title-extra-large" />
-               </styleClass>
             </Label>
             <Region minHeight="20.0" VBox.vgrow="SOMETIMES" />
             <VBox fx:id="vBoxLogin" alignment="CENTER" VBox.vgrow="SOMETIMES">
                <children>
-                  <Label fx:id="lblLoginTitle" text="User login">
+                  <Label fx:id="lblLoginTitle" styleClass="label-title-default" text="User login">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
-                     <styleClass>
-                        <String fx:value="label-default" />
-                        <String fx:value="label-title-default" />
-                     </styleClass>
                   </Label>
                   <ComboBox fx:id="cmbLoginUser" maxWidth="1.7976931348623157E308" promptText="Select user name...">
                      <VBox.margin>
@@ -108,14 +100,10 @@
             </VBox>
             <VBox fx:id="vBoxNew" alignment="CENTER" layoutX="20.0" layoutY="118.0" VBox.vgrow="SOMETIMES">
                <children>
-                  <Label fx:id="lblNewTitle" text="New user">
+                  <Label fx:id="lblNewTitle" styleClass="label-title-default" text="New user">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
-                     <styleClass>
-                        <String fx:value="label-default" />
-                        <String fx:value="label-title-default" />
-                     </styleClass>
                   </Label>
                   <TextField fx:id="txtNewUser" promptText="User name...">
                      <VBox.margin>

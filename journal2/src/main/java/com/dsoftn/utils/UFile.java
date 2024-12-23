@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 
 import java.util.List;
 
@@ -238,6 +239,37 @@ public class UFile {
                 OBJECTS.SETTINGS.setv("lastSaveFileDirectory", selectedFile.getParent());
             }
             return selectedFile.getAbsolutePath();
+        }
+    }
+
+    public static boolean saveToFile(String path, String content) {
+        path = getAbsolutePath(path);
+        if (path == null) {
+            UError.exception("Failed to save file: " + path, "Path cannot be resolved");
+            return false;
+        }
+        
+        try {
+            Files.write(Paths.get(path), content.getBytes(StandardCharsets.UTF_8));
+            return true;
+        } catch (IOException e) {
+            UError.exception("Failed to save file: " + path, e);
+            return false;
+        }
+    }
+
+    public static String loadFromFile(String path) {
+        path = getAbsolutePath(path);
+        if (path == null) {
+            UError.exception("Failed to load file: " + path, "Path cannot be resolved");
+            return null;
+        }
+        
+        try {
+            return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            UError.exception("Failed to load file: " + path, e);
+            return null;
         }
     }
 

@@ -1,0 +1,89 @@
+{
+  "data": {
+    "en": {
+      "text_FindFile": {
+        "key": "text_FindFile",
+        "value": "Find File",
+        "languageCode": "en",
+        "creationDate": "2024.12.18 01:28:38",
+        "userData": ""
+      },
+      "text_Yes": {
+        "key": "text_Yes",
+        "value": "Yes",
+        "languageCode": "en",
+        "creationDate": "2024.12.18 01:29:02",
+        "userData": ""
+      },
+      "text_No": {
+        "key": "text_No",
+        "value": "No",
+        "languageCode": "en",
+        "creationDate": "2024.12.18 01:29:16",
+        "userData": ""
+      },
+      "text_Ok": {
+        "key": "text_Ok",
+        "value": "Ok",
+        "languageCode": "en",
+        "creationDate": "2024.12.18 01:29:27",
+        "userData": ""
+      },
+      "text_Cancel": {
+        "key": "text_Cancel",
+        "value": "Cancel",
+        "languageCode": "en",
+        "creationDate": "2024.12.18 01:29:40",
+        "userData": ""
+      }
+    },
+    "sr-lat": {
+      "text_FindFile": {
+        "key": "text_FindFile",
+        "value": "Pronađite datoteku",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.18 01:28:38",
+        "userData": ""
+      },
+      "text_Yes": {
+        "key": "text_Yes",
+        "value": "Da",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.18 01:29:02",
+        "userData": ""
+      },
+      "text_No": {
+        "key": "text_No",
+        "value": "Ne",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.18 01:29:16",
+        "userData": ""
+      },
+      "text_Ok": {
+        "key": "text_Ok",
+        "value": "Ok",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.18 01:29:27",
+        "userData": ""
+      },
+      "text_Cancel": {
+        "key": "text_Cancel",
+        "value": "Otkaži",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.18 01:29:40",
+        "userData": ""
+      }
+    }
+  },
+  "available_languages": [
+    [
+      "en",
+      "English"
+    ],
+    [
+      "sr-lat",
+      "Serbian (Latin)"
+    ]
+  ],
+  "default_language": ""
+}
