@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import com.dsoftn.OBJECTS;
 
@@ -94,8 +96,24 @@ public class UFile {
      * Check if file exists
      */
     public static boolean isFile(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return false;
+        }
+
         try {
-            return Files.exists(Path.of(filePath));
+            return Files.isRegularFile(Path.of(filePath));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isDirectory(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return false;
+        }
+
+        try {
+            return Files.isDirectory(Path.of(filePath));
         } catch (Exception e) {
             return false;
         }
@@ -112,6 +130,83 @@ public class UFile {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static boolean isAbsolutePath(String filePath) {
+        try {
+            return Path.of(filePath).toAbsolutePath().toString().equals(filePath);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isPathLikeString(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return false;
+        }
+
+        if (filePath.contains("\\") || filePath.contains("/")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static String getBaseFileName(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return null;
+        }
+
+        Path baseFile = Paths.get(filePath);
+        String fileName = baseFile.getFileName().toString();
+
+        return fileName;
+    }
+
+    public static List<String> getFolderContent(String folderPathString) {
+        if (folderPathString == null || folderPathString.isEmpty()) {
+            return null;
+        }
+        if (!isDirectory(folderPathString)) {
+            return null;
+        }
+
+        Path folderPath = Path.of(folderPathString);
+
+        List<String> files = new ArrayList<>();
+
+        try (Stream<Path> stream = Files.list(folderPath)) {
+            stream.forEach(path -> files.add(path.toString()));
+        } catch (IOException e) {
+            UError.exception("UFile.getFolderContent: Failed to get folder content", e);
+            return null;
+        }
+
+        return files;
+    }
+
+    public static String concatPaths(String... paths) {
+        if (paths == null || paths.length == 0) {
+            return null;
+        }
+
+        return Path.of(String.join(File.separator, paths)).toString();
+    }
+
+    /**
+     * Returns path to file with end separator (/ or \\)
+     * @param filePath
+     * @return path or null if path cannot be resolved
+     */
+    public static String getBaseFolder(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return null;
+        }
+
+        Path baseFolder = Paths.get(filePath);
+        String folderName = baseFolder.getParent().toString() + File.separator;
+
+        return folderName;
     }
 
     /**
@@ -245,7 +340,7 @@ public class UFile {
     public static boolean saveToFile(String path, String content) {
         path = getAbsolutePath(path);
         if (path == null) {
-            UError.exception("Failed to save file: " + path, "Path cannot be resolved");
+            UError.exception("Failed to save file: " + path, "UFile.saveToFile: Path cannot be resolved");
             return false;
         }
         
@@ -253,7 +348,7 @@ public class UFile {
             Files.write(Paths.get(path), content.getBytes(StandardCharsets.UTF_8));
             return true;
         } catch (IOException e) {
-            UError.exception("Failed to save file: " + path, e);
+            UError.exception("UFile.saveToFile: Failed to save file: " + path, e);
             return false;
         }
     }
@@ -261,14 +356,14 @@ public class UFile {
     public static String loadFromFile(String path) {
         path = getAbsolutePath(path);
         if (path == null) {
-            UError.exception("Failed to load file: " + path, "Path cannot be resolved");
+            UError.exception("UFile.loadFromFile: Failed to load file: " + path, "Path cannot be resolved");
             return null;
         }
         
         try {
             return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            UError.exception("Failed to load file: " + path, e);
+            UError.exception("UFile.loadFromFile: Failed to load file: " + path, e);
             return null;
         }
     }
@@ -303,5 +398,32 @@ public class UFile {
         }
     }
 
+    public static boolean createFile(String path) {
+        path = getAbsolutePath(path);
+        if (path == null || isFile(path)) {
+            return false;
+        }
+        
+        try {
+            Files.createFile(Paths.get(path));
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public static boolean createFolder(String path) {
+        path = getAbsolutePath(path);
+        if (path == null || isDirectory(path)) {
+            return false;
+        }
+        
+        try {
+            Files.createDirectory(Paths.get(path));
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
 }

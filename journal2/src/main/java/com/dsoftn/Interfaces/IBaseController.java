@@ -4,10 +4,10 @@ import javafx.stage.Stage;
 
 public interface IBaseController {
 
-    void setStage(Stage stage);
+    public void setStage(Stage stage);
     
-    void startMe();
+    public void startMe();
 
-    void closeMe();
+    public void closeMe();
 
 }

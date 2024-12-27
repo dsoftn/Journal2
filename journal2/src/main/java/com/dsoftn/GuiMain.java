@@ -41,6 +41,15 @@ public class GuiMain extends Application {
             Platform.exit();
             return;
         }
+
+        // Load settings
+        OBJECTS.SETTINGS.userSettingsFilePath = CONSTANTS.SETTINGS_FILE_PATH;
+        OBJECTS.SETTINGS.languagesFilePath = CONSTANTS.LANGUAGES_FILE_PATH;
+        OBJECTS.SETTINGS.setActiveLanguage(CONSTANTS.DEFAULT_SETTINGS_LANGUAGE_CODE);
+        OBJECTS.SETTINGS.load(true, true, false);
+
+        // Set Users object
+        OBJECTS.USERS.load();
         
         // Start Login Window
         Stage loginStage = new Stage();
@@ -51,6 +60,12 @@ public class GuiMain extends Application {
             Platform.exit();
             return;
         }
+
+        OBJECTS.ACTIVE_USER = loginController.getAuthenticatedUser();
+
+        OBJECTS.ACTIVE_USER.setIsLoggedIn(true);
+        OBJECTS.ACTIVE_USER.setLastSessionStart();
+        OBJECTS.ACTIVE_USER.save();
 
         loginStage.close();
 
@@ -124,7 +139,7 @@ public class GuiMain extends Application {
 
     private boolean isSettingsAndLanguageFilesExist() {
         // Check if file "/data/app/settings/settings.json" exists
-        if (!UFile.isFile("data/app/settings/settings.json")) {
+        if (!UFile.isFile(CONSTANTS.SETTINGS_FILE_PATH)) {
             // Let user find file
             MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
             msgBoxController.setTitleText("Required File");
@@ -142,7 +157,7 @@ public class GuiMain extends Application {
             }
 
             // If user found file, copy it to "/data/app/settings/settings.json"
-            boolean success = UFile.copyFile(msgBoxController.getResult(), "data/app/settings/settings.json");
+            boolean success = UFile.copyFile(msgBoxController.getResult(), CONSTANTS.SETTINGS_FILE_PATH);
             if (!success) {
                 MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
                 msgBoxFailed.setTitleText("Error");
@@ -158,7 +173,7 @@ public class GuiMain extends Application {
 
             // Check if file "/data/app/settings/settings.json" is valid
             OBJECTS.SETTINGS.clearErrorString();
-            OBJECTS.SETTINGS.userSettingsFilePath = "data/app/settings/settings.json";
+            OBJECTS.SETTINGS.userSettingsFilePath = CONSTANTS.SETTINGS_FILE_PATH;
             boolean loadSuccess = OBJECTS.SETTINGS.load(true, false, false);
             if (!loadSuccess || !OBJECTS.SETTINGS.getLastErrorString().isEmpty()) {
                 MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
@@ -175,7 +190,7 @@ public class GuiMain extends Application {
                 msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
                 msgBoxFailed.startMe();
                 // Delete corrupted file
-                UFile.deleteFile("data/app/settings/settings.json");
+                UFile.deleteFile(CONSTANTS.SETTINGS_FILE_PATH);
                 return false;
             }
 
@@ -185,7 +200,7 @@ public class GuiMain extends Application {
 
 
         // Check if file "/data/app/settings/languages.json" exists
-        if (!UFile.isFile("data/app/settings/languages.json")) {
+        if (!UFile.isFile(CONSTANTS.LANGUAGES_FILE_PATH)) {
             // Let user find file
             MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
             msgBoxController.setTitleText("Required File");
@@ -203,7 +218,7 @@ public class GuiMain extends Application {
             }
 
             // If user found file, copy it to "/data/app/settings/languages.json"
-            boolean success = UFile.copyFile(msgBoxController.getResult(), "data/app/settings/languages.json");
+            boolean success = UFile.copyFile(msgBoxController.getResult(), CONSTANTS.LANGUAGES_FILE_PATH);
             if (!success) {
                 MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
                 msgBoxFailed.setTitleText("Error");
@@ -219,7 +234,7 @@ public class GuiMain extends Application {
 
             // Check if file "/data/app/settings/languages.json" is valid
             OBJECTS.SETTINGS.clearErrorString();
-            OBJECTS.SETTINGS.languagesFilePath = "data/app/settings/languages.json";
+            OBJECTS.SETTINGS.languagesFilePath = CONSTANTS.LANGUAGES_FILE_PATH;
             boolean loadSuccess = OBJECTS.SETTINGS.load(false, true, false);
             if (!loadSuccess || !OBJECTS.SETTINGS.getLastErrorString().isEmpty()) {
                 MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
@@ -236,7 +251,7 @@ public class GuiMain extends Application {
                 msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
                 msgBoxFailed.startMe();
                 // Delete corrupted file
-                UFile.deleteFile("data/app/settings/languages.json");
+                UFile.deleteFile(CONSTANTS.LANGUAGES_FILE_PATH);
                 return false;
             }
         }
@@ -245,6 +260,12 @@ public class GuiMain extends Application {
     }
 
     private void onWindowClose(WindowEvent event, MainWinController controller) {
+        // Set active user login duration and login status. Save Active User
+        OBJECTS.ACTIVE_USER.setLoginDurationSeconds(OBJECTS.ACTIVE_USER.getLoginDurationSeconds() + OBJECTS.ACTIVE_USER.getSessionElapsedSeconds());
+        OBJECTS.ACTIVE_USER.setLoginSessions(OBJECTS.ACTIVE_USER.getLoginSessions() + 1);
+        OBJECTS.ACTIVE_USER.setIsLoggedIn(false);
+        OBJECTS.ACTIVE_USER.save();
+
         // TODO: Implement saving Settings
     }
     

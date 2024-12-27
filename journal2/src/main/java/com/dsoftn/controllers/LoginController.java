@@ -1,9 +1,6 @@
 package com.dsoftn.controllers;
 
 import javafx.stage.Stage;
-
-import com.dsoftn.Interfaces.IBaseController;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -11,12 +8,24 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.scene.input.KeyCode;
+
+import java.util.List;
+
+
+import com.dsoftn.CONSTANTS;
+import com.dsoftn.OBJECTS;
+import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.models.User;
+import com.dsoftn.utils.LanguagesEnum;
+import com.dsoftn.utils.UError;
 
 
 public class LoginController implements IBaseController {
 
     // Variables
     private Stage stage;
+    private User selectedUser = null;
 
     // FXML widgets
     @FXML
@@ -28,9 +37,9 @@ public class LoginController implements IBaseController {
     @FXML
     Label lblLoginTitle; // Existing user login title
     @FXML
-    ComboBox<String> cmbLoginUsers; // Existing users list
+    ComboBox<String> cmbLoginUser; // Existing users list
     @FXML
-    PasswordField ptxtPassword; // Existing user password field
+    PasswordField pTxtPassword; // Existing user password field
     @FXML
     ComboBox<String> cmbLoginLang; // Existing user language
     @FXML
@@ -44,9 +53,9 @@ public class LoginController implements IBaseController {
     @FXML
     TextField txtNewUser; // New user name field
     @FXML
-    PasswordField ptxtNewPassword; // New user password field
+    PasswordField pTxtNewPassword; // New user password field
     @FXML
-    PasswordField ptxtNewConfirmPassword; // New user password confirmation
+    PasswordField pTxtNewConfirmPassword; // New user password confirmation
     @FXML
     ComboBox<String> cmbNewLang; // New user language
     @FXML
@@ -65,9 +74,13 @@ public class LoginController implements IBaseController {
     
     @Override
     public void startMe () {
+        setupWidgetText();
+        setupWidgets();
+
         showExistingUserWindow();
         
         stage.setHeight(470);
+        pTxtPassword.requestFocus();
         stage.showAndWait();
     }
 
@@ -78,12 +91,77 @@ public class LoginController implements IBaseController {
 
     // Public methods
 
-    public String getAuthenticatedUser() {
-        return "result";
+    public User getAuthenticatedUser() {
+        return selectedUser;
     }
 
 
     // Private methods
+
+    private void setupWidgetText () {
+        lblTitle.setText(CONSTANTS.APPLICATION_NAME);
+        lblLoginTitle.setText(OBJECTS.SETTINGS.getl("text_UserLogin"));
+        cmbLoginUser.setPromptText(OBJECTS.SETTINGS.getl("text_SelectUsername..."));
+        pTxtPassword.setPromptText(OBJECTS.SETTINGS.getl("text_EnterPassword..."));
+        btnLogin.setText(OBJECTS.SETTINGS.getl("text_Login"));
+        btnCancel.setText(OBJECTS.SETTINGS.getl("text_Cancel"));
+        btnSwitchNew.setText(OBJECTS.SETTINGS.getl("text_CreateNewUser"));
+        lblNewTitle.setText(OBJECTS.SETTINGS.getl("text_NewUser"));
+        txtNewUser.setPromptText(OBJECTS.SETTINGS.getl("text_EnterUsername..."));
+        pTxtNewPassword.setPromptText(OBJECTS.SETTINGS.getl("text_EnterPassword..."));
+        pTxtNewConfirmPassword.setPromptText(OBJECTS.SETTINGS.getl("text_ConfirmPassword..."));
+        btnCreateNew.setText(OBJECTS.SETTINGS.getl("text_CreateNewUser"));
+        btnSwitchExisting.setText(OBJECTS.SETTINGS.getl("text_SelectExistingUser"));
+    }
+
+    private void setupWidgets () {
+        // Populate Existing Users ComboBox
+        for (User user : OBJECTS.USERS.getEntityAll()) {
+            cmbLoginUser.getItems().add(user.getUsername());
+        }
+        User lastUser = OBJECTS.USERS.lastActiveUser();
+        if (lastUser != null) {
+            cmbLoginUser.setValue(lastUser.getUsername());
+        }
+
+        // Populate Languages ComboBoxes
+        List<String> availableLanguages = OBJECTS.SETTINGS.getAvailableLanguageNames();
+
+        for (String lang : availableLanguages) {
+            LanguagesEnum langEnum = LanguagesEnum.fromName(lang);
+
+            if (langEnum != null && langEnum != LanguagesEnum.UNKNOWN) {
+                cmbLoginLang.getItems().add(langEnum.getNativeName());
+                cmbNewLang.getItems().add(langEnum.getNativeName());
+            }
+        }
+        // Set default values for Language ComboBoxes
+        cmbLoginLang.setValue(LanguagesEnum.fromLangCode(CONSTANTS.DEFAULT_SETTINGS_LANGUAGE_CODE).getNativeName());
+        cmbNewLang.setValue(LanguagesEnum.fromLangCode(CONSTANTS.DEFAULT_SETTINGS_LANGUAGE_CODE).getNativeName());
+
+        // Set listener for cmbLoginLang ComboBox
+        cmbLoginLang.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                OBJECTS.SETTINGS.setActiveLanguage(LanguagesEnum.fromNativeName(newValue).getLangCode());
+                setupWidgetText();
+            }
+        });
+
+        // Set listener for cmbNewLang ComboBox
+        cmbNewLang.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                OBJECTS.SETTINGS.setActiveLanguage(LanguagesEnum.fromNativeName(newValue).getLangCode());
+                setupWidgetText();
+            }
+        });
+
+        // Set listener for pTxtPassword, when user press Enter key
+        pTxtPassword.setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                loginButtonClicked();
+            }
+        });
+    }
 
     private void showExistingUserWindow () {
         vBoxLogin.setVisible(true);
@@ -91,6 +169,15 @@ public class LoginController implements IBaseController {
 
         vBoxNew.setVisible(false);
         vBoxNew.setManaged(false);
+
+        // Set language if cmbLoginLang has selected value
+        if (cmbLoginLang.getValue() == null) {
+            OBJECTS.SETTINGS.setActiveLanguage(CONSTANTS.DEFAULT_SETTINGS_LANGUAGE_CODE);
+        }
+        else {
+            OBJECTS.SETTINGS.setActiveLanguage(LanguagesEnum.fromNativeName(cmbLoginLang.getValue()).getLangCode());
+        }
+        setupWidgetText();
     }
 
     private void showNewUserWindow () {
@@ -99,6 +186,64 @@ public class LoginController implements IBaseController {
 
         vBoxNew.setVisible(true);
         vBoxNew.setManaged(true);
+
+        // Set language if cmbNewLang has selected value
+        if (cmbNewLang.getValue() == null) {
+            OBJECTS.SETTINGS.setActiveLanguage(CONSTANTS.DEFAULT_SETTINGS_LANGUAGE_CODE);
+        }
+        else {
+            OBJECTS.SETTINGS.setActiveLanguage(LanguagesEnum.fromNativeName(cmbNewLang.getValue()).getLangCode());
+        }
+        setupWidgetText();
+    }
+
+    private void loginButtonClicked () {
+        // Get selected user
+        String selectedUserName = cmbLoginUser.getValue();
+        if (selectedUserName == null || !OBJECTS.USERS.isExists(selectedUserName)) {
+            UError.error("LOGIN: Failed to login.", "Username (" + selectedUserName + ") does not exist");
+            return;
+        }
+
+        selectedUser = OBJECTS.USERS.getEntity(selectedUserName);
+        if (selectedUser == null) {
+            UError.error("LOGIN: Failed to login.", "User with username '" + selectedUserName + "' could not be found.");
+            return;
+        }
+
+        // Check password
+        String password = pTxtPassword.getText();
+        if (!selectedUser.getPassword().equals(password)) {
+            selectedUser = null;
+            pTxtPassword.clear();
+            pTxtPassword.setPromptText(OBJECTS.SETTINGS.getl("text_InvalidPassword"));
+            pTxtPassword.requestFocus();
+            return;
+        }
+
+        stage.close();
+    }
+        
+    // FXML event handlers
+
+    @FXML
+    private void onBtnSwitchNewClick () {
+        showNewUserWindow();
+    }
+
+    @FXML
+    private void onBtnSwitchExistingClick () {
+        showExistingUserWindow();
+    }
+
+    @FXML
+    private void onBtnCancelClick () {
+        stage.close();
+    }
+
+    @FXML
+    private void onBtnLoginClick () {
+        loginButtonClicked();
     }
 
 

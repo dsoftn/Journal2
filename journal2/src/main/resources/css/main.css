@@ -83,7 +83,7 @@
 }
 
 .combo-box-default .text {
-    -fx-fill: -fx-prompt-text-fill-input-default;
+    -fx-fill: -fx-text-fill-input-default;
 }
 
 .combo-box-default:hover {
@@ -99,6 +99,27 @@
     -fx-background-color: -fx-background-color-input-disabled-default;
     -fx-text-fill: -fx-text-fill-input-disabled-default;
     -fx-border-color: -fx-border-color-input-disabled-default;
+}
+
+.combo-box-default .list-cell {
+    -fx-background-color: -fx-background-color-input-default;
+    -fx-text-fill: -fx-text-fill-input-default;
+}
+
+.combo-box-default .list-cell:hover {
+    -fx-background-color: #0c1a68;
+    -fx-text-fill: #ffff00;
+}
+
+.combo-box-default .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-border-color-input-default;
+    -fx-border-width: 1px;
+}
+
+.combo-box-default .arrow-button:hover {
+    -fx-border-color: -fx-border-color-input-hover-default;
+    -fx-border-width: 2px;
 }
 
     /*Text field*/

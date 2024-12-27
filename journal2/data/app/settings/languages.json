@@ -35,6 +35,76 @@
         "languageCode": "en",
         "creationDate": "2024.12.18 01:29:40",
         "userData": ""
+      },
+      "text_UserLogin": {
+        "key": "text_UserLogin",
+        "value": "User Login",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:00:32",
+        "userData": ""
+      },
+      "text_SelectUsername...": {
+        "key": "text_SelectUsername...",
+        "value": "Select username...",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:17:43",
+        "userData": ""
+      },
+      "text_EnterPassword...": {
+        "key": "text_EnterPassword...",
+        "value": "Enter Password...",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:18:08",
+        "userData": ""
+      },
+      "text_Login": {
+        "key": "text_Login",
+        "value": "Login",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:19:36",
+        "userData": ""
+      },
+      "text_CreateNewUser": {
+        "key": "text_CreateNewUser",
+        "value": "Create new user",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:22:19",
+        "userData": ""
+      },
+      "text_NewUser": {
+        "key": "text_NewUser",
+        "value": "New User",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:23:10",
+        "userData": ""
+      },
+      "text_EnterUsername...": {
+        "key": "text_EnterUsername...",
+        "value": "Enter username...",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:24:42",
+        "userData": ""
+      },
+      "text_ConfirmPassword...": {
+        "key": "text_ConfirmPassword...",
+        "value": "Confirm Password...",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:25:30",
+        "userData": ""
+      },
+      "text_SelectExistingUser": {
+        "key": "text_SelectExistingUser",
+        "value": "Select existing user",
+        "languageCode": "en",
+        "creationDate": "2024.12.26 20:28:16",
+        "userData": ""
+      },
+      "text_InvalidPassword": {
+        "key": "text_InvalidPassword",
+        "value": "Invalid Password",
+        "languageCode": "en",
+        "creationDate": "2024.12.27 13:28:12",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -71,6 +141,76 @@
         "value": "Otkaži",
         "languageCode": "sr-lat",
         "creationDate": "2024.12.18 01:29:40",
+        "userData": ""
+      },
+      "text_UserLogin": {
+        "key": "text_UserLogin",
+        "value": "Prijavljivanje Korisnika",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:00:32",
+        "userData": ""
+      },
+      "text_SelectUsername...": {
+        "key": "text_SelectUsername...",
+        "value": "Izaberite korisničko ime...",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:17:43",
+        "userData": ""
+      },
+      "text_EnterPassword...": {
+        "key": "text_EnterPassword...",
+        "value": "Unesite lozinku...",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:18:08",
+        "userData": ""
+      },
+      "text_Login": {
+        "key": "text_Login",
+        "value": "Prijavljivanje",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:19:36",
+        "userData": ""
+      },
+      "text_CreateNewUser": {
+        "key": "text_CreateNewUser",
+        "value": "Kreiranje novog korisnika",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:22:19",
+        "userData": ""
+      },
+      "text_NewUser": {
+        "key": "text_NewUser",
+        "value": "Novi korisnik",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:23:10",
+        "userData": ""
+      },
+      "text_EnterUsername...": {
+        "key": "text_EnterUsername...",
+        "value": "Unesite korisničko ime...",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:24:42",
+        "userData": ""
+      },
+      "text_ConfirmPassword...": {
+        "key": "text_ConfirmPassword...",
+        "value": "Potvrdite lozinku...",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:25:30",
+        "userData": ""
+      },
+      "text_SelectExistingUser": {
+        "key": "text_SelectExistingUser",
+        "value": "Izaberite postojećeg korisnika",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.26 20:28:16",
+        "userData": ""
+      },
+      "text_InvalidPassword": {
+        "key": "text_InvalidPassword",
+        "value": "Nevažeća lozinka",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.27 13:28:12",
         "userData": ""
       }
     }

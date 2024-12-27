@@ -28,7 +28,7 @@ public class UJson {
             Files.write(Path.of(filePath), jsonString.getBytes(StandardCharsets.UTF_8));
             return true;
         } catch (Exception e) {
-            UError.exception("Failed to save Json to file: " + filePath, e);
+            UError.exception("UJson.saveJsonFile: Failed to save Json to file: " + filePath, e);
             return false;
         }
     }
@@ -55,7 +55,7 @@ public class UJson {
         try {
             return new String(Files.readAllBytes(Path.of(filePath)), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            UError.exception("Failed to load Json from file: " + filePath, e);
+            UError.exception("UJson.loadJsonFileToString: Failed to load Json from file: " + filePath, e);
             return null;
         }
     }

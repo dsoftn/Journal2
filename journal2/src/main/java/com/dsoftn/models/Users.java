@@ -1,11 +1,14 @@
 package com.dsoftn.models;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dsoftn.CONSTANTS;
 import com.dsoftn.Interfaces.IModelRepository;
+import com.dsoftn.utils.UFile;
 
 public class Users implements IModelRepository<User> {
 
@@ -14,9 +17,24 @@ public class Users implements IModelRepository<User> {
 
     // IModelRepository methods
 
+    /**
+     * Load all users from data/users folder
+     */
     @Override
     public boolean load() {
-        // TODO Load data
+        List<String> folders = UFile.getFolderContent(CONSTANTS.FOLDER_DATA_USERS);
+        if (folders == null) return false;
+
+        data.clear();
+
+        for (String folder : folders) {
+            if (UFile.isDirectory(folder)) {
+                User user = new User();
+                user.load(folder);
+                data.put(user.getUsername(), user);
+            }
+        }
+
         return true;
     }
 
@@ -26,16 +44,58 @@ public class Users implements IModelRepository<User> {
     }
 
     @Override
-    public boolean isExists(String entityID) {
-        return data.containsKey(entityID);
+    public boolean isExists(String userName) {
+        return data.containsKey(userName);
     }
 
     @Override
-    public User getEntity(String entityID) {
-        return data.get(entityID);
+    public User getEntity(String userName) {
+        return data.get(userName);
     }
 
+    @Override
+    public List<User> getEntityAll() {
+        List<User> list = new ArrayList<>(data.values());
+        return list;
+    }
 
+    @Override
+    public boolean update(User user) {
+        if (user == null || user.getUsername() == null || user.getUsername().isEmpty()) return false;
+        if (!data.containsKey(user.getUsername())) return false;
+        data.put(user.getUsername(), user);
+        return true;
+    }
+
+    @Override
+    public boolean add(User user) {
+        if (user == null || user.getUsername() == null || user.getUsername().isEmpty()) return false;
+        if (data.containsKey(user.getUsername())) return false;
+        data.put(user.getUsername(), user);
+        return true;
+    }
+
+    @Override
+    public boolean delete(User user) {
+        if (user == null || user.getUsername() == null || user.getUsername().isEmpty()) return false;
+        if (!data.containsKey(user.getUsername())) return false;
+        data.remove(user.getUsername());
+        return true;
+    }
+
+    // Public methods
+
+    public User lastActiveUser() {
+        if (data.isEmpty()) return null;
+
+        LocalDateTime last = data.values().stream().map(User::getLastSessionStart).max(LocalDateTime::compareTo).get();
+
+        for (User user : data.values()) {
+            if (user.getLastSessionStart().equals(last)) return user;
+        }
+
+        return null;
+    }
 
 
 

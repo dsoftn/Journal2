@@ -32,13 +32,20 @@ public class UNumbers {
                 return ((Double) object).intValue();
             }
             else if (object instanceof String) {
-                return Integer.parseInt((String) object);
-            }
+                Double doubleValue = toDouble(object.toString());
+                if (doubleValue != null) {
+                    return doubleValue.intValue();
+                }
+                }
             else if (object instanceof Long) {
                 return ((Long) object).intValue();
             }
             else if (object instanceof Float) {
                 return ((Float) object).intValue();
+            }
+            Double doubleValue = toDouble(object.toString());
+            if (doubleValue != null) {
+                return doubleValue.intValue();
             }
             return Integer.parseInt(object.toString());
         } catch (NumberFormatException e) {

@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="730.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="730.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.LoginController">
    <children>
       <VBox alignment="TOP_CENTER" layoutX="293.0" layoutY="93.0" prefHeight="543.0" prefWidth="800.0" styleClass="root" AnchorPane.bottomAnchor="-0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -39,7 +39,7 @@
                         <String fx:value="combo-box-login-user-name" />
                      </styleClass>
                   </ComboBox>
-                  <PasswordField fx:id="ptxtPassword" promptText="Enter password...">
+                  <PasswordField fx:id="pTxtPassword" promptText="Enter password...">
                      <VBox.margin>
                         <Insets left="40.0" right="40.0" />
                      </VBox.margin>
@@ -57,7 +57,7 @@
                               <String fx:value="combo-box-login-language" />
                            </styleClass></ComboBox>
                         <Region HBox.hgrow="SOMETIMES" />
-                        <Button fx:id="btnLogin" mnemonicParsing="false" text="Login">
+                        <Button fx:id="btnLogin" mnemonicParsing="false" onAction="#onBtnLoginClick" text="Login">
                            <padding>
                               <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
                            </padding>
@@ -66,7 +66,7 @@
                               <String fx:value="button-login-big" />
                            </styleClass>
                         </Button>
-                        <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel">
+                        <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#onBtnCancelClick" text="Cancel">
                            <padding>
                               <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
                            </padding>
@@ -84,7 +84,7 @@
                   <HBox>
                      <children>
                         <Region HBox.hgrow="SOMETIMES" />
-                        <Button fx:id="btnSwitchNew" mnemonicParsing="false" text="Create new user">
+                        <Button fx:id="btnSwitchNew" mnemonicParsing="false" onAction="#onBtnSwitchNewClick" text="Create new user">
                            <styleClass>
                               <String fx:value="button-default" />
                               <String fx:value="button-login-small" />
@@ -114,7 +114,7 @@
                         <String fx:value="text-field-login-user-name" />
                      </styleClass>
                   </TextField>
-                  <PasswordField fx:id="ptxtNewPassword" promptText="Password...">
+                  <PasswordField fx:id="pTxtNewPassword" promptText="Password...">
                      <VBox.margin>
                         <Insets bottom="5.0" left="40.0" right="40.0" />
                      </VBox.margin>
@@ -123,7 +123,7 @@
                         <String fx:value="text-field-login-user-password" />
                      </styleClass>
                   </PasswordField>
-                  <PasswordField fx:id="ptxtNewConfirmPassword" layoutX="50.0" layoutY="128.0" promptText="Confirm password...">
+                  <PasswordField fx:id="pTxtNewConfirmPassword" layoutX="50.0" layoutY="128.0" promptText="Confirm password...">
                      <VBox.margin>
                         <Insets left="40.0" right="40.0" />
                      </VBox.margin>
@@ -160,7 +160,7 @@
                   <HBox>
                      <children>
                         <Region HBox.hgrow="SOMETIMES" />
-                        <Button fx:id="btnSwitchExisting" mnemonicParsing="false" text="Select existing user">
+                        <Button fx:id="btnSwitchExisting" mnemonicParsing="false" onAction="#onBtnSwitchExistingClick" text="Select existing user">
                            <styleClass>
                               <String fx:value="button-default" />
                               <String fx:value="button-login-small" />
