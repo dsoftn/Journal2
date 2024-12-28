@@ -61,11 +61,35 @@ public class GuiMain extends Application {
             return;
         }
 
+        // Create active user
         OBJECTS.ACTIVE_USER = loginController.getAuthenticatedUser();
-
         OBJECTS.ACTIVE_USER.setIsLoggedIn(true);
         OBJECTS.ACTIVE_USER.setLastSessionStart();
-        OBJECTS.ACTIVE_USER.save();
+        OBJECTS.ACTIVE_USER.saveUserInfoFile();
+
+        // Setup settings for active user
+        OBJECTS.SETTINGS.reset();
+        OBJECTS.SETTINGS.defaultSettingsFilePath = CONSTANTS.SETTINGS_FILE_PATH;
+        OBJECTS.SETTINGS.languagesFilePath = CONSTANTS.LANGUAGES_FILE_PATH;
+        OBJECTS.SETTINGS.userSettingsFilePath = OBJECTS.ACTIVE_USER.getUserSettingsPath();
+        OBJECTS.SETTINGS.appDataFilePath = OBJECTS.ACTIVE_USER.getAppSettingsPath();
+        OBJECTS.SETTINGS.setActiveLanguage(OBJECTS.ACTIVE_USER.getLanguage().getLangCode());
+        OBJECTS.SETTINGS.clearErrorString();
+        boolean loadUserSettingsSuccess = OBJECTS.SETTINGS.load();
+        if (!loadUserSettingsSuccess) {
+            MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
+            msgBoxController.setTitleText("Configuration Error");
+            msgBoxController.setHeaderText("Error Loading User Settings");
+            msgBoxController.setHeaderIcon(MsgBoxIcon.ERROR);
+            msgBoxController.setContentText("An error occurred while loading the user settings file.\nApplication will now exit.\n\n" + OBJECTS.SETTINGS.getLastErrorString());
+            msgBoxController.setContentIcon(MsgBoxIcon.FILE_ERROR);
+            msgBoxController.setButtons(MsgBoxButton.OK);
+            msgBoxController.setDefaultButton(MsgBoxButton.OK);
+            msgBoxController.startMe();
+
+            Platform.exit();
+            return;
+        }
 
         loginStage.close();
 
@@ -264,9 +288,23 @@ public class GuiMain extends Application {
         OBJECTS.ACTIVE_USER.setLoginDurationSeconds(OBJECTS.ACTIVE_USER.getLoginDurationSeconds() + OBJECTS.ACTIVE_USER.getSessionElapsedSeconds());
         OBJECTS.ACTIVE_USER.setLoginSessions(OBJECTS.ACTIVE_USER.getLoginSessions() + 1);
         OBJECTS.ACTIVE_USER.setIsLoggedIn(false);
-        OBJECTS.ACTIVE_USER.save();
+        OBJECTS.ACTIVE_USER.saveUserInfoFile();
 
-        // TODO: Implement saving Settings
+        // Save Settings
+        boolean success;
+        success = OBJECTS.SETTINGS.save();
+        if (!success) {
+            MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(null);
+            msgBoxFailed.setTitleText("Settings");
+            msgBoxFailed.setHeaderText("Failed to Save Settings");
+            msgBoxFailed.setHeaderIcon(MsgBoxIcon.ERROR);
+            msgBoxFailed.setContentText("An error occurred while saving settings.\nApplication will now exit.\n\n" + OBJECTS.SETTINGS.getLastErrorString());
+            msgBoxFailed.setContentIcon(MsgBoxIcon.WARNING);
+            msgBoxFailed.setButtons(MsgBoxButton.OK);
+            msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
+            msgBoxFailed.startMe();
+            return;
+        }
     }
     
 }

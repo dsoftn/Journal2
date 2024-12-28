@@ -106,6 +106,8 @@ public class UTranslate {
         cyrillicToLatinMap.put('ч', "č");
         cyrillicToLatinMap.put('џ', "dž");
         cyrillicToLatinMap.put('ш', "š");
+        cyrillicToLatinMap.put('„', "\"");
+        cyrillicToLatinMap.put('“', "\"");
     }
 
     private static final Map<String, Character> latinToCyrillicMap = new LinkedHashMap<>();

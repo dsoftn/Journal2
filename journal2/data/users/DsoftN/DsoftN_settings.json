@@ -1,1 +1,14 @@
-{}
+{
+  "AllowMultipleLogins": {
+    "key": "AllowMultipleLogins",
+    "value": "true",
+    "defaultValue": "true",
+    "min": "null",
+    "max": "null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "Allow already loged user to login on another instance od application.",
+    "creationDate": "2024.12.23 16:52:00",
+    "userData": ""
+  }
+}

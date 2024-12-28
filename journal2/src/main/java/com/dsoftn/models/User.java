@@ -18,7 +18,9 @@ import com.dsoftn.OBJECTS;
 
 public class User {
     // Constants
+    private final String PATH_NAME_ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
     private final String USERNAME_ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+    private final int USERNAME_MAX_LENGTH = 100;
     private final String PASSWORD_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()~-_=+[]{}|;:,.<>/?'\"";
     private final Character PASSWORD_END_CHAR = '`';
     private final int PASSWORD_MAX_LENGTH = 100;
@@ -27,7 +29,7 @@ public class User {
     // Properties
     // Mandatory
     private String username = "";
-    private LanguagesEnum language = LanguagesEnum.UNKNOWN;
+    private LanguagesEnum language = LanguagesEnum.ENGLISH;
     private String password = "";
     private String passwordString1 = "";
     private String passwordString2 = "";
@@ -113,14 +115,13 @@ public class User {
         return true;
     }
 
-    public boolean save() { return save(userInfoPath); }
+    public boolean saveUserInfoFile() { return saveUserInfoFile(userInfoPath); }
 
-    public boolean save(String userInfoFilePath) {
+    public boolean saveUserInfoFile(String userInfoFilePath) {
         if (userInfoFilePath == null || userInfoFilePath.isEmpty()) return false;
 
         try {
             UJson.saveJsonFile(userInfoFilePath, toMap());
-            OBJECTS.USERS.update(this);
             return true;
         }
         catch (Exception e) {
@@ -129,13 +130,94 @@ public class User {
         }
     }
 
-    public boolean add() { return OBJECTS.USERS.add(this); }
+    public boolean add() {
+        // Set pathName
+        int counter = 1;
+        String validPath = getNewPathName(username);
+        pathName = validPath;
+        while (true) {
+            if (!canBePathname(pathName)) {
+                pathName = validPath + "_" + counter;
+                counter++;
+            }
+            else {
+                break;
+            }
+        }
+        if (!setPathName(pathName)) return false;
 
-    public boolean update() { return OBJECTS.USERS.update(this); }
+        // Make main user folder
+        boolean makeMainUserFolder = UFile.createFolder(UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, pathName));
+        if (!makeMainUserFolder) return false;
+
+        // Add to repository
+        boolean addToRepository = OBJECTS.USERS.add(this);
+        if (!addToRepository) return false;
+
+        // Save UserInfo file
+        boolean saveToDisk = saveUserInfoFile();
+        if (!saveToDisk) {
+            OBJECTS.USERS.delete(this);
+            return false;
+        }
+
+        repairFileStructure();
+        return true;
+    }
+
+    public boolean update() {
+        if (!hasValidFileStructure()) {
+            repairFileStructure();
+        };
+
+        return OBJECTS.USERS.update(this);
+    }
 
     public boolean delete() { return OBJECTS.USERS.delete(this); }
 
     public int getSessionElapsedSeconds() { return (int) Duration.between(lastSessionStart, LocalDateTime.now()).getSeconds(); }
+
+    public boolean isUserNameValid(String userName) {
+        if (userName == null || userName.isEmpty()) return false;
+
+        if (userName.length() > USERNAME_MAX_LENGTH) return false;
+        
+        boolean valid = true;
+        for (int i = 0; i < userName.length(); i++) {
+            String c = userName.substring(i, i + 1);
+            if (!USERNAME_ALLOWED_CHARS.contains(c)) {
+                valid = false;
+                break;
+            }
+        }
+
+        return valid;
+    }
+
+    public boolean isPasswordValid(String password) {
+        if (password == null) return false;
+
+        if (password.length() > PASSWORD_MAX_LENGTH) return false;
+        
+        boolean valid = true;
+        for (int i = 0; i < password.length(); i++) {
+            String c = password.substring(i, i + 1);
+            if (!PASSWORD_ALLOWED_CHARS.contains(c)) {
+                valid = false;
+                break;
+            }
+        }
+
+        return valid;
+    }
+
+    public String getUserNameAllowedChars() { return USERNAME_ALLOWED_CHARS; }
+
+    public int getUserNameMaxLength() { return USERNAME_MAX_LENGTH; }
+
+    public String getPasswordAllowedChars() { return PASSWORD_ALLOWED_CHARS; }
+
+    public int getPasswordMaxLength() { return PASSWORD_MAX_LENGTH; }
 
     // Serialize / Deserialize
 
@@ -212,6 +294,42 @@ public class User {
 
     // Private methods
 
+    private String getNewPathName(String userName) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < userName.length(); i++) {
+            String c = userName.substring(i, i + 1);
+            
+            if (PATH_NAME_ALLOWED_CHARS.contains(c)) {
+                sb.append(c);
+            }
+            else {
+                sb.append("_");
+            }
+        }
+
+        String result = sb.toString();
+        if (result.startsWith("_")) result = "U" + result.substring(1);
+
+        return result;
+    }
+
+    private boolean canBePathname(String pathName) {
+        List<User> users = OBJECTS.USERS.getEntityAll();
+        for (int i = 0; i < users.size(); i++) {
+            String userPathName = users.get(i).getPathName();
+            if (userPathName != null && !userPathName.isEmpty()) {
+                userPathName = userPathName.toLowerCase();
+                if (pathName.toLowerCase().equals(userPathName)) {
+                    pathName = userPathName;
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     private boolean hasValidFileStructure() {
         if (pathName == null || pathName.isEmpty()) return false;
 
@@ -271,6 +389,8 @@ public class User {
             char c3 = passwordStr3.charAt(pos);
             if (c3 == PASSWORD_END_CHAR) break;
             sb.append(c3);
+
+            pos += PASSWORD_STEP;
         }
 
         return sb.toString();
@@ -294,11 +414,16 @@ public class User {
         int stringLine = 0;
 
         for (int i = 0; i <= password.length(); i++) {
-            char c = password.charAt(i);
+            char ch;
 
             if (i == password.length()) {
-                c = PASSWORD_END_CHAR;
+                ch = PASSWORD_END_CHAR;
             }
+            else {
+                ch = password.charAt(i);
+            }
+
+            String c = String.valueOf(ch);
 
             if (stringLine == 0) {
                 string1 = string1.substring(0, pos) + c + string1.substring(pos + 1);
@@ -372,11 +497,41 @@ public class User {
     public boolean getMultipleLoginAllowed() { return multipleLoginAllowed; }
 
     // Setters
-    public void setUsername(String username) { this.username = username; }
+    public void setUsername(String username) {
+        if (username == null) {
+            username = "";
+        }
+
+        if (username.length() > USERNAME_MAX_LENGTH) {
+            this.username = null;
+            UError.error("USER: Failed to set username", "Username is too long");
+            return;
+        }
+
+        if (!isUserNameValid(username)) {
+            this.username = null;
+            UError.error("USER: Failed to set username", "Username is invalid");
+            return;
+        }
+        
+        this.username = username;
+    }
     public void setLanguage(LanguagesEnum language) { this.language = language; }
     public void setPassword(String password) {
         if (password == null) {
             password = "";
+        }
+
+        if (password.length() > PASSWORD_MAX_LENGTH) {
+            this.password = null;
+            UError.error("USER: Failed to set password", "Password is too long");
+            return;
+        }
+
+        if (!isPasswordValid(password)) {
+            this.password = null;
+            UError.error("USER: Failed to set password", "Password is invalid");
+            return;
         }
 
         List<String> passwordStringsList = encryptPassword(password);
@@ -388,16 +543,11 @@ public class User {
             this.password = "";
             return;
         }
-        if (password.length() > PASSWORD_MAX_LENGTH) {
-            this.password = null;
-            UError.error("USER: Failed to set password", "Password is too long");
-            return;
-        }
         
         this.password = password;
     }
 
-    public void setPathName(String pathName) {
+    public boolean setPathName(String pathName) {
         if (pathName == null || pathName.isEmpty()) {
             this.pathName = "";
             this.userInfoPath = "";
@@ -405,7 +555,7 @@ public class User {
             this.userSettingsPath = "";
             this.appSettingsPath = "";
             this.attachmentsFolderPath = "";
-            return;
+            return false;
         }
 
         this.pathName = pathName;
@@ -414,6 +564,8 @@ public class User {
         this.userSettingsPath = UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName, this.pathName + "_settings.json");
         this.appSettingsPath = UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName, this.pathName + "_app_settings.json");
         this.attachmentsFolderPath = UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName, CONSTANTS.USER_ATTACHMENT_FOLDER_NAME);
+
+        return true;
     }
 
     public void setName(String name) { this.name = name; }

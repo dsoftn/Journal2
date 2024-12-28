@@ -105,6 +105,41 @@
         "languageCode": "en",
         "creationDate": "2024.12.27 13:28:12",
         "userData": ""
+      },
+      "username_exist": {
+        "key": "username_exist",
+        "value": "User with username \"#1\" already exists.\nNew user cannot have same username as existing user.",
+        "languageCode": "en",
+        "creationDate": "2024.12.28 00:28:51",
+        "userData": ""
+      },
+      "username_empty": {
+        "key": "username_empty",
+        "value": "Username cannot be empty.",
+        "languageCode": "en",
+        "creationDate": "2024.12.28 00:35:23",
+        "userData": ""
+      },
+      "username_invalid": {
+        "key": "username_invalid",
+        "value": "Username is not valid.\nMaximum length: #1 charachters.\nAllowed characters: #2",
+        "languageCode": "en",
+        "creationDate": "2024.12.28 00:37:58",
+        "userData": ""
+      },
+      "password_invalid": {
+        "key": "password_invalid",
+        "value": "Password is not valid.\nMaximum length: #1 charachters.\nAllowed characters: #2",
+        "languageCode": "en",
+        "creationDate": "2024.12.28 00:44:43",
+        "userData": ""
+      },
+      "password_confirmation": {
+        "key": "password_confirmation",
+        "value": "Password and password confirmation do not match.",
+        "languageCode": "en",
+        "creationDate": "2024.12.28 00:46:21",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -211,6 +246,41 @@
         "value": "Nevažeća lozinka",
         "languageCode": "sr-lat",
         "creationDate": "2024.12.27 13:28:12",
+        "userData": ""
+      },
+      "username_exist": {
+        "key": "username_exist",
+        "value": "Korisnik sa korisničkim imenom \"#1\" već postoji.\nNovi korisnik ne može imati isto korisničko ime kao postojeći korisnik.",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.28 00:28:51",
+        "userData": ""
+      },
+      "username_empty": {
+        "key": "username_empty",
+        "value": "Korisničko ime ne može biti prazno.",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.28 00:35:23",
+        "userData": ""
+      },
+      "username_invalid": {
+        "key": "username_invalid",
+        "value": "Korisničko ime nije važeće.\nMaksimalna dužina: #1 znakova.\nDozvoljeni znakovi: #2",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.28 00:37:58",
+        "userData": ""
+      },
+      "password_invalid": {
+        "key": "password_invalid",
+        "value": "Lozinka nije važeća.\nMaksimalna dužina: #1 znakova.\nDozvoljeni znakovi: #2",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.28 00:44:43",
+        "userData": ""
+      },
+      "password_confirmation": {
+        "key": "password_confirmation",
+        "value": "Lozinka i potvrda lozinke se ne poklapaju.",
+        "languageCode": "sr-lat",
+        "creationDate": "2024.12.28 00:46:21",
         "userData": ""
       }
     }

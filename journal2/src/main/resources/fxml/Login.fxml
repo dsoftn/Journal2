@@ -100,7 +100,7 @@
             </VBox>
             <VBox fx:id="vBoxNew" alignment="CENTER" layoutX="20.0" layoutY="118.0" VBox.vgrow="SOMETIMES">
                <children>
-                  <Label fx:id="lblNewTitle" styleClass="label-title-default" text="New user">
+                  <Label fx:id="lblNewTitle" graphicTextGap="20.0" styleClass="label-title-default" text="New user">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
@@ -142,7 +142,7 @@
                            </styleClass>
                         </ComboBox>
                         <Region HBox.hgrow="SOMETIMES" />
-                        <Button fx:id="btnCreateNew" mnemonicParsing="false" text="Create new">
+                        <Button fx:id="btnCreateNew" mnemonicParsing="false" onAction="#onBtnCreateNewClick" text="Create new">
                            <padding>
                               <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
                            </padding>

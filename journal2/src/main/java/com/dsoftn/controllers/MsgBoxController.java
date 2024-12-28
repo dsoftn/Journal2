@@ -28,7 +28,8 @@ public class MsgBoxController implements IBaseController {
         FILE_SEARCH("/images/file_search2.png"),
         FILE_ERROR("/images/file_error.png"),
         SETTINGS_FILE("/images/settings_file2.png"),
-        COPY("/images/copy.png");
+        COPY("/images/copy.png"),
+        USER("/images/user.png");
 
         private final String iconPath;
 

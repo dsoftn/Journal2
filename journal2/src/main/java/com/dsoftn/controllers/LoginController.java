@@ -14,8 +14,11 @@ import java.util.List;
 
 
 import com.dsoftn.CONSTANTS;
+import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.models.User;
 import com.dsoftn.utils.LanguagesEnum;
 import com.dsoftn.utils.UError;
@@ -79,7 +82,7 @@ public class LoginController implements IBaseController {
 
         showExistingUserWindow();
         
-        stage.setHeight(470);
+        stage.setHeight(480);
         pTxtPassword.requestFocus();
         stage.showAndWait();
     }
@@ -115,15 +118,6 @@ public class LoginController implements IBaseController {
     }
 
     private void setupWidgets () {
-        // Populate Existing Users ComboBox
-        for (User user : OBJECTS.USERS.getEntityAll()) {
-            cmbLoginUser.getItems().add(user.getUsername());
-        }
-        User lastUser = OBJECTS.USERS.lastActiveUser();
-        if (lastUser != null) {
-            cmbLoginUser.setValue(lastUser.getUsername());
-        }
-
         // Populate Languages ComboBoxes
         List<String> availableLanguages = OBJECTS.SETTINGS.getAvailableLanguageNames();
 
@@ -161,6 +155,25 @@ public class LoginController implements IBaseController {
                 loginButtonClicked();
             }
         });
+
+        // Populate Existing Users ComboBox
+        for (User user : OBJECTS.USERS.getEntityAll()) {
+            cmbLoginUser.getItems().add(user.getUsername());
+        }
+
+        // Set listener for cmbLoginUser ComboBox
+        cmbLoginUser.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                cmbLoginLang.setValue(OBJECTS.USERS.getEntity(newValue).getLanguage().getNativeName());
+                pTxtPassword.requestFocus();
+            }
+        });
+
+        // Set last active user
+        User lastUser = OBJECTS.USERS.lastActiveUser();
+        if (lastUser != null) {
+            cmbLoginUser.setValue(lastUser.getUsername());
+        }
     }
 
     private void showExistingUserWindow () {
@@ -178,6 +191,7 @@ public class LoginController implements IBaseController {
             OBJECTS.SETTINGS.setActiveLanguage(LanguagesEnum.fromNativeName(cmbLoginLang.getValue()).getLangCode());
         }
         setupWidgetText();
+        pTxtPassword.requestFocus();
     }
 
     private void showNewUserWindow () {
@@ -195,6 +209,7 @@ public class LoginController implements IBaseController {
             OBJECTS.SETTINGS.setActiveLanguage(LanguagesEnum.fromNativeName(cmbNewLang.getValue()).getLangCode());
         }
         setupWidgetText();
+        txtNewUser.requestFocus();
     }
 
     private void loginButtonClicked () {
@@ -223,7 +238,70 @@ public class LoginController implements IBaseController {
 
         stage.close();
     }
-        
+
+    private User getNewUser () {
+        String userName = txtNewUser.getText();
+        String password = pTxtNewPassword.getText();
+        String passwordConfirm = pTxtNewConfirmPassword.getText();
+
+        User newUser = new User();
+
+        String checkString = checkUser(userName, password, passwordConfirm);
+        if (!checkString.isEmpty()) {
+            MsgBoxController msgBox = DIALOGS.getMsgBoxController(stage);
+            msgBox.setHeaderIcon(MsgBoxIcon.USER);
+            msgBox.setHeaderText(OBJECTS.SETTINGS.getl("text_CreateNewUser"));
+            msgBox.setContentIcon(MsgBoxIcon.WARNING);
+            msgBox.setContentText(checkString);
+            msgBox.setButtons(MsgBoxButton.OK);
+            msgBox.startMe();
+            return null;
+        }
+
+        newUser.setUsername(userName);
+        newUser.setPassword(password);
+        newUser.setLanguage(LanguagesEnum.fromNativeName(cmbNewLang.getValue()));
+
+        return newUser;
+    }
+
+    private String checkUser (String userName, String password, String passwordConfirm) {
+        String result = "";
+        User userObject = new User();
+
+        if (OBJECTS.USERS.isExists(userName)) {
+            result += OBJECTS.SETTINGS.getl("username_exist")
+                .replace("#1", userName);
+            result += "\n\n";
+        }
+
+        if (userName.isEmpty()) {
+            result += OBJECTS.SETTINGS.getl("username_empty");
+            result += "\n\n";
+        }
+
+        if (!userObject.isUserNameValid(userName)) {
+            result += OBJECTS.SETTINGS.getl("username_invalid")
+                .replace("#1", String.valueOf(userObject.getUserNameMaxLength()))
+                .replace("#2", userObject.getUserNameAllowedChars());
+            result += "\n\n";
+        }
+
+        if (!userObject.isPasswordValid(password)) {
+            result += OBJECTS.SETTINGS.getl("password_invalid")
+                .replace("#1", String.valueOf(userObject.getPasswordMaxLength()))
+                .replace("#2", userObject.getPasswordAllowedChars());
+            result += "\n\n";
+        }
+
+        if (!password.equals(passwordConfirm)) {
+            result += OBJECTS.SETTINGS.getl("password_confirmation");
+            result += "\n\n";
+        }
+
+        return result;
+    }
+    
     // FXML event handlers
 
     @FXML
@@ -246,6 +324,24 @@ public class LoginController implements IBaseController {
         loginButtonClicked();
     }
 
+    @FXML
+    private void onBtnCreateNewClick () {
+        User newUser = getNewUser();
+        if (newUser == null) {
+            return;
+        }
+
+        newUser.add();
+
+        // Populate Existing Users ComboBox
+        cmbLoginUser.getItems().clear();
+        for (User user : OBJECTS.USERS.getEntityAll()) {
+            cmbLoginUser.getItems().add(user.getUsername());
+        }
+        cmbLoginUser.setValue(newUser.getUsername());
+
+        showExistingUserWindow();
+    }
 
 
 }

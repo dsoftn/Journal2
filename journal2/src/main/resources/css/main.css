@@ -113,8 +113,7 @@
 
 .combo-box-default .arrow-button {
     -fx-background-color: transparent;
-    -fx-border-color: -fx-border-color-input-default;
-    -fx-border-width: 1px;
+    -fx-border-width: 0px;
 }
 
 .combo-box-default .arrow-button:hover {
