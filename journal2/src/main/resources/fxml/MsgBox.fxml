@@ -17,7 +17,7 @@
             <Region prefHeight="10.0" />
             <VBox fx:id="vBoxHeader">
                <children>
-                  <HBox fx:id="hBoxHeaderContent" alignment="CENTER_LEFT">
+                  <HBox fx:id="hBoxHeaderContent" alignment="CENTER">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -42,7 +42,7 @@
             </VBox>
             <VBox fx:id="vBoxContent">
                <children>
-                  <HBox fx:id="hBoxContentContent" alignment="CENTER_LEFT">
+                  <HBox fx:id="hBoxContentContent" alignment="CENTER">
                      <children>
                         <Label fx:id="lblIconContent">
                            <HBox.margin>

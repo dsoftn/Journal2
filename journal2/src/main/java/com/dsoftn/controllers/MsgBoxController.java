@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.text.TextFlow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.utils.UFile;
+import com.dsoftn.services.RichText;
 
 public class MsgBoxController implements IBaseController {
 
@@ -83,10 +85,10 @@ public class MsgBoxController implements IBaseController {
     private MsgBoxIcon titleIcon = MsgBoxIcon.APP;
     private boolean showHeader = false;
     private MsgBoxIcon headerIcon = MsgBoxIcon.APP;
-    private String headerText = "";
+    private RichText headerText = new RichText();
     private boolean showContent = false;
     private MsgBoxIcon contentIcon = MsgBoxIcon.APP;
-    private String contentText = "";
+    private RichText contentText = new RichText();
 
     private MsgBoxButton selectedButton = null;
     private String result = "";
@@ -138,7 +140,7 @@ public class MsgBoxController implements IBaseController {
 
     public void setHeaderText (String headerText) {
         this.showHeader = true;
-        this.headerText = headerText;
+        this.headerText.setText(headerText);
     }
 
     public void setShowContent (boolean showContent) {
@@ -152,7 +154,7 @@ public class MsgBoxController implements IBaseController {
 
     public void setContentText (String contentText) {
         this.showContent = true;
-        this.contentText = contentText;
+        this.contentText.setText(contentText);
     }
 
     public void setButtons (MsgBoxButton... buttons) {
@@ -223,9 +225,8 @@ public class MsgBoxController implements IBaseController {
 
         // Setup header
         if (showHeader) {
-            Label lblHeaderText = new Label(headerText);
-            lblHeaderText.setWrapText(true);
-            lblHeaderText.getStyleClass().add("label-msg-box-header");
+            headerText.setCss("-fx-fill: #80ed99; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-style: italic;");
+            TextFlow lblHeaderText = headerText.getTextFlow();
             hBoxHeaderContent.getChildren().add(lblHeaderText);
             setImageToLabel(headerIcon, lblIconHeader);
         } else {
@@ -235,9 +236,8 @@ public class MsgBoxController implements IBaseController {
 
         // Setup content
         if (showContent) {
-            Label lblContentText = new Label(contentText);
-            lblContentText.setWrapText(true);
-            lblContentText.getStyleClass().add("label-msg-box-content");
+            contentText.setCss("-fx-fill: #c7f9cc; -fx-font-size: 18px;");
+            TextFlow lblContentText = contentText.getTextFlow();
             hBoxContentContent.getChildren().add(lblContentText);
             setImageToLabel(contentIcon, lblIconContent);
         } else {
