@@ -143,6 +143,11 @@ public class MsgBoxController implements IBaseController {
         this.headerText.setText(headerText);
     }
 
+    public void setHeaderText (RichText headerText) {
+        this.showHeader = true;
+        this.headerText = headerText;
+    }
+
     public void setShowContent (boolean showContent) {
         this.showContent = showContent;
     }
@@ -155,6 +160,11 @@ public class MsgBoxController implements IBaseController {
     public void setContentText (String contentText) {
         this.showContent = true;
         this.contentText.setText(contentText);
+    }
+
+    public void setContentText (RichText contentText) {
+        this.showContent = true;
+        this.contentText = contentText;
     }
 
     public void setButtons (MsgBoxButton... buttons) {

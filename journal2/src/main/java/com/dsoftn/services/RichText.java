@@ -48,6 +48,12 @@ public class RichText {
     }
 
     public TextFlow getTextFlow() {
+        // Normalize css in rules
+        for (int i = 0; i < rules.size(); i++) {
+            RichTextRule rule = rules.get(i);
+            rule.setCss(generalRule.getCss() + rule.getCss());
+        }
+
         List <RichTextRule> textList = new ArrayList<>();
         String text = this.generalRule.getText();
         
@@ -84,7 +90,6 @@ public class RichText {
 
             // Update text and position
             text = text.substring(minIndex + minIndexRule.getText().length());
-            pos = minIndex + minIndexRule.getText().length();
         }
 
         // Create TextFlow

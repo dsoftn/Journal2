@@ -11,6 +11,8 @@ import javafx.scene.Parent;
 import com.dsoftn.controllers.MainWinController;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
+import com.dsoftn.services.RichText;
+import com.dsoftn.services.RichTextRule;
 import com.dsoftn.utils.UFile;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 
