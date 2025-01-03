@@ -1,6 +1,11 @@
 package com.dsoftn.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 public class UString {
+
     public static int Count(String text, String searchString) {
         int count = 0;
         int pos = 0;
@@ -15,4 +20,16 @@ public class UString {
         }
         return count;
     }
+
+    public static List<String> splitAndStrip(String text, String delimiter) {
+        String[] segments = text.split(Pattern.quote(delimiter), -1);
+        List<String> parts = new ArrayList<>();
+        for (String segment : segments) {
+            parts.add(segment.strip());
+        }
+        return parts;
+    }
+
+
+
 }

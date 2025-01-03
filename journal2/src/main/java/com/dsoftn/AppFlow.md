@@ -3,7 +3,10 @@
 # Table of Contents
 - [Application Flow](#application-flow-⤴)
 - [Dialogs](#dialogs-⤴)
+- [Services](#services-⤴)
 - [Folder Structure](#folder-structure-⤴)
+- [Special classes](#special-classes-⤴)
+- [Files Explanation](#files-explanation-⤴)
 
 
 ### Application Flow <sup>[⤴](#table-of-contents)</sup>
@@ -13,6 +16,10 @@
 - [Login Dialog](#login-dialog-⤴)
 - [MsgBox Dialog](#msgbox-dialog-⤴)
 - [Main Window Dialog](#main-window-dialog-⤴)
+
+### Services <sup>[⤴](#table-of-contents)</sup>
+- [SQLiteDb Service](#sqlite-db-service-⤴)
+- [RichText Service](#rich-text-service-⤴)
 
 ### Folder Structure <sup>[⤴](#table-of-contents)</sup>
 - [Java Classes Structure](#java-classes-structure-⤴)
@@ -112,6 +119,38 @@ MsgBoxButton selectedButton = msgBoxController.getSelectedButton();
 String result = msgBoxController.getResult();
 ```
 
+## SQLiteDb Service <sup>[⤴](#services-⤴)</sup>
+### Usage
+1. Make instance of `SQLiteDb` class.
+2. Perform database operations.
+3. Close database connection with `disconnect()`.
+
+### Example
+```java
+SQLiteDb db = new SQLiteDb();
+// Database will be automatically connected to "OBJECTS.ACTIVE_USER.getDbPath()"
+ResultSer result = db.execute("SELECT * FROM blocks");
+// This will return ResultSet, you can walk through it with `next()` method
+db.disconnect();
+```
+
+## RichText Service <sup>[⤴](#services-⤴)</sup>
+### Usage
+1. Make instance of `RichText` class.
+2. Set `generalRule`, you can set `text` in this rule
+3. Alternatively set text with `setText()` method
+4. Add `RichTextRule` to `RichText.rules` list.
+5. Get `TextFlow` object with `getTextFlow()` method.
+
+### Example
+```java
+RichText richText = new RichText();
+richText.generalRule = new RichTextRule("This is example");
+RichTextRule rule = new RichTextRule("is");
+rule.setFontColor("#ffff00");
+richText.rules.add(rule);
+TextFlow textFlow = richText.getTextFlow();
+```
 
 ## Java Classes Structure <sup>[⤴](#folder-structure-⤴)</sup>
 **java.com.dsoftn** - root package
