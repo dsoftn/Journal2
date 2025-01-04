@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.util.List;
 
 import com.dsoftn.OBJECTS;
 import com.dsoftn.utils.UString;
+import com.dsoftn.utils.UError;
 
 
 public class SQLiteDB {
@@ -42,6 +44,8 @@ public class SQLiteDB {
     }
     
     public boolean createTable(String sql) {
+        sql = fixSql(sql);
+
         try {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sql);
@@ -52,21 +56,9 @@ public class SQLiteDB {
         }
     }
 
-    public boolean insert(String sql) {
+    public boolean update(PreparedStatement stmt) {
         try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
-            return true;
-        } catch (SQLException e) {
-            error("SQLiteDB.insert: Failed to insert data", e);
-            return false;
-        }
-    }
-
-    public boolean update(String sql) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
+            stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
             error("SQLiteDB.update: Failed to update data", e);
@@ -74,21 +66,17 @@ public class SQLiteDB {
         }
     }
 
-    public boolean delete(String sql) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
-            return true;
-        } catch (SQLException e) {
-            error("SQLiteDB.delete: Failed to delete data", e);
-            return false;
-        }
+    public boolean insert(PreparedStatement stmt) {
+        return update(stmt);
     }
 
-    public ResultSet select(String sql) {
+    public boolean delete(PreparedStatement stmt) {
+        return update(stmt);
+    }
+
+    public ResultSet select(PreparedStatement stmt) {
         try {
-            Statement stmt = conn.createStatement();
-            return stmt.executeQuery(sql);
+            return stmt.executeQuery();
         } catch (SQLException e) {
             error("SQLiteDB.select: Failed to select data", e);
             return null;
@@ -110,7 +98,9 @@ public class SQLiteDB {
         }
     }
 
-    public void disconnect(Connection conn) {
+    public void disconnect() {
+        if (conn == null) return;
+
         try {
             conn.close();
         } catch (SQLException e) {
@@ -118,9 +108,55 @@ public class SQLiteDB {
         }
     }
 
+    public PreparedStatement preparedStatement(String sql, Object... params) {
+        // Check if connection is open
+        try {
+            if (conn == null || conn.isClosed()) {
+                throw new SQLException("Connection is not open.");
+            }
+        } catch (SQLException e) {
+            error("SQLiteDB.prepareStatement: Connection is not open.", null);
+            return null;
+        }
+
+        sql = fixSql(sql);
+
+        // Prepare statement
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            for (int i = 0; i < params.length; i++) {
+                Object param = params[i];
+
+                if (param instanceof Integer) {
+                    stmt.setInt(i + 1, (Integer) param);
+                } else if (param instanceof String) {
+                    stmt.setString(i + 1, (String) param);
+                } else if (param instanceof Double) {
+                    stmt.setDouble(i + 1, (Double) param);
+                } else if (param instanceof Boolean) {
+                    stmt.setBoolean(i + 1, (Boolean) param);
+                } else if (param == null) {
+                    stmt.setNull(i + 1, java.sql.Types.NULL);
+                } else {
+                    stmt.setObject(i + 1, param);
+                }
+            }
+
+            return stmt;
+        } catch (SQLException e) {
+            error("SQLiteDB.prepareStatement: Failed to prepare statement", e);
+            return null;
+        }
+    }
+
+    private String fixSql(String sql) {
+        if (!sql.endsWith(";")) sql += ";";
+        return sql;
+    }
+
     private void error(String message, SQLException e) {
-        System.out.println(message + ": " + e.getMessage() +  "\n\n");
-        e.printStackTrace();
+        UError.exception(message, e);
     }
 
 
