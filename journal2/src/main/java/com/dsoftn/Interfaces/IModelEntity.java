@@ -2,14 +2,9 @@ package com.dsoftn.Interfaces;
 
 public interface IModelEntity {
 
-    public String getID();
+    public Integer getID();
 
-    public boolean load(String id);
-
-    public boolean save();
-    public boolean canBeSaved();
-
-    public boolean isExists(String id);
+    public boolean load(Integer id);
 
     public boolean add();
     public boolean canBeAdded();

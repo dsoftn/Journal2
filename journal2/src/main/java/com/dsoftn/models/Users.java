@@ -30,8 +30,9 @@ public class Users implements IModelRepository<User> {
         for (String folder : folders) {
             if (UFile.isDirectory(folder)) {
                 User user = new User();
-                user.load(folder);
-                data.put(user.getUsername(), user);
+                if (user.load(folder)) {
+                    data.put(user.getUsername(), user);
+                }
             }
         }
 
@@ -44,11 +45,19 @@ public class Users implements IModelRepository<User> {
     }
 
     @Override
+    public boolean isExists(Integer userName) {
+        return false;
+    }
+
     public boolean isExists(String userName) {
         return data.containsKey(userName);
     }
 
     @Override
+    public User getEntity(Integer userName) {
+        return null;
+    }
+
     public User getEntity(String userName) {
         return data.get(userName);
     }

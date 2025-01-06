@@ -8,9 +8,9 @@ public interface IModelRepository<T> {
 
     public int count();
 
-    public boolean isExists(String entityID);
+    public boolean isExists(Integer entityID);
     
-    public T getEntity(String entityID);
+    public T getEntity(Integer entityID);
 
     public List<T> getEntityAll();
 

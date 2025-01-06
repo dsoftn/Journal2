@@ -10,5 +10,17 @@
     "description": "Allow already loged user to login on another instance od application.",
     "creationDate": "2024.12.23 16:52:00",
     "userData": ""
+  },
+  "DatabaseTables": {
+    "key": "DatabaseTables",
+    "value": "CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, categories TEXT NOT NULL, tags TEXT NOT NULL, attachments TEXT NOT NULL, default_attachment INTEGER);",
+    "defaultValue": "CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, categories TEXT NOT NULL, tags TEXT NOT NULL, attachments TEXT NOT NULL, default_attachment INTEGER);",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "Allow already loged user to login on another instance od application.",
+    "creationDate": "2025.01.03 21:56:26",
+    "userData": ""
   }
 }

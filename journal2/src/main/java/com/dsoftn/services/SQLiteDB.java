@@ -40,10 +40,31 @@ public class SQLiteDB {
     }
 
     public boolean isConnected() {
-        return conn != null;
+        // Check if connection is open
+        try {
+            if (conn == null || conn.isClosed()) {
+                return false;
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+
+        return true;
     }
     
     public boolean createTable(String sql) {
+        // Check sql
+        if (sql == null || sql.isEmpty()) {
+            UError.error("SQLiteDB.createTable: Failed to create table", "SQL is null");
+            return false;
+        }
+        
+        // Check if connection is open
+        if (checkConnection() == false) {
+            UError.error("SQLiteDB.createTable: Failed to create table", "Database is not connected", "SQL: " + sql);
+            return false;
+        }
+
         sql = fixSql(sql);
 
         try {
@@ -51,34 +72,114 @@ public class SQLiteDB {
             stmt.executeUpdate(sql);
             return true;
         } catch (SQLException e) {
-            error("SQLiteDB.createTable: Failed to create table", e);
+            UError.exception("SQLiteDB.createTable: Failed to create table", e, "SQL: " + sql);
             return false;
         }
     }
 
     public boolean update(PreparedStatement stmt) {
+        // Check if stmt is null
+        if (stmt == null) {
+            UError.error("SQLiteDB.update: Failed to update data", "Statement is null");
+            return false;
+        }
+
+        // Check if connection is open
+        if (checkConnection() == false) {
+            UError.error("SQLiteDB.update: Failed to update data", "Database is not connected", "SQL: " + stmt.toString());
+            return false;
+        }
+
         try {
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            error("SQLiteDB.update: Failed to update data", e);
+            UError.exception("SQLiteDB.update: Failed to update data", e, "SQL: " + stmt.toString());
             return false;
         }
     }
 
-    public boolean insert(PreparedStatement stmt) {
-        return update(stmt);
+    /**
+     * Returns new id or null if failed
+     */
+    public Integer insert(PreparedStatement stmt) {
+        // Check if stmt is null
+        if (stmt == null) {
+            UError.error("SQLiteDB.insert: Failed to insert data", "Statement is null");
+            return null;
+        }
+
+        // Check if connection is open
+        if (checkConnection() == false) {
+            UError.error("SQLiteDB.insert: Failed to insert data", "Database is not connected", "SQL: " + stmt.toString());
+            return null;
+        }
+
+        // Insert data
+        try {
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                UError.error("SQLiteDB.insert: Insert operation did not affect any rows", "Affected rows is 0", "SQL: " + stmt.toString());
+                return null;
+            }
+
+            // Get generated id
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                else {
+                    UError.error("SQLiteDB.insert: No generated ID returned", "Result set is unexpectedly null" ,"SQL: " + stmt.toString());
+                    return null;
+                }
+            }
+            
+        } catch (SQLException e) {
+            UError.exception("SQLiteDB.insert: Failed to insert data", e, "SQL: " + stmt.toString());
+            return null;
+        }
     }
 
     public boolean delete(PreparedStatement stmt) {
-        return update(stmt);
+        // Check if stmt is null
+        if (stmt == null) {
+            UError.error("SQLiteDB.delete: Failed to delete data", "Statement is null");
+            return false;
+        }
+
+        // Check if connection is open
+        if (checkConnection() == false) {
+            UError.error("SQLiteDB.delete: Failed to delete data", "Database is not connected", "SQL: " + stmt.toString());
+            return false;
+        }
+
+        try {
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            UError.exception("SQLiteDB.delete: Failed to delete data", e, "SQL: " + stmt.toString());
+            return false;
+        }
     }
 
     public ResultSet select(PreparedStatement stmt) {
+        // Check if stmt is null
+        if (stmt == null) {
+            UError.error("SQLiteDB.select: Failed to select data", "Statement is null");
+            return null;
+        }
+
+        // Check if connection is open
+        if (checkConnection() == false) {
+            UError.error("SQLiteDB.select: Failed to select data", "Database is not connected", "SQL: " + stmt.toString());
+            return null;
+        }
+
         try {
             return stmt.executeQuery();
         } catch (SQLException e) {
-            error("SQLiteDB.select: Failed to select data", e);
+            UError.exception("SQLiteDB.select: Failed to select data", e, "SQL: " + stmt.toString());
             return null;
         }
     }
@@ -90,10 +191,10 @@ public class SQLiteDB {
         try {
             if (conn != null && !conn.isClosed()) conn.close();
 
-            Connection conn = DriverManager.getConnection(dbUrl);
+            conn = DriverManager.getConnection(dbUrl);
             return conn;
         } catch (SQLException e) {
-            error("SQLiteDB.connect: Failed to connect to database", e);
+            UError.exception("SQLiteDB.connect: Failed to connect to database", e, "Database path: " + dbPath);
             return null;
         }
     }
@@ -104,26 +205,30 @@ public class SQLiteDB {
         try {
             conn.close();
         } catch (SQLException e) {
-            error("SQLiteDB.disconnect: Failed to disconnect from database", e);
+            UError.exception("SQLiteDB.disconnect: Failed to disconnect from database", e);
         }
     }
 
+    /**
+     * If SQL command is INSERT INTO, returns PreparedStatement with RETURN_GENERATED_KEYS
+     */
     public PreparedStatement preparedStatement(String sql, Object... params) {
         // Check if connection is open
-        try {
-            if (conn == null || conn.isClosed()) {
-                throw new SQLException("Connection is not open.");
-            }
-        } catch (SQLException e) {
-            error("SQLiteDB.prepareStatement: Connection is not open.", null);
+        if (checkConnection() == false) {
+            UError.error("SQLiteDB.prepareStatement: Failed to prepare statement", "Database is not connected", "SQL: " + sql);
             return null;
         }
 
         sql = fixSql(sql);
 
+        // Check if SQl is INSERT INTO
+        boolean returnGeneratedKeys = sql.trim().toUpperCase().startsWith("INSERT INTO");
+
         // Prepare statement
         try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
+            PreparedStatement stmt = returnGeneratedKeys
+            ? conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+            : conn.prepareStatement(sql);
 
             for (int i = 0; i < params.length; i++) {
                 Object param = params[i];
@@ -145,7 +250,7 @@ public class SQLiteDB {
 
             return stmt;
         } catch (SQLException e) {
-            error("SQLiteDB.prepareStatement: Failed to prepare statement", e);
+            UError.exception("SQLiteDB.prepareStatement: Failed to prepare statement", e, "SQL: " + sql);
             return null;
         }
     }
@@ -155,9 +260,19 @@ public class SQLiteDB {
         return sql;
     }
 
-    private void error(String message, SQLException e) {
-        UError.exception(message, e);
-    }
+    private boolean checkConnection() {
+        // Check if connection is open
+        try {
+            if (conn == null || conn.isClosed()) {
+                UError.error("SQLiteDB.checkConnection: Failed", "Database is not connected");
+                return false;
+            }
+        } catch (SQLException e) {
+            UError.exception("SQLiteDB.checkConnection: Failed.", e, "Database is not connected");
+            return false;
+        }
 
+        return true;
+    }
 
 }
