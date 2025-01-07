@@ -22,13 +22,13 @@ import com.dsoftn.events.CategoryUpdatedEvent;
 import com.dsoftn.events.CategoryDeletedEvent;
 
 
-public class Category implements IModelEntity{
+public class Category implements IModelEntity<Category> {
     // Properties
-    private Integer id = 0;
+    private Integer id = CONSTANTS.INVALID_ID;
     private String name = "";
     private String description = "";
-    private String relatedCategories = "";
-    private Integer parent = 0;
+    private List<Integer> relatedCategories = new ArrayList<>();
+    private Integer parent = CONSTANTS.INVALID_ID;
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
     // Constructors
@@ -80,9 +80,13 @@ public class Category implements IModelEntity{
             this.id = rs.getInt("id");
             this.name = rs.getString("name");
             this.description = rs.getString("description");
-            this.relatedCategories = rs.getString("related_categories");
             this.parent = rs.getInt("parent");
             this.created = rs.getString("created");
+            
+            this.setRelatedCategories(OBJECTS.CATEGORIES.getCategoriesListFromRelations(
+                OBJECTS.RELATIONS.getRelationsList(ScopeEnum.CATEGORY, this.id, ScopeEnum.CATEGORY)
+            ));
+            
             return true;
         } catch (Exception e) {
             UError.exception("Category.loadFromResultSet: Failed to load category from result set", e);
@@ -103,11 +107,10 @@ public class Category implements IModelEntity{
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO categories " + 
-                "(name, description, related_categories, parent, created) " + 
-                "VALUES (?, ?, ?, ?, ?)",
+                "(name, description, parent, created) " + 
+                "VALUES (?, ?, ?, ?)",
                 this.name,
                 this.description,
-                this.relatedCategories,
                 this.parent,
                 this.created);
 
@@ -130,7 +133,7 @@ public class Category implements IModelEntity{
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new CategoryAddedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new CategoryAddedEvent(this.duplicate()));
 
             return true;
 
@@ -146,7 +149,7 @@ public class Category implements IModelEntity{
 
     @Override
     public boolean canBeAdded() {
-        if (this.created == null || this.created.isEmpty()) return false;
+        if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (OBJECTS.CATEGORIES.isExists(this.id)) return false;
         return true;
     }
@@ -164,11 +167,10 @@ public class Category implements IModelEntity{
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE categories " + 
-                "SET name = ?, description = ?, related_categories = ?, parent = ?, created = ? " + 
+                "SET name = ?, description = ?, parent = ?, created = ? " + 
                 "WHERE id = ?",
                 this.name,
                 this.description,
-                this.relatedCategories,
                 this.parent,
                 this.created,
                 this.id);
@@ -182,6 +184,8 @@ public class Category implements IModelEntity{
                 return false;
             }
 
+            Category oldCategory = OBJECTS.CATEGORIES.getEntity(this.id).duplicate();
+
             // Update in repository
             if (!OBJECTS.CATEGORIES.update(this)) {
                 UError.error("Category.update: Failed to update category in repository", "Updating category in repository failed");
@@ -189,7 +193,7 @@ public class Category implements IModelEntity{
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new CategoryUpdatedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new CategoryUpdatedEvent(oldCategory, this.duplicate()));
 
             return true;
 
@@ -205,8 +209,8 @@ public class Category implements IModelEntity{
 
     @Override
     public boolean canBeUpdated() {
-        if (this.id == 0) return false;
-        if (this.created == null || this.created.isEmpty()) return false;
+        if (this.id == CONSTANTS.INVALID_ID) return false;
+        if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (!OBJECTS.CATEGORIES.isExists(this.id)) return false;
 
         return true;
@@ -244,7 +248,7 @@ public class Category implements IModelEntity{
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new CategoryDeletedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new CategoryDeletedEvent(this.duplicate()));
 
             return true;
 
@@ -260,9 +264,23 @@ public class Category implements IModelEntity{
 
     @Override
     public boolean canBeDeleted() {
-        if (this.id == 0) return false;
+        if (this.id == CONSTANTS.INVALID_ID) return false;
         if (!OBJECTS.CATEGORIES.isExists(this.id)) return false;
         return true;
+    }
+
+    @Override
+    public Category duplicate() {
+        Category newCategory = new Category();
+
+        newCategory.setID(this.id);
+        newCategory.setName(this.name);
+        newCategory.setDescription(this.description);
+        newCategory.setParent(OBJECTS.CATEGORIES.getEntity(this.parent).duplicate());
+        newCategory.setCreatedSTR_JSON(this.created);
+        newCategory.setRelatedCategories(this.getRelatedCategories());
+
+        return newCategory;
     }
 
     // Getters
@@ -276,22 +294,7 @@ public class Category implements IModelEntity{
     }
 
     public List<Category> getRelatedCategories() {
-        return getRelatedCategoriesList();
-    }
-
-    private List<Category> getRelatedCategoriesList() {
-        List<String> ids = UString.splitAndStrip(this.relatedCategories, ",");
-        List<Category> categories = new ArrayList<Category>();
-
-        for (String id : ids) {
-            if (UNumbers.isStringInteger(id)) {
-                Category category = OBJECTS.CATEGORIES.getEntity(UNumbers.toInteger(id));
-                if (category != null) {
-                    categories.add(category);
-                }
-            }
-        }
-        return categories;
+        return OBJECTS.CATEGORIES.getCategoriesListFromIDs(this.relatedCategories);
     }
 
     public Category getParent() {
@@ -329,7 +332,7 @@ public class Category implements IModelEntity{
     public void setDescription(String description) { this.description = description; }
 
     public void setRelatedCategories(List<Category> relatedCategories) {
-        this.relatedCategories = String.join(",", relatedCategories.stream().map((Category category) -> String.valueOf(category.getID())).collect(Collectors.toList()));
+        this.relatedCategories = relatedCategories.stream().map((Category category) -> category.getID()).collect(Collectors.toList());
     }
 
     public void setParent(Category parent) {
@@ -350,6 +353,10 @@ public class Category implements IModelEntity{
 
     public void setCreated() {
         setCreated(LocalDateTime.now());
+    }
+
+    public void setCreatedSTR_JSON(String created) {
+        this.created = created;
     }
 
 }

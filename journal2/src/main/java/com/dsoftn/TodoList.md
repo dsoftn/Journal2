@@ -11,6 +11,7 @@
 - **category** and **tag** can be assigned to block, definition... (*User can select scope of category or tag*)
 - **category** will have property `tag`
 - **tag** will have property `category`
+- Add property **source** to `attachment`
 
 ## Images and Files are now Attachments
 - In version 1.0 i have classes `Images`, `Image`, `Files` and `File`
@@ -21,5 +22,7 @@
 
 ## Name *Related*
 - Name *Related* will be used to indicate relations between definitions
+
+
 
 

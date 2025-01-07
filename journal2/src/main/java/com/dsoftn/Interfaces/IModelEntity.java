@@ -1,6 +1,6 @@
 package com.dsoftn.Interfaces;
 
-public interface IModelEntity {
+public interface IModelEntity<T> {
 
     public Integer getID();
 
@@ -15,7 +15,7 @@ public interface IModelEntity {
     public boolean delete();
     public boolean canBeDeleted();
 
-
+    public T duplicate();
 
     
 

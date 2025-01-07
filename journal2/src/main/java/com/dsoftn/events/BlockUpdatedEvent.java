@@ -10,15 +10,20 @@ public class BlockUpdatedEvent extends Event {
 
     public static final EventType<BlockUpdatedEvent> BLOCK_UPDATED_EVENT = new EventType<>(Event.ANY, "BLOCK_UPDATED_EVENT");
 
-    private final Block block;
+    private final Block OldBlock;
+    private final Block NewBlock;
 
     // Constructor
-    public BlockUpdatedEvent(Block block) {
+    public BlockUpdatedEvent(Block oldBlock, Block newBlock) {
         super(BLOCK_UPDATED_EVENT);
-        this.block = block;
+        this.OldBlock = oldBlock;
+        this.NewBlock = newBlock;
     }
 
     // Getters
-    public Block getBlock() { return this.block; }
+    
+    public Block getOldBlock() { return this.OldBlock; }
+
+    public Block getNewBlock() { return this.NewBlock; }
 
 }

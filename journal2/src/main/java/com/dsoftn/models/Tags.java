@@ -3,8 +3,6 @@ package com.dsoftn.models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -140,6 +138,29 @@ public class Tags implements IModelRepository<Tag> {
 
         data.remove(entity.getID());
         return true;
+    }
+
+    // Public methods
+
+    public List<Tag> getTagsListFromIDs(List<Integer> tagIDs) {
+        List<Tag> tags = new ArrayList<>();
+        for (Integer tagID : tagIDs) {
+            Tag tag = getEntity(tagID);
+            if (tag != null) tags.add(tag);
+        }
+
+        return tags;
+    }
+
+    public List<Tag> getTagsListFromRelations(List<Relation> relations) {
+        List<Integer> tagIDs = new ArrayList<>();
+        for (Relation relation : relations) {
+            if (relation.getRelatedModel() == ScopeEnum.TAG) {
+                tagIDs.add(relation.getRelatedID());
+            }
+        }
+
+        return getTagsListFromIDs(tagIDs);
     }
 
 }

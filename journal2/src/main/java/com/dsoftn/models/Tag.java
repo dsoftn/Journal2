@@ -13,18 +13,16 @@ import com.dsoftn.events.TagDeletedEvent;
 import com.dsoftn.events.TagUpdatedEvent;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
-import com.dsoftn.utils.UNumbers;
-import com.dsoftn.utils.UString;
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 
 
-public class Tag implements IModelEntity{
+public class Tag implements IModelEntity<Tag> {
     // Properties
-    private Integer id = 0;
+    private Integer id = CONSTANTS.INVALID_ID;
     private String name = "";
     private String description = "";
-    private String relatedTags = "";
+    private List<Integer> relatedTags = new ArrayList<>();
     private Integer scope = ScopeEnum.ALL.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
@@ -77,9 +75,15 @@ public class Tag implements IModelEntity{
             this.id = rs.getInt("id");
             this.name = rs.getString("name");
             this.description = rs.getString("description");
-            this.relatedTags = rs.getString("related_tags");
             this.scope = rs.getInt("scope");
             this.created = rs.getString("created");
+
+            this.setRelatedTags(
+                OBJECTS.TAGS.getTagsListFromRelations(
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.TAG, this.id, ScopeEnum.TAG)
+                )
+            );
+
             return true;
         } catch (Exception e) {
             UError.exception("Tag.loadFromResultSet: Failed to load tag from result set", e);
@@ -100,11 +104,10 @@ public class Tag implements IModelEntity{
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO tags " + 
-                "(name, description, related_tags, scope, created) " + 
-                "VALUES (?, ?, ?, ?, ?)",
+                "(name, description, scope, created) " + 
+                "VALUES (?, ?, ?, ?)",
                 this.name,
                 this.description,
-                this.relatedTags,
                 this.scope,
                 this.created);
 
@@ -127,7 +130,7 @@ public class Tag implements IModelEntity{
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new TagAddedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new TagAddedEvent(this.duplicate()));
 
             return true;
 
@@ -143,7 +146,8 @@ public class Tag implements IModelEntity{
 
     @Override
     public boolean canBeAdded() {
-        if (this.created == null || this.created.isEmpty()) return false;
+        if (this.id != CONSTANTS.INVALID_ID) return false;
+        if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (OBJECTS.TAGS.isExists(this.id)) return false;
         return true;
     }
@@ -161,11 +165,10 @@ public class Tag implements IModelEntity{
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE tags " + 
-                "SET name = ?, description = ?, related_tags = ?, scope = ?, created = ? " + 
+                "SET name = ?, description = ?, scope = ?, created = ? " + 
                 "WHERE id = ?",
                 this.name,
                 this.description,
-                this.relatedTags,
                 this.scope,
                 this.created,
                 this.id);
@@ -179,6 +182,8 @@ public class Tag implements IModelEntity{
                 return false;
             }
 
+            Tag oldTag = OBJECTS.TAGS.getEntity(this.id).duplicate();
+
             // Update in repository
             if (!OBJECTS.TAGS.update(this)) {
                 UError.error("Tag.update: Failed to update tag in repository", "Updating tag in repository failed");
@@ -186,7 +191,7 @@ public class Tag implements IModelEntity{
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new TagUpdatedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new TagUpdatedEvent(oldTag, this.duplicate()));
 
             return true;
 
@@ -202,8 +207,8 @@ public class Tag implements IModelEntity{
 
     @Override
     public boolean canBeUpdated() {
-        if (this.id == 0) return false;
-        if (this.created == null || this.created.isEmpty()) return false;
+        if (this.id == CONSTANTS.INVALID_ID) return false;
+        if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (!OBJECTS.TAGS.isExists(this.id)) return false;
 
         return true;
@@ -241,7 +246,7 @@ public class Tag implements IModelEntity{
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new TagDeletedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new TagDeletedEvent(this.duplicate()));
 
             return true;
 
@@ -257,9 +262,24 @@ public class Tag implements IModelEntity{
 
     @Override
     public boolean canBeDeleted() {
-        if (this.id == 0) return false;
+        if (this.id == CONSTANTS.INVALID_ID) return false;
         if (!OBJECTS.TAGS.isExists(this.id)) return false;
         return true;
+    }
+
+    @Override
+    public Tag duplicate() {
+        Tag newTag = new Tag();
+
+        newTag.setID(this.id);
+        newTag.setName(this.name);
+        newTag.setDescription(this.description);
+        newTag.setScope(this.scope);
+        newTag.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
+
+        newTag.setRelatedTags(this.getRelatedTags());
+
+        return newTag;
     }
 
     // Getters
@@ -272,23 +292,8 @@ public class Tag implements IModelEntity{
         return this.description;
     }
 
-    public List<Tag> getRelatedTags() {
-        return getRelatedTagsList();
-    }
-
-    private List<Tag> getRelatedTagsList() {
-        List<String> ids = UString.splitAndStrip(this.relatedTags, ",");
-        List<Tag> tags = new ArrayList<Tag>();
-
-        for (String id : ids) {
-            if (UNumbers.isStringInteger(id)) {
-                Tag tag = OBJECTS.TAGS.getEntity(UNumbers.toInteger(id));
-                if (tag != null) {
-                    tags.add(tag);
-                }
-            }
-        }
-        return tags;
+    private List<Tag> getRelatedTags() {
+        return OBJECTS.TAGS.getTagsListFromIDs(this.relatedTags);
     }
 
     public int getScope() {
@@ -326,12 +331,14 @@ public class Tag implements IModelEntity{
     public void setDescription(String description) { this.description = description; }
 
     public void setRelatedTags(List<Tag> relatedTags) {
-        this.relatedTags = String.join(",", relatedTags.stream().map((Tag tag) -> String.valueOf(tag.getID())).collect(Collectors.toList()));
+        this.relatedTags = relatedTags.stream().map(Tag::getID).collect(Collectors.toList());
     }
 
     public void setScope(ScopeEnum... scopes) {
         this.scope = ScopeEnum.combineValues(scopes);
     }
+
+    public void setScope(int scope) { this.scope = scope; }
 
     public void setCreated(LocalDateTime created) {
         this.created = created.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -349,7 +356,6 @@ public class Tag implements IModelEntity{
         setCreated(LocalDateTime.now());
     }
 
-    
-
+    public void setCreatedSTR_JSON(String created) { this.created = created; }
 
 }

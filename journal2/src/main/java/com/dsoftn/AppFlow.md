@@ -135,6 +135,7 @@ All models contain 2 classes:
     - Method `load()` is used to load all data from database and this should be called before any other action.
 2. `Model SINGLE` class that store single object.
     - Use methods of this class for `add`, `update` and `delete` operations. This methods update information in `Model ALL` class and in database.
+3. `Relations` model stores information about relations between models.
 
 ## Users-User Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -160,7 +161,7 @@ Use `Block` class only. DO NOT USE `Blocks` class.
 1. Make instance of `Block` class
 2. Call `load(id)` method if you want to load block from database
 3. Change block properties
-4. Call `add()`, `update()` or `delete()` method
+4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
 5. Database and `Block` class will be updated automatically
 ```java
 // Change block name example
@@ -176,8 +177,9 @@ Update following code in `Block` class:
 3. Add new property in method `Block.loadFromResultSet`
 4. Add new property in method `Block.add` sql query
 5. Add new property in method `Block.update` sql query
-6. Update `Blocks` class docstring
-7. Update **DatabaseTables** settings
+6. Add new property in method `Block.duplicate`
+7. Update `Blocks` class docstring
+8. Update **DatabaseTables** settings
 
 ## Tags-Tag Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -193,7 +195,7 @@ Use `Tag` class only. DO NOT USE `Tags` class.
 1. Make instance of `Tag` class
 2. Call `load(id)` method if you want to load tag from database
 3. Change tag properties
-4. Call `add()`, `update()` or `delete()` method
+4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
 5. Database and `Tag` class will be updated automatically
 ```java
 // Change tag name example
@@ -209,8 +211,9 @@ Update following code in `Tag` class:
 3. Add new property in method `Tag.loadFromResultSet`
 4. Add new property in method `Tag.add` sql query
 5. Add new property in method `Tag.update` sql query
-6. Update `Tags` class docstring
-7. Update **DatabaseTables** settings
+6. Add new property in method `Tag.duplicate`
+7. Update `Tags` class docstring
+8. Update **DatabaseTables** settings
 
 ## Categories-Category Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -226,7 +229,7 @@ Use `Category` class only. DO NOT USE `Categories` class.
 1. Make instance of `Category` class
 2. Call `load(id)` method if you want to load category from database
 3. Change category properties
-4. Call `add()`, `update()` or `delete()` method
+4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
 5. Database and `Category` class will be updated automatically
 ```java
 // Change category name example
@@ -243,15 +246,15 @@ Update following code in `Category` class:
 3. Add new property in method `Category.loadFromResultSet`
 4. Add new property in method `Category.add` sql query
 5. Add new property in method `Category.update` sql query
-6. Update `Categories` class docstring
-7. Update **DatabaseTables** settings
+6. Add new property in method `Category.duplicate`
+7. Update `Categories` class docstring
+8. Update **DatabaseTables** settings
 
 ## ScopeEnum <sup>[⤴](#models-⤴)</sup>
 ### Overview
-`ScopeEnum` class is used to set scope of tag or category.
-Any **Tag** or **Category** has `scope` property.
-This can be used to separate tags and categories for *BLOCKS*, *DEFINITIONS*, etc.
-
+- `ScopeEnum` class is used to set scope of **tag**.
+Based on *scope* you can distinguish **tags** that belong to various models like **BLOCKS**, **DEFINITIONS**, etc.
+- It is also used in **Relations** model to define models entities that are related.
 
 ## SQLiteDB Service <sup>[⤴](#services-⤴)</sup>
 ### Usage

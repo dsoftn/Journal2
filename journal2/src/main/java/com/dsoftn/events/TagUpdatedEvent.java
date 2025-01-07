@@ -9,17 +9,21 @@ import com.dsoftn.models.Tag;
 public class TagUpdatedEvent extends Event {
     public static final EventType<TagUpdatedEvent> TAG_UPDATED_EVENT = new EventType<>(Event.ANY, "TAG_UPDATED_EVENT");
     
-    private final Tag tag;
+    private final Tag oldTag;
+    private final Tag newTag;
 
     // Constructor
 
-    public TagUpdatedEvent(Tag tag) {
+    public TagUpdatedEvent(Tag oldTag, Tag newTag) {
         super(TAG_UPDATED_EVENT);
-        this.tag = tag;
+        this.oldTag = oldTag;
+        this.newTag = newTag;
     }
 
     // Getters
 
-    public Tag getTag() { return this.tag; }
+    public Tag getOldTag() { return this.oldTag; }
+
+    public Tag getNewTag() { return this.newTag; }
 
 }

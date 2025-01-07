@@ -2,14 +2,16 @@ package com.dsoftn.models;
 
 import java.util.Arrays;
 
-import com.dsoftn.Settings.SettingType;
 
 public enum ScopeEnum {
 
     NONE(1),
     ALL(2),
     BLOCK(4),
-    TAG(8);
+    DEFINITION(8),
+    ATTACHMENT(16),
+    CATEGORY(32),
+    TAG(64);
 
     private final int value;
 
@@ -102,11 +104,10 @@ public enum ScopeEnum {
 
     /**
      * Check if this integer contains specified type
-     * <p>Example: hasType(12, SettingType.BLOCK) = true</p>
+     * <p>Example: hasType(12, ScopeEnum.BLOCK) = true</p>
      */
-    public static boolean hasType(int integerToExamine, SettingType requiredType) {
+    public static boolean hasType(int integerToExamine, ScopeEnum requiredType) {
         return (integerToExamine & requiredType.getValue()) != 0;
     }
-
 
 }

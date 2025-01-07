@@ -10,17 +10,21 @@ public class CategoryUpdatedEvent extends Event {
 
     public static final EventType<CategoryUpdatedEvent> CATEGORY_UPDATED_EVENT = new EventType<>(Event.ANY, "CATEGORY_UPDATED_EVENT");
     
-    private final Category category;
+    private final Category oldCategory;
+    private final Category newCategory;
 
     // Constructor
 
-    public CategoryUpdatedEvent(Category category) {
+    public CategoryUpdatedEvent(Category oldCategory, Category newCategory) {
         super(CATEGORY_UPDATED_EVENT);
-        this.category = category;
+        this.oldCategory = oldCategory;
+        this.newCategory = newCategory;
     }
 
     // Getters
 
-    public Category getCategory() { return this.category; }
+    public Category getOldCategory() { return this.oldCategory; }
+
+    public Category getNewCategory() { return this.newCategory; }
 
 }

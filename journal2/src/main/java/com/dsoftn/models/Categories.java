@@ -3,8 +3,6 @@ package com.dsoftn.models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -140,6 +138,29 @@ public class Categories implements IModelRepository<Category> {
 
         data.remove(entity.getID());
         return true;
+    }
+
+    // Public methods
+
+    public List<Category> getCategoriesListFromIDs(List<Integer> categoryIDs) {
+        List<Category> categories = new ArrayList<>();
+        for (Integer categoryID : categoryIDs) {
+            Category category = getEntity(categoryID);
+            if (category != null) categories.add(category);
+        }
+
+        return categories;
+    }
+
+    public List<Category> getCategoriesListFromRelations(List<Relation> relations) {
+        List<Integer> categoryIDs = new ArrayList<>();
+        for (Relation relation : relations) {
+            if (relation.getRelatedModel() == ScopeEnum.CATEGORY) {
+                categoryIDs.add(relation.getRelatedID());
+            }
+        }
+
+        return getCategoriesListFromIDs(categoryIDs);
     }
 
 }

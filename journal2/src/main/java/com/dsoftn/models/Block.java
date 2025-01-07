@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
-import com.dsoftn.utils.UNumbers;
-import com.dsoftn.utils.UString;
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 
@@ -23,19 +21,19 @@ import com.dsoftn.events.BlockUpdatedEvent;
 import com.dsoftn.events.BlockDeletedEvent;
 
 
-public class Block implements IModelEntity {
+public class Block implements IModelEntity<Block> {
     // Properties
-    private int id = 0;
+    private int id = CONSTANTS.INVALID_ID;
     private String name = "";
-    private String date = "";
+    private String date = CONSTANTS.INVALID_DATETIME_STRING;
     private String text = "";
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String updated = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
-    private String categories = "";
-    private String tags = "";
-    private String attachments = "";
-    private int defaultAttachment = 0;
-    private String relatedBlocks = "";
+    private List<Integer> relatedCategories = new ArrayList<Integer>();
+    private List<Integer> relatedTags = new ArrayList<Integer>();
+    private List<Integer> relatedAttachments = new ArrayList<Integer>();
+    private int defaultAttachment = CONSTANTS.INVALID_ID;
+    private List<Integer> relatedBlocks = new ArrayList<Integer>();
 
     // Constructors
 
@@ -89,11 +87,28 @@ public class Block implements IModelEntity {
             this.text = rs.getString("text");
             this.created = rs.getString("created");
             this.updated = rs.getString("updated");
-            this.categories = rs.getString("categories");
-            this.tags = rs.getString("tags");
-            this.attachments = rs.getString("attachments");
             this.defaultAttachment = rs.getInt("default_attachment");
-            this.relatedBlocks = rs.getString("related_blocks");
+
+            this.setRelatedCategories(
+                OBJECTS.CATEGORIES.getCategoriesListFromRelations(
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.CATEGORY))
+                );
+
+            this.setRelatedTags(
+                OBJECTS.TAGS.getTagsListFromRelations(
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.TAG))
+            );
+
+            this.setRelatedAttachments(
+                OBJECTS.ATTACHMENTS.getAttachmentsListFromRelations(
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.ATTACHMENT))
+            );
+
+            this.setRelatedBlocks(
+                OBJECTS.BLOCKS.getBlocksListFromRelations(
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.BLOCK))
+            );
+
             return true;
         } catch (Exception e) {
             UError.exception("Block.loadFromResultSet: Failed to load block from result set", e);
@@ -114,18 +129,14 @@ public class Block implements IModelEntity {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO blocks " + 
-                "(name, date, text, created, updated, categories, tags, attachments, default_attachment, related_blocks) " + 
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "(name, date, text, created, updated, default_attachment) " + 
+                "VALUES (?, ?, ?, ?, ?, ?)",
                 this.name,
                 this.date,
                 this.text,
                 this.created,
                 this.updated,
-                this.categories,
-                this.tags,
-                this.attachments,
-                this.defaultAttachment,
-                this.relatedBlocks);
+                this.defaultAttachment);
 
             if (stmt == null) {
                 UError.error("Block.add: Failed to add block", "Statement is unexpectedly null");
@@ -146,7 +157,7 @@ public class Block implements IModelEntity {
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new BlockAddedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new BlockAddedEvent(this.duplicate()));
 
             return true;
 
@@ -162,9 +173,9 @@ public class Block implements IModelEntity {
 
     @Override
     public boolean canBeAdded() {
-        if (this.date == null || this.date.isEmpty()) return false;
-        if (this.created == null || this.created.isEmpty()) return false;
-        if (this.updated == null || this.updated.isEmpty()) return false;
+        if (this.date == null || this.date.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
+        if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
+        if (this.updated == null || this.updated.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (OBJECTS.BLOCKS.isExists(this.id)) return false;
         return true;
     }
@@ -182,18 +193,14 @@ public class Block implements IModelEntity {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE blocks " + 
-                "SET name = ?, date = ?, text = ?, created = ?, updated = ?, categories = ?, tags = ?, attachments = ?, default_attachment = ?, related_blocks = ? " + 
+                "SET name = ?, date = ?, text = ?, created = ?, updated = ?, default_attachment = ? " + 
                 "WHERE id = ?",
                 this.name,
                 this.date,
                 this.text,
                 this.created,
                 this.updated,
-                this.categories,
-                this.tags,
-                this.attachments,
                 this.defaultAttachment,
-                this.relatedBlocks,
                 this.id);
 
             if (stmt == null) {
@@ -205,6 +212,8 @@ public class Block implements IModelEntity {
                 return false;
             }
 
+            Block oldBlock = OBJECTS.BLOCKS.getEntity(this.id).duplicate();
+
             // Update in repository
             if (!OBJECTS.BLOCKS.update(this)) {
                 UError.error("Block.update: Failed to update block in repository", "Updating block in repository failed");
@@ -212,7 +221,7 @@ public class Block implements IModelEntity {
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new BlockUpdatedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new BlockUpdatedEvent(oldBlock, this.duplicate()));
 
             return true;
 
@@ -228,10 +237,10 @@ public class Block implements IModelEntity {
 
     @Override
     public boolean canBeUpdated() {
-        if (this.id == 0) return false;
-        if (this.date == null || this.date.isEmpty()) return false;
-        if (this.created == null || this.created.isEmpty()) return false;
-        if (this.updated == null || this.updated.isEmpty()) return false;
+        if (this.id == CONSTANTS.INVALID_ID) return false;
+        if (this.date == null || this.date.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
+        if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
+        if (this.updated == null || this.updated.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (!OBJECTS.BLOCKS.isExists(this.id)) return false;
 
         return true;
@@ -269,7 +278,7 @@ public class Block implements IModelEntity {
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new BlockDeletedEvent(this));
+            OBJECTS.EVENT_HANDLER.fireEvent(new BlockDeletedEvent(this.duplicate()));
 
             return true;
 
@@ -285,11 +294,29 @@ public class Block implements IModelEntity {
 
     @Override
     public boolean canBeDeleted() {
-        if (this.id == 0) return false;
+        if (this.id == CONSTANTS.INVALID_ID) return false;
         if (!OBJECTS.BLOCKS.isExists(this.id)) return false;
         return true;
     }
 
+    @Override
+    public Block duplicate() {
+        Block block = new Block();
+        block.setID(this.id);
+        block.setName(this.name);
+        block.setDateSTR_JSON(this.getDateSTR_JSON());
+        block.setText(this.text);
+        block.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
+        block.setUpdatedSTR_JSON(this.getUpdatedSTR_JSON());
+        block.setDefaultAttachment(this.defaultAttachment);
+
+        block.setRelatedCategories(this.getRelatedCategories());
+        block.setRelatedTags(this.getRelatedTags());
+        block.setRelatedAttachments(this.getRelatedAttachments());
+        block.setRelatedBlocks(this.getRelatedBlocks());
+
+        return block;
+    }
 
     // Getters
 
@@ -363,68 +390,22 @@ public class Block implements IModelEntity {
         return this.updated;
     }
 
-    public List<Category> getCategories() {
-        return getCategoriesList();
+    public List<Category> getRelatedCategories() {
+        return OBJECTS.CATEGORIES.getCategoriesListFromIDs(this.relatedCategories);
     }
 
-    private List<Category> getCategoriesList() {
-        List<String> ids = UString.splitAndStrip(this.categories, ",");
-        List<Category> categories = new ArrayList<Category>();
-
-        for (String id : ids) {
-            if (UNumbers.isStringInteger(id)) {
-                Category category = OBJECTS.CATEGORIES.getEntity(UNumbers.toInteger(id));
-                if (category != null) {
-                    categories.add(category);
-                }
-            }
-        }
-        return categories;
+    public List<Tag> getRelatedTags() {
+        return OBJECTS.TAGS.getTagsListFromIDs(this.relatedTags);
     }
 
-    public List<Tag> getTags() {
-        return getTagsList();
-    }
-
-    private List<Tag> getTagsList() {
-        List<String> ids = UString.splitAndStrip(this.tags, ",");
-        List<Tag> tags = new ArrayList<Tag>();
-
-        for (String id : ids) {
-            if (UNumbers.isStringInteger(id)) {
-                Tag tag = OBJECTS.TAGS.getEntity(UNumbers.toInteger(id));
-                if (tag != null) {
-                    tags.add(tag);
-                }
-            }
-        }
-        return tags;
-    }
-
-    public String getAttachments() {
-        // TODO Return list of attachments
-        return this.attachments;
+    public List<Attachment> getRelatedAttachments() {
+        return OBJECTS.ATTACHMENTS.getAttachmentsListFromIDs(this.relatedAttachments);
     }
     
     public int getDefaultAttachment() { return this.defaultAttachment; }
 
     public List<Block> getRelatedBlocks() {
-        return getRelatedBlocksList();
-    }
-
-    private List<Block> getRelatedBlocksList() {
-        List<String> ids = UString.splitAndStrip(this.relatedBlocks, ",");
-        List<Block> blocks = new ArrayList<Block>();
-
-        for (String id : ids) {
-            if (UNumbers.isStringInteger(id)) {
-                Block block = OBJECTS.BLOCKS.getEntity(UNumbers.toInteger(id));
-                if (block != null) {
-                    blocks.add(block);
-                }
-            }
-        }
-        return blocks;
+        return OBJECTS.BLOCKS.getBlocksListFromIDs(this.relatedBlocks);
     }
 
     // Setters
@@ -445,6 +426,8 @@ public class Block implements IModelEntity {
         }
     }
 
+    public void setDateSTR_JSON(String date) { this.date = date; }
+
     public void setText(String text) { this.text = text; }
 
     public void setCreated(LocalDateTime created) {
@@ -463,6 +446,8 @@ public class Block implements IModelEntity {
         setCreated(LocalDateTime.now());
     }
 
+    public void setCreatedSTR_JSON(String created) { this.created = created; }
+
     public void setUpdated(LocalDateTime updated) {
         this.updated = updated.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     }
@@ -479,23 +464,26 @@ public class Block implements IModelEntity {
         setUpdated(LocalDateTime.now());
     }
 
-    public void setCategories(List<Category> categories) {
-        this.categories = String.join(",", categories.stream().map((Category category) -> String.valueOf(category.getID())).collect(Collectors.toList()));
+    public void setUpdatedSTR_JSON(String updated) { this.updated = updated; }
+
+    public void setRelatedCategories(List<Category> categories) {
+        this.relatedCategories = categories.stream().map((Category category) -> category.getID()).collect(Collectors.toList());
     }
 
-    public void setTags(List<Tag> tags) {
-        this.tags = String.join(",", tags.stream().map((Tag tag) -> String.valueOf(tag.getID())).collect(Collectors.toList()));
+    public void setRelatedTags(List<Tag> tags) {
+        this.relatedTags = tags.stream().map((Tag tag) -> tag.getID()).collect(Collectors.toList());
     }
     
-    public void setAttachments(String attachments) {
-        // TODO Set list of attachments
+    public void setRelatedAttachments(List<Attachment> attachments) {
+        this.relatedAttachments = attachments.stream().map((Attachment attachment) -> attachment.getID()).collect(Collectors.toList());
     }
     
     public void setDefaultAttachment(int defaultAttachment) { this.defaultAttachment = defaultAttachment; }
 
-    public void setRelatedBlocks(List<Block> relatedBlocks) {
-        this.relatedBlocks = String.join(",", relatedBlocks.stream().map((Block block) -> String.valueOf(block.getID())).collect(Collectors.toList()));
-    }
+    public void setDefaultAttachment(Attachment defaultAttachment) { this.defaultAttachment = defaultAttachment.getID(); }
 
+    public void setRelatedBlocks(List<Block> relatedBlocks) {
+        this.relatedBlocks = relatedBlocks.stream().map((Block block) -> block.getID()).collect(Collectors.toList());
+    }
 
 }

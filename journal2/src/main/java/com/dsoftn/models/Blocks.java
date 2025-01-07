@@ -3,8 +3,6 @@ package com.dsoftn.models;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,11 +21,7 @@ TABLE blocks
     text TEXT NOT NULL - text of the block
     created TEXT NOT NULL - date in format for JSON
     updated TEXT NOT NULL - date in format for JSON
-    categories TEXT NOT NULL - list of category ids delimited by comma
-    tags TEXT NOT NULL - list of tag ids delimited by comma
-    attachments TEXT NOT NULL - list of attachment ids delimited by comma
     default_attachment INTEGER - default attachment id
-    related_blocks TEXT NOT NULL - list of related block ids delimited by comma
  */
 
 public class Blocks implements IModelRepository<Block> {
@@ -146,6 +140,29 @@ public class Blocks implements IModelRepository<Block> {
 
         data.remove(entity.getID());
         return true;
+    }
+
+    // Public methods
+
+    public List<Block> getBlocksListFromIDs(List<Integer> blockIDs) {
+        List<Block> blocks = new ArrayList<>();
+        for (Integer blockID : blockIDs) {
+            Block block = getEntity(blockID);
+            if (block != null) blocks.add(block);
+        }
+
+        return blocks;
+    }
+
+    public List<Block> getBlocksListFromRelations(List<Relation> relations) {
+        List<Integer> blockIDs = new ArrayList<>();
+        for (Relation relation : relations) {
+            if (relation.getRelatedModel() == ScopeEnum.BLOCK) {
+                blockIDs.add(relation.getRelatedID());
+            }
+        }
+
+        return getBlocksListFromIDs(blockIDs);
     }
 
 }
