@@ -18,9 +18,10 @@ TABLE tags
     id INTEGER PRIMARY KEY AUTOINCREMENT
     name TEXT NOT NULL - name of the tag
     description TEXT NOT NULL - description of the tag
-    related_tags TEXT NOT NULL - list of related tag ids delimited by comma
     scope INTEGER NOT NULL - ScopeEnum combined value
     created TEXT NOT NULL - date in format for JSON
+RELATED PROPERTIES:
+    Tags
  */
 public class Tags implements IModelRepository<Tag> {
     // Variables

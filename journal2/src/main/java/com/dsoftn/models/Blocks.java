@@ -22,6 +22,11 @@ TABLE blocks
     created TEXT NOT NULL - date in format for JSON
     updated TEXT NOT NULL - date in format for JSON
     default_attachment INTEGER - default attachment id
+RELATED PROPERTIES
+    Attachments
+    Categories
+    Tags
+    Blocks
  */
 
 public class Blocks implements IModelRepository<Block> {

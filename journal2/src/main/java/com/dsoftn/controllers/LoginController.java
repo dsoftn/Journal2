@@ -331,7 +331,11 @@ public class LoginController implements IBaseController {
             return;
         }
 
-        newUser.add();
+        boolean added = newUser.add();
+        if (!added) {
+            UError.error("LOGIN: Failed to create new user.", "User could not be added to database.");
+            return;
+        }
 
         // Populate Existing Users ComboBox
         cmbLoginUser.getItems().clear();

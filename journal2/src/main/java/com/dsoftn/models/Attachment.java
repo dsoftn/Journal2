@@ -334,6 +334,7 @@ public class Attachment implements IModelEntity<Attachment> {
             return null;
         }
     }
+    
     public String getFileCreatedSTR() {
         try {
             return LocalDateTime.parse(this.fileCreated, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON).format(CONSTANTS.DATE_TIME_FORMATTER);
@@ -342,6 +343,7 @@ public class Attachment implements IModelEntity<Attachment> {
             return null;
         }
     }
+    
     public String getFileCreatedSTR_JSON() { return this.fileCreated; }
 
     public LocalDateTime getFileModifiedOBJ() {
@@ -352,6 +354,7 @@ public class Attachment implements IModelEntity<Attachment> {
             return null;
         }
     }
+    
     public String getFileModifiedSTR() {
         try {
             return LocalDateTime.parse(this.fileModified, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON).format(CONSTANTS.DATE_TIME_FORMATTER);
@@ -360,6 +363,7 @@ public class Attachment implements IModelEntity<Attachment> {
             return null;
         }
     }
+    
     public String getFileModifiedSTR_JSON() { return this.fileModified; }
 
     public LocalDateTime getFileAccessedOBJ() {
@@ -370,6 +374,7 @@ public class Attachment implements IModelEntity<Attachment> {
             return null;
         }
     }
+    
     public String getFileAccessedSTR() {
         try {
             return LocalDateTime.parse(this.fileAccessed, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON).format(CONSTANTS.DATE_TIME_FORMATTER);
@@ -378,6 +383,7 @@ public class Attachment implements IModelEntity<Attachment> {
             return null;
         }
     }
+    
     public String getFileAccessedSTR_JSON() { return this.fileAccessed; }
 
     public LocalDateTime getCreatedOBJ() {
@@ -406,6 +412,10 @@ public class Attachment implements IModelEntity<Attachment> {
         return OBJECTS.ATTACHMENTS.getAttachmentsListFromIDs(this.relatedAttachments);
     }
 
+    public List<Integer> getRelatedAttachmentsIDs() {
+        return this.relatedAttachments;
+    }
+
     // Setters
 
     public void setID(Integer id) { this.id = id; }
@@ -417,6 +427,7 @@ public class Attachment implements IModelEntity<Attachment> {
     public void setType(AttachmentTypeEnum type) { this.type = type.getInteger(); }
 
     public void setIsSupported(boolean isSupported) { this.isSupported = isSupported ? 1 : 0; }
+    
     public void setIsSupported(Integer isSupported) { this.isSupported = isSupported == 1 ? 1 : 0; }
 
     public void setFilePath(String filePath) { this.filePath = filePath; }
@@ -424,7 +435,9 @@ public class Attachment implements IModelEntity<Attachment> {
     public void setFileSize(Integer fileSize) { this.fileSize = fileSize; }
 
     public void setFileCreated(LocalDateTime fileCreated) { this.fileCreated = fileCreated.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON); }
+    
     public void setFileCreated() { setFileCreated(LocalDateTime.now()); }
+    
     public void setFileCreated(String fileCreated) {
         try {
             this.fileCreated = LocalDateTime.parse(fileCreated, CONSTANTS.DATE_TIME_FORMATTER).format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -436,7 +449,9 @@ public class Attachment implements IModelEntity<Attachment> {
     public void  setFileCreatedSTR_JSON(String fileCreated) { this.fileCreated = fileCreated; }
 
     public void setFileModified(LocalDateTime fileModified) { this.fileModified = fileModified.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON); }
+    
     public void setFileModified() { setFileModified(LocalDateTime.now()); }
+    
     public void setFileModified(String fileModified) {
         try {
             this.fileModified = LocalDateTime.parse(fileModified, CONSTANTS.DATE_TIME_FORMATTER).format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -448,7 +463,9 @@ public class Attachment implements IModelEntity<Attachment> {
     public void setFileModifiedSTR_JSON(String fileModified) { this.fileModified = fileModified; }
 
     public void setFileAccessed(LocalDateTime fileAccessed) { this.fileAccessed = fileAccessed.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON); }
+    
     public void setFileAccessed() { setFileAccessed(LocalDateTime.now()); }
+    
     public void setFileAccessed(String fileAccessed) {
         try {
             this.fileAccessed = LocalDateTime.parse(fileAccessed, CONSTANTS.DATE_TIME_FORMATTER).format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -462,6 +479,7 @@ public class Attachment implements IModelEntity<Attachment> {
     public void setCreated(LocalDateTime created) {
         this.created = created.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     }
+    
     public void setCreated(String created) {
         try {
             this.created = LocalDateTime.parse(created, CONSTANTS.DATE_TIME_FORMATTER).format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -469,6 +487,7 @@ public class Attachment implements IModelEntity<Attachment> {
             UError.exception("Attachment.setCreated: Failed to parse date", e);
         }
     }
+    
     public void setCreated() {
         setCreated(LocalDateTime.now());
     }

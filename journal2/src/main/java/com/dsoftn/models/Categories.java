@@ -18,9 +18,11 @@ TABLE categories
     id INTEGER PRIMARY KEY AUTOINCREMENT
     name TEXT NOT NULL - name of the category
     description TEXT NOT NULL - description of the category
-    related_categories TEXT NOT NULL - list of related category ids delimited by comma
     parent INTEGER NOT NULL - id of the parent category
     created TEXT NOT NULL - date in format for JSON
+RELATED TO:
+    Categories    
+    Tags
  */
 public class Categories implements IModelRepository<Category> {
     // Variables

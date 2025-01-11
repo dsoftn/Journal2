@@ -25,12 +25,20 @@ public class SQLiteDB {
         this.conn = connect(null);
     }
 
+    public SQLiteDB(String dbPath) {
+        this.conn = connect(dbPath);
+    }
+
     // Methods
 
     public boolean constructAllTables() {
         List<String> sqlCommands = UString.splitAndStrip(OBJECTS.SETTINGS.getvSTRING("DatabaseTables"), ";");
 
         for (String sql : sqlCommands) {
+            if (sql.isEmpty()) {
+                continue;
+            }
+            
             if (!createTable(sql)) {
                 return false;
             }
@@ -189,7 +197,7 @@ public class SQLiteDB {
         String dbUrl = "jdbc:sqlite:" + dbPath;
 
         try {
-            if (conn != null && !conn.isClosed()) conn.close();
+            if (conn != null && !conn.isClosed()) disconnect();
 
             conn = DriverManager.getConnection(dbUrl);
             return conn;

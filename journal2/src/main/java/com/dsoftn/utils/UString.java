@@ -25,6 +25,9 @@ public class UString {
         String[] segments = text.split(Pattern.quote(delimiter), -1);
         List<String> parts = new ArrayList<>();
         for (String segment : segments) {
+            if (segment.strip().isEmpty()) {
+                continue;
+            }
             parts.add(segment.strip());
         }
         return parts;

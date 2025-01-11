@@ -18,6 +18,9 @@ import java.io.File;
 
 import com.dsoftn.controllers.LoginController;
 
+import com.dsoftn.models.Attachment;
+import java.util.List;
+import java.util.ArrayList;
 
 public class GuiMain extends Application {
 
@@ -93,10 +96,63 @@ public class GuiMain extends Application {
 
         loginStage.close();
 
+        testTest();
+
         // Start Main Window
         startMainWin(primaryStage);
     }
 
+    private void testTest() {
+        System.out.println("Pocetak testa:");
+        System.out.println("--------------");
+
+        System.out.println("UCITAVAM SVE OBJEKTE");
+        OBJECTS.RELATIONS.load();
+        OBJECTS.TAGS.load();
+        OBJECTS.CATEGORIES.load();
+        OBJECTS.ATTACHMENTS.load();
+        OBJECTS.BLOCKS.load();
+        System.out.println(" - - -");
+
+        // System.out.println("DODAJ ATTACHMENT BEZ RELATED ATTACHMENTS:");
+        // Attachment attachment = new Attachment();
+        // attachment.setName("Test Attachment");
+        // attachment.setDescription("Test Description");
+        // attachment.setFileCreated("08.01.2025. 20:25:00");
+        // attachment.add();
+        // System.out.println(" - - -");
+        Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(8);
+
+        System.out.println("PRIKAZUJEM ATTACHMENT IZ Attachments:");
+        System.out.println("Description:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getDescription());
+        System.out.println("FileCreated:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getFileCreatedSTR());
+        System.out.println("RelatedAttachments:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getRelatedAttachments());
+        System.out.println(" - - -");
+
+        System.out.println("Dodajem RelatedAttachment:");
+        List<Integer> relatedAttachmentIDs = new ArrayList<>();
+        relatedAttachmentIDs.add(1);
+        relatedAttachmentIDs.add(2);
+
+
+        attachment.setRelatedAttachmentsFromIDsList(relatedAttachmentIDs);
+        attachment.update();
+        System.out.println("Description:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getDescription());
+        System.out.println("FileCreated:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getFileCreatedSTR());
+        System.out.println("RelatedAttachments:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getRelatedAttachmentsIDs());
+        System.out.println(" - - -");
+
+        System.out.println("Menjam RelatedAttachment:");
+        relatedAttachmentIDs.remove(0);
+        attachment.setRelatedAttachmentsFromIDsList(relatedAttachmentIDs);
+        attachment.update();
+        System.out.println("Description:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getDescription());
+        System.out.println("FileCreated:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getFileCreatedSTR());
+        System.out.println("RelatedAttachments:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getRelatedAttachmentsIDs());
+        System.out.println(" - - -");
+        
+
+    }    
 
     private LoginController startLogin(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));

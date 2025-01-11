@@ -10,5 +10,17 @@
     "description": "Allow already loged user to login on another instance od application.",
     "creationDate": "2024.12.23 16:52:00",
     "userData": ""
+  },
+  "DatabaseTables": {
+    "key": "DatabaseTables",
+    "value": "CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, scope INTEGER NOT NULL, created TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY AUTOINCREMENT, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL);",
+    "defaultValue": "CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, scope INTEGER NOT NULL, created TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY AUTOINCREMENT, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL);",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "SQL commands to create table structure in database.",
+    "creationDate": "2025.01.03 21:56:26",
+    "userData": ""
   }
 }

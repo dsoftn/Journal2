@@ -20,13 +20,14 @@ TABLE attachments
     description TEXT NOT NULL - description of the attachment
     type INTEGER NOT NULL - AttachmentTypeEnum value
     is_supported INTEGER NOT NULL - 0 or 1
-    related_attachments TEXT NOT NULL - list of related attachment ids delimited by comma
     created TEXT NOT NULL - date in format for JSON
     file_path TEXT NOT NULL - path to attachment file
     file_size INTEGER NOT NULL - file size in bytes
     file_created TEXT NOT NULL - date in format for JSON
     file_modified TEXT NOT NULL - date in format for JSON
     file_accessed TEXT NOT NULL - date in format for JSON
+RELATED PROPERTIES:
+    Attachments
  */
 public class Attachments implements IModelRepository<Attachment> {
     // Variables

@@ -394,18 +394,34 @@ public class Block implements IModelEntity<Block> {
         return OBJECTS.CATEGORIES.getCategoriesListFromIDs(this.relatedCategories);
     }
 
+    public List<Integer> getRelatedCategoriesIDs() {
+        return this.relatedCategories;
+    }
+
     public List<Tag> getRelatedTags() {
         return OBJECTS.TAGS.getTagsListFromIDs(this.relatedTags);
     }
 
+    public List<Integer> getRelatedTagsIDs() {
+        return this.relatedTags;
+    }
+
     public List<Attachment> getRelatedAttachments() {
         return OBJECTS.ATTACHMENTS.getAttachmentsListFromIDs(this.relatedAttachments);
+    }
+
+    public List<Integer> getRelatedAttachmentsIDs() {
+        return this.relatedAttachments;
     }
     
     public int getDefaultAttachment() { return this.defaultAttachment; }
 
     public List<Block> getRelatedBlocks() {
         return OBJECTS.BLOCKS.getBlocksListFromIDs(this.relatedBlocks);
+    }
+
+    public List<Integer> getRelatedBlocksIDs() {
+        return this.relatedBlocks;
     }
 
     // Setters

@@ -15,6 +15,8 @@ import com.dsoftn.utils.UNumbers;
 import com.dsoftn.utils.UError;
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
+import com.dsoftn.services.SQLiteDB;
+
 
 public class User {
     // Constants
@@ -160,6 +162,18 @@ public class User {
             OBJECTS.USERS.delete(this);
             return false;
         }
+
+        // Create database file
+        SQLiteDB db = new SQLiteDB(dbPath);
+        boolean createDatabase = db.constructAllTables();
+        if (!createDatabase) {
+            UError.error("USER: " + username, "Failed to create database");
+            OBJECTS.USERS.delete(this);
+            db.disconnect();
+            return false;
+        }
+
+        db.disconnect();
 
         repairFileStructure();
         return true;

@@ -296,6 +296,10 @@ public class Tag implements IModelEntity<Tag> {
         return OBJECTS.TAGS.getTagsListFromIDs(this.relatedTags);
     }
 
+    public List<Integer> getRelatedTagsIDs() {
+        return this.relatedTags;
+    }
+
     public int getScope() {
         return this.scope;
     }

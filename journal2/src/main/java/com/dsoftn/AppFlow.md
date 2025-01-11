@@ -19,6 +19,7 @@
 
 ### Models <sup>[⤴](#table-of-contents)</sup>
 - [General Models Rules](#general-models-rules-⤴)
+- [How to add new Model](#how-to-add-new-model-⤴)
 - [Users-User Model](#users-user-model-⤴)
 - [Blocks-Block Model](#blocks-block-model-⤴)
 - [Tags-Tag Model](#tags-tag-model-⤴)
@@ -136,6 +137,12 @@ All models contain 2 classes:
 2. `Model SINGLE` class that store single object.
     - Use methods of this class for `add`, `update` and `delete` operations. This methods update information in `Model ALL` class and in database.
 3. `Relations` model stores information about relations between models.
+
+## How to add new Model <sup>[⤴](#models-⤴)</sup>
+1. Create `Model classes` **Repository** and **Entity** classes
+2. Add **Repository** class to `OBJECTS` class
+3. Make **events** for `Model` if necessary
+4. Add **Events** to `Relations` class if necessary
 
 ## Users-User Model <sup>[⤴](#models-⤴)</sup>
 ### Overview

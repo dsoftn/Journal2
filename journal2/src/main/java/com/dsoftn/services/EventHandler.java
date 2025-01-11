@@ -1,6 +1,7 @@
 package com.dsoftn.services;
 
 import javafx.event.Event;
+import javafx.event.EventType;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -16,7 +17,7 @@ public class EventHandler {
 
     public class EventListener {
         private ICustomEventListener classObject;
-        private Set<Event> events;
+        private Set<EventType<?>> events;
     
         public EventListener(ICustomEventListener classObject) {
             this.classObject = classObject;
@@ -27,11 +28,11 @@ public class EventHandler {
             return classObject;
         }
     
-        public void addEvents(Event... events) {
+        public void addEvents(EventType<?>... events) {
             this.events.addAll(List.of(events));
         }
 
-        public boolean hasEvent(Event event) {
+        public boolean hasEvent(EventType<?> event) {
             return events.contains(event);
         }
     }
@@ -42,7 +43,7 @@ public class EventHandler {
 
     // Methods
 
-    public void register (ICustomEventListener classObject, Event... events) {
+    public void register (ICustomEventListener classObject, EventType<?>... eventTypes) {
         String name = String.valueOf(System.identityHashCode(classObject));
 
         if (eventMap.containsKey(name)) {
@@ -52,7 +53,7 @@ public class EventHandler {
 
         // Make new entry
         EventListener listener = new EventListener(classObject);
-        listener.addEvents(events);
+        listener.addEvents(eventTypes);
         eventMap.put(name, listener);
     }
 
@@ -72,7 +73,7 @@ public class EventHandler {
         boolean isHandled = false;
         Set<ICustomEventListener> notifiedStages = new HashSet<>();
         for (EventListener listener : eventMap.values()) {
-            if (listener.hasEvent(event) && !notifiedStages.contains(listener.getClassObject())) {
+            if (listener.hasEvent(event.getEventType()) && !notifiedStages.contains(listener.getClassObject())) {
                 listener.getClassObject().onCustomEvent(event);
                 notifiedStages.add(listener.getClassObject());
                 isHandled = true;

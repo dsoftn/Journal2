@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
-import com.dsoftn.utils.UNumbers;
-import com.dsoftn.utils.UString;
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 
@@ -28,6 +26,7 @@ public class Category implements IModelEntity<Category> {
     private String name = "";
     private String description = "";
     private List<Integer> relatedCategories = new ArrayList<>();
+    private List<Integer> relatedTags = new ArrayList<>();
     private Integer parent = CONSTANTS.INVALID_ID;
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
@@ -85,6 +84,10 @@ public class Category implements IModelEntity<Category> {
             
             this.setRelatedCategories(OBJECTS.CATEGORIES.getCategoriesListFromRelations(
                 OBJECTS.RELATIONS.getRelationsList(ScopeEnum.CATEGORY, this.id, ScopeEnum.CATEGORY)
+            ));
+
+            this.setRelatedTags(OBJECTS.TAGS.getTagsListFromRelations(
+                OBJECTS.RELATIONS.getRelationsList(ScopeEnum.CATEGORY, this.id, ScopeEnum.TAG)
             ));
             
             return true;
@@ -278,7 +281,9 @@ public class Category implements IModelEntity<Category> {
         newCategory.setDescription(this.description);
         newCategory.setParent(OBJECTS.CATEGORIES.getEntity(this.parent).duplicate());
         newCategory.setCreatedSTR_JSON(this.created);
+
         newCategory.setRelatedCategories(this.getRelatedCategories());
+        newCategory.setRelatedTags(this.getRelatedTags());
 
         return newCategory;
     }
@@ -295,6 +300,18 @@ public class Category implements IModelEntity<Category> {
 
     public List<Category> getRelatedCategories() {
         return OBJECTS.CATEGORIES.getCategoriesListFromIDs(this.relatedCategories);
+    }
+
+    public List<Integer> getRelatedCategoriesIDs() {
+        return this.relatedCategories;
+    }
+
+    public List<Tag> getRelatedTags() {
+        return OBJECTS.TAGS.getTagsListFromIDs(this.relatedTags);
+    }
+
+    public List<Integer> getRelatedTagsIDs() {
+        return this.relatedTags;
     }
 
     public Category getParent() {
@@ -333,6 +350,10 @@ public class Category implements IModelEntity<Category> {
 
     public void setRelatedCategories(List<Category> relatedCategories) {
         this.relatedCategories = relatedCategories.stream().map((Category category) -> category.getID()).collect(Collectors.toList());
+    }
+
+    public void setRelatedTags(List<Tag> relatedTags) {
+        this.relatedTags = relatedTags.stream().map((Tag tag) -> tag.getID()).collect(Collectors.toList());
     }
 
     public void setParent(Category parent) {
