@@ -9,8 +9,16 @@ import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.Interfaces.IModelRepository;
+import com.dsoftn.Interfaces.ICustomEventListener;
+import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+
+import javafx.event.Event;
+
+import com.dsoftn.events.RelationAddedEvent;
+import com.dsoftn.events.RelationDeletedEvent;
+import com.dsoftn.events.RelationUpdatedEvent;
 
 
 /*
@@ -23,10 +31,62 @@ TABLE tags
 RELATED PROPERTIES:
     Tags
  */
-public class Tags implements IModelRepository<Tag> {
+public class Tags implements IModelRepository<Tag>, ICustomEventListener {
     // Variables
 
     private Map<Integer, Tag> data = new LinkedHashMap<>(); // <id, Tag>
+
+    // Constructor
+
+    public Tags() {
+        OBJECTS.EVENT_HANDLER.register(
+            this,
+            RelationAddedEvent.RELATION_ADDED_EVENT,
+            RelationUpdatedEvent.RELATION_UPDATED_EVENT,
+            RelationDeletedEvent.RELATION_DELETED_EVENT
+        );
+
+    }
+
+    // Event handlers
+
+    @Override
+    public void onCustomEvent(Event event) {
+        if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
+            Relation newRelation = null;
+            Relation oldRelation = null;
+            if (event instanceof RelationAddedEvent) {
+                RelationAddedEvent relationEvent = (RelationAddedEvent) event;
+                newRelation = relationEvent.getRelation();
+            }
+            else if (event instanceof RelationUpdatedEvent) {
+                RelationUpdatedEvent relationEvent = (RelationUpdatedEvent) event;
+                oldRelation = relationEvent.getOldRelation();
+                newRelation = relationEvent.getNewRelation();
+            }
+            else if (event instanceof RelationDeletedEvent) {
+                RelationDeletedEvent relationEvent = (RelationDeletedEvent) event;
+                oldRelation = relationEvent.getRelation();
+            }
+
+            onRelationEvents(newRelation, event);
+            onRelationEvents(oldRelation, event);
+
+        }
+    }
+
+    private void onRelationEvents(Relation relation, Event event) {
+        if (relation == null) {
+            return;
+        }
+
+        if (relation.getBaseModel() == ScopeEnum.TAG) {
+            Tag tag = getEntity(relation.getBaseID());
+            if (tag != null) {
+                tag.onCustomEvent(event);
+            }
+        }
+    }
 
     // Interface methods
 

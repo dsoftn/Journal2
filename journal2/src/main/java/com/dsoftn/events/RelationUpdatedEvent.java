@@ -12,13 +12,15 @@ public class RelationUpdatedEvent extends Event {
     
     private final Relation oldRelation;
     private final Relation newRelation;
+    private Boolean loopEvent;
 
     // Constructor
 
-    public RelationUpdatedEvent(Relation oldRelation, Relation newRelation) {
+    public RelationUpdatedEvent(Relation oldRelation, Relation newRelation, boolean loopEvent) {
         super(RELATION_UPDATED_EVENT);
         this.oldRelation = oldRelation;
         this.newRelation = newRelation;
+        this.loopEvent = loopEvent;
     }
 
     // Getters
@@ -26,5 +28,7 @@ public class RelationUpdatedEvent extends Event {
     public Relation getOldRelation() { return this.oldRelation; }
 
     public Relation getNewRelation() { return this.newRelation; }
+
+    public Boolean isLoopEvent() { return this.loopEvent; }
 
 }

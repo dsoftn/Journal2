@@ -54,7 +54,16 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             this,
             AttachmentAddedEvent.ATTACHMENT_ADDED_EVENT,
             AttachmentUpdatedEvent.ATTACHMENT_UPDATED_EVENT,
-            AttachmentDeletedEvent.ATTACHMENT_DELETED_EVENT
+            AttachmentDeletedEvent.ATTACHMENT_DELETED_EVENT,
+            BlockAddedEvent.BLOCK_ADDED_EVENT,
+            BlockUpdatedEvent.BLOCK_UPDATED_EVENT,
+            BlockDeletedEvent.BLOCK_DELETED_EVENT,
+            CategoryAddedEvent.CATEGORY_ADDED_EVENT,
+            CategoryUpdatedEvent.CATEGORY_UPDATED_EVENT,
+            CategoryDeletedEvent.CATEGORY_DELETED_EVENT,
+            TagAddedEvent.TAG_ADDED_EVENT,
+            TagUpdatedEvent.TAG_UPDATED_EVENT,
+            TagDeletedEvent.TAG_DELETED_EVENT
         );
     }
 
@@ -126,7 +135,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             relation.setRelatedModel(ScopeEnum.ATTACHMENT);
             relation.setRelatedID(relatedAttachmentID);
 
-            relation.add();
+            relation.add(true);
         }
     }
 
@@ -156,7 +165,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         }
 
         for (Relation relation : relationsToRemove) {
-            relation.delete();
+            relation.delete(true);
         }
 
         // Add new relations that new attachment has
@@ -171,7 +180,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             relation.setRelatedModel(ScopeEnum.ATTACHMENT);
             relation.setRelatedID(relatedAttachmentID);
 
-            relation.add();
+            relation.add(true);
         }
     }
 
@@ -193,7 +202,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         }
 
         for (Relation relation : relationsToRemove) {
-            relation.delete();
+            relation.delete(true);
         }
 
         // Delete key from dataByScopeAndID
@@ -238,7 +247,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
 
-                relation.add();
+                relation.add(true);
             }
         }
 
@@ -283,7 +292,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             }
 
             for (Relation relation : relationsToRemove) {
-                relation.delete();
+                relation.delete(true);
             }
 
             // Add new
@@ -298,7 +307,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
 
-                relation.add();
+                relation.add(true);
             }
         }
     }
@@ -321,7 +330,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         }
 
         for (Relation relation : relationsToRemove) {
-            relation.delete();
+            relation.delete(true);
         }
 
         // Delete key from dataByScopeAndID
@@ -362,7 +371,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
 
-                relation.add();
+                relation.add(true);
             }
         }
 
@@ -403,7 +412,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             }
 
             for (Relation relation : relationsToRemove) {
-                relation.delete();
+                relation.delete(true);
             }
 
             // Add new
@@ -418,7 +427,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
 
-                relation.add();
+                relation.add(true);
             }
         }
     }
@@ -441,7 +450,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         }
 
         for (Relation relation : relationsToRemove) {
-            relation.delete();
+            relation.delete(true);
         }
 
         // Delete key from dataByScopeAndID
@@ -480,7 +489,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
 
-                relation.add();
+                relation.add(true);
             }
         }
 
@@ -519,7 +528,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             }
 
             for (Relation relation : relationsToRemove) {
-                relation.delete();
+                relation.delete(true);
             }
 
             // Add new
@@ -534,7 +543,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
 
-                relation.add();
+                relation.add(true);
             }
         }
     }
@@ -557,7 +566,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         }
 
         for (Relation relation : relationsToRemove) {
-            relation.delete();
+            relation.delete(true);
         }
 
         // Delete key from dataByScopeAndID
@@ -681,14 +690,8 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         }
 
         data.put(entity.getID(), entity);
-        // Remove old relation from dataByScopeAndID.get(scopeAndIDKey) list and add new one
-        for (Relation relation : dataByScopeAndID.get(scopeAndIDKey)) {
-            if (relation.getID() == entity.getID()) {
-                dataByScopeAndID.get(scopeAndIDKey).remove(relation);
-                break;
-            }
-        }
-        dataByScopeAndID.get(scopeAndIDKey).add(entity);
+
+        rebuildScopeAndIdMap();
 
         return true;
     }
@@ -807,6 +810,17 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
 
     private String getScopeAndIdKey(ScopeEnum baseModel, Integer baseID) {
         return baseModel.toString() + ";" + String.valueOf(baseID);
+    }
+
+    private void rebuildScopeAndIdMap() {
+        dataByScopeAndID.clear();
+        for (Relation relation : data.values()) {
+            String scopeAndIDKey = getScopeAndIdKey(relation);
+            if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
+                dataByScopeAndID.put(scopeAndIDKey, new ArrayList<>());
+            }
+            dataByScopeAndID.get(scopeAndIDKey).add(relation);
+        }
     }
 
 }

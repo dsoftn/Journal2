@@ -8,10 +8,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import com.dsoftn.OBJECTS;
 import com.dsoftn.utils.UString;
 import com.dsoftn.utils.UError;
+import com.dsoftn.models.DefVariant;
 
 
 public class SQLiteDB {
@@ -147,6 +149,50 @@ public class SQLiteDB {
             UError.exception("SQLiteDB.insert: Failed to insert data", e, "SQL: " + stmt.toString());
             return null;
         }
+    }
+
+    public List<Integer> insertMany(List<DefVariant> variants) {
+        String sql = "INSERT INTO definitions_variants (text, definition_id, match_case) VALUES (?, ?, ?)";
+        List<Integer> generatedIds = new ArrayList<>();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            conn.setAutoCommit(false);
+
+            for (DefVariant variant : variants) {
+                pstmt.setString(1, variant.getText());
+                pstmt.setInt(2, variant.getDefinitionID());
+                pstmt.setInt(3, variant.getMatchCaseInt());
+                pstmt.addBatch();
+            }
+
+            pstmt.executeBatch();
+
+            // Get generated ids
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                while (generatedKeys.next()) {
+                    generatedIds.add(generatedKeys.getInt(1));
+                }
+            }
+
+            conn.commit();
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+                UError.exception("SQLiteDB.insertMany: Failed to insert data", e, "SQL: " + sql);
+                return null;
+            } catch (SQLException ex) {
+                UError.exception("SQLiteDB.insertMany: Database rollback failed. Failed to insert data", ex, "SQL: " + sql);
+                return null;
+            }
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                UError.exception("SQLiteDB.insertMany: Failed to set auto commit to true", e, "SQL: " + sql);
+            }
+        }
+
+        return generatedIds;
     }
 
     public boolean delete(PreparedStatement stmt) {

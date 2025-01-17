@@ -4,10 +4,12 @@ import javafx.event.Event;
 import javafx.event.EventType;
 
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.lang.ref.WeakReference;
+import java.util.Iterator;
 
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.utils.UError;
@@ -16,16 +18,16 @@ import com.dsoftn.utils.UError;
 public class EventHandler {
 
     public class EventListener {
-        private ICustomEventListener classObject;
+        private WeakReference<ICustomEventListener> classObject;
         private Set<EventType<?>> events;
     
         public EventListener(ICustomEventListener classObject) {
-            this.classObject = classObject;
+            this.classObject = new WeakReference<>(classObject);
             this.events = new HashSet<>();
         }
     
         public ICustomEventListener getClassObject() {
-            return classObject;
+            return classObject.get();
         }
     
         public void addEvents(EventType<?>... events) {
@@ -39,7 +41,7 @@ public class EventHandler {
     
 
     // Variables
-    private Map<String, EventListener> eventMap = new LinkedHashMap<>();
+    private Map<String, EventListener> eventMap = new ConcurrentHashMap<>();
 
     // Methods
 
@@ -71,11 +73,22 @@ public class EventHandler {
 
     public void fireEvent (Event event) {
         boolean isHandled = false;
-        Set<ICustomEventListener> notifiedStages = new HashSet<>();
-        for (EventListener listener : eventMap.values()) {
-            if (listener.hasEvent(event.getEventType()) && !notifiedStages.contains(listener.getClassObject())) {
+        Set<ICustomEventListener> notifiedClasses = new HashSet<>();
+        
+        Iterator<Map.Entry<String, EventListener>> iterator = eventMap.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, EventListener> entry = iterator.next();
+            EventListener listener = entry.getValue();
+            
+            if (listener.getClassObject() == null) {
+                iterator.remove();
+                continue;
+            }
+            
+            if (listener.hasEvent(event.getEventType()) && !notifiedClasses.contains(listener.getClassObject())) {
                 listener.getClassObject().onCustomEvent(event);
-                notifiedStages.add(listener.getClassObject());
+                notifiedClasses.add(listener.getClassObject());
                 isHandled = true;
             }
         }
@@ -84,6 +97,4 @@ public class EventHandler {
             UError.info("EventHandler.fireEvent: Event not handled.", "Event '" + event + "' was not handled by any registered listener.");
         }
     }
-  
-
 }

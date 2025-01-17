@@ -3,6 +3,8 @@ package com.dsoftn;
 import com.dsoftn.Settings.Settings;
 import com.dsoftn.models.Users;
 import com.dsoftn.models.Blocks;
+import com.dsoftn.models.Definitions;
+import com.dsoftn.models.DefVariants;
 import com.dsoftn.models.Categories;
 import com.dsoftn.models.Tags;
 import com.dsoftn.models.Attachments;
@@ -24,6 +26,10 @@ public class OBJECTS {
     public static final Users USERS = new Users();
 
     public static final Blocks BLOCKS = new Blocks();
+
+    public static final Definitions DEFINITIONS = new Definitions();
+
+    public static final DefVariants DEFINITIONS_VARIANTS = new DefVariants();
 
     public static final Tags TAGS = new Tags();
 

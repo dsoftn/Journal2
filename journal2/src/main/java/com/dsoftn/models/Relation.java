@@ -86,6 +86,10 @@ public class Relation implements IModelEntity<Relation> {
 
     @Override
     public boolean add() {
+        return add(false);
+    }
+
+    public boolean add(boolean isLoopEvent) {
         // Check if relation can be added
         if (!canBeAdded()) {
             return false;
@@ -125,7 +129,7 @@ public class Relation implements IModelEntity<Relation> {
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new RelationAddedEvent(this.duplicate()));
+            OBJECTS.EVENT_HANDLER.fireEvent(new RelationAddedEvent(this.duplicate(), isLoopEvent));
 
             return true;
 
@@ -148,6 +152,10 @@ public class Relation implements IModelEntity<Relation> {
 
     @Override
     public boolean update() {
+        return update(false);
+    }
+
+    public boolean update(boolean isLoopEvent) {
         // Check if relation can be updated
         if (!canBeUpdated()) {
             return false;
@@ -187,7 +195,7 @@ public class Relation implements IModelEntity<Relation> {
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new RelationUpdatedEvent(oldRelation, this.duplicate()));
+            OBJECTS.EVENT_HANDLER.fireEvent(new RelationUpdatedEvent(oldRelation, this.duplicate(), isLoopEvent));
 
             return true;
 
@@ -212,6 +220,10 @@ public class Relation implements IModelEntity<Relation> {
 
     @Override
     public boolean delete() {
+        return delete(false);
+    }
+
+    public boolean delete(boolean isLoopEvent) {
         // Check if relation can be deleted
         if (!canBeDeleted()) {
             return false;
@@ -242,7 +254,7 @@ public class Relation implements IModelEntity<Relation> {
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new RelationDeletedEvent(this.duplicate()));
+            OBJECTS.EVENT_HANDLER.fireEvent(new RelationDeletedEvent(this.duplicate(), isLoopEvent));
 
             return true;
 

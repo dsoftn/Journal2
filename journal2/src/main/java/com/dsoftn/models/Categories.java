@@ -8,9 +8,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.event.Event;
+
 import com.dsoftn.Interfaces.IModelRepository;
+import com.dsoftn.Interfaces.ICustomEventListener;
+import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.events.RelationAddedEvent;
+import com.dsoftn.events.RelationDeletedEvent;
+import com.dsoftn.events.RelationUpdatedEvent;
 
 
 /*
@@ -24,10 +31,61 @@ RELATED TO:
     Categories    
     Tags
  */
-public class Categories implements IModelRepository<Category> {
+public class Categories implements IModelRepository<Category>, ICustomEventListener {
     // Variables
 
     private Map<Integer, Category> data = new LinkedHashMap<>(); // <id, Category>
+
+    // Constructor
+
+    public Categories() {
+        OBJECTS.EVENT_HANDLER.register(
+            this,
+            RelationAddedEvent.RELATION_ADDED_EVENT,
+            RelationUpdatedEvent.RELATION_UPDATED_EVENT,
+            RelationDeletedEvent.RELATION_DELETED_EVENT
+        );
+    }
+
+    // Event handlers
+
+    @Override
+    public void onCustomEvent(Event event) {
+        if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
+            Relation newRelation = null;
+            Relation oldRelation = null;
+            if (event instanceof RelationAddedEvent) {
+                RelationAddedEvent relationEvent = (RelationAddedEvent) event;
+                newRelation = relationEvent.getRelation();
+            }
+            else if (event instanceof RelationUpdatedEvent) {
+                RelationUpdatedEvent relationEvent = (RelationUpdatedEvent) event;
+                oldRelation = relationEvent.getOldRelation();
+                newRelation = relationEvent.getNewRelation();
+            }
+            else if (event instanceof RelationDeletedEvent) {
+                RelationDeletedEvent relationEvent = (RelationDeletedEvent) event;
+                oldRelation = relationEvent.getRelation();
+            }
+
+            onRelationEvents(newRelation, event);
+            onRelationEvents(oldRelation, event);
+
+        }
+    }
+
+    private void onRelationEvents(Relation relation, Event event) {
+        if (relation == null) {
+            return;
+        }
+
+        if (relation.getBaseModel() == ScopeEnum.CATEGORY) {
+            Category category = getEntity(relation.getBaseID());
+            if (category != null) {
+                category.onCustomEvent(event);
+            }
+        }
+    }
 
     // Interface methods
 

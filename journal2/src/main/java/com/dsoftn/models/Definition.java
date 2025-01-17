@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,32 +18,35 @@ import javafx.event.Event;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
-
-import com.dsoftn.events.BlockAddedEvent;
-import com.dsoftn.events.BlockUpdatedEvent;
-import com.dsoftn.events.BlockDeletedEvent;
+import com.dsoftn.events.DefinitionAddedEvent;
+import com.dsoftn.events.DefinitionUpdatedEvent;
+import com.dsoftn.events.DefinitionDeletedEvent;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
+import com.dsoftn.utils.UString;
 
 
-public class Block implements IModelEntity<Block>, ICustomEventListener {
+public class Definition implements IModelEntity<Definition>, ICustomEventListener {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private String name = "";
-    private String date = CONSTANTS.INVALID_DATETIME_STRING;
-    private String text = "";
+    private String description = "";
+    private String source = "";
+    private Integer sourceType = SourceTypeEnum.UNDEFINED.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String updated = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
+    private List<Integer> relatedDefinitions = new ArrayList<Integer>();
     private List<Integer> relatedCategories = new ArrayList<Integer>();
     private List<Integer> relatedTags = new ArrayList<Integer>();
     private List<Integer> relatedAttachments = new ArrayList<Integer>();
-    private int defaultAttachment = CONSTANTS.INVALID_ID;
     private List<Integer> relatedBlocks = new ArrayList<Integer>();
+    private int defaultAttachment = CONSTANTS.INVALID_ID;
+    private String variants = "";
 
     // Constructors
 
-    public Block() {
+    public Definition() {
         OBJECTS.EVENT_HANDLER.register(
             this,
             RelationAddedEvent.RELATION_ADDED_EVENT,
@@ -84,20 +86,22 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             return;
         }
 
-        // Check if relation belongs to this block
-        if (relation.getBaseModel() != ScopeEnum.BLOCK && relation.getBaseID() != this.id) {
+        // Check if relation belongs to this definition
+        if (relation.getBaseModel() != ScopeEnum.DEFINITION && relation.getBaseID() != this.id) {
             return;
         }
 
-        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedBlocks = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.BLOCK).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedBlocks = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.BLOCK).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedDefinitions = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.DEFINITION).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedAttachments = newRelatedAttachments;
         relatedBlocks = newRelatedBlocks;
         relatedCategories = newRelatedCategories;
         relatedTags = newRelatedTags;
+        relatedDefinitions = newRelatedDefinitions;
         update();
     }
     
@@ -114,15 +118,15 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            stmt = db.preparedStatement("SELECT * FROM blocks WHERE id = ?", id);
+            stmt = db.preparedStatement("SELECT * FROM definitions WHERE id = ?", id);
             if (stmt == null) {
-                UError.error("Block.load: Failed to load block", "Statement is unexpectedly null");
+                UError.error("Definition.load: Failed to load definition", "Statement is unexpectedly null");
                 return false;
             }
             
             rs = db.select(stmt);
             if (rs == null) {
-                UError.error("Block.load: Failed to load block", "Result set is unexpectedly null");
+                UError.error("Definition.load: Failed to load definition", "Result set is unexpectedly null");
                 return false;
             }
 
@@ -130,7 +134,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
                 return loadFromResultSet(rs);
             }
         } catch (Exception e) {
-            UError.exception("Block.load: Failed to load block", e);
+            UError.exception("Definition.load: Failed to load definition", e);
             return false;
         }
         finally {
@@ -145,42 +149,53 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             this.id = rs.getInt("id");
             this.name = rs.getString("name");
-            this.date = rs.getString("date");
-            this.text = rs.getString("text");
+            this.description = rs.getString("description");
+            this.source = rs.getString("source");
+            this.sourceType = rs.getInt("source_type");
             this.created = rs.getString("created");
             this.updated = rs.getString("updated");
             this.defaultAttachment = rs.getInt("default_attachment");
 
             this.setRelatedCategories(
                 OBJECTS.CATEGORIES.getCategoriesListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.CATEGORY))
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.CATEGORY))
                 );
 
             this.setRelatedTags(
                 OBJECTS.TAGS.getTagsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.TAG))
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.TAG))
             );
 
             this.setRelatedAttachments(
                 OBJECTS.ATTACHMENTS.getAttachmentsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.ATTACHMENT))
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.ATTACHMENT))
             );
 
             this.setRelatedBlocks(
                 OBJECTS.BLOCKS.getBlocksListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.BLOCK))
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.BLOCK))
+            );
+
+            this.setRelatedDefinitions(
+                OBJECTS.DEFINITIONS.getDefinitionsListFromRelations(
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.DEFINITION))
+            );
+
+            // Variants
+            this.setVariants(
+                OBJECTS.DEFINITIONS_VARIANTS.getVariantsWordList(this.id)
             );
 
             return true;
         } catch (Exception e) {
-            UError.exception("Block.loadFromResultSet: Failed to load block from result set", e);
+            UError.exception("Definition.loadFromResultSet: Failed to load definition from result set", e);
             return false;
         }
     }
 
     @Override
     public boolean add() {
-        // Check if block can be added
+        // Check if definition can be added
         if (!canBeAdded()) {
             return false;
         }
@@ -190,41 +205,48 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             // Add to database
             stmt = db.preparedStatement(
-                "INSERT INTO blocks " + 
-                "(name, date, text, created, updated, default_attachment) " + 
-                "VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO definitions " + 
+                "(name, description, source, source_type, created, updated, default_attachment) " + 
+                "VALUES (?,?,?,?,?,?,?)",
                 this.name,
-                this.date,
-                this.text,
+                this.description,
+                this.source,
+                this.sourceType,
                 this.created,
                 this.updated,
                 this.defaultAttachment);
 
             if (stmt == null) {
-                UError.error("Block.add: Failed to add block", "Statement is unexpectedly null");
+                UError.error("Definition.add: Failed to add definition", "Statement is unexpectedly null");
                 return false;
             }
             Integer result = db.insert(stmt);
             if (result == null) {
-                UError.error("Block.add: Failed to write block to database", "Adding block failed");
+                UError.error("Definition.add: Failed to write definition to database", "Adding definition failed");
                 return false;
             }
 
             this.id = result;
             
             // Add to repository
-            if (!OBJECTS.BLOCKS.add(this)) {
-                UError.error("Block.add: Failed to add block to repository", "Adding block to repository failed");
+            if (!OBJECTS.DEFINITIONS.add(this)) {
+                UError.error("Definition.add: Failed to add definition to repository", "Adding definition to repository failed");
+                return false;
+            }
+
+            // Add Variants
+            if (!OBJECTS.DEFINITIONS_VARIANTS.updateVariantsDefinitionAdd(this)) {
+                UError.error("Definition.add: Failed to update definition variants", "Updating definition variants failed");
                 return false;
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new BlockAddedEvent(this.duplicate()));
+            OBJECTS.EVENT_HANDLER.fireEvent(new DefinitionAddedEvent(this.duplicate()));
 
             return true;
 
         } catch (Exception e) {
-            UError.exception("Block.add: Failed to add block", e);
+            UError.exception("Definition.add: Failed to add definition", e);
             return false;
         }
         finally {
@@ -235,16 +257,15 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
     @Override
     public boolean canBeAdded() {
-        if (this.date == null || this.date.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (this.updated == null || this.updated.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
-        if (OBJECTS.BLOCKS.isExists(this.id)) return false;
+        if (OBJECTS.DEFINITIONS.isExists(this.id)) return false;
         return true;
     }
 
     @Override
     public boolean update() {
-        // Check if block can be updated
+        // Check if definition can be updated
         if (!canBeUpdated()) {
             return false;
         }
@@ -254,41 +275,48 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             // Update in database
             stmt = db.preparedStatement(
-                "UPDATE blocks " + 
-                "SET name = ?, date = ?, text = ?, created = ?, updated = ?, default_attachment = ? " + 
+                "UPDATE definitions " + 
+                "SET name = ?, description = ?, source = ?, source_type = ?, created = ?, updated = ?, default_attachment = ? " + 
                 "WHERE id = ?",
                 this.name,
-                this.date,
-                this.text,
+                this.description,
+                this.source,
+                this.sourceType,
                 this.created,
                 this.updated,
                 this.defaultAttachment,
                 this.id);
 
             if (stmt == null) {
-                UError.error("Block.update: Failed to update block", "Statement is unexpectedly null");
+                UError.error("Definition.update: Failed to update definition", "Statement is unexpectedly null");
                 return false;
             }
             if (!db.update(stmt)) {
-                UError.error("Block.update: Failed to write block to database", "Updating block failed");
+                UError.error("Definition.update: Failed to write  to database", "Updating definition failed");
                 return false;
             }
 
-            Block oldBlock = OBJECTS.BLOCKS.getEntity(this.id).duplicate();
+            Definition oldDefinition = OBJECTS.DEFINITIONS.getEntity(this.id).duplicate();
 
             // Update in repository
-            if (!OBJECTS.BLOCKS.update(this)) {
-                UError.error("Block.update: Failed to update block in repository", "Updating block in repository failed");
+            if (!OBJECTS.DEFINITIONS.update(this)) {
+                UError.error("Definition.update: Failed to update definition in repository", "Updating definition in repository failed");
+                return false;
+            }
+
+            // Update Variants
+            if (!OBJECTS.DEFINITIONS_VARIANTS.updateVariantsDefinitionUpdate(this)) {
+                UError.error("Definition.add: Failed to update definition variants", "Updating definition variants failed");
                 return false;
             }
 
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new BlockUpdatedEvent(oldBlock, this.duplicate()));
+            OBJECTS.EVENT_HANDLER.fireEvent(new DefinitionUpdatedEvent(oldDefinition, this.duplicate()));
 
             return true;
 
         } catch (Exception e) {
-            UError.exception("Block.update: Failed to update block", e);
+            UError.exception("Definition.update: Failed to update definition", e);
             return false;
         }
         finally {
@@ -300,17 +328,16 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     @Override
     public boolean canBeUpdated() {
         if (this.id == CONSTANTS.INVALID_ID) return false;
-        if (this.date == null || this.date.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (this.updated == null || this.updated.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
-        if (!OBJECTS.BLOCKS.isExists(this.id)) return false;
+        if (!OBJECTS.DEFINITIONS.isExists(this.id)) return false;
 
         return true;
     }
 
     @Override
     public boolean delete() {
-        // Check if block can be deleted
+        // Check if definition can be deleted
         if (!canBeDeleted()) {
             return false;
         }
@@ -320,32 +347,38 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             // Delete from database
             stmt = db.preparedStatement(
-                "DELETE FROM blocks " + 
+                "DELETE FROM definitions " + 
                 "WHERE id = ?",
                 this.id);
 
             if (stmt == null) {
-                UError.error("Block.delete: Failed to delete block", "Statement is unexpectedly null");
+                UError.error("Definition.delete: Failed to delete definition", "Statement is unexpectedly null");
                 return false;
             }
             if (!db.delete(stmt)) {
-                UError.error("Block.delete: Failed to delete block from database", "Deleting block failed");
+                UError.error("Definition.delete: Failed to delete definition from database", "Deleting definition failed");
                 return false;
             }
 
             // Delete from repository
-            if (!OBJECTS.BLOCKS.delete(this)) {
-                UError.error("Block.delete: Failed to delete block from repository", "Deleting block from repository failed");
+            if (!OBJECTS.DEFINITIONS.delete(this)) {
+                UError.error("Definition.delete: Failed to delete definition from repository", "Deleting definition from repository failed");
                 return false;
             }
 
+            // Delete Variants
+            if (!OBJECTS.DEFINITIONS_VARIANTS.updateVariantsDefinitionDelete(this)) {
+                UError.error("Definition.add: Failed to update definition variants", "Updating definition variants failed");
+                return false;
+            }
+            
             // Send event
-            OBJECTS.EVENT_HANDLER.fireEvent(new BlockDeletedEvent(this.duplicate()));
+            OBJECTS.EVENT_HANDLER.fireEvent(new DefinitionDeletedEvent(this.duplicate()));
 
             return true;
 
         } catch (Exception e) {
-            UError.exception("Block.delete: Failed to delete block", e);
+            UError.exception("Definition.delete: Failed to delete definition", e);
             return false;
         }
         finally {
@@ -357,62 +390,47 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     @Override
     public boolean canBeDeleted() {
         if (this.id == CONSTANTS.INVALID_ID) return false;
-        if (!OBJECTS.BLOCKS.isExists(this.id)) return false;
+        if (!OBJECTS.DEFINITIONS.isExists(this.id)) return false;
         return true;
     }
 
     @Override
-    public Block duplicate() {
-        Block block = new Block();
-        block.setID(this.id);
-        block.setName(this.name);
-        block.setDateSTR_JSON(this.getDateSTR_JSON());
-        block.setText(this.text);
-        block.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
-        block.setUpdatedSTR_JSON(this.getUpdatedSTR_JSON());
-        block.setDefaultAttachment(this.defaultAttachment);
+    public Definition duplicate() {
+        Definition definition = new Definition();
+        definition.setID(this.id);
+        definition.setName(this.name);
+        definition.setDescription(this.description);
+        definition.setSource(this.source);
+        definition.setSourceType(SourceTypeEnum.fromInteger(this.sourceType));
+        definition.setCreatedSTR_JSON(this.created);
+        definition.setUpdatedSTR_JSON(this.updated);
+        definition.setDefaultAttachment(this.defaultAttachment);
+        definition.setVariants(this.variants);
 
-        block.setRelatedCategories(this.getRelatedCategories());
-        block.setRelatedTags(this.getRelatedTags());
-        block.setRelatedAttachments(this.getRelatedAttachments());
-        block.setRelatedBlocks(this.getRelatedBlocks());
+        definition.setRelatedCategories(this.getRelatedCategories());
+        definition.setRelatedTags(this.getRelatedTags());
+        definition.setRelatedAttachments(this.getRelatedAttachments());
+        definition.setRelatedBlocks(this.getRelatedBlocks());
+        definition.setRelatedDefinitions(this.getRelatedDefinitions());
 
-        return block;
+        return definition;
     }
 
     // Getters
 
     public String getName() { return this.name; }
     
-    public LocalDate getDateOBJ() {
-        try {
-            return LocalDate.parse(this.date, CONSTANTS.DATE_FORMATTER_FOR_JSON);
-        } catch (Exception e) {
-            UError.exception("Block.getDateOBJ: Failed to parse date", e);
-            return null;
-        }
-    }
+    public String getDescription() { return this.description; }
 
-    public String getDateSTR() {
-        try {
-            return LocalDate.parse(this.date, CONSTANTS.DATE_FORMATTER_FOR_JSON).format(CONSTANTS.DATE_FORMATTER);
-        } catch (Exception e) {
-            UError.exception("Block.getDateSTR: Failed to parse date", e);
-            return null;
-        }
-    }
+    public String getSource() { return this.source; }
 
-    public String getDateSTR_JSON() {
-        return this.date;
-    }
-
-    public String getText() { return this.text; }
+    public SourceTypeEnum getSourceType() { return SourceTypeEnum.fromInteger(this.sourceType); }
 
     public LocalDateTime getCreatedOBJ() {
         try {
             return LocalDateTime.parse(this.created, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
         } catch (Exception e) {
-            UError.exception("Block.getCreatedOBJ: Failed to parse date", e);
+            UError.exception("Definition.getCreatedOBJ: Failed to parse date", e);
             return null;
         }
     }
@@ -421,7 +439,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             return LocalDateTime.parse(this.created, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON).format(CONSTANTS.DATE_TIME_FORMATTER);
         } catch (Exception e) {
-            UError.exception("Block.getCreatedSTR: Failed to parse date", e);
+            UError.exception("Definition.getCreatedSTR: Failed to parse date", e);
             return null;
         }
     }
@@ -434,7 +452,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             return LocalDateTime.parse(this.updated, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
         } catch (Exception e) {
-            UError.exception("Block.getUpdatedOBJ: Failed to parse date", e);
+            UError.exception("Definition.getUpdatedOBJ: Failed to parse date", e);
             return null;
         }
     }
@@ -443,7 +461,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             return LocalDateTime.parse(this.updated, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON).format(CONSTANTS.DATE_TIME_FORMATTER);
         } catch (Exception e) {
-            UError.exception("Block.getUpdatedSTR: Failed to parse date", e);
+            UError.exception("Definition.getUpdatedSTR: Failed to parse date", e);
             return null;
         }
     }
@@ -475,6 +493,14 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     public List<Integer> getRelatedAttachmentsIDs() {
         return this.relatedAttachments;
     }
+
+    public List<Definition> getRelatedDefinitions() {
+        return OBJECTS.DEFINITIONS.getDefinitionsListFromIDs(this.relatedDefinitions);
+    }
+
+    public List<Integer> getRelatedDefinitionsIDs() {
+        return this.relatedDefinitions;
+    }
     
     public int getDefaultAttachment() { return this.defaultAttachment; }
 
@@ -486,27 +512,25 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         return this.relatedBlocks;
     }
 
+    public String getVariants() {
+        return this.variants;
+    }
+
+    public List<String> getVariantsWordsList() {
+        return UString.splitAndStrip(this.variants, "\n");
+    }
+
     // Setters
 
     public void setID(int id) { this.id = id; }
 
     public void setName(String name) { this.name = name; }
     
-    public void setDate(LocalDate date) {
-        this.date = date.format(CONSTANTS.DATE_FORMATTER_FOR_JSON);
-    }
+    public void setDescription(String description) { this.description = description; }
 
-    public void setDate(String date) {
-        try {
-            this.date = LocalDate.parse(date, CONSTANTS.DATE_FORMATTER).format(CONSTANTS.DATE_FORMATTER_FOR_JSON);
-        } catch (Exception e) {
-            UError.exception("Block.setDate: Failed to parse date", e);
-        }
-    }
+    public void setSource(String source) { this.source = source; }
 
-    public void setDateSTR_JSON(String date) { this.date = date; }
-
-    public void setText(String text) { this.text = text; }
+    public void setSourceType(SourceTypeEnum sourceType) { this.sourceType = sourceType.getValue(); }
 
     public void setCreated(LocalDateTime created) {
         this.created = created.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -516,7 +540,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             this.created = LocalDateTime.parse(created, CONSTANTS.DATE_TIME_FORMATTER).format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
         } catch (Exception e) {
-            UError.exception("Block.setCreated: Failed to parse date", e);
+            UError.exception("Definition.setCreated: Failed to parse date", e);
         }
     }
 
@@ -534,7 +558,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         try {
             this.updated = LocalDateTime.parse(updated, CONSTANTS.DATE_TIME_FORMATTER).format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
         } catch (Exception e) {
-            UError.exception("Block.setUpdated: Failed to parse date", e);
+            UError.exception("Definition.setUpdated: Failed to parse date", e);
         }
     }
 
@@ -555,6 +579,10 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     public void setRelatedAttachments(List<Attachment> attachments) {
         this.relatedAttachments = attachments.stream().map((Attachment attachment) -> attachment.getID()).collect(Collectors.toList());
     }
+
+    public void setRelatedDefinitions(List<Definition> definitions) {
+        this.relatedDefinitions = definitions.stream().map((Definition definition) -> definition.getID()).collect(Collectors.toList());
+    }
     
     public void setDefaultAttachment(int defaultAttachment) { this.defaultAttachment = defaultAttachment; }
 
@@ -562,6 +590,14 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
     public void setRelatedBlocks(List<Block> relatedBlocks) {
         this.relatedBlocks = relatedBlocks.stream().map((Block block) -> block.getID()).collect(Collectors.toList());
+    }
+
+    public void setVariants(String variantsString) {
+        this.variants = variantsString;
+    }
+
+    public void setVariants(List<String> variantsWordList) {
+        this.variants = variantsWordList.stream().collect(Collectors.joining("\n"));
     }
 
 }

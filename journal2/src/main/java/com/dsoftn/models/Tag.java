@@ -8,16 +8,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.events.TagAddedEvent;
 import com.dsoftn.events.TagDeletedEvent;
 import com.dsoftn.events.TagUpdatedEvent;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+
+import javafx.event.Event;
+
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
+import com.dsoftn.events.RelationAddedEvent;
+import com.dsoftn.events.RelationDeletedEvent;
+import com.dsoftn.events.RelationUpdatedEvent;
 
 
-public class Tag implements IModelEntity<Tag> {
+public class Tag implements IModelEntity<Tag>, ICustomEventListener {
     // Properties
     private Integer id = CONSTANTS.INVALID_ID;
     private String name = "";
@@ -28,7 +35,56 @@ public class Tag implements IModelEntity<Tag> {
 
     // Constructors
     
-    public Tag() {}
+    public Tag() {
+        OBJECTS.EVENT_HANDLER.register(
+        this,
+        RelationAddedEvent.RELATION_ADDED_EVENT,
+        RelationUpdatedEvent.RELATION_UPDATED_EVENT,
+        RelationDeletedEvent.RELATION_DELETED_EVENT
+        );
+    }
+
+    // Event listeners
+
+    @Override
+    public void onCustomEvent(Event event) {
+        if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
+            Relation newRelation = null;
+            Relation oldRelation = null;
+            if (event instanceof RelationAddedEvent) {
+                RelationAddedEvent relationAddedEvent = (RelationAddedEvent) event;
+                newRelation = relationAddedEvent.getRelation();
+            }
+            else if (event instanceof RelationUpdatedEvent) {
+                RelationUpdatedEvent relationUpdatedEvent = (RelationUpdatedEvent) event;
+                newRelation = relationUpdatedEvent.getNewRelation();
+                oldRelation = relationUpdatedEvent.getOldRelation();
+            }
+            else {
+                RelationDeletedEvent relationDeletedEvent = (RelationDeletedEvent) event;
+                newRelation = relationDeletedEvent.getRelation();
+            }
+            
+            onRelationEvents(newRelation);
+            onRelationEvents(oldRelation);
+        }
+    }
+
+    private void onRelationEvents(Relation relation) {
+        if (relation == null) {
+            return;
+        }
+
+        // Check if relation belongs to this block
+        if (relation.getBaseModel() != ScopeEnum.TAG && relation.getBaseID() != this.id) {
+            return;
+        }
+
+        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.TAG, this.id, ScopeEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+
+        relatedTags = newRelatedTags;
+        update();
+    }
 
     // Interface methods
     

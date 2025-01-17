@@ -22,8 +22,10 @@
 - [How to add new Model](#how-to-add-new-model-⤴)
 - [Users-User Model](#users-user-model-⤴)
 - [Blocks-Block Model](#blocks-block-model-⤴)
+- [Attachments-Attachment Model](#attachments-attachment-model-⤴)
 - [Tags-Tag Model](#tags-tag-model-⤴)
 - [Categories-Category Model](#categories-category-model-⤴)
+- [Relations-Relation Model](#relations-relation-model-⤴)
 - [ScopeEnum](#scopeenum-⤴)
 
 ### Services <sup>[⤴](#table-of-contents)</sup>
@@ -169,7 +171,7 @@ Use `Block` class only. DO NOT USE `Blocks` class.
 2. Call `load(id)` method if you want to load block from database
 3. Change block properties
 4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
-5. Database and `Block` class will be updated automatically
+5. Database and `Blocks` class will be updated automatically
 ```java
 // Change block name example
 Block block = new Block();
@@ -186,7 +188,42 @@ Update following code in `Block` class:
 5. Add new property in method `Block.update` sql query
 6. Add new property in method `Block.duplicate`
 7. Update `Blocks` class docstring
-8. Update **DatabaseTables** settings
+8. Update `Block` and `Blocks` **onCustomEvent** methods if needed
+9. Update **DatabaseTables** settings
+
+## Attachments-Attachment Model <sup>[⤴](#models-⤴)</sup>
+### Overview
+- Load all attachments with `Attachments.load()` method, this should be called before any other action.
+- Dates are stored in database in JSON format.
+- Getters for date properties as `created`, `file_created`, `file_modified` and `file_accessed` methods give date in NORMAL format.
+- Pass to setters date in NORMAL format or object.
+
+### To Add, Update or Delete attachment
+Use `Attachment` class only. DO NOT USE `Attachments` class.
+1. Make instance of `Attachment` class
+2. Call `load(id)` method if you want to load attachment from database
+3. Change attachment properties
+4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
+5. Database and `Attachments` class will be updated automatically
+```java
+// Change block name example
+Attachment attachment = new Attachment();
+attachment.load(id);
+attachment.setName("My Attachment");
+attachment.update();
+```
+### How to add new property to attachment
+Update following code in `Attachment` class:
+1. Add variable with new property
+2. Add getter and setter for new property
+3. Add new property in method `Attachment.loadFromResultSet`
+4. Add new property in method `Attachment.add` sql query
+5. Add new property in method `Attachment.update` sql query
+6. Add new property in method `Attachment.duplicate`
+7. Update `Attachments` class docstring
+8. Update `Attachment` and `Attachments` **onCustomEvent** methods if needed
+9. Update **DatabaseTables** settings
+
 
 ## Tags-Tag Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -203,7 +240,7 @@ Use `Tag` class only. DO NOT USE `Tags` class.
 2. Call `load(id)` method if you want to load tag from database
 3. Change tag properties
 4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
-5. Database and `Tag` class will be updated automatically
+5. Database and `Tags` class will be updated automatically
 ```java
 // Change tag name example
 Tag tag = new Tag();
@@ -220,7 +257,8 @@ Update following code in `Tag` class:
 5. Add new property in method `Tag.update` sql query
 6. Add new property in method `Tag.duplicate`
 7. Update `Tags` class docstring
-8. Update **DatabaseTables** settings
+8. Update `Tag` and `Tags` **onCustomEvent** methods if needed
+9. Update **DatabaseTables** settings
 
 ## Categories-Category Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -237,7 +275,7 @@ Use `Category` class only. DO NOT USE `Categories` class.
 2. Call `load(id)` method if you want to load category from database
 3. Change category properties
 4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
-5. Database and `Category` class will be updated automatically
+5. Database and `Categories` class will be updated automatically
 ```java
 // Change category name example
 Category category = new Category();
@@ -255,7 +293,61 @@ Update following code in `Category` class:
 5. Add new property in method `Category.update` sql query
 6. Add new property in method `Category.duplicate`
 7. Update `Categories` class docstring
-8. Update **DatabaseTables** settings
+8. Update `Category` and `Categories` **onCustomEvent** methods if needed
+9. Update **DatabaseTables** settings
+
+## Relations-Relation Model <sup>[⤴](#models-⤴)</sup>
+### Overview
+- Contains all relations between models.
+- Load all relations with `Relations.load()` method, this should be called before any other action.
+- **Structure**
+    - `BaseModel` - model type that contain this relation
+    - `BaseID` - id of model type that contain this relation
+    - `RelatedModel` - model type that is related to `BaseModel`
+    - `RelatedID` - id of model type that is related to `BaseModel`
+- `Relations` class listens to *add*, *update* and *delete* events of `BaseModel` and updates relations automatically.
+
+### To Add, Update or Delete relation
+Most common and recommended way is to use `BaseModel` itself.
+- Change your `BaseModel` and call `add()`, `update()` or `delete()` method on `BaseModel`.
+- `BaseModel` will trigger event (*add*, *update* or *delete*)
+- `Relations` class will respond to event and update relations automatically
+
+Another way is to manage *Relations* model directly.
+- Only use `Relation` class, do not use `Relations` class.
+- Use methods `add()`, `update()` or `delete()` on `Related` class.
+- In order this actions be performed correctly, `BaseModel` must have `Listener` for *add*, *update* and *delete* events that `Relation` class will trigger.
+- `BaseModel` *Listener* must be in *Repository* class of `BaseModel`. This is very important because that way you can avoid **Events loop problem**. *See* [Events loop problem](#events-loop-problem)
+- If `BaseModel` does not have `Listener` for *add*, *update* and *delete* events that `Relation` class will trigger, you will get incorrect data in `BaseModel`. After restarting *Application* `BaseModel` will contain correct data based on *Relations* you have changed.
+
+### Events loop problem - DEPRECATED
+
+|**NOTE**: *This problem has been solved! No need to read this section.*|
+|----------------------------------------------------------
+
+#### Problem
+- When `BaseModel` updates his properties, `BaseModel` will trigger *add*, *update* and *delete* events.
+- This events will be processed by `Relations` class.
+- `Relations` class will update relations automatically and for each *relation* that is changed will trigger *add*, *update* or *delete* event.
+- This will cause that `BaseModel` will recieive *add*, *update* and *delete* events in from `Relations` class.
+- Generally you don't want to respond to `Relations` events when they are triggered because `BaseModel` is causing them.
+- You only want to respond to `Relations` events when they are triggered because `Relation` is directly changed, without knowledge of `BaseModel`.
+
+#### Solution
+- *Events* that are triggered by `Relations` class have property `isLoopEvent` set to `true` if they are caused by `BaseModel` class.
+- Check *Event* property `isLoopEvent` before responding to event.
+- If `isLoopEvent` is `true` then you know that event is caused by `BaseModel` class and generally you don't want to respond to it because `BaseModel` is already properly updated.
+- If `isLoopEvent` is `false` then you know that event is caused by `Relation` class and you can respond to it to update `BaseModel` with new **Relations** data.
+
+```java
+public void onRelationAddedEvent(RelationAddedEvent event) {
+    if (event.isLoopEvent()) {
+        // do nothing
+    } else {
+        // update BaseModel with new data
+    }
+}
+```
 
 ## ScopeEnum <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -302,7 +394,8 @@ TextFlow textFlow = richText.getTextFlow();
 ### Overview
 - Every Dialog or Class should register to `EventHandler` through `EventHandler.register` method. Class that registers itself should implement **CustomEventListener** interface with method `onCustomEvent`.
 With process of registration class will provide list of Events it is interested in.
-- When class is closed `EventHandler.unregister` method should be called.
+- If registered class has no strong reference to it, it will be garbage collected and automatically unregistered.
+- You can manually unregister class with `EventHandler.unregister` method.
 - When event is fired `EventHandler.fireEvent` method should be called. This method will pass event to all interested classes.
 - `EventHandler` is part of `OBJECTS` class.
 

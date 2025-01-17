@@ -8,45 +8,50 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.event.Event;
-
 import com.dsoftn.Interfaces.IModelRepository;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+
+import javafx.event.Event;
+
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
 
 
 /*
-TABLE attachments
+ TABLE definitions
     id INTEGER PRIMARY KEY AUTOINCREMENT
-    name TEXT NOT NULL - name of the attachment
-    description TEXT NOT NULL - description of the attachment
-    type INTEGER NOT NULL - AttachmentTypeEnum value
-    is_supported INTEGER NOT NULL - 0 or 1
-    source TEXT NOT NULL - source of the attachment
+    name TEXT NOT NULL - name of the definition
+    description TEXT NOT NULL - description of the definition
+    source TEXT NOT NULL - source of the definition
     source_type INTEGER NOT NULL - SourceTypeEnum value
-    downloaded INTEGER NOT NULL - 0 or 1
     created TEXT NOT NULL - date in format for JSON
-    file_path TEXT NOT NULL - path to attachment file
-    file_size INTEGER NOT NULL - file size in bytes
-    file_created TEXT NOT NULL - date in format for JSON
-    file_modified TEXT NOT NULL - date in format for JSON
-    file_accessed TEXT NOT NULL - date in format for JSON
-RELATED PROPERTIES:
+    updated TEXT NOT NULL - date in format for JSON
+    default_attachment INTEGER NOT NULL - id of the default attachment
+RELATED PROPERTIES
     Attachments
+    Categories
+    Tags
+    Definitions
+    Blocks
+
+TABLE definitions_variants
+    id INTEGER PRIMARY KEY AUTOINCREMENT
+    text TEXT NOT NULL - text of the variant
+    definition_id INTEGER NOT NULL - id of the definition
+    match_case INTEGER NOT NULL - 0 or 1
  */
-public class Attachments implements IModelRepository<Attachment>, ICustomEventListener {
+public class Definitions implements IModelRepository<Definition>, ICustomEventListener {
     // Variables
 
-    private Map<Integer, Attachment> data = new LinkedHashMap<>(); // <id, Attachment>
+    private Map<Integer, Definition> data = new LinkedHashMap<>();
 
     // Constructor
 
-    public Attachments() {
+    public Definitions() {
         OBJECTS.EVENT_HANDLER.register(
             this,
             RelationAddedEvent.RELATION_ADDED_EVENT,
@@ -87,10 +92,10 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
             return;
         }
 
-        if (relation.getBaseModel() == ScopeEnum.ATTACHMENT) {
-            Attachment attachment = getEntity(relation.getBaseID());
-            if (attachment != null) {
-                attachment.onCustomEvent(event);
+        if (relation.getBaseModel() == ScopeEnum.DEFINITION) {
+            Definition definition = getEntity(relation.getBaseID());
+            if (definition != null) {
+                definition.onCustomEvent(event);
             }
         }
     }
@@ -108,32 +113,32 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
         ResultSet rs = null;
         
         try {
-            stmt = db.preparedStatement("SELECT * FROM attachments");
+            stmt = db.preparedStatement("SELECT * FROM definitions");
             if (stmt == null) {
-                UError.error("Attachments.load: Failed to load attachments", "Statement is unexpectedly null");
+                UError.error("Definitions.load: Failed to load definitions", "Statement is unexpectedly null");
                 return false;
             }
             rs = db.select(stmt);
             if (rs == null) {
-                UError.error("Attachments.load: Failed to load attachments", "Result set is unexpectedly null");
+                UError.error("Definitions.load: Failed to load definitions", "Result set is unexpectedly null");
                 return false;
             }
 
             while (rs.next()) {
-                Attachment attachment = new Attachment();
-                result = attachment.loadFromResultSet(rs);
+                Definition definition = new Definition();
+                result = definition.loadFromResultSet(rs);
                 if (result == false) {
-                    UError.error("Attachments.load: Failed to load attachment", "Loading attachment failed");
+                    UError.error("Definitions.load: Failed to load definition", "Loading definition failed");
                     result = false;
                     continue;
                 }
                 
-                // Add attachment
-                add(attachment);
+                // Add definition
+                add(definition);
             }
 
         } catch (Exception e) {
-            UError.exception("Attachments.load: Failed to load attachments", e);
+            UError.exception("Definitions.load: Failed to load definitions", e);
             return false;
         
         } finally {
@@ -141,14 +146,14 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
                 try {
                     rs.close();
                 } catch (Exception e) {
-                    UError.exception("Attachments.load: Failed to close result set", e);
+                    UError.exception("Definitions.load: Failed to close result set", e);
                 }
             }
             if (stmt != null) {
                 try {
                     stmt.close();
                 } catch (Exception e) {
-                    UError.exception("Attachments.load: Failed to close statement", e);
+                    UError.exception("Definitions.load: Failed to close statement", e);
                 }
             }
             db.disconnect();
@@ -168,18 +173,18 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
     }
 
     @Override
-    public Attachment getEntity(Integer entityID) {
+    public Definition getEntity(Integer entityID) {
         return data.get(entityID);
     }
 
     @Override
-    public List<Attachment> getEntityAll() {
-        List<Attachment> list = new ArrayList<>(data.values());
+    public List<Definition> getEntityAll() {
+        List<Definition> list = new ArrayList<>(data.values());
         return list;
     }
 
     @Override
-    public boolean add(Attachment entity) {
+    public boolean add(Definition entity) {
         if (entity == null) return false;
 
         if (isExists(entity.getID())) return false;
@@ -189,7 +194,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
     }
 
     @Override
-    public boolean update(Attachment entity) {
+    public boolean update(Definition entity) {
         if (entity == null) return false;
 
         if (!isExists(entity.getID())) return false;
@@ -199,7 +204,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
     }
 
     @Override
-    public boolean delete(Attachment entity) {
+    public boolean delete(Definition entity) {
         if (entity == null) return false;
 
         if (!isExists(entity.getID())) return false;
@@ -210,25 +215,25 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
 
     // Public methods
 
-    public List<Attachment> getAttachmentsListFromIDs(List<Integer> attachmentIDs) {
-        List<Attachment> attachments = new ArrayList<>();
-        for (Integer attachmentID : attachmentIDs) {
-            Attachment attachment = getEntity(attachmentID);
-            if (attachment != null) attachments.add(attachment);
+    public List<Definition> getDefinitionsListFromIDs(List<Integer> definitionIDs) {
+        List<Definition> definitions = new ArrayList<>();
+        for (Integer definitionID : definitionIDs) {
+            Definition definition = getEntity(definitionID);
+            if (definition != null) definitions.add(definition);
         }
 
-        return attachments;
+        return definitions;
     }
 
-    public List<Attachment> getAttachmentsListFromRelations(List<Relation> relations) {
-        List<Integer> attachmentIDs = new ArrayList<>();
+    public List<Definition> getDefinitionsListFromRelations(List<Relation> relations) {
+        List<Integer> definitionIDs = new ArrayList<>();
         for (Relation relation : relations) {
-            if (relation.getRelatedModel() == ScopeEnum.ATTACHMENT) {
-                attachmentIDs.add(relation.getRelatedID());
+            if (relation.getRelatedModel() == ScopeEnum.DEFINITION) {
+                definitionIDs.add(relation.getRelatedID());
             }
         }
 
-        return getAttachmentsListFromIDs(attachmentIDs);
+        return getDefinitionsListFromIDs(definitionIDs);
     }
 
 }

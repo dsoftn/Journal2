@@ -7,23 +7,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.events.AttachmentAddedEvent;
 import com.dsoftn.events.AttachmentDeletedEvent;
 import com.dsoftn.events.AttachmentUpdatedEvent;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+
+import javafx.event.Event;
+
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
+import com.dsoftn.events.RelationAddedEvent;
+import com.dsoftn.events.RelationDeletedEvent;
+import com.dsoftn.events.RelationUpdatedEvent;
 
 
-public class Attachment implements IModelEntity<Attachment> {
+public class Attachment implements IModelEntity<Attachment>, ICustomEventListener {
     // Properties
     private Integer id = CONSTANTS.INVALID_ID;
     private String name = "";
     private String description = "";
     private Integer type = AttachmentTypeEnum.UNDEFINED.getValue();
     private Integer isSupported = 0;
+    private String source = "";
+    private Integer sourceType = SourceTypeEnum.UNDEFINED.getValue();
+    private Integer downloaded = 0;
     private List<Integer> relatedAttachments = new ArrayList<>();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String filePath = "";
@@ -34,10 +44,58 @@ public class Attachment implements IModelEntity<Attachment> {
 
     // Constructors
     
-    public Attachment() {}
+    public Attachment() {
+        OBJECTS.EVENT_HANDLER.register(
+            this,
+            RelationAddedEvent.RELATION_ADDED_EVENT,
+            RelationUpdatedEvent.RELATION_UPDATED_EVENT,
+            RelationDeletedEvent.RELATION_DELETED_EVENT
+        );
+    }
+
+    // Event listeners
+
+    @Override
+    public void onCustomEvent(Event event) {
+        if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
+            Relation newRelation = null;
+            Relation oldRelation = null;
+            if (event instanceof RelationAddedEvent) {
+                RelationAddedEvent relationAddedEvent = (RelationAddedEvent) event;
+                newRelation = relationAddedEvent.getRelation();
+            }
+            else if (event instanceof RelationUpdatedEvent) {
+                RelationUpdatedEvent relationUpdatedEvent = (RelationUpdatedEvent) event;
+                newRelation = relationUpdatedEvent.getNewRelation();
+                oldRelation = relationUpdatedEvent.getOldRelation();
+            }
+            else {
+                RelationDeletedEvent relationDeletedEvent = (RelationDeletedEvent) event;
+                newRelation = relationDeletedEvent.getRelation();
+            }
+            
+            onRelationEvents(newRelation);
+            onRelationEvents(oldRelation);
+        }
+    }
+    
+    private void onRelationEvents(Relation relation) {
+        if (relation == null) {
+            return;
+        }
+
+        // Check if relation belongs to this attachment
+        if (relation.getBaseModel() != ScopeEnum.ATTACHMENT && relation.getBaseID() != this.id) {
+            return;
+        }
+
+        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.ATTACHMENT, this.id, ScopeEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        relatedAttachments = newRelatedAttachments;
+        update();
+    }
 
     // Interface methods
-    
+
     @Override
     public Integer getID() {
         return this.id;
@@ -83,6 +141,9 @@ public class Attachment implements IModelEntity<Attachment> {
             this.description = rs.getString("description");
             this.type = rs.getInt("type");
             this.isSupported = rs.getInt("is_supported");
+            this.source = rs.getString("source");
+            this.sourceType = rs.getInt("source_type");
+            this.downloaded = rs.getInt("downloaded");
             this.created = rs.getString("created");
             this.filePath = rs.getString("file_path");
             this.fileSize = rs.getInt("file_size");
@@ -114,12 +175,15 @@ public class Attachment implements IModelEntity<Attachment> {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO attachments " + 
-                "(name, description, type, is_supported, file_path, file_size, file_created, file_modified, file_accessed, created) " + 
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "(name, description, type, is_supported, source, source_type, downloaded, file_path, file_size, file_created, file_modified, file_accessed, created) " + 
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 this.name,
                 this.description,
                 this.type,
                 this.isSupported,
+                this.source,
+                this.sourceType,
+                this.downloaded,
                 this.filePath,
                 this.fileSize,
                 this.fileCreated,
@@ -180,12 +244,15 @@ public class Attachment implements IModelEntity<Attachment> {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE attachments " + 
-                "SET name = ?, description = ?, type = ?, is_supported = ?, file_path = ?, file_size = ?, file_created = ?, file_modified = ?, file_accessed = ?, created = ? " + 
+                "SET name = ?, description = ?, type = ?, is_supported = ?, source = ?, source_type = ?, downloaded = ?, file_path = ?, file_size = ?, file_created = ?, file_modified = ?, file_accessed = ?, created = ? " + 
                 "WHERE id = ?",
                 this.name,
                 this.description,
                 this.type,
                 this.isSupported,
+                this.source,
+                this.sourceType,
+                this.downloaded,
                 this.filePath,
                 this.fileSize,
                 this.fileCreated,
@@ -296,6 +363,9 @@ public class Attachment implements IModelEntity<Attachment> {
         newAttachment.setDescription(this.description);
         newAttachment.setType(AttachmentTypeEnum.fromInteger(this.type));
         newAttachment.setIsSupported(this.isSupported);
+        newAttachment.setSource(this.source);
+        newAttachment.setSourceType(SourceTypeEnum.fromInteger(this.sourceType));
+        newAttachment.setDownloaded(this.isDownloaded());
         newAttachment.setFilePath(this.filePath);
         newAttachment.setFileSize(this.fileSize);
         newAttachment.setFileCreatedSTR_JSON(getFileCreatedSTR_JSON());
@@ -321,6 +391,12 @@ public class Attachment implements IModelEntity<Attachment> {
     public AttachmentTypeEnum getType() { return AttachmentTypeEnum.fromInteger(this.type); }
 
     public boolean getIsSupported() { return this.isSupported == 1; }
+
+    public String getSource () { return this.source; }
+
+    public SourceTypeEnum getSourceType () { return SourceTypeEnum.fromInteger(this.sourceType); }
+
+    public boolean isDownloaded() { return this.downloaded == 1; }
 
     public String getFilePath() { return this.filePath; }
 
@@ -427,6 +503,12 @@ public class Attachment implements IModelEntity<Attachment> {
     public void setType(AttachmentTypeEnum type) { this.type = type.getInteger(); }
 
     public void setIsSupported(boolean isSupported) { this.isSupported = isSupported ? 1 : 0; }
+
+    public void setSource(String source) { this.source = source; }
+
+    public void setSourceType(SourceTypeEnum sourceType) { this.sourceType = sourceType.getValue(); }
+
+    public void setDownloaded(boolean downloaded) { this.downloaded = downloaded ? 1 : 0; }
     
     public void setIsSupported(Integer isSupported) { this.isSupported = isSupported == 1 ? 1 : 0; }
 
