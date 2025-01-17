@@ -204,7 +204,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
 
     public boolean updateVariantsDefinitionUpdate(Definition definition) {
         // Delete old variants
-        if (!deleteVariants(dataByDef.get(definition.getID()))) {
+        if (!deleteAllVariants(definition)) {
             UError.error("DefVariants.updateVariantsDefinitionUpdate: Failed to update variants", "Deleting old variants failed");
             return false;
         }
@@ -216,7 +216,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
     public boolean updateVariantsDefinitionDelete(Definition definition) {
         if (!dataByDef.containsKey(definition.getID())) return true;
 
-        if (!deleteVariants(dataByDef.get(definition.getID()))) {
+        if (!deleteAllVariants(definition)) {
             UError.error("DefVariants.updateVariantsDefinitionDelete: Failed to delete variants", "Deleting variants failed");
             return false;
         }
@@ -226,29 +226,9 @@ public class DefVariants implements IModelRepository<DefVariant> {
 
     // Private methods
 
-    private boolean deleteVariants(List<DefVariant> variants) {
-        if (variants == null) return true;
-        List<DefVariant> newVariants = new ArrayList<>(variants);
-        Integer definitionID = null;
-
-        // Check if DefVariant can be deleted
-        for (DefVariant defVariant : newVariants) {
-            if (!defVariant.canBeDeleted()) {
-                UError.error("DefVariant.delete: Failed to delete DefVariant", "DefVariant cannot be deleted");
-                return false;
-            }
-            if (definitionID == null) {
-                definitionID = defVariant.getDefinitionID();
-            }
-            else if (definitionID != defVariant.getDefinitionID()) {
-                UError.error("DefVariant.delete: Failed to delete DefVariant", "DefVariant is not in the same definition");
-                return false;
-            }
-        }
-
-        if (definitionID == null) {
-            UError.error("DefVariant.delete: Failed to delete DefVariant", "DefVariant is not in any definition or list is empty");
-            return false;
+    private boolean deleteAllVariants(Definition definition) {
+        if (!dataByDef.containsKey(definition.getID())) {
+            return true;
         }
 
         SQLiteDB db = new SQLiteDB();
@@ -258,7 +238,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
             stmt = db.preparedStatement(
                 "DELETE FROM definitions_variants " + 
                 "WHERE definition_id = ?",
-                definitionID);
+                definition.getID());
 
             if (stmt == null) {
                 UError.error("DefVariant.deleteVariants: Failed to delete DefVariant", "Statement is unexpectedly null");
@@ -269,16 +249,6 @@ public class DefVariants implements IModelRepository<DefVariant> {
                 return false;
             }
 
-            // Delete from repository
-            for (DefVariant defVariant : newVariants) {
-                if (!OBJECTS.DEFINITIONS_VARIANTS.delete(defVariant)) {
-                    UError.error("DefVariant.deleteVariants: Failed to delete DefVariant from repository", "Deleting DefVariant from repository failed");
-                    return false;
-                }
-            }
-
-            return true;
-
         } catch (Exception e) {
             UError.exception("DefVariant.deleteVariants: Failed to delete DefVariant", e);
             return false;
@@ -287,6 +257,15 @@ public class DefVariants implements IModelRepository<DefVariant> {
             if (stmt != null) try { stmt.close(); } catch (Exception e) {}
             db.disconnect();
         }
+
+        // Remove from data and dataByDef
+        for (DefVariant defVariant : dataByDef.get(definition.getID())) {
+            data.remove(defVariant.getID());
+        }
+
+        dataByDef.remove(definition.getID());
+
+        return true;
     }
 
     private boolean addVariants(List<DefVariant> variants) {

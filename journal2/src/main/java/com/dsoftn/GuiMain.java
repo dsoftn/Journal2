@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import com.dsoftn.controllers.MainWinController;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
+import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UFile;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 
@@ -19,6 +20,7 @@ import java.io.File;
 import com.dsoftn.controllers.LoginController;
 
 import com.dsoftn.models.Attachment;
+import com.dsoftn.models.Definition;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -102,26 +104,83 @@ public class GuiMain extends Application {
         startMainWin(primaryStage);
     }
 
+    private boolean createGlobalDataModels() {
+        if (!OBJECTS.RELATIONS.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.RELATIONS.load() failed");
+            return false;
+        }
+        if (!OBJECTS.DEFINITIONS_VARIANTS.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.DEFINITIONS_VARIANTS.load() failed");
+            return false;
+        }
+        if (!OBJECTS.TAGS.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.TAGS.load() failed");
+            return false;
+        }
+        if (!OBJECTS.CATEGORIES.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.CATEGORIES.load() failed");
+            return false;
+        }
+        if (!OBJECTS.ATTACHMENTS.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.ATTACHMENTS.load() failed");
+            return false;
+        }
+        if (!OBJECTS.BLOCKS.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.BLOCKS.load() failed");
+            return false;
+        }
+        if (!OBJECTS.DEFINITIONS.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.DEFINITIONS.load() failed");
+            return false;
+        }
+
+        return true;
+    }
+
     private void testTest() {
         System.out.println("Pocetak testa:");
         System.out.println("--------------");
 
         System.out.println("UCITAVAM SVE OBJEKTE");
-        OBJECTS.RELATIONS.load();
-        OBJECTS.TAGS.load();
-        OBJECTS.CATEGORIES.load();
-        OBJECTS.ATTACHMENTS.load();
-        OBJECTS.BLOCKS.load();
+        if (!createGlobalDataModels()) {
+            UError.error("GuiMain.testTest -> createGlobalDataModels() failed");
+            return;
+        }
         System.out.println(" - - -");
 
-        // System.out.println("DODAJ ATTACHMENT BEZ RELATED ATTACHMENTS:");
-        // Attachment attachment = new Attachment();
-        // attachment.setName("Test Attachment");
-        // attachment.setDescription("Test Description");
-        // attachment.setFileCreated("08.01.2025. 20:25:00");
-        // attachment.add();
-        // System.out.println(" - - -");
-        Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(8);
+        System.out.println("Dodajem novu definiciju:");
+        // Definition addedDefinition = new Definition();
+        Definition addedDefinition = OBJECTS.DEFINITIONS.getEntity(1);
+        addedDefinition.setName("Test Definition");
+        addedDefinition.setDescription("Test Description");
+        String variants = "";
+        for (int i = 0; i < 2000; i++) {
+            variants += "Test Variant " + i + "\n";
+        }
+        addedDefinition.setVariants(variants);
+        // addedDefinition.setVariants("mama-name\nmami\nmamin");
+        addedDefinition.update();
+        System.out.println(" - - -");
+        
+        System.out.println("Promeni variante");
+        Definition definition = OBJECTS.DEFINITIONS.getEntity(1);
+        definition.setVariants("mama\nmami\nmamu");
+        definition.update();
+        System.out.println(" - - -");
+
+
+
+
+
+
+        System.out.println("DODAJ ATTACHMENT BEZ RELATED ATTACHMENTS:");
+        Attachment addedAttachment = new Attachment();
+        addedAttachment.setName("Test Attachment");
+        addedAttachment.setDescription("Test Description");
+        addedAttachment.setFileCreated("08.01.2025. 20:25:00");
+        addedAttachment.add();
+        System.out.println(" - - -");
+        Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(3);
 
         System.out.println("PRIKAZUJEM ATTACHMENT IZ Attachments:");
         System.out.println("Description:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getDescription());

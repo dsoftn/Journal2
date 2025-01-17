@@ -162,19 +162,39 @@ public class SQLiteDB {
                 pstmt.setString(1, variant.getText());
                 pstmt.setInt(2, variant.getDefinitionID());
                 pstmt.setInt(3, variant.getMatchCaseInt());
-                pstmt.addBatch();
-            }
+                pstmt.executeUpdate();
 
-            pstmt.executeBatch();
-
-            // Get generated ids
-            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                while (generatedKeys.next()) {
-                    generatedIds.add(generatedKeys.getInt(1));
+                // Get generated id
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        generatedIds.add(generatedKeys.getInt(1));
+                    }
+                    else {
+                        try {
+                            conn.rollback();
+                            UError.error("SQLiteDB.insertMany: No generated ID returned", "Result set is unexpectedly null" ,"SQL: " + sql);
+                            return null;
+                        } catch (SQLException ex) {
+                            UError.exception("SQLiteDB.insertMany: No generated ID returned. Database rollback failed. Failed to insert data", ex, "SQL: " + sql);
+                            return null;
+                        }
+                    }
                 }
+                catch (SQLException e) {
+                    try {
+                        conn.rollback();
+                        UError.exception("SQLiteDB.insertMany: Failed to insert data", e, "SQL: " + sql);
+                        return null;
+                    } catch (SQLException ex) {
+                        UError.exception("SQLiteDB.insertMany: Database rollback failed. Failed to insert data", ex, "SQL: " + sql);
+                        return null;
+                    }
+                }
+    
             }
 
             conn.commit();
+            
         } catch (SQLException e) {
             try {
                 conn.rollback();
