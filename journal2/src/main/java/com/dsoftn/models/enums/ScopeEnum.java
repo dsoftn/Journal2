@@ -1,4 +1,4 @@
-package com.dsoftn.models;
+package com.dsoftn.models.enums;
 
 import java.util.Arrays;
 
@@ -11,7 +11,10 @@ public enum ScopeEnum {
     DEFINITION(8),
     ATTACHMENT(16),
     CATEGORY(32),
-    TAG(64);
+    TAG(64),
+    RELATION(128),
+    DEF_VARIANT(256)
+    ;
 
     private final int value;
 

@@ -8,6 +8,7 @@ import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
+import com.dsoftn.models.enums.ScopeEnum;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 import com.dsoftn.CONSTANTS;

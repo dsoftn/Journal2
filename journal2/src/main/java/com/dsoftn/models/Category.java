@@ -25,6 +25,7 @@ import com.dsoftn.events.CategoryDeletedEvent;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
+import com.dsoftn.models.enums.ScopeEnum;
 
 
 public class Category implements IModelEntity<Category>, ICustomEventListener {

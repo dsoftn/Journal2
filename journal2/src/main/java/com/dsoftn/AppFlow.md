@@ -22,6 +22,8 @@
 - [How to add new Model](#how-to-add-new-model-⤴)
 - [Users-User Model](#users-user-model-⤴)
 - [Blocks-Block Model](#blocks-block-model-⤴)
+- [Definitions-Definition Model](#definitions-definition-model-⤴)
+- [DefVariants-DefVariant Model](#defvariants-defvariant-model-⤴)
 - [Attachments-Attachment Model](#attachments-attachment-model-⤴)
 - [Tags-Tag Model](#tags-tag-model-⤴)
 - [Categories-Category Model](#categories-category-model-⤴)
@@ -190,6 +192,47 @@ Update following code in `Block` class:
 7. Update `Blocks` class docstring
 8. Update `Block` and `Blocks` **onCustomEvent** methods if needed
 9. Update **DatabaseTables** settings
+
+## Definitions-Definition Model <sup>[⤴](#models-⤴)</sup>
+### Overview
+- Load all definitions with `Definitions.load()` method, this should be called before any other action.
+- Dates are stored in database in JSON format.
+- Getters for date properties as `date`, `created` and `updated` methods give date in NORMAL format.
+- Pass to setters date in NORMAL format or object.
+ - `DefVariants` model stores information about variants of definitions.
+
+### To Add, Update or Delete definition
+Use `Definition` class only. DO NOT USE `Definitions` class.
+1. Make instance of `Definition` class
+2. Call `load(id)` method if you want to load definition from database
+3. Change definition properties
+4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
+5. Database and `Definitions` class will be updated automatically
+```java
+// Change block name example
+Definition definition = new Definition();
+definition.load(id);
+definition.setName("My Definition");
+definition.update();
+```
+### How to add new property to definition
+Update following code in `Definition` class:
+1. Add variable with new property
+2. Add getter and setter for new property
+3. Add new property in method `Definition.loadFromResultSet`
+4. Add new property in method `Definition.add` sql query
+5. Add new property in method `Definition.update` sql query
+6. Add new property in method `Definition.duplicate`
+7. Update `Definitions` class docstring
+8. Update `Definition` and `Definitions` **onCustomEvent** methods if needed
+9. Update **DatabaseTables** settings
+
+## DefVariants-DefVariant Model <sup>[⤴](#models-⤴)</sup>
+### Overview
+- Load all defVariants with `DefVariants.load()` method, this should be called before any other action.
+- This classes stores information about variants of definitions.
+- When you call on `Definition` object method 'add', 'update' or 'delete' methods, `DefVariants` class will be updated automatically with methods `OBJECT.DefVariants.updateVariantsDefinitionAdd`, `OBJECT.DefVariants.updateVariantsDefinitionUpdate` and `OBJECT.DefVariants.updateVariantsDefinitionDelete`
+- When updating data, `DefVariants` will first delete all variants for definition and then add new variants
 
 ## Attachments-Attachment Model <sup>[⤴](#models-⤴)</sup>
 ### Overview

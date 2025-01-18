@@ -24,6 +24,8 @@ import com.dsoftn.events.DefinitionDeletedEvent;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
+import com.dsoftn.models.enums.ScopeEnum;
+import com.dsoftn.models.enums.SourceTypeEnum;
 import com.dsoftn.utils.UString;
 
 

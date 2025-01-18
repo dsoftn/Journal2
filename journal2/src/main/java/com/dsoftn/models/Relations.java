@@ -27,6 +27,7 @@ import com.dsoftn.events.CategoryUpdatedEvent;
 import com.dsoftn.events.CategoryDeletedEvent;
 import com.dsoftn.events.TagAddedEvent;
 import com.dsoftn.events.TagUpdatedEvent;
+import com.dsoftn.models.enums.ScopeEnum;
 import com.dsoftn.events.TagDeletedEvent;
 
 

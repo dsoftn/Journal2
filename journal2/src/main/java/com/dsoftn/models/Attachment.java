@@ -22,6 +22,9 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
+import com.dsoftn.models.enums.AttachmentTypeEnum;
+import com.dsoftn.models.enums.ScopeEnum;
+import com.dsoftn.models.enums.SourceTypeEnum;
 
 
 public class Attachment implements IModelEntity<Attachment>, ICustomEventListener {

@@ -1,4 +1,4 @@
-package com.dsoftn.models;
+package com.dsoftn.models.enums;
 
 
 public enum AttachmentTypeEnum {
