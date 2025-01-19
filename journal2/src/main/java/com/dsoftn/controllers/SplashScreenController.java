@@ -192,16 +192,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         Task<Boolean> task = new Task<Boolean>() {
             @Override
             protected Boolean call() throws Exception {
-                try {
-                    Thread.sleep(3000);
-                    boolean result = createGlobalDataModels();
-                    Thread.sleep(3000);
-
-                    return result;
-                } catch (InterruptedException e) {
-                    UError.exception("SplashScreenController.startMe -> Thread (createGlobalDataModels) failed", e);
-                    return false;
-                }
+                return createGlobalDataModels();
             }
         };
 

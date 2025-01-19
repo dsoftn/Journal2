@@ -45,6 +45,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
     // Variables
 
     private Map<Integer, Block> data = new LinkedHashMap<>(); // <id, Block>
+    private boolean isLoaded = false;
 
     // Constructor
 
@@ -199,6 +200,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
             Platform.runLater(() -> { 
                 OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.COMPLETED));
             });
+            isLoaded = true;
         }
 
         return result;
@@ -264,6 +266,11 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
 
         data.remove(entity.getID());
         return true;
+    }
+
+    @Override
+    public boolean isModelLoaded() {
+        return isLoaded;
     }
 
     // Public methods

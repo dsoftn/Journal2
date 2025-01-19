@@ -14,6 +14,7 @@ public class Users implements IModelRepository<User> {
 
     // Variables
     private Map<String, User> data = new LinkedHashMap<>();
+    private boolean isLoaded = false;
 
     // IModelRepository methods
 
@@ -36,6 +37,7 @@ public class Users implements IModelRepository<User> {
             }
         }
 
+        isLoaded = true;
         return true;
     }
 
@@ -92,6 +94,11 @@ public class Users implements IModelRepository<User> {
         return true;
     }
 
+    @Override
+    public boolean isModelLoaded() {
+        return isLoaded;
+    }
+    
     // Public methods
 
     public User lastActiveUser() {

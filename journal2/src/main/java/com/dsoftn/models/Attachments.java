@@ -48,6 +48,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
     // Variables
 
     private Map<Integer, Attachment> data = new LinkedHashMap<>(); // <id, Attachment>
+    private boolean isLoaded = false;
 
     // Constructor
 
@@ -202,6 +203,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
             Platform.runLater(() -> { 
                 OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.ATTACHMENT, TaskStateEnum.COMPLETED));
             });
+            isLoaded = true;
         }
 
         return result;
@@ -267,6 +269,11 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
 
         data.remove(entity.getID());
         return true;
+    }
+
+    @Override
+    public boolean isModelLoaded() {
+        return isLoaded;
     }
 
     // Public methods

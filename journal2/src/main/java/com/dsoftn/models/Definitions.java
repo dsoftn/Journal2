@@ -53,6 +53,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
     // Variables
 
     private Map<Integer, Definition> data = new LinkedHashMap<>();
+    private boolean isLoaded = false;
 
     // Constructor
 
@@ -207,6 +208,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
             Platform.runLater(() -> { 
                 OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.DEFINITION, TaskStateEnum.COMPLETED));
             });
+            isLoaded = true;
         }
 
         return result;
@@ -272,6 +274,11 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
 
         data.remove(entity.getID());
         return true;
+    }
+
+    @Override
+    public boolean isModelLoaded() {
+        return isLoaded;
     }
 
     // Public methods

@@ -40,6 +40,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
     // Variables
 
     private Map<Integer, Category> data = new LinkedHashMap<>(); // <id, Category>
+    private boolean isLoaded = false;
 
     // Constructor
 
@@ -194,6 +195,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
             Platform.runLater(() -> { 
                 OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.CATEGORY, TaskStateEnum.COMPLETED));
             });
+            isLoaded = true;
         }
 
         return result;
@@ -259,6 +261,11 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
 
         data.remove(entity.getID());
         return true;
+    }
+
+    @Override
+    public boolean isModelLoaded() {
+        return isLoaded;
     }
 
     // Public methods

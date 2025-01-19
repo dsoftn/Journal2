@@ -52,6 +52,8 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
 
     private Map<String, List<Relation>> dataByScopeAndID = new LinkedHashMap<>(); // <scope + id, List<Relation>>
 
+    private boolean isLoaded = false;
+
     // Constructor
 
     public Relations() {
@@ -680,6 +682,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             Platform.runLater(() -> { 
                 OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.RELATION, TaskStateEnum.COMPLETED));
             });
+            isLoaded = true;
         }
 
         return result;
@@ -783,6 +786,11 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         return true;
     }
 
+    @Override
+    public boolean isModelLoaded() {
+        return isLoaded;
+    }
+    
     // Public methods
 
     public List<Relation> getScopeAndIdList(ScopeEnum baseModel, Integer baseID, ScopeEnum relatedModel) {

@@ -40,6 +40,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
     // Variables
 
     private Map<Integer, Tag> data = new LinkedHashMap<>(); // <id, Tag>
+    private boolean isLoaded = false;
 
     // Constructor
 
@@ -195,6 +196,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
             Platform.runLater(() -> { 
                 OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.TAG, TaskStateEnum.COMPLETED));
             });
+            isLoaded = true;
         }
 
         return result;
@@ -262,6 +264,11 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
         return true;
     }
 
+    @Override
+    public boolean isModelLoaded() {
+        return isLoaded;
+    }
+    
     // Public methods
 
     public List<Tag> getTagsListFromIDs(List<Integer> tagIDs) {

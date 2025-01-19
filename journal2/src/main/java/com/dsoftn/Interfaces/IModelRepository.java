@@ -20,4 +20,6 @@ public interface IModelRepository<T> {
 
     public boolean delete(T entity);
 
+    public boolean isModelLoaded();
+
 }

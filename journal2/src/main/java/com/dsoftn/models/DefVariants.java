@@ -33,6 +33,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
 
     private Map<Integer, DefVariant> data = new LinkedHashMap<>(); // ID: variant
     private Map<Integer, List<DefVariant>> dataByDef = new LinkedHashMap<>(); // definitionID: list of variants
+    private boolean isLoaded = false;
 
     // Constructor
 
@@ -149,6 +150,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
             Platform.runLater(() -> { 
                 OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.DEF_VARIANT, TaskStateEnum.COMPLETED));
             });
+            isLoaded = true;
         }
 
         return result;
@@ -226,6 +228,11 @@ public class DefVariants implements IModelRepository<DefVariant> {
         data.remove(entity.getID());
         
         return true;
+    }
+
+    @Override
+    public boolean isModelLoaded() {
+        return isLoaded;
     }
 
     // Public methods

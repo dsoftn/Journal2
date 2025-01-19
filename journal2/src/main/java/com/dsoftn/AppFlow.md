@@ -129,6 +129,9 @@ MsgBoxButton selectedButton = msgBoxController.getSelectedButton();
 String result = msgBoxController.getResult();
 ```
 
+#### How to add new **Icon** to MsgBoxDialog
+- Just add new icon in `MsgBoxIcon` enum which is part of `MsgBoxController` class
+
 ## Main Window Dialog <sup>[⤴](#dialogs-⤴)</sup>
 ### Overview
 
@@ -148,7 +151,8 @@ All models contain 2 classes:
 3. Make **events** for `Model` if necessary
 4. Add **Events** to `Relations` class if necessary
 5. Add new model to `ScopeEnum` class
-6. Update `SplashScreenController` to `load()` model properly
+6. Add new model to `GuiMain.getErrorsInModelLoading` to properly check loading errors
+7. Update `SplashScreenController` to `load()` model properly
 
 #### How to update `SplashScreenController` class
 - In **SceneBuilder** open `SplashScreen.fxml` file and add *Label* for new model
