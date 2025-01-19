@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 
 import com.dsoftn.CONSTANTS;
@@ -15,8 +16,10 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IModelRepository;
 import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UNumbers;
 import com.dsoftn.events.AttachmentAddedEvent;
 import com.dsoftn.events.AttachmentUpdatedEvent;
 import com.dsoftn.events.AttachmentDeletedEvent;
@@ -28,6 +31,7 @@ import com.dsoftn.events.CategoryUpdatedEvent;
 import com.dsoftn.events.CategoryDeletedEvent;
 import com.dsoftn.events.TagAddedEvent;
 import com.dsoftn.events.TagUpdatedEvent;
+import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.events.TagDeletedEvent;
 
 
@@ -578,10 +582,28 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
 
     @Override
     public boolean load() {
+        // Send start event
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.RELATION,
+                    TaskStateEnum.STARTED
+                )
+            );
+        });
+
         boolean result = true;
 
         SQLiteDB db = new SQLiteDB();
-        if (db.isConnected() == false) return false;
+        if (db.isConnected() == false) { loadFailed(); return false; }
+
+        // Find number of rows
+        Integer rowCount = db.getRowCount("relations");
+        if (rowCount == null) {
+            UError.error("Relations.load: Failed to load relations", "Failed to get row count");
+            loadFailed();
+            return false;
+        }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -590,13 +612,17 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             stmt = db.preparedStatement("SELECT * FROM relations");
             if (stmt == null) {
                 UError.error("Relations.load: Failed to load relations", "Statement is unexpectedly null");
+                loadFailed();
                 return false;
             }
             rs = db.select(stmt);
             if (rs == null) {
                 UError.error("Relations.load: Failed to load relations", "Result set is unexpectedly null");
+                loadFailed();
                 return false;
             }
+
+            int currentRow = 1;
 
             while (rs.next()) {
                 Relation relation = new Relation();
@@ -609,10 +635,22 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 
                 // Add relation
                 add(relation);
+
+                // Send progress event
+                Integer progressPercent = UNumbers.getPercentIfHasNoRemainder(rowCount, currentRow);
+                if (progressPercent != null) {
+                    Platform.runLater(() -> {
+                        OBJECTS.EVENT_HANDLER.fireEvent(
+                            new TaskStateEvent(ScopeEnum.RELATION, TaskStateEnum.EXECUTING, progressPercent)
+                        );
+                    });
+                }
+                currentRow++;
             }
 
         } catch (Exception e) {
             UError.exception("Relations.load: Failed to load relations", e);
+            loadFailed();
             return false;
         
         } finally {
@@ -621,6 +659,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                     rs.close();
                 } catch (Exception e) {
                     UError.exception("Relations.load: Failed to close result set", e);
+                    loadFailed();
                 }
             }
             if (stmt != null) {
@@ -628,12 +667,33 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                     stmt.close();
                 } catch (Exception e) {
                     UError.exception("Relations.load: Failed to close statement", e);
+                    loadFailed();
                 }
             }
             db.disconnect();
         }
 
+        if (result == false) {
+            loadFailed();
+        }
+        else {
+            Platform.runLater(() -> { 
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.RELATION, TaskStateEnum.COMPLETED));
+            });
+        }
+
         return result;
+    }
+
+    private void loadFailed() {
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.RELATION,
+                    TaskStateEnum.FAILED
+                )
+            );
+        });
     }
 
     @Override

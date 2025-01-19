@@ -109,49 +109,10 @@ public class GuiMain extends Application {
         startMainWin(primaryStage);
     }
 
-    private boolean createGlobalDataModels() {
-        if (!OBJECTS.RELATIONS.load()) {
-            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.RELATIONS.load() failed");
-            return false;
-        }
-        if (!OBJECTS.DEFINITIONS_VARIANTS.load()) {
-            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.DEFINITIONS_VARIANTS.load() failed");
-            return false;
-        }
-        if (!OBJECTS.TAGS.load()) {
-            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.TAGS.load() failed");
-            return false;
-        }
-        if (!OBJECTS.CATEGORIES.load()) {
-            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.CATEGORIES.load() failed");
-            return false;
-        }
-        if (!OBJECTS.ATTACHMENTS.load()) {
-            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.ATTACHMENTS.load() failed");
-            return false;
-        }
-        if (!OBJECTS.BLOCKS.load()) {
-            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.BLOCKS.load() failed");
-            return false;
-        }
-        if (!OBJECTS.DEFINITIONS.load()) {
-            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.DEFINITIONS.load() failed");
-            return false;
-        }
-
-        return true;
-    }
-
     private void testTest() {
         System.out.println("Pocetak testa:");
         System.out.println("--------------");
 
-        System.out.println("UCITAVAM SVE OBJEKTE");
-        if (!createGlobalDataModels()) {
-            UError.error("GuiMain.testTest -> createGlobalDataModels() failed");
-            return;
-        }
-        System.out.println(" - - -");
 
         System.out.println("Dodajem novu definiciju:");
         // Definition addedDefinition = new Definition();

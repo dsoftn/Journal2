@@ -147,6 +147,42 @@ All models contain 2 classes:
 2. Add **Repository** class to `OBJECTS` class
 3. Make **events** for `Model` if necessary
 4. Add **Events** to `Relations` class if necessary
+5. Add new model to `ScopeEnum` class
+6. Update `SplashScreenController` to `load()` model properly
+
+#### How to update `SplashScreenController` class
+- In **SceneBuilder** open `SplashScreen.fxml` file and add *Label* for new model
+- Add new *Label* in `@FXML` *Widgets* section
+```java
+@FXML
+private Label my_new_label; // Add your label here !
+```
+- Update `setupWidgetText` method to add text in new *Label*
+- Set icon for new *Label* in `initialize()` method:
+```java
+// Set images for labels
+lblTaskBlocks.setGraphic(imgSelected.get(ScopeEnum.BLOCK.toString()));
+lblTaskDefinitions.setGraphic(imgSelected.get(ScopeEnum.DEFINITION.toString()));
+lblTaskAttachments.setGraphic(imgSelected.get(ScopeEnum.ATTACHMENT.toString()));
+lblTaskCategories.setGraphic(imgSelected.get(ScopeEnum.CATEGORY.toString()));
+lblTaskTags.setGraphic(imgSelected.get(ScopeEnum.TAG.toString()));
+lblTaskDefVariants.setGraphic(imgSelected.get(ScopeEnum.DEF_VARIANT.toString()));
+lblTaskRelations.setGraphic(imgSelected.get(ScopeEnum.RELATION.toString()));
+// Add your label here !
+```
+- In `onCustomEvent` method add case for new model
+```java
+case NEW_MODEL:
+    changeTaskWidget(newModelLabel, "text_NewModel", taskStateEvent);
+    break;
+```
+- In `createGlobalDataModels` method add new model
+```java
+if (!OBJECTS.NEW_MODEL.load()) {
+    UError.error("GuiMain.createGlobalDataModels -> OBJECTS.NEW_MODEL.load() failed");
+    return false;
+}
+```
 
 ## Users-User Model <sup>[⤴](#models-⤴)</sup>
 ### Overview

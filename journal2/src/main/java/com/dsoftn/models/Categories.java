@@ -8,17 +8,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 
 import com.dsoftn.Interfaces.IModelRepository;
 import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UNumbers;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
+import com.dsoftn.events.TaskStateEvent;
 
 
 /*
@@ -92,10 +96,28 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
 
     @Override
     public boolean load() {
+        // Send start event
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.CATEGORY,
+                    TaskStateEnum.STARTED
+                )
+            );
+        });
+
         boolean result = true;
 
         SQLiteDB db = new SQLiteDB();
-        if (db.isConnected() == false) return false;
+        if (db.isConnected() == false) { loadFailed(); return false; }
+
+        // Find number of rows
+        Integer rowCount = db.getRowCount("categories");
+        if (rowCount == null) {
+            UError.error("Categories.load: Failed to load categories", "Failed to get row count");
+            loadFailed();
+            return false;
+        }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -104,13 +126,17 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
             stmt = db.preparedStatement("SELECT * FROM categories");
             if (stmt == null) {
                 UError.error("Categories.load: Failed to load categories", "Statement is unexpectedly null");
+                loadFailed();
                 return false;
             }
             rs = db.select(stmt);
             if (rs == null) {
                 UError.error("Categories.load: Failed to load categories", "Result set is unexpectedly null");
+                loadFailed();
                 return false;
             }
+            
+            int currentRow = 1;
 
             while (rs.next()) {
                 Category category = new Category();
@@ -123,10 +149,22 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
                 
                 // Add tag
                 add(category);
+
+                // Send progress event
+                Integer progressPercent = UNumbers.getPercentIfHasNoRemainder(rowCount, currentRow);
+                if (progressPercent != null) {
+                    Platform.runLater(() -> {
+                        OBJECTS.EVENT_HANDLER.fireEvent(
+                            new TaskStateEvent(ScopeEnum.CATEGORY, TaskStateEnum.EXECUTING, progressPercent)
+                        );
+                    });
+                }
+                currentRow++;
             }
 
         } catch (Exception e) {
             UError.exception("Categories.load: Failed to load categories", e);
+            loadFailed();
             return false;
         
         } finally {
@@ -135,6 +173,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
                     rs.close();
                 } catch (Exception e) {
                     UError.exception("Categories.load: Failed to close result set", e);
+                    loadFailed();
                 }
             }
             if (stmt != null) {
@@ -142,12 +181,33 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
                     stmt.close();
                 } catch (Exception e) {
                     UError.exception("Categories.load: Failed to close statement", e);
+                    loadFailed();
                 }
             }
             db.disconnect();
         }
 
+        if (result == false) {
+            loadFailed();
+        }
+        else {
+            Platform.runLater(() -> { 
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.CATEGORY, TaskStateEnum.COMPLETED));
+            });
+        }
+
         return result;
+    }
+
+    private void loadFailed() {
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.CATEGORY,
+                    TaskStateEnum.FAILED
+                )
+            );
+        });
     }
 
     @Override

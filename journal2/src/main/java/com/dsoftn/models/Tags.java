@@ -10,16 +10,20 @@ import java.util.Map;
 
 import com.dsoftn.Interfaces.IModelRepository;
 import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UNumbers;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
+import com.dsoftn.events.TaskStateEvent;
 
 
 /*
@@ -93,10 +97,28 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
 
     @Override
     public boolean load() {
+        // Send start event
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.TAG,
+                    TaskStateEnum.STARTED
+                )
+            );
+        });
+
         boolean result = true;
 
         SQLiteDB db = new SQLiteDB();
-        if (db.isConnected() == false) return false;
+        if (db.isConnected() == false) { loadFailed(); return false; }
+
+        // Find number of rows
+        Integer rowCount = db.getRowCount("tags");
+        if (rowCount == null) {
+            UError.error("Tags.load: Failed to load tags", "Failed to get row count");
+            loadFailed();
+            return false;
+        }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -105,13 +127,17 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
             stmt = db.preparedStatement("SELECT * FROM tags");
             if (stmt == null) {
                 UError.error("Tags.load: Failed to load tags", "Statement is unexpectedly null");
+                loadFailed();
                 return false;
             }
             rs = db.select(stmt);
             if (rs == null) {
                 UError.error("Tags.load: Failed to load tags", "Result set is unexpectedly null");
+                loadFailed();
                 return false;
             }
+
+            int currentRow = 1;
 
             while (rs.next()) {
                 Tag tag = new Tag();
@@ -124,10 +150,22 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
                 
                 // Add tag
                 add(tag);
+            
+                // Send progress event
+                Integer progressPercent = UNumbers.getPercentIfHasNoRemainder(rowCount, currentRow);
+                if (progressPercent != null) {
+                    Platform.runLater(() -> {
+                        OBJECTS.EVENT_HANDLER.fireEvent(
+                            new TaskStateEvent(ScopeEnum.TAG, TaskStateEnum.EXECUTING, progressPercent)
+                        );
+                    });
+                }
+                currentRow++;
             }
 
         } catch (Exception e) {
             UError.exception("Tags.load: Failed to load tags", e);
+            loadFailed();
             return false;
         
         } finally {
@@ -136,6 +174,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
                     rs.close();
                 } catch (Exception e) {
                     UError.exception("Tags.load: Failed to close result set", e);
+                    loadFailed();
                 }
             }
             if (stmt != null) {
@@ -143,12 +182,33 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
                     stmt.close();
                 } catch (Exception e) {
                     UError.exception("Tags.load: Failed to close statement", e);
+                    loadFailed();
                 }
             }
             db.disconnect();
         }
 
+        if (result == false) {
+            loadFailed();
+        }
+        else {
+            Platform.runLater(() -> { 
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.TAG, TaskStateEnum.COMPLETED));
+            });
+        }
+
         return result;
+    }
+
+    private void loadFailed() {
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.TAG,
+                    TaskStateEnum.FAILED
+                )
+            );
+        });
     }
 
     @Override

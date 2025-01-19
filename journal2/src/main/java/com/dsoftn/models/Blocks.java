@@ -16,6 +16,7 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 
 import com.dsoftn.events.RelationAddedEvent;
@@ -101,12 +102,14 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
     @Override
     public boolean load() {
         // Send start event
-        OBJECTS.EVENT_HANDLER.fireEvent(
-            new TaskStateEvent(
-                ScopeEnum.BLOCK,
-                TaskStateEnum.STARTED
-            )
-        );
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.BLOCK,
+                    TaskStateEnum.STARTED
+                )
+            );
+        });
 
         boolean result = true;
 
@@ -155,18 +158,12 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                 // Send progress event
                 Integer progressPercent = UNumbers.getPercentIfHasNoRemainder(rowCount, currentRow);
                 if (progressPercent != null) {
-                    OBJECTS.EVENT_HANDLER.fireEvent(
-                        new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.EXECUTING, progressPercent)
-                    );
+                    Platform.runLater(() -> {
+                        OBJECTS.EVENT_HANDLER.fireEvent(
+                            new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.EXECUTING, progressPercent)
+                        );
+                    });
                 }
-                // Pause for 2 second
-                try {
-                    System.out.println("Blocks.load: Pausing for 2 seconds. Current row: " + currentRow);
-                    Thread.sleep(2000);
-                } catch (Exception e) {
-                    UError.exception("Blocks.load: Failed to sleep", e);
-                }
-
                 currentRow++;
             }
 
@@ -199,24 +196,23 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
             loadFailed();
         }
         else {
-            OBJECTS.EVENT_HANDLER.fireEvent(
-                new TaskStateEvent(
-                    ScopeEnum.BLOCK,
-                    TaskStateEnum.COMPLETED
-                )
-            );
+            Platform.runLater(() -> { 
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.COMPLETED));
+            });
         }
 
         return result;
     }
 
     private void loadFailed() {
-        OBJECTS.EVENT_HANDLER.fireEvent(
-            new TaskStateEvent(
-                ScopeEnum.BLOCK,
-                TaskStateEnum.FAILED
-            )
-        );
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.BLOCK,
+                    TaskStateEnum.FAILED
+                )
+            );
+        });
     }
 
     @Override

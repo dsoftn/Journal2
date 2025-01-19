@@ -8,17 +8,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 
 import com.dsoftn.Interfaces.IModelRepository;
 import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UNumbers;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
+import com.dsoftn.events.TaskStateEvent;
 
 
 /*
@@ -100,11 +104,29 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
 
     @Override
     public boolean load() {
+        // Send start event
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.ATTACHMENT,
+                    TaskStateEnum.STARTED
+                )
+            );
+        });
+
         boolean result = true;
 
         SQLiteDB db = new SQLiteDB();
-        if (db.isConnected() == false) return false;
+        if (db.isConnected() == false) { loadFailed(); return false; }
 
+        // Find number of rows
+        Integer rowCount = db.getRowCount("attachments");
+        if (rowCount == null) {
+            UError.error("Attachments.load: Failed to load attachments", "Failed to get row count");
+            loadFailed();
+            return false;
+        }
+        
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
@@ -112,13 +134,17 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
             stmt = db.preparedStatement("SELECT * FROM attachments");
             if (stmt == null) {
                 UError.error("Attachments.load: Failed to load attachments", "Statement is unexpectedly null");
+                loadFailed();
                 return false;
             }
             rs = db.select(stmt);
             if (rs == null) {
                 UError.error("Attachments.load: Failed to load attachments", "Result set is unexpectedly null");
+                loadFailed();
                 return false;
             }
+
+            int currentRow = 1;
 
             while (rs.next()) {
                 Attachment attachment = new Attachment();
@@ -131,10 +157,22 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
                 
                 // Add attachment
                 add(attachment);
+
+                // Send progress event
+                Integer progressPercent = UNumbers.getPercentIfHasNoRemainder(rowCount, currentRow);
+                if (progressPercent != null) {
+                    Platform.runLater(() -> {
+                        OBJECTS.EVENT_HANDLER.fireEvent(
+                            new TaskStateEvent(ScopeEnum.ATTACHMENT, TaskStateEnum.EXECUTING, progressPercent)
+                        );
+                    });
+                }
+                currentRow++;
             }
 
         } catch (Exception e) {
             UError.exception("Attachments.load: Failed to load attachments", e);
+            loadFailed();
             return false;
         
         } finally {
@@ -143,6 +181,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
                     rs.close();
                 } catch (Exception e) {
                     UError.exception("Attachments.load: Failed to close result set", e);
+                    loadFailed();
                 }
             }
             if (stmt != null) {
@@ -150,12 +189,33 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
                     stmt.close();
                 } catch (Exception e) {
                     UError.exception("Attachments.load: Failed to close statement", e);
+                    loadFailed();
                 }
             }
             db.disconnect();
         }
 
+        if (result == false) {
+            loadFailed();
+        }
+        else {
+            Platform.runLater(() -> { 
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.ATTACHMENT, TaskStateEnum.COMPLETED));
+            });
+        }
+
         return result;
+    }
+
+    private void loadFailed() {
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.ATTACHMENT,
+                    TaskStateEnum.FAILED
+                )
+            );
+        });
     }
 
     @Override

@@ -10,6 +10,9 @@ import javafx.event.Event;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
@@ -24,8 +27,10 @@ public class SplashScreenController implements IBaseController, ICustomEventList
     // Variables
     private Stage stage;
     private Image imageSelected = new Image(getClass().getResourceAsStream("/images/item_selected.png"));
+    private Map<String, ImageView> imgSelected = new HashMap<>();
     private ImageView imgWorking = new ImageView(new Image(getClass().getResourceAsStream("/images/item_selected2.png")));
-    private ImageView imgDone = new ImageView(new Image(getClass().getResourceAsStream("/images/ok.png")));
+    private Image imageDone = new Image(getClass().getResourceAsStream("/images/ok.png"));
+    private Map<String, ImageView> imgDone = new HashMap<>();
     private ImageView imgError = new ImageView(new Image(getClass().getResourceAsStream("/images/error.png")));
 
     // FXML Widgets
@@ -61,10 +66,19 @@ public class SplashScreenController implements IBaseController, ICustomEventList
     public void initialize () {
         imgWorking.setFitHeight(20);
         imgWorking.setPreserveRatio(true);
-        imgDone.setFitHeight(20);
-        imgDone.setPreserveRatio(true);
         imgError.setFitHeight(20);
         imgError.setPreserveRatio(true);
+
+        // Add to imgDone map ImageView for all ScopeEnum values
+        for (ScopeEnum scope : ScopeEnum.values()) {
+            imgDone.put(scope.toString(), new ImageView(imageDone));
+            imgDone.get(scope.toString()).setFitHeight(20);
+            imgDone.get(scope.toString()).setPreserveRatio(true);
+
+            imgSelected.put(scope.toString(), new ImageView(imageSelected));
+            imgSelected.get(scope.toString()).setFitHeight(20);
+            imgSelected.get(scope.toString()).setPreserveRatio(true);
+        }
 
         // Set image to user
         if (OBJECTS.ACTIVE_USER.getAvatarPath().isEmpty()) {
@@ -78,41 +92,13 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         imgLoading.setImage(new Image(getClass().getResourceAsStream("/gifs/loading.gif")));
 
         // Set images for labels
-        ImageView imageSelected1 = new ImageView(imageSelected);
-        imageSelected1.setFitHeight(20);
-        imageSelected1.setPreserveRatio(true);
-        lblTaskBlocks.setGraphic(imageSelected1);
-
-        ImageView imageSelected2 = new ImageView(imageSelected);
-        imageSelected2.setFitHeight(20);
-        imageSelected2.setPreserveRatio(true);
-        lblTaskDefinitions.setGraphic(imageSelected2);
-
-        ImageView imageSelected3 = new ImageView(imageSelected);
-        imageSelected3.setFitHeight(20);
-        imageSelected3.setPreserveRatio(true);
-        lblTaskAttachments.setGraphic(imageSelected3);
-
-        ImageView imageSelected4 = new ImageView(imageSelected);
-        imageSelected4.setFitHeight(20);
-        imageSelected4.setPreserveRatio(true);
-        lblTaskCategories.setGraphic(imageSelected4);
-
-        ImageView imageSelected5 = new ImageView(imageSelected);
-        imageSelected5.setFitHeight(20);
-        imageSelected5.setPreserveRatio(true);
-        lblTaskTags.setGraphic(imageSelected5);
-
-        ImageView imageSelected6 = new ImageView(imageSelected);
-        imageSelected6.setFitHeight(20);
-        imageSelected6.setPreserveRatio(true);
-        lblTaskDefVariants.setGraphic(imageSelected6);
-
-        ImageView imageSelected7 = new ImageView(imageSelected);
-        imageSelected7.setFitHeight(20);
-        imageSelected7.setPreserveRatio(true);
-        lblTaskRelations.setGraphic(imageSelected7);
-
+        lblTaskBlocks.setGraphic(imgSelected.get(ScopeEnum.BLOCK.toString()));
+        lblTaskDefinitions.setGraphic(imgSelected.get(ScopeEnum.DEFINITION.toString()));
+        lblTaskAttachments.setGraphic(imgSelected.get(ScopeEnum.ATTACHMENT.toString()));
+        lblTaskCategories.setGraphic(imgSelected.get(ScopeEnum.CATEGORY.toString()));
+        lblTaskTags.setGraphic(imgSelected.get(ScopeEnum.TAG.toString()));
+        lblTaskDefVariants.setGraphic(imgSelected.get(ScopeEnum.DEF_VARIANT.toString()));
+        lblTaskRelations.setGraphic(imgSelected.get(ScopeEnum.RELATION.toString()));
     }
 
     // Interface ICustomEventListener methods
@@ -170,7 +156,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
                 label.setGraphic(imgWorking);
             }
             else if (taskStateEvent.getState() == TaskStateEnum.COMPLETED) {
-                label.setGraphic(imgDone);
+                label.setGraphic(imgDone.get(taskStateEvent.getModel().toString()));
                 label.setText(OBJECTS.SETTINGS.getl(textSettingsKey));
             }
             else if (taskStateEvent.getState() == TaskStateEnum.FAILED) {

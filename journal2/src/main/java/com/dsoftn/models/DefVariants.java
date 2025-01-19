@@ -9,10 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javafx.application.Platform;
+
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IModelRepository;
+import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.TaskStateEnum;
+import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UNumbers;
 import com.dsoftn.utils.UString;
 
 /*
@@ -36,10 +42,28 @@ public class DefVariants implements IModelRepository<DefVariant> {
 
     @Override
     public boolean load() {
+        // Send start event
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.DEF_VARIANT,
+                    TaskStateEnum.STARTED
+                )
+            );
+        });
+
         boolean result = true;
 
         SQLiteDB db = new SQLiteDB();
-        if (db.isConnected() == false) return false;
+        if (db.isConnected() == false) { loadFailed(); return false; }
+
+        // Find number of rows
+        Integer rowCount = db.getRowCount("definitions_variants");
+        if (rowCount == null) {
+            UError.error("DefVariants.load: Failed to load DefVariants", "Failed to get row count");
+            loadFailed();
+            return false;
+        }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -48,13 +72,17 @@ public class DefVariants implements IModelRepository<DefVariant> {
             stmt = db.preparedStatement("SELECT * FROM definitions_variants");
             if (stmt == null) {
                 UError.error("DefVariants.load: Failed to load DefVariants", "Statement is unexpectedly null");
+                loadFailed();
                 return false;
             }
             rs = db.select(stmt);
             if (rs == null) {
                 UError.error("DefVariants.load: Failed to load DefVariants", "Result set is unexpectedly null");
+                loadFailed();
                 return false;
             }
+
+            int currentRow = 1;
 
             while (rs.next()) {
                 DefVariant def_variant = new DefVariant();
@@ -67,10 +95,22 @@ public class DefVariants implements IModelRepository<DefVariant> {
                 
                 // Add DefVariant
                 add(def_variant);
+
+                // Send progress event
+                Integer progressPercent = UNumbers.getPercentIfHasNoRemainder(rowCount, currentRow);
+                if (progressPercent != null) {
+                    Platform.runLater(() -> {
+                        OBJECTS.EVENT_HANDLER.fireEvent(
+                            new TaskStateEvent(ScopeEnum.DEF_VARIANT, TaskStateEnum.EXECUTING, progressPercent)
+                        );
+                    });
+                }
+                currentRow++;
             }
 
         } catch (Exception e) {
             UError.exception("DefVariants.load: Failed to load DefVariants", e);
+            loadFailed();
             return false;
         
         } finally {
@@ -79,6 +119,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
                     rs.close();
                 } catch (Exception e) {
                     UError.exception("DefVariants.load: Failed to close result set", e);
+                    loadFailed();
                 }
             }
             if (stmt != null) {
@@ -86,6 +127,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
                     stmt.close();
                 } catch (Exception e) {
                     UError.exception("DefVariants.load: Failed to close statement", e);
+                    loadFailed();
                 }
             }
             db.disconnect();
@@ -100,7 +142,27 @@ public class DefVariants implements IModelRepository<DefVariant> {
             dataByDef.get(definition_variant.getDefinitionID()).add(definition_variant);
         }
 
+        if (result == false) {
+            loadFailed();
+        }
+        else {
+            Platform.runLater(() -> { 
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.DEF_VARIANT, TaskStateEnum.COMPLETED));
+            });
+        }
+
         return result;
+    }
+
+    private void loadFailed() {
+        Platform.runLater(() -> {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.DEF_VARIANT,
+                    TaskStateEnum.FAILED
+                )
+            );
+        });
     }
 
     @Override
