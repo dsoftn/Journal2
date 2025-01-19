@@ -1,0 +1,740 @@
+[11.01.2025. 13:28:11] *****     NEW LOG STARTED     *****
+[11.01.2025. 13:28:11] Starting application...
+[11.01.2025. 13:28:11] .   -> AppState loaded
+[11.01.2025. 13:28:13] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:28:13] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:28:13] .   -> Settings widgets appearance updated
+[11.01.2025. 13:28:13] .   -> Settings widgets appearance updated
+[11.01.2025. 13:28:13] .   -> Settings widgets appearance updated
+[11.01.2025. 13:28:13] .   -> Settings widgets appearance updated
+[11.01.2025. 13:28:13] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:28:13] .   -> Settings widgets appearance updated
+[11.01.2025. 13:28:13] .   -> Settings visible list changed to: Loaded
+[11.01.2025. 13:28:13] .   -> Settings widgets appearance updated
+[11.01.2025. 13:28:13] .   -> Current Language item changed to: text_FindFile
+[11.01.2025. 13:28:13] .   -> Current Language item changed to: text_FindFile
+[11.01.2025. 13:28:13] .   -> Language widgets appearance updated
+[11.01.2025. 13:28:13] .   -> Language widgets appearance updated
+[11.01.2025. 13:28:14] .   -> Language widgets appearance updated
+[11.01.2025. 13:28:14] .   -> Language widgets appearance updated
+[11.01.2025. 13:28:14] .   -> Current Language item changed to: text_FindFile
+[11.01.2025. 13:28:14] .   -> Language widgets appearance updated
+[11.01.2025. 13:28:14] .   -> Language visible list changed to: Loaded
+[11.01.2025. 13:28:14] .   -> Language widgets appearance updated
+[11.01.2025. 13:28:14] .   -> .   -> Restoring current Language item.
+[11.01.2025. 13:28:14] .   -> Language Manager: Language file unloaded.
+[11.01.2025. 13:28:14] .   -> Settings file is valid: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[11.01.2025. 13:28:14] .   -> Settings file is valid: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[11.01.2025. 13:28:14] .   -> Active section changed to Settings
+[11.01.2025. 13:28:14] .   -> AppState restored
+[11.01.2025. 13:28:14] Application started
+[11.01.2025. 13:29:45] Update Settings item started...
+[11.01.2025. 13:29:45] .   -> Validating Settings item...
+[11.01.2025. 13:29:45] .   -> Checking if Settings item is valid...
+[11.01.2025. 13:29:45] .   -> .   -> 0 problems found.
+[11.01.2025. 13:29:45] .   -> Settings item is valid.
+[11.01.2025. 13:29:45] .   -> Created updated Settings item:
+[11.01.2025. 13:29:45] .   -> .   -> Key: DatabaseTables
+[11.01.2025. 13:29:45] .   -> .   -> SettingType: 8
+[11.01.2025. 13:29:45] .   -> .   -> DataType: STRING
+[11.01.2025. 13:29:45] .   -> .   -> Value: CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, scope INTEGER NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, downloaded INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL); CREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY AUTOINCREMENT, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL);
+[11.01.2025. 13:29:45] .   -> .   -> DefaultValue: CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, scope INTEGER NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, downloaded INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL); CREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY AUTOINCREMENT, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL);
+[11.01.2025. 13:29:45] .   -> .   -> Min: Null
+[11.01.2025. 13:29:45] .   -> .   -> Max: Null
+[11.01.2025. 13:29:45] .   -> .   -> Description: SQL commands to create table structure in database.
+[11.01.2025. 13:29:45] .   -> .   -> CanBeSavedInFile: true
+[11.01.2025. 13:29:45] .   -> .   -> UserData: Changed
+[11.01.2025. 13:29:45] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:29:45] .   -> Settings widgets appearance updated
+[11.01.2025. 13:29:45] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:29:45] .   -> Settings widgets appearance updated
+[11.01.2025. 13:29:45] .   -> Settings visible list changed to: Loaded
+[11.01.2025. 13:29:45] .   -> Settings widgets appearance updated
+[11.01.2025. 13:29:45] .   -> Saving current Language item in changing process: text_FindFile
+[11.01.2025. 13:29:45] .   -> AppState created
+[11.01.2025. 13:29:45] .   -> AppState saved to 'config.json'
+[11.01.2025. 13:29:45] .   -> Showing message: (ID): Update Settings item, (Text): Settings item is updated, (Description): Settings item updated: DatabaseTables
+[11.01.2025. 13:29:45] .   -> Updated Settings item in list of changed items: DatabaseTables
+[11.01.2025. 13:29:45] .   -> Updating Settings item completed successfully.
+[11.01.2025. 13:29:55] Starting save dialog...
+[11.01.2025. 13:29:55] Saving current Language item in changing process: text_FindFile
+[11.01.2025. 13:29:55] AppState created
+[11.01.2025. 13:29:56] .   -> App state received
+[11.01.2025. 13:29:56] .   -> Save type changed to: LANGUAGE
+[11.01.2025. 13:29:56] .   -> Starting populate widgets
+[11.01.2025. 13:29:56] .   -> .   -> Populating section SETTINGS
+[11.01.2025. 13:29:56] .   -> .   -> .   -> Affected items: 1
+[11.01.2025. 13:29:56] .   -> .   -> .   -> Deleted items: 0
+[11.01.2025. 13:29:56] .   -> .   -> .   -> Changed items: 1
+[11.01.2025. 13:29:56] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[11.01.2025. 13:29:56] .   -> .   -> Populating section LANGUAGE
+[11.01.2025. 13:29:56] .   -> .   -> .   -> Affected items: 0
+[11.01.2025. 13:29:56] .   -> .   -> .   -> Deleted items: 0
+[11.01.2025. 13:29:56] .   -> .   -> .   -> Changed items: 0
+[11.01.2025. 13:29:56] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[11.01.2025. 13:29:56] .   -> Finished populating widgets
+[11.01.2025. 13:30:00] Save dialog closed
+[11.01.2025. 13:30:00] Language Manager: Language file unloaded.
+[11.01.2025. 13:30:00] .   -> Manage Language content updated
+[11.01.2025. 13:30:01] Starting save dialog...
+[11.01.2025. 13:30:02] Saving current Language item in changing process: text_FindFile
+[11.01.2025. 13:30:02] AppState created
+[11.01.2025. 13:30:02] .   -> App state received
+[11.01.2025. 13:30:02] .   -> Save type changed to: SETTINGS
+[11.01.2025. 13:30:02] .   -> Starting populate widgets
+[11.01.2025. 13:30:02] .   -> .   -> Populating section SETTINGS
+[11.01.2025. 13:30:02] .   -> .   -> .   -> Affected items: 1
+[11.01.2025. 13:30:02] .   -> .   -> .   -> Deleted items: 0
+[11.01.2025. 13:30:02] .   -> .   -> .   -> Changed items: 1
+[11.01.2025. 13:30:02] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[11.01.2025. 13:30:02] .   -> .   -> Populating section LANGUAGE
+[11.01.2025. 13:30:02] .   -> .   -> .   -> Affected items: 0
+[11.01.2025. 13:30:02] .   -> .   -> .   -> Deleted items: 0
+[11.01.2025. 13:30:02] .   -> .   -> .   -> Changed items: 0
+[11.01.2025. 13:30:02] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[11.01.2025. 13:30:02] .   -> Finished populating widgets
+[11.01.2025. 13:30:03] .   -> Save type changed to: WORKING
+[11.01.2025. 13:30:03] .   -> Starting data save...
+[11.01.2025. 13:30:03] .   -> .   -> File added to RollBack: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[11.01.2025. 13:30:03] .   -> .   -> File added to RollBack: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[11.01.2025. 13:30:03] .   -> .   -> Saving settings...
+[11.01.2025. 13:30:03] .   -> .   -> .   -> Loaded file: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[11.01.2025. 13:30:03] .   -> .   -> .   -> .   -> Changing item: DatabaseTables
+[11.01.2025. 13:30:03] .   -> .   -> .   -> .   -> .   -> Item: DatabaseTables changed
+[11.01.2025. 13:30:03] .   -> .   -> .   -> Saved file: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[11.01.2025. 13:30:03] .   -> .   -> Finished saving settings
+[11.01.2025. 13:30:03] .   -> Finished saving data, completed without errors
+[11.01.2025. 13:30:03] .   -> Save type changed to: COMPLETED
+[11.01.2025. 13:30:03] Settings has been saved, updating list of changed items...
+[11.01.2025. 13:30:03] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:30:03] .   -> Settings widgets appearance updated
+[11.01.2025. 13:30:03] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:30:03] .   -> Settings widgets appearance updated
+[11.01.2025. 13:30:03] .   -> Settings visible list changed to: Loaded
+[11.01.2025. 13:30:03] .   -> Settings widgets appearance updated
+[11.01.2025. 13:30:03] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:30:03] .   -> Settings widgets appearance updated
+[11.01.2025. 13:30:03] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:30:03] .   -> Settings widgets appearance updated
+[11.01.2025. 13:30:03] .   -> List of loaded settings item is refreshed
+[11.01.2025. 13:30:03] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:30:03] .   -> Settings widgets appearance updated
+[11.01.2025. 13:30:03] .   -> Current Settings item changed to: DatabaseTables
+[11.01.2025. 13:30:03] .   -> Settings widgets appearance updated
+[11.01.2025. 13:30:03] .   -> Settings visible list changed to: Loaded
+[11.01.2025. 13:30:03] .   -> Settings widgets appearance updated
+[11.01.2025. 13:30:03] .   -> Saving current Language item in changing process: text_FindFile
+[11.01.2025. 13:30:03] .   -> AppState created
+[11.01.2025. 13:30:03] .   -> AppState saved to 'config.json'
+[11.01.2025. 13:30:03] List of changed items has been updated.
+[11.01.2025. 13:30:03] Showing message: (ID): DataSaved, (Text): Settings saved, (Description): Settings have been saved
+[11.01.2025. 13:30:03] Message inactive: (ID): Update Settings item (Text): Settings item is updated
+[11.01.2025. 13:30:04] Save dialog closed
+[11.01.2025. 13:30:04] .   -> Dialog closed. OK pressed
+[11.01.2025. 13:30:04] .   -> 'temp' directory removed
+[11.01.2025. 14:24:35] Application is closing...
+[11.01.2025. 14:24:35] .   -> Saving current Language item in changing process: text_FindFile
+[11.01.2025. 14:24:35] .   -> AppState created
+[11.01.2025. 14:24:35] .   -> AppState saved to 'config.json'
+[11.01.2025. 14:24:35] Application closed.
+[17.01.2025. 15:22:13] Active section changed to Settings
+
+[17.01.2025. 15:22:13] *****     NEW LOG STARTED     *****
+[17.01.2025. 15:22:13] Starting application...
+[17.01.2025. 15:22:14] .   -> AppState loaded
+[17.01.2025. 15:22:14] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:15] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:15] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:15] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Settings visible list changed to: Loaded
+[17.01.2025. 15:22:15] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Current Language item changed to: text_FindFile
+[17.01.2025. 15:22:15] .   -> Current Language item changed to: text_FindFile
+[17.01.2025. 15:22:15] .   -> Language widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Language widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Language widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Language widgets appearance updated
+[17.01.2025. 15:22:15] .   -> Current Language item changed to: text_FindFile
+[17.01.2025. 15:22:16] .   -> Language widgets appearance updated
+[17.01.2025. 15:22:16] .   -> Language visible list changed to: Loaded
+[17.01.2025. 15:22:16] .   -> Language widgets appearance updated
+[17.01.2025. 15:22:16] .   -> .   -> Restoring current Language item.
+[17.01.2025. 15:22:16] .   -> Language Manager: Language file unloaded.
+[17.01.2025. 15:22:16] .   -> Settings file is valid: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:22:16] .   -> Settings file is valid: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:22:16] .   -> Active section changed to Settings
+[17.01.2025. 15:22:16] .   -> AppState restored
+[17.01.2025. 15:22:16] Application started
+[17.01.2025. 15:22:37] Update Settings item started...
+[17.01.2025. 15:22:37] .   -> Validating Settings item...
+[17.01.2025. 15:22:37] .   -> Checking if Settings item is valid...
+[17.01.2025. 15:22:37] .   -> .   -> 0 problems found.
+[17.01.2025. 15:22:37] .   -> Settings item is valid.
+[17.01.2025. 15:22:37] .   -> Created updated Settings item:
+[17.01.2025. 15:22:37] .   -> .   -> Key: DatabaseTables
+[17.01.2025. 15:22:37] .   -> .   -> SettingType: 8
+[17.01.2025. 15:22:37] .   -> .   -> DataType: STRING
+[17.01.2025. 15:22:37] .   -> .   -> Value: CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, scope INTEGER NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, downloaded INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL); CREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS definitions_variants (id INTEGER PRIMARY KEY, text TEXT NOT NULL, definition_id INTEGER NOT NULL, match_case INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS definitions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);
+[17.01.2025. 15:22:37] .   -> .   -> DefaultValue: CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, scope INTEGER NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, downloaded INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL); CREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL); CREATE TABLE IF NOT EXISTS definitions_variants (id INTEGER PRIMARY KEY, text TEXT NOT NULL, definition_id INTEGER NOT NULL, match_case INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS definitions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);
+[17.01.2025. 15:22:37] .   -> .   -> Min: Null
+[17.01.2025. 15:22:37] .   -> .   -> Max: Null
+[17.01.2025. 15:22:37] .   -> .   -> Description: SQL commands to create table structure in database.
+[17.01.2025. 15:22:37] .   -> .   -> CanBeSavedInFile: true
+[17.01.2025. 15:22:37] .   -> .   -> UserData: Changed
+[17.01.2025. 15:22:37] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:37] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:37] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:37] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:37] .   -> Settings visible list changed to: Loaded
+[17.01.2025. 15:22:37] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:37] .   -> Saving current Language item in changing process: text_FindFile
+[17.01.2025. 15:22:37] .   -> AppState created
+[17.01.2025. 15:22:37] .   -> AppState saved to 'config.json'
+[17.01.2025. 15:22:37] .   -> Showing message: (ID): Update Settings item, (Text): Settings item is updated, (Description): Settings item updated: DatabaseTables
+[17.01.2025. 15:22:37] .   -> Updated Settings item in list of changed items: DatabaseTables
+[17.01.2025. 15:22:37] .   -> Updating Settings item completed successfully.
+[17.01.2025. 15:22:40] Starting save dialog...
+[17.01.2025. 15:22:40] Saving current Language item in changing process: text_FindFile
+[17.01.2025. 15:22:40] AppState created
+[17.01.2025. 15:22:40] .   -> App state received
+[17.01.2025. 15:22:40] .   -> Save type changed to: SETTINGS
+[17.01.2025. 15:22:40] .   -> Starting populate widgets
+[17.01.2025. 15:22:40] .   -> .   -> Populating section SETTINGS
+[17.01.2025. 15:22:40] .   -> .   -> .   -> Affected items: 1
+[17.01.2025. 15:22:40] .   -> .   -> .   -> Deleted items: 0
+[17.01.2025. 15:22:40] .   -> .   -> .   -> Changed items: 1
+[17.01.2025. 15:22:40] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:22:40] .   -> .   -> Populating section LANGUAGE
+[17.01.2025. 15:22:40] .   -> .   -> .   -> Affected items: 0
+[17.01.2025. 15:22:40] .   -> .   -> .   -> Deleted items: 0
+[17.01.2025. 15:22:40] .   -> .   -> .   -> Changed items: 0
+[17.01.2025. 15:22:40] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[17.01.2025. 15:22:40] .   -> Finished populating widgets
+[17.01.2025. 15:22:41] .   -> Save type changed to: WORKING
+[17.01.2025. 15:22:41] .   -> Starting data save...
+[17.01.2025. 15:22:41] .   -> .   -> File added to RollBack: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:22:41] .   -> .   -> File added to RollBack: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[17.01.2025. 15:22:41] .   -> .   -> Saving settings...
+[17.01.2025. 15:22:41] .   -> .   -> .   -> Loaded file: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:22:41] .   -> .   -> .   -> .   -> Changing item: DatabaseTables
+[17.01.2025. 15:22:41] .   -> .   -> .   -> .   -> .   -> Item: DatabaseTables changed
+[17.01.2025. 15:22:41] .   -> .   -> .   -> Saved file: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:22:41] .   -> .   -> Finished saving settings
+[17.01.2025. 15:22:41] .   -> Finished saving data, completed without errors
+[17.01.2025. 15:22:41] .   -> Save type changed to: COMPLETED
+[17.01.2025. 15:22:41] Settings has been saved, updating list of changed items...
+[17.01.2025. 15:22:41] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:41] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:41] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:41] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:41] .   -> Settings visible list changed to: Loaded
+[17.01.2025. 15:22:41] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:41] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:41] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:41] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:41] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:41] .   -> List of loaded settings item is refreshed
+[17.01.2025. 15:22:41] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:42] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:22:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:42] .   -> Settings visible list changed to: Loaded
+[17.01.2025. 15:22:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:22:42] .   -> Saving current Language item in changing process: text_FindFile
+[17.01.2025. 15:22:42] .   -> AppState created
+[17.01.2025. 15:22:42] .   -> AppState saved to 'config.json'
+[17.01.2025. 15:22:42] List of changed items has been updated.
+[17.01.2025. 15:22:42] Showing message: (ID): DataSaved, (Text): Settings saved, (Description): Settings have been saved
+[17.01.2025. 15:22:43] Save dialog closed
+[17.01.2025. 15:22:43] .   -> Dialog closed. OK pressed
+[17.01.2025. 15:22:43] .   -> 'temp' directory removed
+[17.01.2025. 15:32:11] Message expired: (ID): Update Settings item (Text): Settings item is updated
+[17.01.2025. 15:32:11] Message expired: (ID): DataSaved (Text): Settings saved
+[17.01.2025. 15:32:12] Settings widgets appearance updated
+[17.01.2025. 15:36:38] Add new Settings item started...
+[17.01.2025. 15:36:38] .   -> Validating new Settings item...
+[17.01.2025. 15:36:38] .   -> Checking if Settings item is valid...
+[17.01.2025. 15:36:38] .   -> .   -> 0 problems found.
+[17.01.2025. 15:36:38] .   -> Settings item is valid.
+[17.01.2025. 15:36:38] .   -> Created new Settings item:
+[17.01.2025. 15:36:38] .   -> .   -> Key: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:38] .   -> .   -> SettingType: 8
+[17.01.2025. 15:36:38] .   -> .   -> DataType: INTEGER
+[17.01.2025. 15:36:38] .   -> .   -> Value: 0
+[17.01.2025. 15:36:38] .   -> .   -> DefaultValue: 0
+[17.01.2025. 15:36:38] .   -> .   -> Min: 0
+[17.01.2025. 15:36:38] .   -> .   -> Max: 1
+[17.01.2025. 15:36:38] .   -> .   -> Description: Default setup for Definition Variants 0 = False 1 = True
+[17.01.2025. 15:36:38] .   -> .   -> CanBeSavedInFile: true
+[17.01.2025. 15:36:38] .   -> .   -> UserData: Changed
+[17.01.2025. 15:36:38] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:36:38] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Current Settings item changed to: DatabaseTables
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Settings visible list changed to: Loaded
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:38] .   -> Saving current Language item in changing process: text_FindFile
+[17.01.2025. 15:36:38] .   -> AppState created
+[17.01.2025. 15:36:38] .   -> AppState saved to 'config.json'
+[17.01.2025. 15:36:38] .   -> Showing message: (ID): Add new Settings item, (Text): New Settings item added, (Description): New Settings item added: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:38] .   -> Added new Settings item to list of changed items: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:38] .   -> Adding new Settings item completed successfully.
+[17.01.2025. 15:36:40] Starting save dialog...
+[17.01.2025. 15:36:41] Saving current Language item in changing process: text_FindFile
+[17.01.2025. 15:36:41] AppState created
+[17.01.2025. 15:36:41] .   -> App state received
+[17.01.2025. 15:36:41] .   -> Save type changed to: SETTINGS
+[17.01.2025. 15:36:41] .   -> Starting populate widgets
+[17.01.2025. 15:36:41] .   -> .   -> Populating section SETTINGS
+[17.01.2025. 15:36:41] .   -> .   -> .   -> Affected items: 1
+[17.01.2025. 15:36:41] .   -> .   -> .   -> Deleted items: 0
+[17.01.2025. 15:36:41] .   -> .   -> .   -> Changed items: 1
+[17.01.2025. 15:36:41] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:36:41] .   -> .   -> Populating section LANGUAGE
+[17.01.2025. 15:36:41] .   -> .   -> .   -> Affected items: 0
+[17.01.2025. 15:36:41] .   -> .   -> .   -> Deleted items: 0
+[17.01.2025. 15:36:41] .   -> .   -> .   -> Changed items: 0
+[17.01.2025. 15:36:41] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[17.01.2025. 15:36:41] .   -> Finished populating widgets
+[17.01.2025. 15:36:42] .   -> Save type changed to: WORKING
+[17.01.2025. 15:36:42] .   -> Starting data save...
+[17.01.2025. 15:36:42] .   -> .   -> File added to RollBack: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:36:42] .   -> .   -> File added to RollBack: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[17.01.2025. 15:36:42] .   -> .   -> Saving settings...
+[17.01.2025. 15:36:42] .   -> .   -> .   -> Loaded file: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:36:42] .   -> .   -> .   -> .   -> Changing item: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:42] .   -> .   -> .   -> .   -> .   -> Item: DefVariantDefaultMatchCase changed
+[17.01.2025. 15:36:42] .   -> .   -> .   -> Saved file: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[17.01.2025. 15:36:42] .   -> .   -> Finished saving settings
+[17.01.2025. 15:36:42] .   -> Finished saving data, completed without errors
+[17.01.2025. 15:36:42] .   -> Save type changed to: COMPLETED
+[17.01.2025. 15:36:42] Settings has been saved, updating list of changed items...
+[17.01.2025. 15:36:42] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:42] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:42] .   -> Settings visible list changed to: Loaded
+[17.01.2025. 15:36:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:42] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:42] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:42] .   -> List of loaded settings item is refreshed
+[17.01.2025. 15:36:42] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:42] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[17.01.2025. 15:36:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:42] .   -> Settings visible list changed to: Loaded
+[17.01.2025. 15:36:42] .   -> Settings widgets appearance updated
+[17.01.2025. 15:36:42] .   -> Saving current Language item in changing process: text_FindFile
+[17.01.2025. 15:36:42] .   -> AppState created
+[17.01.2025. 15:36:42] .   -> AppState saved to 'config.json'
+[17.01.2025. 15:36:43] List of changed items has been updated.
+[17.01.2025. 15:36:43] Showing message: (ID): DataSaved, (Text): Settings saved, (Description): Settings have been saved
+[17.01.2025. 15:36:44] Save dialog closed
+[17.01.2025. 15:36:44] .   -> Dialog closed. OK pressed
+[17.01.2025. 15:36:44] .   -> 'temp' directory removed
+[17.01.2025. 15:38:54] Application is closing...
+[17.01.2025. 15:38:54] .   -> Saving current Language item in changing process: text_FindFile
+[17.01.2025. 15:38:54] .   -> AppState created
+[17.01.2025. 15:38:55] .   -> AppState saved to 'config.json'
+[17.01.2025. 15:38:55] Application closed.
+[18.01.2025. 23:22:23] Active section changed to Settings
+
+[18.01.2025. 23:22:24] *****     NEW LOG STARTED     *****
+[18.01.2025. 23:22:24] Starting application...
+[18.01.2025. 23:22:24] .   -> AppState loaded
+[18.01.2025. 23:22:25] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[18.01.2025. 23:22:25] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[18.01.2025. 23:22:25] .   -> Settings widgets appearance updated
+[18.01.2025. 23:22:25] .   -> Settings widgets appearance updated
+[18.01.2025. 23:22:25] .   -> Settings widgets appearance updated
+[18.01.2025. 23:22:25] .   -> Settings widgets appearance updated
+[18.01.2025. 23:22:25] .   -> Current Settings item changed to: DefVariantDefaultMatchCase
+[18.01.2025. 23:22:25] .   -> Settings widgets appearance updated
+[18.01.2025. 23:22:26] .   -> Settings visible list changed to: Loaded
+[18.01.2025. 23:22:26] .   -> Settings widgets appearance updated
+[18.01.2025. 23:22:26] .   -> Current Language item changed to: text_FindFile
+[18.01.2025. 23:22:26] .   -> Current Language item changed to: text_FindFile
+[18.01.2025. 23:22:26] .   -> Language widgets appearance updated
+[18.01.2025. 23:22:26] .   -> Language widgets appearance updated
+[18.01.2025. 23:22:26] .   -> Language widgets appearance updated
+[18.01.2025. 23:22:26] .   -> Language widgets appearance updated
+[18.01.2025. 23:22:26] .   -> Current Language item changed to: text_FindFile
+[18.01.2025. 23:22:26] .   -> Language widgets appearance updated
+[18.01.2025. 23:22:26] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:22:26] .   -> Language widgets appearance updated
+[18.01.2025. 23:22:26] .   -> .   -> Restoring current Language item.
+[18.01.2025. 23:22:26] .   -> Language Manager: Language file unloaded.
+[18.01.2025. 23:22:26] .   -> Settings file is valid: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[18.01.2025. 23:22:27] .   -> Settings file is valid: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[18.01.2025. 23:22:27] .   -> Active section changed to Settings
+[18.01.2025. 23:22:27] .   -> AppState restored
+[18.01.2025. 23:22:27] Application started
+[18.01.2025. 23:22:29] Language file is valid: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[18.01.2025. 23:22:29] Language file is valid: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[18.01.2025. 23:22:29] Active section changed to Language
+[18.01.2025. 23:24:17] Language widgets appearance updated
+[18.01.2025. 23:24:17] Language widgets appearance updated
+[18.01.2025. 23:24:56] Translating from English to Serbian (Latin) started...
+[18.01.2025. 23:24:56] .   -> Translator Server not running. Starting Translator Server...
+[18.01.2025. 23:24:56] .   -> .   -> Attempting to connect to Translator Server...(1/10)
+[18.01.2025. 23:24:58] .   -> .   -> Attempting to connect to Translator Server...(2/10)
+[18.01.2025. 23:24:58] .   -> .   -> Connected to Translator Server
+[18.01.2025. 23:24:58] .   -> .   -> Connected to Translator Server
+[18.01.2025. 23:24:58] .   -> Translating...
+[18.01.2025. 23:24:59] .   -> .   -> Translation successful
+[18.01.2025. 23:25:27] Add new Language item started...
+[18.01.2025. 23:25:27] .   -> Created new LanguageItemGroup item:
+[18.01.2025. 23:25:27] .   -> .   -> Key: text_Blocks, LangCode: en, Value: Blocks
+[18.01.2025. 23:25:27] .   -> .   -> Key: text_Blocks, LangCode: sr-lat, Value: Blokovi
+[18.01.2025. 23:25:27] .   -> Current Language item changed to: text_FindFile
+[18.01.2025. 23:25:27] .   -> Current Language item changed to: text_FindFile
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Current Language item changed to: text_FindFile
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Current Language item changed to: text_Blocks
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:27] .   -> Saving current Language item in changing process: text_Blocks
+[18.01.2025. 23:25:27] .   -> AppState created
+[18.01.2025. 23:25:27] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:25:27] .   -> Showing message: (ID): Add new Language item, (Text): New Language item added, (Description): New Language item added: text_Blocks
+[18.01.2025. 23:25:27] .   -> Added new Language item to list of changed items: text_Blocks
+[18.01.2025. 23:25:27] .   -> Adding new Language item completed successfully.
+[18.01.2025. 23:25:35] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:25:36] Language widgets appearance updated
+[18.01.2025. 23:25:36] Language widgets appearance updated
+[18.01.2025. 23:25:45] Translating from Serbian (Latin) to English started...
+[18.01.2025. 23:25:45] .   -> Translating...
+[18.01.2025. 23:25:45] .   -> .   -> Translation successful
+[18.01.2025. 23:25:47] Add new Language item started...
+[18.01.2025. 23:25:47] .   -> Created new LanguageItemGroup item:
+[18.01.2025. 23:25:47] .   -> .   -> Key: text_Definitions, LangCode: en, Value: Definitions
+[18.01.2025. 23:25:47] .   -> .   -> Key: text_Definitions, LangCode: sr-lat, Value: Definicije
+[18.01.2025. 23:25:47] .   -> Current Language item changed to: text_Blocks
+[18.01.2025. 23:25:47] .   -> Current Language item changed to: text_Blocks
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Current Language item changed to: text_Blocks
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Current Language item changed to: text_Definitions
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:25:48] .   -> Saving current Language item in changing process: text_Definitions
+[18.01.2025. 23:25:48] .   -> AppState created
+[18.01.2025. 23:25:48] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:25:48] .   -> Showing message: (ID): Add new Language item, (Text): New Language item added, (Description): New Language item added: text_Definitions
+[18.01.2025. 23:25:48] .   -> Added new Language item to list of changed items: text_Definitions
+[18.01.2025. 23:25:48] .   -> Adding new Language item completed successfully.
+[18.01.2025. 23:25:55] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:25:55] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:25:56] Language widgets appearance updated
+[18.01.2025. 23:25:56] Language widgets appearance updated
+[18.01.2025. 23:26:05] Translating from English to Serbian (Latin) started...
+[18.01.2025. 23:26:05] .   -> Translating...
+[18.01.2025. 23:26:05] .   -> .   -> Translation successful
+[18.01.2025. 23:26:19] Add new Language item started...
+[18.01.2025. 23:26:19] .   -> Created new LanguageItemGroup item:
+[18.01.2025. 23:26:19] .   -> .   -> Key: text_Attachments, LangCode: en, Value: Attachments
+[18.01.2025. 23:26:19] .   -> .   -> Key: text_Attachments, LangCode: sr-lat, Value: Prilozi
+[18.01.2025. 23:26:19] .   -> Current Language item changed to: text_Definitions
+[18.01.2025. 23:26:19] .   -> Current Language item changed to: text_Definitions
+[18.01.2025. 23:26:19] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Current Language item changed to: text_Definitions
+[18.01.2025. 23:26:20] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:26:20] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Current Language item changed to: text_Attachments
+[18.01.2025. 23:26:20] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:20] .   -> Saving current Language item in changing process: text_Attachments
+[18.01.2025. 23:26:20] .   -> AppState created
+[18.01.2025. 23:26:20] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:26:20] .   -> Showing message: (ID): Add new Language item, (Text): New Language item added, (Description): New Language item added: text_Attachments
+[18.01.2025. 23:26:20] .   -> Added new Language item to list of changed items: text_Attachments
+[18.01.2025. 23:26:20] .   -> Adding new Language item completed successfully.
+[18.01.2025. 23:26:29] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:26:29] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:26:31] Language widgets appearance updated
+[18.01.2025. 23:26:31] Language widgets appearance updated
+[18.01.2025. 23:26:40] Translating from English to Serbian (Latin) started...
+[18.01.2025. 23:26:40] .   -> Translating...
+[18.01.2025. 23:26:40] .   -> .   -> Translation successful
+[18.01.2025. 23:26:42] Add new Language item started...
+[18.01.2025. 23:26:42] .   -> Created new LanguageItemGroup item:
+[18.01.2025. 23:26:42] .   -> .   -> Key: text_Categories, LangCode: en, Value: Categories
+[18.01.2025. 23:26:42] .   -> .   -> Key: text_Categories, LangCode: sr-lat, Value: Kategorije
+[18.01.2025. 23:26:42] .   -> Current Language item changed to: text_Attachments
+[18.01.2025. 23:26:42] .   -> Current Language item changed to: text_Attachments
+[18.01.2025. 23:26:42] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:42] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:42] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:42] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:42] .   -> Current Language item changed to: text_Attachments
+[18.01.2025. 23:26:42] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:42] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:26:42] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:42] .   -> Current Language item changed to: text_Categories
+[18.01.2025. 23:26:42] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:43] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:43] .   -> Language widgets appearance updated
+[18.01.2025. 23:26:43] .   -> Saving current Language item in changing process: text_Categories
+[18.01.2025. 23:26:43] .   -> AppState created
+[18.01.2025. 23:26:43] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:26:43] .   -> Showing message: (ID): Add new Language item, (Text): New Language item added, (Description): New Language item added: text_Categories
+[18.01.2025. 23:26:43] .   -> Added new Language item to list of changed items: text_Categories
+[18.01.2025. 23:26:43] .   -> Adding new Language item completed successfully.
+[18.01.2025. 23:26:48] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:26:48] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:26:49] Language widgets appearance updated
+[18.01.2025. 23:26:49] Language widgets appearance updated
+[18.01.2025. 23:26:57] Translating from English to Serbian (Latin) started...
+[18.01.2025. 23:26:57] .   -> Translating...
+[18.01.2025. 23:26:57] .   -> .   -> Translation successful
+[18.01.2025. 23:27:04] Add new Language item started...
+[18.01.2025. 23:27:04] .   -> Created new LanguageItemGroup item:
+[18.01.2025. 23:27:04] .   -> .   -> Key: text_Tags, LangCode: en, Value: Tags
+[18.01.2025. 23:27:04] .   -> .   -> Key: text_Tags, LangCode: sr-lat, Value: Oznake
+[18.01.2025. 23:27:04] .   -> Current Language item changed to: text_Categories
+[18.01.2025. 23:27:04] .   -> Current Language item changed to: text_Categories
+[18.01.2025. 23:27:04] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:04] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:04] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:04] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:04] .   -> Current Language item changed to: text_Categories
+[18.01.2025. 23:27:04] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:05] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:27:05] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:05] .   -> Current Language item changed to: text_Tags
+[18.01.2025. 23:27:05] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:05] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:05] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:05] .   -> Saving current Language item in changing process: text_Tags
+[18.01.2025. 23:27:05] .   -> AppState created
+[18.01.2025. 23:27:05] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:27:05] .   -> Showing message: (ID): Add new Language item, (Text): New Language item added, (Description): New Language item added: text_Tags
+[18.01.2025. 23:27:05] .   -> Added new Language item to list of changed items: text_Tags
+[18.01.2025. 23:27:05] .   -> Adding new Language item completed successfully.
+[18.01.2025. 23:27:10] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:27:10] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:27:11] Language widgets appearance updated
+[18.01.2025. 23:27:11] Language widgets appearance updated
+[18.01.2025. 23:27:24] Translating from English to Serbian (Latin) started...
+[18.01.2025. 23:27:24] .   -> Translating...
+[18.01.2025. 23:27:24] .   -> .   -> Translation successful
+[18.01.2025. 23:27:28] Add new Language item started...
+[18.01.2025. 23:27:28] .   -> Created new LanguageItemGroup item:
+[18.01.2025. 23:27:28] .   -> .   -> Key: text_DefinitionVariants, LangCode: en, Value: Definition Variants
+[18.01.2025. 23:27:28] .   -> .   -> Key: text_DefinitionVariants, LangCode: sr-lat, Value: Varijante definicija
+[18.01.2025. 23:27:28] .   -> Current Language item changed to: text_Tags
+[18.01.2025. 23:27:28] .   -> Current Language item changed to: text_Tags
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Current Language item changed to: text_Tags
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Current Language item changed to: text_DefinitionVariants
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Language widgets appearance updated
+[18.01.2025. 23:27:28] .   -> Saving current Language item in changing process: text_DefinitionVariants
+[18.01.2025. 23:27:28] .   -> AppState created
+[18.01.2025. 23:27:28] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:27:28] .   -> Showing message: (ID): Add new Language item, (Text): New Language item added, (Description): New Language item added: text_DefinitionVariants
+[18.01.2025. 23:27:28] .   -> Added new Language item to list of changed items: text_DefinitionVariants
+[18.01.2025. 23:27:28] .   -> Adding new Language item completed successfully.
+[18.01.2025. 23:27:36] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:27:36] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:27:37] Language widgets appearance updated
+[18.01.2025. 23:27:37] Language widgets appearance updated
+[18.01.2025. 23:27:46] Translating from English to Serbian (Latin) started...
+[18.01.2025. 23:27:46] .   -> Translating...
+[18.01.2025. 23:27:47] .   -> .   -> Translation successful
+[18.01.2025. 23:28:10] Add new Language item started...
+[18.01.2025. 23:28:10] .   -> Created new LanguageItemGroup item:
+[18.01.2025. 23:28:10] .   -> .   -> Key: text_Relations, LangCode: en, Value: Relations
+[18.01.2025. 23:28:10] .   -> .   -> Key: text_Relations, LangCode: sr-lat, Value: Relacije
+[18.01.2025. 23:28:10] .   -> Current Language item changed to: text_DefinitionVariants
+[18.01.2025. 23:28:10] .   -> Current Language item changed to: text_DefinitionVariants
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Current Language item changed to: text_DefinitionVariants
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Current Language item changed to: text_Relations
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:10] .   -> Saving current Language item in changing process: text_Relations
+[18.01.2025. 23:28:10] .   -> AppState created
+[18.01.2025. 23:28:10] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:28:10] .   -> Showing message: (ID): Add new Language item, (Text): New Language item added, (Description): New Language item added: text_Relations
+[18.01.2025. 23:28:10] .   -> Added new Language item to list of changed items: text_Relations
+[18.01.2025. 23:28:10] .   -> Adding new Language item completed successfully.
+[18.01.2025. 23:28:17] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:28:17] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:28:17] Language widgets appearance updated
+[18.01.2025. 23:28:17] Language widgets appearance updated
+[18.01.2025. 23:28:27] Translating from English to Serbian (Latin) started...
+[18.01.2025. 23:28:27] .   -> Translating...
+[18.01.2025. 23:28:28] .   -> .   -> Translation successful
+[18.01.2025. 23:28:37] Add new Language item started...
+[18.01.2025. 23:28:37] .   -> Created new LanguageItemGroup item:
+[18.01.2025. 23:28:37] .   -> .   -> Key: text_Loading, LangCode: en, Value: Loading...
+[18.01.2025. 23:28:37] .   -> .   -> Key: text_Loading, LangCode: sr-lat, Value: Učitavanje...
+[18.01.2025. 23:28:37] .   -> Current Language item changed to: text_Relations
+[18.01.2025. 23:28:37] .   -> Current Language item changed to: text_Relations
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Current Language item changed to: text_Relations
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Current Language item changed to: text_Loading
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:37] .   -> Saving current Language item in changing process: text_Loading
+[18.01.2025. 23:28:37] .   -> AppState created
+[18.01.2025. 23:28:37] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:28:37] .   -> Showing message: (ID): Add new Language item, (Text): New Language item added, (Description): New Language item added: text_Loading
+[18.01.2025. 23:28:37] .   -> Added new Language item to list of changed items: text_Loading
+[18.01.2025. 23:28:37] .   -> Adding new Language item completed successfully.
+[18.01.2025. 23:28:45] Starting save dialog...
+[18.01.2025. 23:28:45] Saving current Language item in changing process: text_Loading
+[18.01.2025. 23:28:45] AppState created
+[18.01.2025. 23:28:45] .   -> App state received
+[18.01.2025. 23:28:45] .   -> Save type changed to: LANGUAGE
+[18.01.2025. 23:28:45] .   -> Starting populate widgets
+[18.01.2025. 23:28:45] .   -> .   -> Populating section SETTINGS
+[18.01.2025. 23:28:45] .   -> .   -> .   -> Affected items: 0
+[18.01.2025. 23:28:45] .   -> .   -> .   -> Deleted items: 0
+[18.01.2025. 23:28:45] .   -> .   -> .   -> Changed items: 0
+[18.01.2025. 23:28:45] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[18.01.2025. 23:28:45] .   -> .   -> Populating section LANGUAGE
+[18.01.2025. 23:28:45] .   -> .   -> .   -> Affected items: 8
+[18.01.2025. 23:28:45] .   -> .   -> .   -> Deleted items: 0
+[18.01.2025. 23:28:45] .   -> .   -> .   -> Changed items: 8
+[18.01.2025. 23:28:45] .   -> .   -> .   -> File to update: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[18.01.2025. 23:28:45] .   -> Finished populating widgets
+[18.01.2025. 23:28:47] .   -> Save type changed to: WORKING
+[18.01.2025. 23:28:47] .   -> Starting data save...
+[18.01.2025. 23:28:47] .   -> .   -> File added to RollBack: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\settings.json
+[18.01.2025. 23:28:47] .   -> .   -> File added to RollBack: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[18.01.2025. 23:28:47] .   -> .   -> Saving language...
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Loaded file: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Changing item: text_Blocks
+[18.01.2025. 23:28:47] .   -> .   -> .   -> .   -> Item: text_Blocks changed
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Changing item: text_Definitions
+[18.01.2025. 23:28:47] .   -> .   -> .   -> .   -> Item: text_Definitions changed
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Changing item: text_Attachments
+[18.01.2025. 23:28:47] .   -> .   -> .   -> .   -> Item: text_Attachments changed
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Changing item: text_Categories
+[18.01.2025. 23:28:47] .   -> .   -> .   -> .   -> Item: text_Categories changed
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Changing item: text_Tags
+[18.01.2025. 23:28:47] .   -> .   -> .   -> .   -> Item: text_Tags changed
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Changing item: text_DefinitionVariants
+[18.01.2025. 23:28:47] .   -> .   -> .   -> .   -> Item: text_DefinitionVariants changed
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Changing item: text_Relations
+[18.01.2025. 23:28:47] .   -> .   -> .   -> .   -> Item: text_Relations changed
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Changing item: text_Loading
+[18.01.2025. 23:28:47] .   -> .   -> .   -> .   -> Item: text_Loading changed
+[18.01.2025. 23:28:47] .   -> .   -> .   -> Saved file: D:\Programiranje\Java\Projekti\Journal2\journal2\data\app\settings\languages.json
+[18.01.2025. 23:28:47] .   -> .   -> Finished saving language
+[18.01.2025. 23:28:47] .   -> Finished saving data, completed without errors
+[18.01.2025. 23:28:47] .   -> Save type changed to: COMPLETED
+[18.01.2025. 23:28:47] Languages has been saved, updating list of changed items...
+[18.01.2025. 23:28:47] .   -> Current Language item changed to: text_Loading
+[18.01.2025. 23:28:47] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:47] .   -> Current Language item changed to: text_Loading
+[18.01.2025. 23:28:47] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:47] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:28:47] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:47] .   -> Current Language item changed to: text_Loading
+[18.01.2025. 23:28:47] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:47] .   -> Current Language item changed to: text_Loading
+[18.01.2025. 23:28:47] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:47] .   -> List of loaded languages item is refreshed
+[18.01.2025. 23:28:47] .   -> Current Language item changed to: text_Loading
+[18.01.2025. 23:28:47] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:47] .   -> Current Language item changed to: text_Loading
+[18.01.2025. 23:28:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:48] .   -> Language visible list changed to: Loaded
+[18.01.2025. 23:28:48] .   -> Language widgets appearance updated
+[18.01.2025. 23:28:48] .   -> Saving current Language item in changing process: text_Loading
+[18.01.2025. 23:28:48] .   -> AppState created
+[18.01.2025. 23:28:48] .   -> AppState saved to 'config.json'
+[18.01.2025. 23:28:48] List of changed items has been updated.
+[18.01.2025. 23:28:48] Showing message: (ID): DataSaved, (Text): Languages saved, (Description): Languages have been saved
+[18.01.2025. 23:28:48] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:28:48] Message inactive: (ID): Add new Language item (Text): New Language item added
+[18.01.2025. 23:28:48] Save dialog closed
+[18.01.2025. 23:28:48] Language Manager: Language file unloaded.
+[18.01.2025. 23:28:48] .   -> Manage Language content updated
+[18.01.2025. 23:28:49] .   -> Dialog closed. OK pressed
+[18.01.2025. 23:28:49] .   -> 'temp' directory removed
+[18.01.2025. 23:29:00] Message inactive: (ID): DataSaved (Text): Languages saved
+[19.01.2025. 01:29:31] Current Language item changed to: text_DefinitionVariants
+[19.01.2025. 01:29:31] Language widgets appearance updated
+[19.01.2025. 01:29:31] Language widgets appearance updated
+[19.01.2025. 01:29:31] Language widgets appearance updated
+[19.01.2025. 01:29:31] Message expired: (ID): Add new Language item (Text): New Language item added
+[19.01.2025. 01:29:31] Message expired: (ID): DataSaved (Text): Languages saved
+[19.01.2025. 01:29:31] Current Language item reloaded to: text_DefinitionVariants
+[19.01.2025. 01:29:31] Language widgets appearance updated
+[19.01.2025. 01:55:42] Translating from Serbian (Latin) to English started...
+[19.01.2025. 01:55:42] .   -> Translating...
+[19.01.2025. 01:55:42] .   -> .   -> Translation successful
+[19.01.2025. 01:55:48] Current Language item changed to: text_Categories
+[19.01.2025. 01:55:48] Language widgets appearance updated
+[19.01.2025. 01:55:48] Language widgets appearance updated
+[19.01.2025. 01:55:48] Language widgets appearance updated
+[19.01.2025. 01:55:48] Current Language item reloaded to: text_Categories
+[19.01.2025. 01:55:48] Language widgets appearance updated
+[19.01.2025. 01:55:49] Current Language item changed to: text_Tags
+[19.01.2025. 01:55:49] Language widgets appearance updated
+[19.01.2025. 01:55:49] Language widgets appearance updated
+[19.01.2025. 01:55:49] Language widgets appearance updated
+[19.01.2025. 01:55:49] Current Language item reloaded to: text_Tags
+[19.01.2025. 01:55:49] Language widgets appearance updated
+[19.01.2025. 03:41:34] Application is closing...
+[19.01.2025. 03:41:34] .   -> Saving current Language item in changing process: text_Tags
+[19.01.2025. 03:41:34] .   -> AppState created
+[19.01.2025. 03:41:34] .   -> AppState saved to 'config.json'
+[19.01.2025. 03:41:34] Application closed.

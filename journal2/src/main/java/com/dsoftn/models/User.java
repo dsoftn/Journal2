@@ -491,6 +491,7 @@ public class User {
     public LanguagesEnum getLanguage() { return language; }
     public String getPassword() { return password; }
     public String getPathName() { return pathName; }
+    public String getPathFolder() { return UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName); }
     public String getUserInfoPath() { return userInfoPath; }
     public String getDbPath() { return dbPath; }
     public String getUserSettingsPath() { return userSettingsPath; }

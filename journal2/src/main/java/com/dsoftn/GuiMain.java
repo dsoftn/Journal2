@@ -118,7 +118,6 @@ public class GuiMain extends Application {
             Platform.exit();
             return;
         }
-        
 
         // Start Main Window
         startMainWin(primaryStage);

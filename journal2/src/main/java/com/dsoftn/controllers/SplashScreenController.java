@@ -12,14 +12,19 @@ import javafx.concurrent.Task;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.io.File;
 
 import com.dsoftn.CONSTANTS;
+import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.enums.models.ScopeEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UFile;
 import com.dsoftn.events.TaskStateEvent;
 
 
@@ -85,7 +90,26 @@ public class SplashScreenController implements IBaseController, ICustomEventList
             imgUser.setImage(new Image(getClass().getResourceAsStream("/images/user_no_image.png")));
         }
         else {
-            imgUser.setImage(new Image(OBJECTS.ACTIVE_USER.getAvatarPath()));
+            try {
+                File file = new File(OBJECTS.ACTIVE_USER.getAvatarPath());
+                Image avatarImage = new Image(file.toURI().toString());
+                imgUser.setImage(avatarImage);
+            }
+            catch (Exception e) {
+                UError.exception("Failed to load user avatar image: " + OBJECTS.ACTIVE_USER.getAvatarPath(), e);
+                // Show message to user
+                MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
+                msgBoxController.setTitleText("Configuration Error");
+                msgBoxController.setHeaderText("Error Loading User Avatar");
+                msgBoxController.setHeaderIcon(MsgBoxIcon.ERROR);
+                msgBoxController.setContentText("The user avatar image could not be loaded.\n" + "Please copy the avatar image in '" + OBJECTS.ACTIVE_USER.getPathFolder() + "' as 'avatar.png' or 'avatar.jpg' and try again.\n" + e.getMessage());
+                msgBoxController.setContentIcon(MsgBoxIcon.USER_NO_IMAGE);
+                msgBoxController.setButtons(MsgBoxButton.OK);
+                msgBoxController.setDefaultButton(MsgBoxButton.OK);
+                msgBoxController.startMe();
+
+                imgUser.setImage(new Image(getClass().getResourceAsStream("/images/user_no_image.png")));
+            }
         }
         
         // Set loading gif
@@ -136,6 +160,8 @@ public class SplashScreenController implements IBaseController, ICustomEventList
             case ALL:
                 // Check if event is signaling that task is done
                 if (taskStateEvent.getState() == TaskStateEnum.COMPLETED) {
+                    // Pause for 3 seconds before closing the application
+                    try { Thread.sleep(3000); } catch (InterruptedException ex) { ex.printStackTrace(); }
                     closeMe();
                     return;
                 }
