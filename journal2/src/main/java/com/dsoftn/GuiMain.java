@@ -99,85 +99,71 @@ public class GuiMain extends Application {
 
         loginStage.close();
 
-        // Proba !!!!!!!!!!!
+        // Show Splash Screen while models is loading
         SplashScreenController splashScreenController = DIALOGS.getSplashScreenController(null);
         splashScreenController.startMe();
 
-        testTest();
+        // If models are not loaded, exit program with error message
+        if (getErrorsInModelLoading() != "") {
+            MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
+            msgBoxController.setTitleText("Configuration Error");
+            msgBoxController.setHeaderText("Error Loading Models");
+            msgBoxController.setHeaderIcon(MsgBoxIcon.ERROR);
+            msgBoxController.setContentText("An error occurred while loading the models.\nApplication will now exit.\n\n" + getErrorsInModelLoading());
+            msgBoxController.setContentIcon(MsgBoxIcon.MODEL);
+            msgBoxController.setButtons(MsgBoxButton.OK);
+            msgBoxController.setDefaultButton(MsgBoxButton.OK);
+            msgBoxController.startMe();
+
+            Platform.exit();
+            return;
+        }
+        
 
         // Start Main Window
         startMainWin(primaryStage);
     }
 
-    private void testTest() {
-        System.out.println("Pocetak testa:");
-        System.out.println("--------------");
+    private String getErrorsInModelLoading() {
+        String errors = "";
 
-
-        System.out.println("Dodajem novu definiciju:");
-        // Definition addedDefinition = new Definition();
-        Definition addedDefinition = OBJECTS.DEFINITIONS.getEntity(1);
-        addedDefinition.setName("Test Definition");
-        addedDefinition.setDescription("Test Description");
-        String variants = "";
-        for (int i = 0; i < 2000; i++) {
-            variants += "Test Variant " + i + "\n";
+        if (!OBJECTS.RELATIONS.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Relations are not properly loaded");
+            errors += "Relations are not properly loaded\n";
         }
-        addedDefinition.setVariants(variants);
-        // addedDefinition.setVariants("mama-name\nmami\nmamin");
-        addedDefinition.update();
-        System.out.println(" - - -");
-        
-        System.out.println("Promeni variante");
-        Definition definition = OBJECTS.DEFINITIONS.getEntity(1);
-        definition.setVariants("mama\nmami\nmamu");
-        definition.update();
-        System.out.println(" - - -");
 
+        if (!OBJECTS.DEFINITIONS_VARIANTS.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Definition Variants are not properly loaded");
+            errors += "Definition Variants are not properly loaded\n";
+        }
 
+        if (!OBJECTS.TAGS.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Tags are not properly loaded");
+            errors += "Tags are not properly loaded\n";
+        }
 
+        if (!OBJECTS.CATEGORIES.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Categories are not properly loaded");
+            errors += "Categories are not properly loaded\n";
+        }
 
+        if (!OBJECTS.ATTACHMENTS.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Attachments are not properly loaded");
+            errors += "Attachments are not properly loaded\n";
+        }
 
+        if (!OBJECTS.BLOCKS.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Blocks are not properly loaded");
+            errors += "Blocks are not properly loaded\n";
+        }
 
-        System.out.println("DODAJ ATTACHMENT BEZ RELATED ATTACHMENTS:");
-        Attachment addedAttachment = new Attachment();
-        addedAttachment.setName("Test Attachment");
-        addedAttachment.setDescription("Test Description");
-        addedAttachment.setFileCreated("08.01.2025. 20:25:00");
-        addedAttachment.add();
-        System.out.println(" - - -");
-        Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(3);
+        if (!OBJECTS.DEFINITIONS.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Definitions are not properly loaded");
+            errors += "Definitions are not properly loaded\n";
+        }
 
-        System.out.println("PRIKAZUJEM ATTACHMENT IZ Attachments:");
-        System.out.println("Description:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getDescription());
-        System.out.println("FileCreated:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getFileCreatedSTR());
-        System.out.println("RelatedAttachments:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getRelatedAttachments());
-        System.out.println(" - - -");
-
-        System.out.println("Dodajem RelatedAttachment:");
-        List<Integer> relatedAttachmentIDs = new ArrayList<>();
-        relatedAttachmentIDs.add(1);
-        relatedAttachmentIDs.add(2);
-
-
-        attachment.setRelatedAttachmentsFromIDsList(relatedAttachmentIDs);
-        attachment.update();
-        System.out.println("Description:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getDescription());
-        System.out.println("FileCreated:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getFileCreatedSTR());
-        System.out.println("RelatedAttachments:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getRelatedAttachmentsIDs());
-        System.out.println(" - - -");
-
-        System.out.println("Menjam RelatedAttachment:");
-        relatedAttachmentIDs.remove(0);
-        attachment.setRelatedAttachmentsFromIDsList(relatedAttachmentIDs);
-        attachment.update();
-        System.out.println("Description:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getDescription());
-        System.out.println("FileCreated:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getFileCreatedSTR());
-        System.out.println("RelatedAttachments:" + OBJECTS.ATTACHMENTS.getEntity(attachment.getID()).getRelatedAttachmentsIDs());
-        System.out.println(" - - -");
-        
-
-    }    
+        return errors;
+    }
 
     private LoginController startLogin(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
