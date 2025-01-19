@@ -49,6 +49,7 @@ public class User {
     private String phone = "";
     private String address = "";
     private String notes = "";
+    private String avatarPath = "";
     // Timestamps
     private LocalDateTime created = LocalDateTime.now();
     private int loginSessions = 0; // Number of login sessions
@@ -500,6 +501,7 @@ public class User {
     public String getPhone() { return phone; }
     public String getAddress() { return address; }
     public String getNotes() { return notes; }
+    public String getAvatarPath() { return avatarPath; }
     public LocalDateTime getCreated() { return created; }
     public String getCreatedString() { return created.format(CONSTANTS.DATE_TIME_FORMATTER); }
     public String getCreatedForJsonString() { return created.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON); }
@@ -569,6 +571,7 @@ public class User {
             this.userSettingsPath = "";
             this.appSettingsPath = "";
             this.attachmentsFolderPath = "";
+            this.avatarPath = "";
             return false;
         }
 
@@ -578,6 +581,18 @@ public class User {
         this.userSettingsPath = UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName, this.pathName + "_settings.json");
         this.appSettingsPath = UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName, this.pathName + "_app_settings.json");
         this.attachmentsFolderPath = UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName, CONSTANTS.USER_ATTACHMENT_FOLDER_NAME);
+        
+        this.avatarPath = "";
+        String avatarPathCheck = UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName, CONSTANTS.USER_AVATAR_FILE_NAME_WITHOUT_EXTENSION + ".png");
+        if (UFile.isFile(avatarPathCheck)) {
+            this.avatarPath = avatarPathCheck;
+        }
+        else {
+            avatarPathCheck = UFile.concatPaths(CONSTANTS.FOLDER_DATA_USERS, this.pathName, CONSTANTS.USER_AVATAR_FILE_NAME_WITHOUT_EXTENSION + ".jpg");
+            if (UFile.isFile(avatarPathCheck)) {
+                this.avatarPath = avatarPathCheck;
+            }
+        }
 
         return true;
     }
@@ -587,6 +602,7 @@ public class User {
     public void setPhone(String phone) { this.phone = phone; }
     public void setAddress(String address) { this.address = address; }
     public void setNotes(String notes) { this.notes = notes; }
+    public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
     public void setCreated(LocalDateTime created) { this.created = created; }
     public void setCreated(String created) { this.created = LocalDateTime.parse(created, CONSTANTS.DATE_TIME_FORMATTER); }
     public void setCreated() { this.created = LocalDateTime.now(); }

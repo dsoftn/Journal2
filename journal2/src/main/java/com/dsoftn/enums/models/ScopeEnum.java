@@ -1,4 +1,4 @@
-package com.dsoftn.models.enums;
+package com.dsoftn.enums.models;
 
 import java.util.Arrays;
 

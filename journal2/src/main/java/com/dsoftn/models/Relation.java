@@ -5,10 +5,10 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.enums.models.ScopeEnum;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
-import com.dsoftn.models.enums.ScopeEnum;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 import com.dsoftn.CONSTANTS;

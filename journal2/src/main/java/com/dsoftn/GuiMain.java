@@ -14,6 +14,7 @@ import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UFile;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
+import com.dsoftn.controllers.SplashScreenController;
 
 import java.io.File;
 
@@ -97,6 +98,10 @@ public class GuiMain extends Application {
         }
 
         loginStage.close();
+
+        // Proba !!!!!!!!!!!
+        SplashScreenController splashScreenController = DIALOGS.getSplashScreenController(null);
+        splashScreenController.startMe();
 
         testTest();
 

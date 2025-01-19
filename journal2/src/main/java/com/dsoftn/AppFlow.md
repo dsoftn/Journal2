@@ -160,6 +160,16 @@ Each folder is sent to `User.load(folder_path)` method, then this method try to 
 For selecting user is responsible `Login Dialog`.
 Information about selected user is stored in `OBJECTS.ACTIVE_USER` object.
 
+### How to add new property to user
+Update following code in `User` class:
+1. Add variable with new property
+2. Add getter and setter for new property
+3. If property is not related with user path:
+   - Add new property in methods `User.fromMap` and `User.toMap`
+4. If property is related with user path:
+    - Add property to `User.setPathName` method
+    - No need to change `User.fromMap` and `User.toMap`
+
 ## Blocks-Block Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
 - Load all blocks with `Blocks.load()` method, this should be called before any other action.

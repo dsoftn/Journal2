@@ -14,6 +14,7 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IModelRepository;
+import com.dsoftn.enums.models.ScopeEnum;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 import com.dsoftn.events.AttachmentAddedEvent;
@@ -27,7 +28,6 @@ import com.dsoftn.events.CategoryUpdatedEvent;
 import com.dsoftn.events.CategoryDeletedEvent;
 import com.dsoftn.events.TagAddedEvent;
 import com.dsoftn.events.TagUpdatedEvent;
-import com.dsoftn.models.enums.ScopeEnum;
 import com.dsoftn.events.TagDeletedEvent;
 
 

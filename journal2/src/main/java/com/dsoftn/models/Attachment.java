@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.enums.models.AttachmentTypeEnum;
+import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.SourceTypeEnum;
 import com.dsoftn.events.AttachmentAddedEvent;
 import com.dsoftn.events.AttachmentDeletedEvent;
 import com.dsoftn.events.AttachmentUpdatedEvent;
@@ -22,9 +25,6 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
-import com.dsoftn.models.enums.AttachmentTypeEnum;
-import com.dsoftn.models.enums.ScopeEnum;
-import com.dsoftn.models.enums.SourceTypeEnum;
 
 
 public class Attachment implements IModelEntity<Attachment>, ICustomEventListener {

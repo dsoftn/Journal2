@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.Interfaces.IModelRepository;
+import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
@@ -19,8 +21,8 @@ import javafx.event.Event;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
-import com.dsoftn.models.enums.ScopeEnum;
-
+import com.dsoftn.events.TaskStateEvent;
+import com.dsoftn.utils.UNumbers;
 
 /*
 TABLE blocks
@@ -98,10 +100,26 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
 
     @Override
     public boolean load() {
+        // Send start event
+        OBJECTS.EVENT_HANDLER.fireEvent(
+            new TaskStateEvent(
+                ScopeEnum.BLOCK,
+                TaskStateEnum.STARTED
+            )
+        );
+
         boolean result = true;
 
         SQLiteDB db = new SQLiteDB();
-        if (db.isConnected() == false) return false;
+        if (db.isConnected() == false) { loadFailed(); return false; }
+
+        // Find number of rows
+        Integer rowCount = db.getRowCount("blocks");
+        if (rowCount == null) {
+            UError.error("Blocks.load: Failed to load blocks", "Failed to get row count");
+            loadFailed();
+            return false;
+        }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -110,13 +128,17 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
             stmt = db.preparedStatement("SELECT * FROM blocks");
             if (stmt == null) {
                 UError.error("Blocks.load: Failed to load blocks", "Statement is unexpectedly null");
+                loadFailed();
                 return false;
             }
             rs = db.select(stmt);
             if (rs == null) {
                 UError.error("Blocks.load: Failed to load blocks", "Result set is unexpectedly null");
+                loadFailed();
                 return false;
             }
+
+            int currentRow = 1;
 
             while (rs.next()) {
                 Block block = new Block();
@@ -129,10 +151,28 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                 
                 // Add block
                 add(block);
+
+                // Send progress event
+                Integer progressPercent = UNumbers.getPercentIfHasNoRemainder(rowCount, currentRow);
+                if (progressPercent != null) {
+                    OBJECTS.EVENT_HANDLER.fireEvent(
+                        new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.EXECUTING, progressPercent)
+                    );
+                }
+                // Pause for 2 second
+                try {
+                    System.out.println("Blocks.load: Pausing for 2 seconds. Current row: " + currentRow);
+                    Thread.sleep(2000);
+                } catch (Exception e) {
+                    UError.exception("Blocks.load: Failed to sleep", e);
+                }
+
+                currentRow++;
             }
 
         } catch (Exception e) {
             UError.exception("Blocks.load: Failed to load blocks", e);
+            loadFailed();
             return false;
         
         } finally {
@@ -141,6 +181,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                     rs.close();
                 } catch (Exception e) {
                     UError.exception("Blocks.load: Failed to close result set", e);
+                    loadFailed();
                 }
             }
             if (stmt != null) {
@@ -148,12 +189,34 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                     stmt.close();
                 } catch (Exception e) {
                     UError.exception("Blocks.load: Failed to close statement", e);
+                    loadFailed();
                 }
             }
             db.disconnect();
         }
 
+        if (result == false) {
+            loadFailed();
+        }
+        else {
+            OBJECTS.EVENT_HANDLER.fireEvent(
+                new TaskStateEvent(
+                    ScopeEnum.BLOCK,
+                    TaskStateEnum.COMPLETED
+                )
+            );
+        }
+
         return result;
+    }
+
+    private void loadFailed() {
+        OBJECTS.EVENT_HANDLER.fireEvent(
+            new TaskStateEvent(
+                ScopeEnum.BLOCK,
+                TaskStateEnum.FAILED
+            )
+        );
     }
 
     @Override

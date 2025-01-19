@@ -140,6 +140,62 @@
         "languageCode": "en",
         "creationDate": "2024.12.28 00:46:21",
         "userData": ""
+      },
+      "text_Blocks": {
+        "key": "text_Blocks",
+        "value": "Blocks",
+        "languageCode": "en",
+        "creationDate": "2025.01.18 23:25:27",
+        "userData": ""
+      },
+      "text_Definitions": {
+        "key": "text_Definitions",
+        "value": "Definitions",
+        "languageCode": "en",
+        "creationDate": "2025.01.18 23:25:47",
+        "userData": ""
+      },
+      "text_Attachments": {
+        "key": "text_Attachments",
+        "value": "Attachments",
+        "languageCode": "en",
+        "creationDate": "2025.01.18 23:26:19",
+        "userData": ""
+      },
+      "text_Categories": {
+        "key": "text_Categories",
+        "value": "Categories",
+        "languageCode": "en",
+        "creationDate": "2025.01.18 23:26:42",
+        "userData": ""
+      },
+      "text_Tags": {
+        "key": "text_Tags",
+        "value": "Tags",
+        "languageCode": "en",
+        "creationDate": "2025.01.18 23:27:04",
+        "userData": ""
+      },
+      "text_DefinitionVariants": {
+        "key": "text_DefinitionVariants",
+        "value": "Definition Variants",
+        "languageCode": "en",
+        "creationDate": "2025.01.18 23:27:28",
+        "userData": ""
+      },
+      "text_Relations": {
+        "key": "text_Relations",
+        "value": "Relations",
+        "languageCode": "en",
+        "creationDate": "2025.01.18 23:28:10",
+        "userData": ""
+      },
+      "text_Loading": {
+        "key": "text_Loading",
+        "value": "Loading...",
+        "languageCode": "en",
+        "creationDate": "2025.01.18 23:28:37",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -281,6 +337,62 @@
         "value": "Lozinka i potvrda lozinke se ne poklapaju.",
         "languageCode": "sr-lat",
         "creationDate": "2024.12.28 00:46:21",
+        "userData": ""
+      },
+      "text_Blocks": {
+        "key": "text_Blocks",
+        "value": "Blokovi",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.18 23:25:27",
+        "userData": ""
+      },
+      "text_Definitions": {
+        "key": "text_Definitions",
+        "value": "Definicije",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.18 23:25:47",
+        "userData": ""
+      },
+      "text_Attachments": {
+        "key": "text_Attachments",
+        "value": "Prilozi",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.18 23:26:19",
+        "userData": ""
+      },
+      "text_Categories": {
+        "key": "text_Categories",
+        "value": "Kategorije",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.18 23:26:42",
+        "userData": ""
+      },
+      "text_Tags": {
+        "key": "text_Tags",
+        "value": "Oznake",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.18 23:27:04",
+        "userData": ""
+      },
+      "text_DefinitionVariants": {
+        "key": "text_DefinitionVariants",
+        "value": "Varijante definicija",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.18 23:27:28",
+        "userData": ""
+      },
+      "text_Relations": {
+        "key": "text_Relations",
+        "value": "Relacije",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.18 23:28:10",
+        "userData": ""
+      },
+      "text_Loading": {
+        "key": "text_Loading",
+        "value": "Učitavanje...",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.18 23:28:37",
         "userData": ""
       }
     }

@@ -1,4 +1,4 @@
-package com.dsoftn.models.enums;
+package com.dsoftn.enums.models;
 
 public enum SourceTypeEnum {
 

@@ -134,5 +134,20 @@ public class UNumbers {
         }
     }
 
+    public static Integer getPercentIfHasNoRemainder(int totalRows, int currentRow) {
+        if (totalRows == 0) {
+            return null;
+        }
+
+        Double percent = ((double) currentRow / (double) totalRows) * 100.0;
+
+        // Return percent if it has no remainder else return null
+        if (percent % 1 == 0) {
+            return percent.intValue();
+        }
+        else {
+            return null;
+        }
+    }
 
 }

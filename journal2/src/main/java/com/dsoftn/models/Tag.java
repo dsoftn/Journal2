@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.enums.models.ScopeEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.events.TagAddedEvent;
 import com.dsoftn.events.TagDeletedEvent;
 import com.dsoftn.events.TagUpdatedEvent;
-import com.dsoftn.models.enums.ScopeEnum;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 

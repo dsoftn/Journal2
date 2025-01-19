@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: lightblue;" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.SplashScreenController">
+   <children>
+      <HBox layoutX="181.0" layoutY="130.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <ImageView fx:id="imgUser" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label fx:id="lblUserName" style="-fx-font-size: 26; -fx-text-fill: lightblue;" styleClass="label-default" text="Username">
+                     <VBox.margin>
+                        <Insets top="20.0" />
+                     </VBox.margin>
+                  </Label>
+                  <Label fx:id="lblUserEmail" style="-fx-font-size: 18;" styleClass="label-default" text="e-mail">
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </VBox>
+            <VBox alignment="CENTER_LEFT" minWidth="200.0" spacing="8.0">
+               <HBox.margin>
+                  <Insets left="20.0" right="10.0" />
+               </HBox.margin>
+               <children>
+                  <Label fx:id="lblTaskBlocks" style="-fx-font-size: 14;" styleClass="label-default" text="Blocks" />
+                  <Label fx:id="lblTaskDefinitions" style="-fx-font-size: 14;" styleClass="label-default" text="Definitions" />
+                  <Label fx:id="lblTaskAttachments" style="-fx-font-size: 14;" styleClass="label-default" text="Attachments" />
+                  <Label fx:id="lblTaskCategories" style="-fx-font-size: 14;" styleClass="label-default" text="Categories" />
+                  <Label fx:id="lblTaskTags" style="-fx-font-size: 14;" styleClass="label-default" text="Tags" />
+                  <Label fx:id="lblTaskDefVariants" style="-fx-font-size: 14;" styleClass="label-default" text="Definition Variants" />
+                  <Label fx:id="lblTaskRelations" style="-fx-font-size: 14;" styleClass="label-default" text="Relations" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" minWidth="200.0">
+               <children>
+                  <Label fx:id="lblLoading" style="-fx-font-size: 26;" styleClass="label-default" text="Loading..." />
+                  <Label fx:id="lblAppName" style="-fx-font-size: 18; -fx-text-fill: lightblue;" styleClass="label-default" text="My Journal 2.0" />
+                  <ImageView fx:id="imgLoading" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <VBox.margin>
+                        <Insets top="20.0" />
+                     </VBox.margin>
+                  </ImageView>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

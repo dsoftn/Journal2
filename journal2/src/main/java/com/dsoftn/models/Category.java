@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.enums.models.ScopeEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
@@ -25,7 +26,6 @@ import com.dsoftn.events.CategoryDeletedEvent;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
-import com.dsoftn.models.enums.ScopeEnum;
 
 
 public class Category implements IModelEntity<Category>, ICustomEventListener {

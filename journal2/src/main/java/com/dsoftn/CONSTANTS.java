@@ -15,6 +15,7 @@ public class CONSTANTS {
     public static final String LANGUAGES_FILE_PATH = UFile.concatPaths("data", "app", "settings", "languages.json");
     public static final String FOLDER_DATA_USERS = UFile.concatPaths("data", "users");
     public static final String USER_ATTACHMENT_FOLDER_NAME = "attachments";
+    public static final String USER_AVATAR_FILE_NAME_WITHOUT_EXTENSION = "avatar";
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm:ss");
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
     public static final DateTimeFormatter DATE_TIME_FORMATTER_FOR_JSON = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");

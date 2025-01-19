@@ -257,7 +257,26 @@ public class SQLiteDB {
             return null;
         }
     }
-    
+
+    public Integer getRowCount(String tableName) {
+        String sql = "SELECT COUNT(*) AS row_count FROM " + tableName;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("row_count");
+            }
+            else {
+                UError.error("SQLiteDB.getRowCount: Failed to get row count", "Result set is unexpectedly null", "SQL: " + sql);
+                return null;
+            }
+        } catch (SQLException e) {
+            UError.exception("SQLiteDB.getRowCount: Failed to get row count", e, "SQL: " + sql);
+            return null;
+        }
+    }
+
     public Connection connect(String dbPath) {
         if (dbPath == null || dbPath.isEmpty()) dbPath = OBJECTS.ACTIVE_USER.getDbPath();
         String dbUrl = "jdbc:sqlite:" + dbPath;
