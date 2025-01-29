@@ -13,7 +13,8 @@ public enum ScopeEnum {
     CATEGORY(32),
     TAG(64),
     RELATION(128),
-    DEF_VARIANT(256)
+    DEF_VARIANT(256),
+    ACTOR(512)
     ;
 
     private final int value;

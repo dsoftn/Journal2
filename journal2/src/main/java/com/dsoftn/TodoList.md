@@ -1,27 +1,41 @@
 # TODO List for My Journal 2.0
 
 
-## Login Dialog
-- **Setup button in Login Dialog**
-  - It will allow user to select file that contain user information on HDD
-  - User also can select ZIP file with user information and data (*Exported user data*)
+## Content
+- List of opened blocks
+- List of recently added & modified blocks, definitions...
 
 
-## Models
-- **category** and **tag** can be assigned to block, definition... (*User can select scope of category or tag*)
-- **category** will have property `tag`
-- **tag** will have property `category`
-- Add property **source** to `attachment`
+## News Feed
+- Highlight newest headline with red background
+- Allow user to choose which news feed they want to see
 
-## Images and Files are now Attachments
-- In version 1.0 i have classes `Images`, `Image`, `Files` and `File`
-- In version 2.0 i have classes `Attachments` and `Attachment` witch covers all previous classes
 
-## Synonyms are now Variants
-- Synonyms should be renamed to Variants
+## Block View
+- Different block types (Each type should have a database table except for text)
+  - Text
+  - Budget
+  - Contact
+  - Company
+  - Movie (Show...)
+  - Music (Album...)
+  - Book (Read...)
+  - Game (Video game, board game, etc.)
+  - App (Software)
+  - Web page
+  - Video (Youtube...)
+  - Remainder (Important date, time)
+  - Quote (Something important)
+  - Task list (To do list)
+  - Health (Weight, blood pressure)
+  - Recipe (Cooking)
+  - Travel (Destination, transportation, budget, list of places to visit, list of things to buy ...)
+  - Event (Holidays, weddings, birthdays, anniversaries)
+  - Workout (Workout, fitness, diet, exercise, etc.)
+  - Password (Password manager)
+  - Custom (Custom block)
+  
 
-## Name *Related*
-- Name *Related* will be used to indicate relations between definitions
 
 
 

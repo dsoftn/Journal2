@@ -196,6 +196,13 @@
         "languageCode": "en",
         "creationDate": "2025.01.18 23:28:37",
         "userData": ""
+      },
+      "text_Actors": {
+        "key": "text_Actors",
+        "value": "Actors",
+        "languageCode": "en",
+        "creationDate": "2025.01.29 23:56:40",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -393,6 +400,13 @@
         "value": "Učitavanje...",
         "languageCode": "sr-lat",
         "creationDate": "2025.01.18 23:28:37",
+        "userData": ""
+      },
+      "text_Actors": {
+        "key": "text_Actors",
+        "value": "Uloge",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.01.29 23:56:40",
         "userData": ""
       }
     }

@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: lightblue;" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.SplashScreenController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: lightblue;" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.SplashScreenController">
    <children>
       <HBox layoutX="181.0" layoutY="130.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
@@ -41,6 +41,7 @@
                   <Label fx:id="lblTaskTags" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Tags" />
                   <Label fx:id="lblTaskDefVariants" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Definition Variants" />
                   <Label fx:id="lblTaskRelations" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Relations" />
+                  <Label fx:id="lblTaskActors" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Actors" />
                </children>
             </VBox>
             <VBox alignment="CENTER" minWidth="200.0">

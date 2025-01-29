@@ -27,6 +27,7 @@
 - [Attachments-Attachment Model](#attachments-attachment-model-⤴)
 - [Tags-Tag Model](#tags-tag-model-⤴)
 - [Categories-Category Model](#categories-category-model-⤴)
+- [Actors-Actor Model](#actors-actor-model-⤴)
 - [Relations-Relation Model](#relations-relation-model-⤴)
 - [ScopeEnum](#scopeenum-⤴)
 
@@ -153,6 +154,11 @@ All models contain 2 classes:
 5. Add new model to `ScopeEnum` class
 6. Add new model to `GuiMain.getErrorsInModelLoading` to properly check loading errors
 7. Update `SplashScreenController` to `load()` model properly
+
+#### How to add events to `Relations` class
+- Add event for new *Model*  in *Relations* **Constructor** to register with **EventHandler**
+- In `onCustomEvent` method add **elseIf** for new model events
+- Make for each new event appropriate **private Method**
 
 #### How to update `SplashScreenController` class
 - In **SceneBuilder** open `SplashScreen.fxml` file and add *Label* for new model
@@ -389,6 +395,39 @@ Update following code in `Category` class:
 8. Update `Category` and `Categories` **onCustomEvent** methods if needed
 9. Update **DatabaseTables** settings
 
+## Actors-Actor Model <sup>[⤴](#models-⤴)</sup>
+### Overview
+- Load all actors with `Actor.load()` method, this should be called before any other action.
+- Dates are stored in database in JSON format.
+- Getters for date properties as `date`, `created` and `updated` methods give date in NORMAL format.
+- Pass to setters date in NORMAL format or object.
+
+### To Add, Update or Delete actor
+Use `Actor` class only. DO NOT USE `Actors` class.
+1. Make instance of `Actor` class
+2. Call `load(id)` method if you want to load actor from database
+3. Change actor properties
+4. Call `add()`, `update()` or `delete()` method. It is good idea to call `canBeAdded()`, `canBeUpdated()` and `canBeDeleted()` methods before calling `add()`, `update()` or `delete()` method
+5. Database and `Actors` class will be updated automatically
+```java
+// Change block name example
+Actor actor = new Actor();
+actor.load(id);
+actor.setName("My Actor");
+actor.update();
+```
+### How to add new property to actor
+Update following code in `Actor` class:
+1. Add variable with new property
+2. Add getter and setter for new property
+3. Add new property in method `Actor.loadFromResultSet`
+4. Add new property in method `actor.add` sql query
+5. Add new property in method `Actor.update` sql query
+6. Add new property in method `Actor.duplicate`
+7. Update `Actors` class docstring
+8. Update `Actor` and `Actors` **onCustomEvent** methods if needed
+9. Update **DatabaseTables** settings
+
 ## Relations-Relation Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
 - Contains all relations between models.
@@ -422,7 +461,7 @@ Another way is to manage *Relations* model directly.
 - When `BaseModel` updates his properties, `BaseModel` will trigger *add*, *update* and *delete* events.
 - This events will be processed by `Relations` class.
 - `Relations` class will update relations automatically and for each *relation* that is changed will trigger *add*, *update* or *delete* event.
-- This will cause that `BaseModel` will recieive *add*, *update* and *delete* events in from `Relations` class.
+- This will cause that `BaseModel` will receive *add*, *update* and *delete* events in from `Relations` class.
 - Generally you don't want to respond to `Relations` events when they are triggered because `BaseModel` is causing them.
 - You only want to respond to `Relations` events when they are triggered because `Relation` is directly changed, without knowledge of `BaseModel`.
 

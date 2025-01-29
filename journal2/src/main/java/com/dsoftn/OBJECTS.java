@@ -9,6 +9,7 @@ import com.dsoftn.models.Categories;
 import com.dsoftn.models.Tags;
 import com.dsoftn.models.Attachments;
 import com.dsoftn.models.Relations;
+import com.dsoftn.models.Actors;
 import com.dsoftn.models.User;
 import com.dsoftn.services.EventHandler;;
 
@@ -38,6 +39,8 @@ public class OBJECTS {
     public static final Attachments ATTACHMENTS = new Attachments();
 
     public static final Relations RELATIONS = new Relations();
+
+    public static final Actors ACTORS = new Actors(); 
 
     // Objects
 

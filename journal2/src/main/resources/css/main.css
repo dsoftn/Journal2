@@ -1,6 +1,14 @@
 .root {
     -fx-background-color: rgb(15, 15, 15);
 
+    /*Default root background (GLOBAL BACKGROUND)*/
+    -fx-background-color-root: rgb(15, 15, 15);
+
+    /*Status bar properties (HBox)*/
+    -fx-background-color-status-bar: rgb(25,25,25);
+    -fx-text-fill-status-bar: #2fa582;
+    -fx-font-size-status-bar: 12px;
+    
     /*Default properties for all labels*/
         /*normal*/
     -fx-background-color-label-default: transparent;
@@ -188,4 +196,35 @@
 .separator .line {
     -fx-border-color: -fx-border-color-separator-default;
     -fx-border-width: 1;
+}
+
+/* SPLIT PANE */
+.split-pane {
+    -fx-background-color: -fx-background-color-root;
+}
+
+.split-pane *.pane {
+    -fx-background-color: -fx-background-color-root;
+}
+
+.split-pane *.content {
+    -fx-background-color: -fx-background-color-root;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: -fx-background-color-root;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+    -fx-background-color: -fx-border-color-separator-default;
+}
+
+.split-pane:vertical > .split-pane-divider {
+    -fx-background-color: -fx-border-color-separator-default;
+}
+
+.status-bar {
+    -fx-background-color: -fx-background-color-status-bar;
+    -fx-text-fill: -fx-text-fill-status-bar;
+    -fx-font-size: -fx-font-size-status-bar;
 }

@@ -33,6 +33,9 @@ import com.dsoftn.events.TagAddedEvent;
 import com.dsoftn.events.TagUpdatedEvent;
 import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.events.TagDeletedEvent;
+import com.dsoftn.events.ActorAddedEvent;
+import com.dsoftn.events.ActorUpdatedEvent;
+import com.dsoftn.events.ActorDeletedEvent;
 
 
 /*
@@ -70,7 +73,10 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             CategoryDeletedEvent.CATEGORY_DELETED_EVENT,
             TagAddedEvent.TAG_ADDED_EVENT,
             TagUpdatedEvent.TAG_UPDATED_EVENT,
-            TagDeletedEvent.TAG_DELETED_EVENT
+            TagDeletedEvent.TAG_DELETED_EVENT,
+            ActorAddedEvent.ACTOR_ADDED_EVENT,
+            ActorUpdatedEvent.ACTOR_UPDATED_EVENT,
+            ActorDeletedEvent.ACTOR_DELETED_EVENT
         );
     }
 
@@ -113,6 +119,15 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         }
         else if (event instanceof TagDeletedEvent) {
             onTagDeletedEvent(event);
+        }
+        else if (event instanceof ActorAddedEvent) {
+            onActorAddedEvent(event);
+        }
+        else if (event instanceof ActorUpdatedEvent) {
+            onActorUpdatedEvent(event);
+        }
+        else if (event instanceof ActorDeletedEvent) {
+            onActorDeletedEvent(event);
         }
 
     }
@@ -560,6 +575,122 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         Tag tag = tagDeletedEvent.getTag();
 
         String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.TAG, tag.getID());
+
+        if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
+            // Add key to dataByScopeAndID
+            dataByScopeAndID.put(scopeAndIDKey, new ArrayList<>());
+        }
+
+        // Delete all relations
+        List<Relation> relationsToRemove = new ArrayList<>();
+        for (Relation relation : dataByScopeAndID.get(scopeAndIDKey)) {
+            relationsToRemove.add(relation);
+        }
+
+        for (Relation relation : relationsToRemove) {
+            relation.delete(true);
+        }
+
+        // Delete key from dataByScopeAndID
+        dataByScopeAndID.remove(scopeAndIDKey);
+    }
+
+    private void onActorAddedEvent(Event event) {
+        ActorAddedEvent actorAddedEvent = (ActorAddedEvent) event;
+        Actor actor = actorAddedEvent.getActor();
+        
+        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ACTOR, actor.getID());
+
+        if (dataByScopeAndID.containsKey(scopeAndIDKey)) {
+            UError.error(
+                "Relations.onCustomEvent.onActorAddedEvent: Key in 'scopeAndId' Map already exist",
+                "Event received: ActorAddedEvent",
+                "Actor ID: " + actor.getID(),
+                "Scope and ID key: " + scopeAndIDKey,
+                "Internal error occurred, related Actor Objects will be added but data structure may be corrupted !",
+                CONSTANTS.DATA_STRUCTURE_CORRUPTED_MESSAGE_STRING);
+                // Deleting existing relations
+                dataByScopeAndID.remove(scopeAndIDKey);
+        }
+
+        List<ScopeEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ScopeEnum.ATTACHMENT);
+
+        for (ScopeEnum model : modelsToProcess) {
+            List<Integer> relatedModelIDs = new ArrayList<>();
+            if (model == ScopeEnum.ATTACHMENT) relatedModelIDs = actor.getRelatedAttachmentsIDs();
+
+            for (int relatedID : relatedModelIDs) {
+                Relation relation = new Relation();
+                relation.setBaseModel(ScopeEnum.ACTOR);
+                relation.setBaseID(actor.getID());
+                relation.setRelatedModel(model);
+                relation.setRelatedID(relatedID);
+
+                relation.add(true);
+            }
+        }
+
+    }
+
+    private void onActorUpdatedEvent(Event event) {
+        ActorUpdatedEvent actorUpdatedEvent = (ActorUpdatedEvent) event;
+        Actor actor = actorUpdatedEvent.getNewActor();
+
+        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ACTOR, actor.getID());
+
+        if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
+            // Add key to dataByScopeAndID
+            dataByScopeAndID.put(scopeAndIDKey, new ArrayList<>());
+        }
+
+        List<ScopeEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ScopeEnum.ATTACHMENT);
+
+        for (ScopeEnum model : modelsToProcess) {
+            List<Integer> relatedModelIDs = new ArrayList<>();
+            if (model == ScopeEnum.ATTACHMENT) relatedModelIDs = actor.getRelatedAttachmentsIDs();
+
+            // Delete not needed
+            List<Relation> relationsToRemove = new ArrayList<>();
+            List<Integer> relationsToAdd = new ArrayList<>();
+            for (Relation relation : dataByScopeAndID.get(scopeAndIDKey)) {
+                if (relation.getRelatedModel() != model) continue;
+
+                if (!relatedModelIDs.contains(relation.getRelatedID())) {
+                    relationsToRemove.add(relation);
+                }
+                else {
+                    relationsToAdd.add(relation.getRelatedID());
+                }
+            }
+
+            for (Relation relation : relationsToRemove) {
+                relation.delete(true);
+            }
+
+            // Add new
+            for (int relatedID : relatedModelIDs) {
+                if (relationsToAdd.contains(relatedID)) continue;
+
+                relationsToAdd.add(relatedID);
+
+                Relation relation = new Relation();
+                relation.setBaseModel(ScopeEnum.ACTOR);
+                relation.setBaseID(actor.getID());
+                relation.setRelatedModel(model);
+                relation.setRelatedID(relatedID);
+
+                relation.add(true);
+            }
+        }
+    }
+
+    private void onActorDeletedEvent(Event event) {
+        ActorDeletedEvent ActorDeletedEvent = (ActorDeletedEvent) event;
+        Actor actor = ActorDeletedEvent.getActor();
+
+        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ACTOR, actor.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID

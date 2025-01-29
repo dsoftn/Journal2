@@ -20,11 +20,6 @@ import java.io.File;
 
 import com.dsoftn.controllers.LoginController;
 
-import com.dsoftn.models.Attachment;
-import com.dsoftn.models.Definition;
-import java.util.List;
-import java.util.ArrayList;
-
 public class GuiMain extends Application {
 
     @Override
@@ -149,6 +144,11 @@ public class GuiMain extends Application {
         if (!OBJECTS.ATTACHMENTS.isModelLoaded()) {
             UError.error("GuiMain.getErrorsInModelLoading: Attachments are not properly loaded");
             errors += "Attachments are not properly loaded\n";
+        }
+
+        if (!OBJECTS.ACTORS.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Actors are not properly loaded");
+            errors += "Actors are not properly loaded\n";
         }
 
         if (!OBJECTS.BLOCKS.isModelLoaded()) {

@@ -24,7 +24,6 @@ import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.enums.models.ScopeEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.utils.UError;
-import com.dsoftn.utils.UFile;
 import com.dsoftn.events.TaskStateEvent;
 
 
@@ -60,6 +59,8 @@ public class SplashScreenController implements IBaseController, ICustomEventList
     private Label lblTaskDefVariants;
     @FXML
     private Label lblTaskRelations;
+    @FXML
+    private Label lblTaskActors;
 
     @FXML
     private Label lblLoading;
@@ -123,6 +124,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         lblTaskTags.setGraphic(imgSelected.get(ScopeEnum.TAG.toString()));
         lblTaskDefVariants.setGraphic(imgSelected.get(ScopeEnum.DEF_VARIANT.toString()));
         lblTaskRelations.setGraphic(imgSelected.get(ScopeEnum.RELATION.toString()));
+        lblTaskActors.setGraphic(imgSelected.get(ScopeEnum.ACTOR.toString()));
     }
 
     // Interface ICustomEventListener methods
@@ -156,6 +158,9 @@ public class SplashScreenController implements IBaseController, ICustomEventList
                 break;
             case RELATION:
                 changeTaskWidget(lblTaskRelations, "text_Relations", taskStateEvent);
+                break;
+            case ACTOR:
+                changeTaskWidget(lblTaskActors, "text_Actors", taskStateEvent);
                 break;
             case ALL:
                 // Check if event is signaling that task is done
@@ -287,6 +292,10 @@ public class SplashScreenController implements IBaseController, ICustomEventList
             UError.error("GuiMain.createGlobalDataModels -> OBJECTS.ATTACHMENTS.load() failed");
             return false;
         }
+        if (!OBJECTS.ACTORS.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.ACTORS.load() failed");
+            return false;
+        }
         if (!OBJECTS.BLOCKS.load()) {
             UError.error("GuiMain.createGlobalDataModels -> OBJECTS.BLOCKS.load() failed");
             return false;
@@ -312,6 +321,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         lblTaskTags.setText(OBJECTS.SETTINGS.getl("text_Tags"));
         lblTaskDefVariants.setText(OBJECTS.SETTINGS.getl("text_DefinitionVariants"));
         lblTaskRelations.setText(OBJECTS.SETTINGS.getl("text_Relations"));
+        lblTaskActors.setText(OBJECTS.SETTINGS.getl("text_Actors"));
 
         // App Info
         lblAppName.setText(CONSTANTS.APPLICATION_NAME);
