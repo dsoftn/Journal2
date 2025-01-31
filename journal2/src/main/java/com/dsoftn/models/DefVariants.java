@@ -55,7 +55,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
 
         boolean result = true;
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         if (db.isConnected() == false) { loadFailed(); return false; }
 
         // Find number of rows
@@ -131,7 +131,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
                     loadFailed();
                 }
             }
-            db.disconnect();
+            db.taskCompleted();
         }
 
         // Rebuild dataByDef Map from data Map
@@ -300,7 +300,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
             return true;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Delete from database
@@ -324,7 +324,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
         }
         finally {
             if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            db.taskCompleted();
         }
 
         // Remove from data and dataByDef
@@ -338,9 +338,11 @@ public class DefVariants implements IModelRepository<DefVariant> {
     }
 
     private boolean addVariants(List<DefVariant> variants) {
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
 
         List<Integer> generatedKeys = db.insertMany(variants);
+
+        db.taskCompleted();
 
         if (generatedKeys == null) {
             UError.error("DefVariant.addVariants: Failed to add DefVariant", "Database did not return generated keys");

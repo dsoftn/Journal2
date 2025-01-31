@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import com.dsoftn.controllers.MainWinController;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
+import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UFile;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
@@ -91,6 +92,12 @@ public class GuiMain extends Application {
             Platform.exit();
             return;
         }
+
+        // Create database connection
+        OBJECTS.DATABASE = new SQLiteDB();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            OBJECTS.DATABASE.disconnect();
+        }));
 
         loginStage.close();
 
@@ -371,6 +378,8 @@ public class GuiMain extends Application {
             msgBoxFailed.startMe();
             return;
         }
+
+        // Exit program
     }
     
 }

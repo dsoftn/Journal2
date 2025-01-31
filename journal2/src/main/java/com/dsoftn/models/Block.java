@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
@@ -35,6 +36,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     private String name = "";
     private String date = CONSTANTS.INVALID_DATETIME_STRING;
     private String text = "";
+    private int blockType = BlockTypeEnum.UNDEFINED.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String updated = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private List<Integer> relatedCategories = new ArrayList<Integer>();
@@ -42,6 +44,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     private List<Integer> relatedAttachments = new ArrayList<Integer>();
     private int defaultAttachment = CONSTANTS.INVALID_ID;
     private List<Integer> relatedBlocks = new ArrayList<Integer>();
+    private List<Integer> relatedActors = new ArrayList<Integer>();
 
     // Constructors
 
@@ -63,15 +66,24 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             Relation oldRelation = null;
             if (event instanceof RelationAddedEvent) {
                 RelationAddedEvent relationAddedEvent = (RelationAddedEvent) event;
+                // If relation is part of loop event then no need to update because this object caused the event
+                if (relationAddedEvent.isLoopEvent()) { return; }
+
                 newRelation = relationAddedEvent.getRelation();
             }
             else if (event instanceof RelationUpdatedEvent) {
                 RelationUpdatedEvent relationUpdatedEvent = (RelationUpdatedEvent) event;
+                // If relation is part of loop event then no need to update because this object caused the event
+                if (relationUpdatedEvent.isLoopEvent()) { return; }
+
                 newRelation = relationUpdatedEvent.getNewRelation();
                 oldRelation = relationUpdatedEvent.getOldRelation();
             }
             else {
                 RelationDeletedEvent relationDeletedEvent = (RelationDeletedEvent) event;
+                // If relation is part of loop event then no need to update because this object caused the event
+                if (relationDeletedEvent.isLoopEvent()) { return; }
+
                 newRelation = relationDeletedEvent.getRelation();
             }
             
@@ -94,11 +106,14 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         List<Integer>  newRelatedBlocks = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.BLOCK).stream().map(Relation::getRelatedID).collect(Collectors.toList());
         List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
         List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedActors = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.ACTOR).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedAttachments = newRelatedAttachments;
         relatedBlocks = newRelatedBlocks;
         relatedCategories = newRelatedCategories;
         relatedTags = newRelatedTags;
+        relatedActors = newRelatedActors;
+
         update();
     }
     
@@ -111,7 +126,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
     @Override
     public boolean load(Integer id) {
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -135,9 +150,9 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             return false;
         }
         finally {
-            if (rs != null) try { rs.close(); } catch (Exception e) {}
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (rs != null) try { rs.close(); } catch (Exception e) { e.printStackTrace(); }
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
         return false;
     }
@@ -148,6 +163,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             this.name = rs.getString("name");
             this.date = rs.getString("date");
             this.text = rs.getString("text");
+            this.blockType = rs.getInt("block_type");
             this.created = rs.getString("created");
             this.updated = rs.getString("updated");
             this.defaultAttachment = rs.getInt("default_attachment");
@@ -172,6 +188,11 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
                     OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.BLOCK))
             );
 
+            this.setRelatedActors(
+                OBJECTS.ACTORS.getActorsListFromRelations(
+                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.ACTOR))
+            );
+
             return true;
         } catch (Exception e) {
             UError.exception("Block.loadFromResultSet: Failed to load block from result set", e);
@@ -186,17 +207,18 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO blocks " + 
-                "(name, date, text, created, updated, default_attachment) " + 
-                "VALUES (?, ?, ?, ?, ?, ?)",
+                "(name, date, text, block_type, created, updated, default_attachment) " + 
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
                 this.name,
                 this.date,
                 this.text,
+                this.blockType,
                 this.created,
                 this.updated,
                 this.defaultAttachment);
@@ -229,8 +251,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 
@@ -240,6 +262,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (this.updated == null || this.updated.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (OBJECTS.BLOCKS.isExists(this.id)) return false;
+        if (this.blockType == BlockTypeEnum.UNDEFINED.getValue()) return false;
+        
         return true;
     }
 
@@ -250,17 +274,18 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE blocks " + 
-                "SET name = ?, date = ?, text = ?, created = ?, updated = ?, default_attachment = ? " + 
+                "SET name = ?, date = ?, text = ?, block_type = ?, created = ?, updated = ?, default_attachment = ? " + 
                 "WHERE id = ?",
                 this.name,
                 this.date,
                 this.text,
+                this.blockType,
                 this.created,
                 this.updated,
                 this.defaultAttachment,
@@ -293,8 +318,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 
@@ -305,6 +330,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         if (this.created == null || this.created.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (this.updated == null || this.updated.equals(CONSTANTS.INVALID_DATETIME_STRING)) return false;
         if (!OBJECTS.BLOCKS.isExists(this.id)) return false;
+        if (this.blockType == BlockTypeEnum.UNDEFINED.getValue()) return false;
 
         return true;
     }
@@ -316,7 +342,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Delete from database
@@ -350,8 +376,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 
@@ -369,6 +395,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         block.setName(this.name);
         block.setDateSTR_JSON(this.getDateSTR_JSON());
         block.setText(this.text);
+        block.setBlockType(BlockTypeEnum.fromInteger(this.blockType));
         block.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
         block.setUpdatedSTR_JSON(this.getUpdatedSTR_JSON());
         block.setDefaultAttachment(this.defaultAttachment);
@@ -377,6 +404,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         block.setRelatedTags(this.getRelatedTags());
         block.setRelatedAttachments(this.getRelatedAttachments());
         block.setRelatedBlocks(this.getRelatedBlocks());
+        block.setRelatedActors(this.getRelatedActors());
 
         return block;
     }
@@ -408,6 +436,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     }
 
     public String getText() { return this.text; }
+
+    public BlockTypeEnum getBlockType() { return BlockTypeEnum.fromInteger(this.blockType); }
 
     public LocalDateTime getCreatedOBJ() {
         try {
@@ -487,6 +517,14 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         return this.relatedBlocks;
     }
 
+    public List<Actor> getRelatedActors() {
+        return OBJECTS.ACTORS.getActorsListFromIDs(this.relatedActors);
+    }
+
+    public List<Integer> getRelatedActorsIDs() {
+        return this.relatedActors;
+    }
+
     // Setters
 
     public void setID(int id) { this.id = id; }
@@ -508,6 +546,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     public void setDateSTR_JSON(String date) { this.date = date; }
 
     public void setText(String text) { this.text = text; }
+
+    public void setBlockType(BlockTypeEnum blockType) { this.blockType = blockType.getValue(); }
 
     public void setCreated(LocalDateTime created) {
         this.created = created.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -563,6 +603,10 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
     public void setRelatedBlocks(List<Block> relatedBlocks) {
         this.relatedBlocks = relatedBlocks.stream().map((Block block) -> block.getID()).collect(Collectors.toList());
+    }
+
+    public void setRelatedActors(List<Actor> relatedActors) {
+        this.relatedActors = relatedActors.stream().map((Actor actor) -> actor.getID()).collect(Collectors.toList());
     }
 
 }

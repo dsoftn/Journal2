@@ -117,7 +117,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
 
         boolean result = true;
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         if (db.isConnected() == false) { loadFailed(); return false; }
 
         // Find number of rows
@@ -193,7 +193,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
                     loadFailed();
                 }
             }
-            db.disconnect();
+            db.taskCompleted();
         }
 
         if (result == false) {

@@ -25,7 +25,7 @@ public class DefVariant implements IModelEntity<DefVariant> {
 
     @Override
     public boolean load(Integer id) {
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -49,9 +49,9 @@ public class DefVariant implements IModelEntity<DefVariant> {
             return false;
         }
         finally {
-            if (rs != null) try { rs.close(); } catch (Exception e) {}
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (rs != null) try { rs.close(); } catch (Exception e) { e.printStackTrace(); }
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
         return false;
     }
@@ -80,7 +80,7 @@ public class DefVariant implements IModelEntity<DefVariant> {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Add to database
@@ -117,8 +117,8 @@ public class DefVariant implements IModelEntity<DefVariant> {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 
@@ -147,7 +147,7 @@ public class DefVariant implements IModelEntity<DefVariant> {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Delete from database
@@ -178,8 +178,8 @@ public class DefVariant implements IModelEntity<DefVariant> {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 

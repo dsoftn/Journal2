@@ -254,6 +254,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         modelsToProcess.add(ScopeEnum.CATEGORY);
         modelsToProcess.add(ScopeEnum.TAG);
         modelsToProcess.add(ScopeEnum.BLOCK);
+        modelsToProcess.add(ScopeEnum.ACTOR);
 
         for (ScopeEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
@@ -261,6 +262,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             if (model == ScopeEnum.CATEGORY) relatedModelIDs = block.getRelatedCategoriesIDs();
             if (model == ScopeEnum.TAG) relatedModelIDs = block.getRelatedTagsIDs();
             if (model == ScopeEnum.BLOCK) relatedModelIDs = block.getRelatedBlocksIDs();
+            if (model == ScopeEnum.ACTOR) relatedModelIDs = block.getRelatedActorsIDs();
 
             for (int relatedID : relatedModelIDs) {
                 Relation relation = new Relation();
@@ -291,6 +293,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         modelsToProcess.add(ScopeEnum.CATEGORY);
         modelsToProcess.add(ScopeEnum.TAG);
         modelsToProcess.add(ScopeEnum.BLOCK);
+        modelsToProcess.add(ScopeEnum.ACTOR);
 
         for (ScopeEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
@@ -298,6 +301,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             if (model == ScopeEnum.CATEGORY) relatedModelIDs = block.getRelatedCategoriesIDs();
             if (model == ScopeEnum.TAG) relatedModelIDs = block.getRelatedTagsIDs();
             if (model == ScopeEnum.BLOCK) relatedModelIDs = block.getRelatedBlocksIDs();
+            if (model == ScopeEnum.ACTOR) relatedModelIDs = block.getRelatedActorsIDs();
 
             // Delete not needed
             List<Relation> relationsToRemove = new ArrayList<>();
@@ -727,7 +731,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
 
         boolean result = true;
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         if (db.isConnected() == false) { loadFailed(); return false; }
 
         // Find number of rows
@@ -803,7 +807,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                     loadFailed();
                 }
             }
-            db.disconnect();
+            db.taskCompleted();
         }
 
         if (result == false) {

@@ -7,7 +7,6 @@
     /*Status bar properties (HBox)*/
     -fx-background-color-status-bar: rgb(25,25,25);
     -fx-text-fill-status-bar: #2fa582;
-    -fx-font-size-status-bar: 12px;
     
     /*Default properties for all labels*/
         /*normal*/
@@ -226,5 +225,5 @@
 .status-bar {
     -fx-background-color: -fx-background-color-status-bar;
     -fx-text-fill: -fx-text-fill-status-bar;
-    -fx-font-size: -fx-font-size-status-bar;
+    -fx-font-size: 12px;
 }

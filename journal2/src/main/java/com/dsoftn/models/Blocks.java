@@ -31,6 +31,7 @@ TABLE blocks
     name TEXT NOT NULL - name of the block
     date TEXT NOT NULL - date in format for JSON
     text TEXT NOT NULL - text of the block
+    block_type INTEGER NOT NULL - BlockTypeEnum value
     created TEXT NOT NULL - date in format for JSON
     updated TEXT NOT NULL - date in format for JSON
     default_attachment INTEGER - default attachment id
@@ -39,6 +40,7 @@ RELATED PROPERTIES
     Categories
     Tags
     Blocks
+    Actors
  */
 
 public class Blocks implements IModelRepository<Block>, ICustomEventListener {
@@ -114,7 +116,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
 
         boolean result = true;
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         if (db.isConnected() == false) { loadFailed(); return false; }
 
         // Find number of rows
@@ -190,7 +192,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                     loadFailed();
                 }
             }
-            db.disconnect();
+            db.taskCompleted();
         }
 
         if (result == false) {

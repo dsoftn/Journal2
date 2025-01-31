@@ -38,7 +38,7 @@ public class Relation implements IModelEntity<Relation> {
 
     @Override
     public boolean load(Integer id) {
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -62,9 +62,9 @@ public class Relation implements IModelEntity<Relation> {
             return false;
         }
         finally {
-            if (rs != null) try { rs.close(); } catch (Exception e) {}
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (rs != null) try { rs.close(); } catch (Exception e) { e.printStackTrace(); }
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
         return false;
     }
@@ -96,7 +96,7 @@ public class Relation implements IModelEntity<Relation> {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Add to database
@@ -139,8 +139,8 @@ public class Relation implements IModelEntity<Relation> {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 
@@ -162,7 +162,7 @@ public class Relation implements IModelEntity<Relation> {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Update in database
@@ -205,8 +205,8 @@ public class Relation implements IModelEntity<Relation> {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 
@@ -230,7 +230,7 @@ public class Relation implements IModelEntity<Relation> {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Delete from database
@@ -264,8 +264,8 @@ public class Relation implements IModelEntity<Relation> {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 

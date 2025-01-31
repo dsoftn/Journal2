@@ -13,7 +13,7 @@
 
 ## Block View
 - Different block types (Each type should have a database table except for text)
-  - Text
+  - Diary
   - Budget
   - Contact
   - Company
@@ -22,7 +22,7 @@
   - Book (Read...)
   - Game (Video game, board game, etc.)
   - App (Software)
-  - Web page
+  - WebSite (Web page)
   - Video (Youtube...)
   - Remainder (Important date, time)
   - Quote (Something important)

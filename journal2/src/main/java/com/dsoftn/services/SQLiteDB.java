@@ -21,6 +21,8 @@ public class SQLiteDB {
 
     private Connection conn = null;
 
+    private int taskCount = 0;
+
     // Constructor
 
     public SQLiteDB() {
@@ -300,6 +302,14 @@ public class SQLiteDB {
         } catch (SQLException e) {
             UError.exception("SQLiteDB.disconnect: Failed to disconnect from database", e);
         }
+    }
+
+    public void taskCompleted() {
+        taskCount++;
+    }
+
+    public int getTaskCount() {
+        return taskCount;
     }
 
     /**

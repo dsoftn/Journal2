@@ -248,6 +248,7 @@ Update following code in `Block` class:
 7. Update `Blocks` class docstring
 8. Update `Block` and `Blocks` **onCustomEvent** methods if needed
 9. Update **DatabaseTables** settings
+10. If property is relation with other model - update in `Relations` class events **add** and **update**
 
 ## Definitions-Definition Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -282,6 +283,7 @@ Update following code in `Definition` class:
 7. Update `Definitions` class docstring
 8. Update `Definition` and `Definitions` **onCustomEvent** methods if needed
 9. Update **DatabaseTables** settings
+10. If property is relation with other model - update in `Relations` class events **add** and **update**
 
 ## DefVariants-DefVariant Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -289,6 +291,9 @@ Update following code in `Definition` class:
 - This classes stores information about variants of definitions.
 - When you call on `Definition` object method 'add', 'update' or 'delete' methods, `DefVariants` class will be updated automatically with methods `OBJECT.DefVariants.updateVariantsDefinitionAdd`, `OBJECT.DefVariants.updateVariantsDefinitionUpdate` and `OBJECT.DefVariants.updateVariantsDefinitionDelete`
 - When updating data, `DefVariants` will first delete all variants for definition and then add new variants
+
+#### Note
+- If you want to add new property to `DefVariant` class, you must also update SQL in method `insertMany` in class `SQLiteDB` !
 
 ## Attachments-Attachment Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -322,6 +327,7 @@ Update following code in `Attachment` class:
 7. Update `Attachments` class docstring
 8. Update `Attachment` and `Attachments` **onCustomEvent** methods if needed
 9. Update **DatabaseTables** settings
+10. If property is relation with other model - update in `Relations` class events **add** and **update**
 
 
 ## Tags-Tag Model <sup>[⤴](#models-⤴)</sup>
@@ -358,6 +364,7 @@ Update following code in `Tag` class:
 7. Update `Tags` class docstring
 8. Update `Tag` and `Tags` **onCustomEvent** methods if needed
 9. Update **DatabaseTables** settings
+10. If property is relation with other model - update in `Relations` class events **add** and **update**
 
 ## Categories-Category Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -394,6 +401,7 @@ Update following code in `Category` class:
 7. Update `Categories` class docstring
 8. Update `Category` and `Categories` **onCustomEvent** methods if needed
 9. Update **DatabaseTables** settings
+10. If property is relation with other model - update in `Relations` class events **add** and **update**
 
 ## Actors-Actor Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -427,6 +435,7 @@ Update following code in `Actor` class:
 7. Update `Actors` class docstring
 8. Update `Actor` and `Actors` **onCustomEvent** methods if needed
 9. Update **DatabaseTables** settings
+10. If property is relation with other model - update in `Relations` class events **add** and **update**
 
 ## Relations-Relation Model <sup>[⤴](#models-⤴)</sup>
 ### Overview

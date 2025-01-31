@@ -58,15 +58,24 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
             Relation oldRelation = null;
             if (event instanceof RelationAddedEvent) {
                 RelationAddedEvent relationAddedEvent = (RelationAddedEvent) event;
+                // If relation is part of loop event then no need to update because this object caused the event
+                if (relationAddedEvent.isLoopEvent()) { return; }
+
                 newRelation = relationAddedEvent.getRelation();
             }
             else if (event instanceof RelationUpdatedEvent) {
                 RelationUpdatedEvent relationUpdatedEvent = (RelationUpdatedEvent) event;
+                // If relation is part of loop event then no need to update because this object caused the event
+                if (relationUpdatedEvent.isLoopEvent()) { return; }
+
                 newRelation = relationUpdatedEvent.getNewRelation();
                 oldRelation = relationUpdatedEvent.getOldRelation();
             }
             else {
                 RelationDeletedEvent relationDeletedEvent = (RelationDeletedEvent) event;
+                // If relation is part of loop event then no need to update because this object caused the event
+                if (relationDeletedEvent.isLoopEvent()) { return; }
+                
                 newRelation = relationDeletedEvent.getRelation();
             }
             
@@ -100,7 +109,7 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
 
     @Override
     public boolean load(Integer id) {
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -124,9 +133,9 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
             return false;
         }
         finally {
-            if (rs != null) try { rs.close(); } catch (Exception e) {}
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (rs != null) try { rs.close(); } catch (Exception e) { e.printStackTrace(); }
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
         return false;
     }
@@ -160,7 +169,7 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Add to database
@@ -203,8 +212,8 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 
@@ -223,7 +232,7 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Update in database
@@ -266,8 +275,8 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 
@@ -288,7 +297,7 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
             return false;
         }
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {
             // Delete from database
@@ -322,8 +331,8 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
             return false;
         }
         finally {
-            if (stmt != null) try { stmt.close(); } catch (Exception e) {}
-            db.disconnect();
+            if (stmt != null) try { stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+            db.taskCompleted();
         }
     }
 

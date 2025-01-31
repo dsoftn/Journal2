@@ -9,7 +9,7 @@ import org.fxmisc.richtext.InlineCssTextArea;
 
 public class BlockGeneralController implements IBaseController {
 
-        // Variables
+    // Variables
     private Stage stage;
 
 

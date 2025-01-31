@@ -111,7 +111,7 @@ public class Actors implements IModelRepository<Actor>, ICustomEventListener {
 
         boolean result = true;
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         if (db.isConnected() == false) { loadFailed(); return false; }
 
         // Find number of rows
@@ -187,7 +187,7 @@ public class Actors implements IModelRepository<Actor>, ICustomEventListener {
                     loadFailed();
                 }
             }
-            db.disconnect();
+            db.taskCompleted();
         }
 
         if (result == false) {

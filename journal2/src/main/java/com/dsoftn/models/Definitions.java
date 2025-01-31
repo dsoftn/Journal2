@@ -122,7 +122,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
 
         boolean result = true;
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         if (db.isConnected() == false) { loadFailed(); return false; }
 
         // Find number of rows
@@ -198,7 +198,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
                     loadFailed();
                 }
             }
-            db.disconnect();
+            db.taskCompleted();
         }
 
         if (result == false) {

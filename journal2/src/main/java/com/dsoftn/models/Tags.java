@@ -110,7 +110,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
 
         boolean result = true;
 
-        SQLiteDB db = new SQLiteDB();
+        SQLiteDB db = OBJECTS.DATABASE;
         if (db.isConnected() == false) { loadFailed(); return false; }
 
         // Find number of rows
@@ -186,7 +186,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
                     loadFailed();
                 }
             }
-            db.disconnect();
+            db.taskCompleted();
         }
 
         if (result == false) {
