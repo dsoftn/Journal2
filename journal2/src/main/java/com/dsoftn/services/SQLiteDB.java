@@ -287,11 +287,23 @@ public class SQLiteDB {
             if (conn != null && !conn.isClosed()) disconnect();
 
             conn = DriverManager.getConnection(dbUrl);
+
+            Statement stmt = conn.createStatement();
+            stmt.execute("PRAGMA synchronous=FULL;"); // Ensure data is written to disk
+            stmt.execute("PRAGMA locking_mode=NORMAL;"); // Lock database while in use
+            stmt.execute("PRAGMA temp_store=MEMORY;"); // Store temporary data in memory
+            stmt.execute("PRAGMA journal_mode=TRUNCATE;"); // Truncate journal file
+            stmt.execute("PRAGMA busy_timeout=5000;"); // Timeout after 5 seconds
+
+            // Close statement
+            stmt.close();
+
             return conn;
         } catch (SQLException e) {
             UError.exception("SQLiteDB.connect: Failed to connect to database", e, "Database path: " + dbPath);
             return null;
         }
+            
     }
 
     public void disconnect() {

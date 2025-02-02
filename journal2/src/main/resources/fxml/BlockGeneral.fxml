@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -9,13 +10,13 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="744.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.BlockGeneralController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="744.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.BlockGeneralController">
    <children>
       <VBox layoutX="220.0" layoutY="55.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox fx:id="hBoxTitle" alignment="CENTER" spacing="5.0">
                <children>
-                  <Label fx:id="lblID" styleClass="label-default" text="ID:##" />
+                  <Label fx:id="lblID" styleClass="label-block-id" text="ID:##" />
                   <Button fx:id="btnActor" mnemonicParsing="false" styleClass="button-default" text="Actor" />
                   <Button fx:id="btnType" mnemonicParsing="false" styleClass="button-default" text="Block Type" />
                   <Button fx:id="btnDate" mnemonicParsing="false" styleClass="button-default" text="Date" />
@@ -40,7 +41,7 @@
             </HBox>
             <HBox fx:id="hBoxName" alignment="TOP_CENTER">
                <children>
-                  <Label fx:id="lblName" styleClass="label-default" text="Block name" />
+                  <Label fx:id="lblName" styleClass="label-block-name" text="Block name" />
                </children>
             </HBox>
             <HBox fx:id="hBoxBody" prefHeight="100.0" prefWidth="200.0" />
@@ -67,7 +68,7 @@
                   </ScrollPane>
                </children>
             </HBox>
-            <HBox fx:id="hBoxFooter" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+            <HBox fx:id="hBoxFooter" spacing="5.0">
                <children>
                   <Button fx:id="btnSave" mnemonicParsing="false" styleClass="button-default" text="Save" />
                   <Button fx:id="btnSaveAsDraft" mnemonicParsing="false" styleClass="button-default" text="Save As Draft" />
@@ -79,4 +80,8 @@
          </children>
       </VBox>
    </children>
+   <stylesheets>
+      <URL value="@../css/main.css" />
+      <URL value="@../css/block_general.css" />
+   </stylesheets>
 </AnchorPane>

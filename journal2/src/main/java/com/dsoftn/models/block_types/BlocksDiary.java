@@ -1,4 +1,4 @@
-package com.dsoftn.models;
+package com.dsoftn.models.block_types;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,100 +8,44 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dsoftn.Interfaces.IBlockBaseRepository;
 import com.dsoftn.Interfaces.IModelRepository;
 import com.dsoftn.enums.models.ScopeEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
-import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 
 import javafx.application.Platform;
-import javafx.event.Event;
 
-import com.dsoftn.events.RelationAddedEvent;
-import com.dsoftn.events.RelationDeletedEvent;
-import com.dsoftn.events.RelationUpdatedEvent;
 import com.dsoftn.events.TaskStateEvent;
+import com.dsoftn.models.Relation;
+import com.dsoftn.models.Block;
 import com.dsoftn.utils.UNumbers;
 
 /*
-TABLE blocks
+TABLE blocks_diary
     id INTEGER PRIMARY KEY AUTOINCREMENT
-    name TEXT NOT NULL - name of the block
-    date TEXT NOT NULL - date in format for JSON
+    base_block_id INTEGER NOT NULL - id of the base block
+    show_def_attachment INTEGER NOT NULL - -1 = DEFAULT, 0 = NO, 1 = YES
     text TEXT NOT NULL - text of the block
-    text_style TEXT NOT NULL - text style of the block
-    block_type INTEGER NOT NULL - BlockTypeEnum value
-    created TEXT NOT NULL - date in format for JSON
-    updated TEXT NOT NULL - date in format for JSON
-    default_attachment INTEGER - default attachment id
-RELATED PROPERTIES
-    Attachments
-    Categories
-    Tags
-    Blocks
-    Actors
+    text_style TEXT NOT NULL - style of the text
  */
 
-public class Blocks implements IModelRepository<Block>, ICustomEventListener {
+public class BlocksDiary implements IModelRepository<BlockDiary>, IBlockBaseRepository<BlockDiary> {
     // Variables
 
-    private Map<Integer, Block> data = new LinkedHashMap<>(); // <id, Block>
+    private Map<Integer, BlockDiary> data = new LinkedHashMap<>(); // <id, BlockDiary>
+    private Map<Integer, BlockDiary> dataByBaseBlock = new LinkedHashMap<>(); // <base_block_id, BlockDiary>
+
     private boolean isLoaded = false;
 
     // Constructor
 
-    public Blocks() {
-        OBJECTS.EVENT_HANDLER.register(
-            this,
-            RelationAddedEvent.RELATION_ADDED_EVENT,
-            RelationUpdatedEvent.RELATION_UPDATED_EVENT,
-            RelationDeletedEvent.RELATION_DELETED_EVENT
-        );
+    public BlocksDiary() {
     }
 
-    // Event handlers
-
-    @Override
-    public void onCustomEvent(Event event) {
-        if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
-            Relation newRelation = null;
-            Relation oldRelation = null;
-            if (event instanceof RelationAddedEvent) {
-                RelationAddedEvent relationEvent = (RelationAddedEvent) event;
-                newRelation = relationEvent.getRelation();
-            }
-            else if (event instanceof RelationUpdatedEvent) {
-                RelationUpdatedEvent relationEvent = (RelationUpdatedEvent) event;
-                oldRelation = relationEvent.getOldRelation();
-                newRelation = relationEvent.getNewRelation();
-            }
-            else if (event instanceof RelationDeletedEvent) {
-                RelationDeletedEvent relationEvent = (RelationDeletedEvent) event;
-                oldRelation = relationEvent.getRelation();
-            }
-
-            onRelationEvents(newRelation, event);
-            onRelationEvents(oldRelation, event);
-
-        }
-    }
-
-    private void onRelationEvents(Relation relation, Event event) {
-        if (relation == null) {
-            return;
-        }
-
-        if (relation.getBaseModel() == ScopeEnum.BLOCK) {
-            Block block = getEntity(relation.getBaseID());
-            if (block != null) {
-                block.onCustomEvent(event);
-            }
-        }
-    }
-
-    // Interface methods
+    // Interface IModelRepository methods
 
     @Override
     public boolean load() {
@@ -109,7 +53,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.BLOCK,
+                    ScopeEnum.BLOCK_TYPE,
                     TaskStateEnum.STARTED
                 )
             );
@@ -121,9 +65,9 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         if (db.isConnected() == false) { loadFailed(); return false; }
 
         // Find number of rows
-        Integer rowCount = db.getRowCount("blocks");
+        Integer rowCount = db.getRowCount("blocks_diary");
         if (rowCount == null) {
-            UError.error("Blocks.load: Failed to load blocks", "Failed to get row count");
+            UError.error("BlocksDiary.load: Failed to load blocks_diary", "Failed to get row count");
             loadFailed();
             return false;
         }
@@ -132,15 +76,15 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         ResultSet rs = null;
         
         try {
-            stmt = db.preparedStatement("SELECT * FROM blocks");
+            stmt = db.preparedStatement("SELECT * FROM blocks_diary");
             if (stmt == null) {
-                UError.error("Blocks.load: Failed to load blocks", "Statement is unexpectedly null");
+                UError.error("BlocksDiary.load: Failed to load blocks_diary", "Statement is unexpectedly null");
                 loadFailed();
                 return false;
             }
             rs = db.select(stmt);
             if (rs == null) {
-                UError.error("Blocks.load: Failed to load blocks", "Result set is unexpectedly null");
+                UError.error("BlocksDiary.load: Failed to load blocks_diary", "Result set is unexpectedly null");
                 loadFailed();
                 return false;
             }
@@ -148,10 +92,10 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
             int currentRow = 1;
 
             while (rs.next()) {
-                Block block = new Block();
+                BlockDiary block = new BlockDiary();
                 result = block.loadFromResultSet(rs);
                 if (result == false) {
-                    UError.error("Blocks.load: Failed to load block", "Loading block failed");
+                    UError.error("BlocksDiary.load: Failed to load block_diary", "Loading block_diary failed");
                     result = false;
                     continue;
                 }
@@ -164,7 +108,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ScopeEnum.BLOCK_TYPE, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -172,7 +116,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
             }
 
         } catch (Exception e) {
-            UError.exception("Blocks.load: Failed to load blocks", e);
+            UError.exception("BlocksDiary.load: Failed to load blocks_diary", e);
             loadFailed();
             return false;
         
@@ -181,7 +125,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                 try {
                     rs.close();
                 } catch (Exception e) {
-                    UError.exception("Blocks.load: Failed to close result set", e);
+                    UError.exception("BlocksDiary.load: Failed to close result set", e);
                     loadFailed();
                 }
             }
@@ -189,7 +133,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                 try {
                     stmt.close();
                 } catch (Exception e) {
-                    UError.exception("Blocks.load: Failed to close statement", e);
+                    UError.exception("BlocksDiary.load: Failed to close statement", e);
                     loadFailed();
                 }
             }
@@ -201,7 +145,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.BLOCK_TYPE, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -213,7 +157,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.BLOCK,
+                    ScopeEnum.BLOCK_TYPE,
                     TaskStateEnum.FAILED
                 )
             );
@@ -231,43 +175,52 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
     }
 
     @Override
-    public Block getEntity(Integer entityID) {
+    public BlockDiary getEntity(Integer entityID) {
         return data.get(entityID);
     }
 
     @Override
-    public List<Block> getEntityAll() {
-        List<Block> list = new ArrayList<>(data.values());
+    public List<BlockDiary> getEntityAll() {
+        List<BlockDiary> list = new ArrayList<>(data.values());
         return list;
     }
 
     @Override
-    public boolean add(Block entity) {
+    public boolean add(BlockDiary entity) {
         if (entity == null) return false;
 
         if (isExists(entity.getID())) return false;
 
         data.put(entity.getID(), entity);
+
+        dataByBaseBlock.put(entity.getBaseBlockID(), entity);
+
         return true;
     }
 
     @Override
-    public boolean update(Block entity) {
+    public boolean update(BlockDiary entity) {
         if (entity == null) return false;
 
         if (!isExists(entity.getID())) return false;
 
         data.put(entity.getID(), entity);
+
+        dataByBaseBlock.put(entity.getBaseBlockID(), entity);
+
         return true;
     }
 
     @Override
-    public boolean delete(Block entity) {
+    public boolean delete(BlockDiary entity) {
         if (entity == null) return false;
 
         if (!isExists(entity.getID())) return false;
 
         data.remove(entity.getID());
+
+        dataByBaseBlock.remove(entity.getBaseBlockID());
+
         return true;
     }
 
@@ -276,22 +229,44 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         return isLoaded;
     }
 
+    // Interface IBlockBaseRepository methods
+
+    @Override
+    public boolean isBaseExists(Integer baseBlockID) {
+        return dataByBaseBlock.containsKey(baseBlockID);
+    }
+
+    @Override
+    public boolean isBaseExists(Block baseBlock) {
+        return isBaseExists(baseBlock.getID());
+    }
+
+    @Override
+    public BlockDiary getEntityFromBase(Integer baseBlockID) {
+        return dataByBaseBlock.get(baseBlockID);
+    }
+
+    @Override
+    public BlockDiary getEntityFromBase(Block baseBlock) {
+        return getEntityFromBase(baseBlock.getID());
+    }
+
     // Public methods
 
-    public List<Block> getBlocksListFromIDs(List<Integer> blockIDs) {
-        List<Block> blocks = new ArrayList<>();
+    public List<BlockDiary> getBlocksListFromIDs(List<Integer> blockIDs) {
+        List<BlockDiary> blocks = new ArrayList<>();
         for (Integer blockID : blockIDs) {
-            Block block = getEntity(blockID);
+            BlockDiary block = getEntity(blockID);
             if (block != null) blocks.add(block);
         }
 
         return blocks;
     }
 
-    public List<Block> getBlocksListFromRelations(List<Relation> relations) {
+    public List<BlockDiary> getBlocksListFromRelations(List<Relation> relations) {
         List<Integer> blockIDs = new ArrayList<>();
         for (Relation relation : relations) {
-            if (relation.getRelatedModel() == ScopeEnum.BLOCK) {
+            if (relation.getRelatedModel() == ScopeEnum.BLOCK_TYPE) {
                 blockIDs.add(relation.getRelatedID());
             }
         }

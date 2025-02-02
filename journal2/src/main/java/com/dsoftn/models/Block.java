@@ -7,15 +7,19 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.enums.models.ScopeEnum;
 import com.dsoftn.enums.models.BlockTypeEnum;
+import com.dsoftn.Interfaces.IBlockBaseEntity;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
 
@@ -36,6 +40,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     private String name = "";
     private String date = CONSTANTS.INVALID_DATETIME_STRING;
     private String text = "";
+    private String textStyle = "";
     private int blockType = BlockTypeEnum.UNDEFINED.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String updated = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -163,6 +168,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             this.name = rs.getString("name");
             this.date = rs.getString("date");
             this.text = rs.getString("text");
+            this.textStyle = rs.getString("text_style");
             this.blockType = rs.getInt("block_type");
             this.created = rs.getString("created");
             this.updated = rs.getString("updated");
@@ -213,11 +219,12 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO blocks " + 
-                "(name, date, text, block_type, created, updated, default_attachment) " + 
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "(name, date, text, text_style, block_type, created, updated, default_attachment) " + 
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 this.name,
                 this.date,
                 this.text,
+                this.textStyle,
                 this.blockType,
                 this.created,
                 this.updated,
@@ -280,11 +287,12 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE blocks " + 
-                "SET name = ?, date = ?, text = ?, block_type = ?, created = ?, updated = ?, default_attachment = ? " + 
+                "SET name = ?, date = ?, text = ?, text_style = ?, block_type = ?, created = ?, updated = ?, default_attachment = ? " + 
                 "WHERE id = ?",
                 this.name,
                 this.date,
                 this.text,
+                this.textStyle,
                 this.blockType,
                 this.created,
                 this.updated,
@@ -395,6 +403,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         block.setName(this.name);
         block.setDateSTR_JSON(this.getDateSTR_JSON());
         block.setText(this.text);
+        block.setTextStyle(this.textStyle);
         block.setBlockType(BlockTypeEnum.fromInteger(this.blockType));
         block.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
         block.setUpdatedSTR_JSON(this.getUpdatedSTR_JSON());
@@ -407,6 +416,37 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         block.setRelatedActors(this.getRelatedActors());
 
         return block;
+    }
+
+    // Public methods
+
+    public IBlockBaseEntity getBlockTypeObject() {
+        switch (getBlockType()) {
+            case UNDEFINED: return null;
+            
+            case DIARY: return OBJECTS.BLOCKS_DIARY.getEntityFromBase(this);
+            case BUDGET: return null;
+            case CONTACT: return null;
+            case COMPANY: return null;
+            case MOVIE: return null;
+            case MUSIC: return null;
+            case BOOK: return null;
+            case GAME: return null;
+            case APP: return null;
+            case WEBSITE: return null;
+            case VIDEO: return null;
+            case REMAINDER: return null;
+            case QUOTE: return null;
+            case HEALTH: return null;
+            case RECIPE: return null;
+            case TRAVEL: return null;
+            case EVENT: return null;
+            case WORKOUT: return null;
+            case PASSWORD: return null;
+
+        }
+
+        return null;
     }
 
     // Getters
@@ -436,6 +476,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     }
 
     public String getText() { return this.text; }
+
+    public String getTextStyle() { return this.textStyle; }
 
     public BlockTypeEnum getBlockType() { return BlockTypeEnum.fromInteger(this.blockType); }
 
@@ -547,6 +589,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
     public void setText(String text) { this.text = text; }
 
+    public void setTextStyle(String textStyle) { this.textStyle = textStyle; }
+
     public void setBlockType(BlockTypeEnum blockType) { this.blockType = blockType.getValue(); }
 
     public void setCreated(LocalDateTime created) {
@@ -607,6 +651,53 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
     public void setRelatedActors(List<Actor> relatedActors) {
         this.relatedActors = relatedActors.stream().map((Actor actor) -> actor.getID()).collect(Collectors.toList());
+    }
+
+
+    // Overrides methods "equals()" and "hashCode()"
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+
+        Block other = (Block) obj;
+
+        return  this.getID() == other.getID() &&
+                this.getName().equals(other.getName()) &&
+                this.getDateSTR_JSON().equals(other.getDateSTR_JSON()) &&
+                this.getText().equals(other.getText()) &&
+                this.getTextStyle().equals(other.getTextStyle()) &&
+                this.getBlockType() == other.getBlockType() &&
+                this.getCreatedSTR_JSON().equals(other.getCreatedSTR_JSON()) &&
+                this.getUpdatedSTR_JSON().equals(other.getUpdatedSTR_JSON()) &&
+                UList.hasSameElements(this.getRelatedCategoriesIDs(), other.getRelatedCategoriesIDs()) &&
+                UList.hasSameElements(this.getRelatedTagsIDs(), other.getRelatedTagsIDs()) &&
+                UList.hasSameElements(this.getRelatedAttachmentsIDs(), other.getRelatedAttachmentsIDs()) &&
+                this.getDefaultAttachment() == other.getDefaultAttachment() &&
+                UList.hasSameElements(this.getRelatedBlocksIDs(), other.getRelatedBlocksIDs()) &&
+                UList.hasSameElements(this.getRelatedActorsIDs(), other.getRelatedActorsIDs());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+            this.id,
+            this.name,
+            this.date,
+            this.text,
+            this.textStyle,
+            this.blockType,
+            this.created,
+            this.updated,
+            this.defaultAttachment,
+            new HashSet<>(this.getRelatedCategoriesIDs()),
+            new HashSet<>(this.getRelatedTagsIDs()),
+            new HashSet<>(this.getRelatedAttachmentsIDs()),
+            new HashSet<>(this.getRelatedBlocksIDs()),
+            new HashSet<>(this.getRelatedActorsIDs())
+        );
     }
 
 }

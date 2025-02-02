@@ -1,0 +1,13 @@
+.label-block-id {
+    -fx-background-color: transparent;
+    -fx-text-fill: #90e0ef;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.label-block-name {
+    -fx-background-color: transparent;
+    -fx-text-fill: #48cae4;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}

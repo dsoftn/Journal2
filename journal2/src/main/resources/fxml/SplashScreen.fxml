@@ -35,6 +35,7 @@
                </HBox.margin>
                <children>
                   <Label fx:id="lblTaskBlocks" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Blocks" />
+                  <Label fx:id="lblTaskBlockTypes" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Block Types" />
                   <Label fx:id="lblTaskDefinitions" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Definitions" />
                   <Label fx:id="lblTaskAttachments" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Attachments" />
                   <Label fx:id="lblTaskCategories" style="-fx-font-size: 14; -fx-text-fill: #80ed99;" styleClass="label-default" text="Categories" />

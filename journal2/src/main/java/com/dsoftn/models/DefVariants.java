@@ -134,14 +134,14 @@ public class DefVariants implements IModelRepository<DefVariant> {
             db.taskCompleted();
         }
 
-        // Rebuild dataByDef Map from data Map
-        dataByDef.clear();
-        for (DefVariant definition_variant : data.values()) {
-            if (!dataByDef.containsKey(definition_variant.getDefinitionID())) {
-                dataByDef.put(definition_variant.getDefinitionID(), new ArrayList<>());
-            }
-            dataByDef.get(definition_variant.getDefinitionID()).add(definition_variant);
-        }
+        // Rebuild dataByDef Map from data Map   - NOT NEEDED ???
+        // dataByDef.clear();
+        // for (DefVariant definition_variant : data.values()) {
+        //     if (!dataByDef.containsKey(definition_variant.getDefinitionID())) {
+        //         dataByDef.put(definition_variant.getDefinitionID(), new ArrayList<>());
+        //     }
+        //     dataByDef.get(definition_variant.getDefinitionID()).add(definition_variant);
+        // }
 
         if (result == false) {
             loadFailed();

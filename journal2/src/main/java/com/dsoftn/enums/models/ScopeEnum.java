@@ -14,7 +14,8 @@ public enum ScopeEnum {
     TAG(64),
     RELATION(128),
     DEF_VARIANT(256),
-    ACTOR(512)
+    ACTOR(512),
+    BLOCK_TYPE(1024)
     ;
 
     private final int value;

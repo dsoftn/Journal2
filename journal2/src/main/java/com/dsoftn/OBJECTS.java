@@ -13,6 +13,7 @@ import com.dsoftn.models.Actors;
 import com.dsoftn.models.User;
 import com.dsoftn.services.EventHandler;
 import com.dsoftn.services.SQLiteDB;
+import com.dsoftn.models.block_types.BlocksDiary;
 
 
 public class OBJECTS {
@@ -44,6 +45,9 @@ public class OBJECTS {
     public static final Relations RELATIONS = new Relations();
 
     public static final Actors ACTORS = new Actors(); 
+
+    // BlockTypes models
+    public static final BlocksDiary BLOCKS_DIARY = new BlocksDiary();
 
     // Objects
 

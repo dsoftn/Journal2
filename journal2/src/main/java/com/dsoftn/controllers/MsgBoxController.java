@@ -33,7 +33,8 @@ public class MsgBoxController implements IBaseController {
         COPY("/images/copy.png"),
         USER("/images/user.png"),
         MODEL("/images/model.png"),
-        USER_NO_IMAGE("/images/user_no_image.png");
+        USER_NO_IMAGE("/images/user_no_image.png"),
+        DATABASE("/images/database.png");
 
         private final String iconPath;
 

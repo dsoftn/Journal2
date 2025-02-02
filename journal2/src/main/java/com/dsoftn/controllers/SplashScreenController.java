@@ -22,6 +22,7 @@ import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.utils.UError;
 import com.dsoftn.events.TaskStateEvent;
@@ -36,6 +37,8 @@ public class SplashScreenController implements IBaseController, ICustomEventList
     private Image imageDone = new Image(getClass().getResourceAsStream("/images/ok.png"));
     private Map<String, ImageView> imgDone = new HashMap<>();
     private ImageView imgError = new ImageView(new Image(getClass().getResourceAsStream("/images/error.png")));
+    private int blockTypesCount = BlockTypeEnum.values().length - 1; // -1 to exclude UNDEFINED
+    private int blockTypesCurrent = 0;
 
     // FXML Widgets
     @FXML
@@ -47,6 +50,8 @@ public class SplashScreenController implements IBaseController, ICustomEventList
 
     @FXML
     private Label lblTaskBlocks;
+    @FXML
+    private Label lblTaskBlockTypes; // All block types
     @FXML
     private Label lblTaskDefinitions;
     @FXML
@@ -118,6 +123,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
 
         // Set images for labels
         lblTaskBlocks.setGraphic(imgSelected.get(ScopeEnum.BLOCK.toString()));
+        lblTaskBlockTypes.setGraphic(imgSelected.get(ScopeEnum.BLOCK_TYPE.toString()));
         lblTaskDefinitions.setGraphic(imgSelected.get(ScopeEnum.DEFINITION.toString()));
         lblTaskAttachments.setGraphic(imgSelected.get(ScopeEnum.ATTACHMENT.toString()));
         lblTaskCategories.setGraphic(imgSelected.get(ScopeEnum.CATEGORY.toString()));
@@ -140,6 +146,9 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         switch (model) {
             case BLOCK:
                 changeTaskWidget(lblTaskBlocks, "text_Blocks", taskStateEvent);
+                break;
+            case BLOCK_TYPE:
+                changeBlockTypeTaskWidget(lblTaskBlockTypes, "text_BlockTypes", taskStateEvent);
                 break;
             case DEFINITION:
                 changeTaskWidget(lblTaskDefinitions, "text_Definitions", taskStateEvent);
@@ -195,6 +204,29 @@ public class SplashScreenController implements IBaseController, ICustomEventList
             }
             else if (taskStateEvent.getState() == TaskStateEnum.EXECUTING && taskStateEvent.getProgressPercent() != null) {
                 label.setText(OBJECTS.SETTINGS.getl(textSettingsKey) + ": " + taskStateEvent.getProgressString());
+            }
+        });
+
+    }
+
+    private void changeBlockTypeTaskWidget(Label label, String textSettingsKey, TaskStateEvent taskStateEvent) {
+        Platform.runLater(() -> {
+            if (taskStateEvent.getState() == TaskStateEnum.STARTED) {
+                blockTypesCurrent++;
+                label.setGraphic(imgWorking);
+            }
+            else if (taskStateEvent.getState() == TaskStateEnum.COMPLETED) {
+                if (blockTypesCurrent == blockTypesCount) {
+                    label.setGraphic(imgDone.get(taskStateEvent.getModel().toString()));
+                    label.setText(OBJECTS.SETTINGS.getl(textSettingsKey));
+                }
+            }
+            else if (taskStateEvent.getState() == TaskStateEnum.FAILED) {
+                label.setGraphic(imgError);
+            }
+            else if (taskStateEvent.getState() == TaskStateEnum.EXECUTING && taskStateEvent.getProgressPercent() != null) {
+                String text = "(" + blockTypesCurrent + "/" + blockTypesCount + ") " + taskStateEvent.getProgressString();
+                label.setText(OBJECTS.SETTINGS.getl(textSettingsKey) + text);
             }
         });
 
@@ -300,8 +332,22 @@ public class SplashScreenController implements IBaseController, ICustomEventList
             UError.error("GuiMain.createGlobalDataModels -> OBJECTS.BLOCKS.load() failed");
             return false;
         }
+        if (!createGlobalBlockTypeModels()) {
+            // This will create all BlockType models
+            // Each BlockType will handle its own loading and trigger error if failed
+            return false;
+        }
         if (!OBJECTS.DEFINITIONS.load()) {
             UError.error("GuiMain.createGlobalDataModels -> OBJECTS.DEFINITIONS.load() failed");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean createGlobalBlockTypeModels() {
+        if (!OBJECTS.BLOCKS_DIARY.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.BLOCKS_DIARY.load() failed");
             return false;
         }
 
@@ -315,6 +361,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
 
         // Tasks Info
         lblTaskBlocks.setText(OBJECTS.SETTINGS.getl("text_Blocks"));
+        lblTaskBlockTypes.setText(OBJECTS.SETTINGS.getl("text_BlockTypes"));
         lblTaskDefinitions.setText(OBJECTS.SETTINGS.getl("text_Definitions"));
         lblTaskAttachments.setText(OBJECTS.SETTINGS.getl("text_Attachments"));
         lblTaskCategories.setText(OBJECTS.SETTINGS.getl("text_Categories"));

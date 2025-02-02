@@ -203,6 +203,13 @@
         "languageCode": "en",
         "creationDate": "2025.01.29 23:56:40",
         "userData": ""
+      },
+      "text_BlockTypes": {
+        "key": "text_BlockTypes",
+        "value": "Block Types",
+        "languageCode": "en",
+        "creationDate": "2025.02.01 15:16:23",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -407,6 +414,13 @@
         "value": "Uloge",
         "languageCode": "sr-lat",
         "creationDate": "2025.01.29 23:56:40",
+        "userData": ""
+      },
+      "text_BlockTypes": {
+        "key": "text_BlockTypes",
+        "value": "Vrste blokova",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.01 15:16:23",
         "userData": ""
       }
     }

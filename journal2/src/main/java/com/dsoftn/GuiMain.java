@@ -99,6 +99,21 @@ public class GuiMain extends Application {
             OBJECTS.DATABASE.disconnect();
         }));
 
+        if (!OBJECTS.DATABASE.isConnected()) {
+            MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
+            msgBoxController.setTitleText("Configuration Error");
+            msgBoxController.setHeaderText("Error Connecting to Database");
+            msgBoxController.setHeaderIcon(MsgBoxIcon.ERROR);
+            msgBoxController.setContentText("An error occurred while connecting to the database.\nApplication will now exit.");
+            msgBoxController.setContentIcon(MsgBoxIcon.DATABASE);
+            msgBoxController.setButtons(MsgBoxButton.OK);
+            msgBoxController.setDefaultButton(MsgBoxButton.OK);
+            msgBoxController.startMe();
+
+            Platform.exit();
+            return;
+        }
+
         loginStage.close();
 
         // Show Splash Screen while models is loading
@@ -161,6 +176,11 @@ public class GuiMain extends Application {
         if (!OBJECTS.BLOCKS.isModelLoaded()) {
             UError.error("GuiMain.getErrorsInModelLoading: Blocks are not properly loaded");
             errors += "Blocks are not properly loaded\n";
+        }
+
+        if (!OBJECTS.BLOCKS_DIARY.isModelLoaded()) {
+            UError.error("GuiMain.getErrorsInModelLoading: Blocks Diary are not properly loaded");
+            errors += "Blocks Diary are not properly loaded\n";
         }
 
         if (!OBJECTS.DEFINITIONS.isModelLoaded()) {

@@ -20,8 +20,10 @@
 ### Models <sup>[⤴](#table-of-contents)</sup>
 - [General Models Rules](#general-models-rules-⤴)
 - [How to add new Model](#how-to-add-new-model-⤴)
+- [How Events work between Models](#how-events-work-between-models-⤴)
 - [Users-User Model](#users-user-model-⤴)
 - [Blocks-Block Model](#blocks-block-model-⤴)
+- [BlockTypes-BlockType Model](#blocktypes-blocktype-model-⤴)
 - [Definitions-Definition Model](#definitions-definition-model-⤴)
 - [DefVariants-DefVariant Model](#defvariants-defvariant-model-⤴)
 - [Attachments-Attachment Model](#attachments-attachment-model-⤴)
@@ -73,7 +75,20 @@
   3. **Login Dialog** [⬅](#login-dialog-⤴):
      - Start `LoginController.startMe()`.
      - Retrieve authenticated user with `getAuthenticatedUser()`.
-  4. **Main Window** [⬅](#main-window-dialog-⤴):
+  4. **Create active user**:
+     - In `OBJECTS` class is created object `ACTIVE_USER` of class `User`
+  5. **Load Settings**:
+     - Setting for `ACTIVE_USER` is loaded from user directory in `Settings` class.
+  6. **Database connection**:
+     - In `OBJECTS` class is created object `DATABASE` of class `SQLiteDB`
+     - This connection stays open until application is closed.
+     - Line of code `Runtime.getRuntime().addShutdownHook` ensures that connection is closed when application is closed.
+  7. **Start Splash Screen**:
+     - `SplashScreenController` will load all models data.
+     - Order of models loading is important because some models depend on others.
+  8. **Check if all models are loaded**:
+     - Calling `getErrorsInModelLoading()` will check if all models are loaded successfully.
+  9. **Main Window** [⬅](#main-window-dialog-⤴):
      - Start `MainWinController.startMe()`.
 
 ## Login Dialog <sup>[⤴](#dialogs-⤴)</sup>
@@ -181,18 +196,38 @@ lblTaskRelations.setGraphic(imgSelected.get(ScopeEnum.RELATION.toString()));
 // Add your label here !
 ```
 - In `onCustomEvent` method add case for new model
+    - **NOTE**: If model is BlockType no need to change `onCustomEvent` method
 ```java
 case NEW_MODEL:
     changeTaskWidget(newModelLabel, "text_NewModel", taskStateEvent);
     break;
 ```
 - In `createGlobalDataModels` method add new model
+    - **NOTE**: If model is BlockType change `createGlobalBlockTypeModels` method instead
 ```java
 if (!OBJECTS.NEW_MODEL.load()) {
     UError.error("GuiMain.createGlobalDataModels -> OBJECTS.NEW_MODEL.load() failed");
     return false;
 }
 ```
+
+## How Events work between Models <sup>[⤴](#models-⤴)</sup>
+### Behavior
+1. When you *add*, *update* or *delete* model entity event is triggered
+2. Class `Relations` listens to all events for every model that can be related with other model
+3. When `Relations` class receive event it make all necessary relations and update information in `Relations` class and in database
+4. `Relations` class trigger his own events for every relation that has been changed and for this event sets **isLoopEvent** property to `true`
+5. Then Model receives event from `Relations` class but has no need to update information because it is loop event and Model itself is causing this event so it will be ignored
+6. If event received from `Relations` class is not loop event that means that information in `Relations` have been changed directly and Model will update information about his relations automatically
+- NOTE
+    - Only Models that can be related with other models listen to `Relations` events
+    - `Relations` class listens only Models that can be related with other models
+
+#### Block and BlockType don't listen events between each other
+1. `Block` class doesn't listen to `BlockType` events
+2. `BlockType` class doesn't listen to `Block` events
+3. NOTE
+    - That means that every time you changing any of this models you must update information in both of them
 
 ## Users-User Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -218,6 +253,10 @@ Update following code in `User` class:
 
 ## Blocks-Block Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
+- Every *Block* in **MyJournal** contain two parts.
+  - *Block* classes that contain information about block (Relations, block type, date, text that is used for searching, etc.)
+  - [Block Type](#blocktypes-blocktype-model-⤴) classes that contain block content (For each block type there is different content, and each Block Type has its own classes)
+  - **Important**: *Block* and *Block Type* should be added, updated and deleted separately. They do not have any knowledge of each other, therefore updating *Block* will not update *Block Type*, and updating *Block Type* will not update *Block* automatically.
 - Load all blocks with `Blocks.load()` method, this should be called before any other action.
 - Dates are stored in database in JSON format.
 - Getters for date properties as `date`, `created` and `updated` methods give date in NORMAL format.
@@ -245,10 +284,42 @@ Update following code in `Block` class:
 4. Add new property in method `Block.add` sql query
 5. Add new property in method `Block.update` sql query
 6. Add new property in method `Block.duplicate`
-7. Update `Blocks` class docstring
-8. Update `Block` and `Blocks` **onCustomEvent** methods if needed
+7. Update methods `Block.equals` and `Block.hashCode`
+8. Update `Blocks` class docstring
+9. Update `Block` and `Blocks` **onCustomEvent** methods if needed
+10. Update **DatabaseTables** settings
+11. If property is relation with other model - update in `Relations` class events **add** and **update**
+
+## BlockTypes-BlockType Model <sup>[⤴](#models-⤴)</sup>
+### Overview
+- You must perform `load()` method before using `BlockTypes` class.
+- Each block type has `baseBlockID()` method that returns ID of base block.
+- See [Blocks-Block Model](#blocks-block-model-⤴) for more information
+
+### How to add new property to BlockType
+Update following code in `BlockType` class:
+1. Add variable with new property
+2. Add getter and setter for new property
+3. Add new property in method `BlockType.loadFromResultSet`
+4. Add new property in method `BlockType.add` sql query
+5. Add new property in method `BlockType.update` sql query
+6. Add new property in method `BlockType.duplicate`
+7. Update methods `BlockType.equals` and `BlockType.hashCode`
+8. Update `BlocksType` class docstring
 9. Update **DatabaseTables** settings
-10. If property is relation with other model - update in `Relations` class events **add** and **update**
+
+### How to add new BlockType Model
+1. Create classes `BlockType` and `BlocksType` (**Repository** and **Entity** classes)
+2. Add **Repository** class to `OBJECTS` class
+3. Add new **BlockType** to `BlockTypeEnum` enum
+4. In **Events** add new property and getter in classes:
+    - `BlockTypeAddedEvent`
+    - `BlockTypeUpdatedEvent`
+    - `BlockTypeDeletedEvent`
+5. Add new `BlockType` to `Block` class in `getBlockTypeObject` method
+6. Add new model to `GuiMain.getErrorsInModelLoading` to properly check loading errors
+7. Update `SplashScreenController` to `load()` model properly
+    - To update `SplashScreenController` class see [How to add new Model](#how-to-add-new-model-⤴)
 
 ## Definitions-Definition Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
@@ -557,8 +628,10 @@ Root contains 3 global classes:
 ## Resources Structure <sup>[⤴](#folder-structure-⤴)</sup>
 Folders:
 - **css** - contains all css files
+    - Every dialog or element has its own css file
 - **fxml** - contains all fxml files
 - **images** - contains all images
+- **gifs** - contains all gifs
 
 
 ## Data Folder Structure <sup>[⤴](#folder-structure-⤴)</sup>
