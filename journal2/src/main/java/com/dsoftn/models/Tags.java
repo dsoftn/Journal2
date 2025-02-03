@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.Interfaces.IModelRepository;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
@@ -86,7 +86,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
             return;
         }
 
-        if (relation.getBaseModel() == ScopeEnum.TAG) {
+        if (relation.getBaseModel() == ModelEnum.TAG) {
             Tag tag = getEntity(relation.getBaseID());
             if (tag != null) {
                 tag.onCustomEvent(event);
@@ -102,7 +102,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.TAG,
+                    ModelEnum.TAG,
                     TaskStateEnum.STARTED
                 )
             );
@@ -157,7 +157,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.TAG, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ModelEnum.TAG, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -194,7 +194,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.TAG, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ModelEnum.TAG, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -206,7 +206,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.TAG,
+                    ModelEnum.TAG,
                     TaskStateEnum.FAILED
                 )
             );
@@ -284,7 +284,7 @@ public class Tags implements IModelRepository<Tag>, ICustomEventListener {
     public List<Tag> getTagsListFromRelations(List<Relation> relations) {
         List<Integer> tagIDs = new ArrayList<>();
         for (Relation relation : relations) {
-            if (relation.getRelatedModel() == ScopeEnum.TAG) {
+            if (relation.getRelatedModel() == ModelEnum.TAG) {
                 tagIDs.add(relation.getRelatedID());
             }
         }

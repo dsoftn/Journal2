@@ -13,7 +13,7 @@ import javafx.application.Platform;
 
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IModelRepository;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.services.SQLiteDB;
@@ -47,7 +47,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.DEF_VARIANT,
+                    ModelEnum.DEF_VARIANT,
                     TaskStateEnum.STARTED
                 )
             );
@@ -102,7 +102,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.DEF_VARIANT, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ModelEnum.DEF_VARIANT, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -148,7 +148,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.DEF_VARIANT, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ModelEnum.DEF_VARIANT, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -160,7 +160,7 @@ public class DefVariants implements IModelRepository<DefVariant> {
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.DEF_VARIANT,
+                    ModelEnum.DEF_VARIANT,
                     TaskStateEnum.FAILED
                 )
             );

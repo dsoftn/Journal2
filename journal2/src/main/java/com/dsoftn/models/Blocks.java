@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.Interfaces.IModelRepository;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
@@ -93,7 +93,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
             return;
         }
 
-        if (relation.getBaseModel() == ScopeEnum.BLOCK) {
+        if (relation.getBaseModel() == ModelEnum.BLOCK) {
             Block block = getEntity(relation.getBaseID());
             if (block != null) {
                 block.onCustomEvent(event);
@@ -109,7 +109,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.BLOCK,
+                    ModelEnum.BLOCK,
                     TaskStateEnum.STARTED
                 )
             );
@@ -164,7 +164,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ModelEnum.BLOCK, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -201,7 +201,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.BLOCK, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ModelEnum.BLOCK, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -213,7 +213,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.BLOCK,
+                    ModelEnum.BLOCK,
                     TaskStateEnum.FAILED
                 )
             );
@@ -291,7 +291,7 @@ public class Blocks implements IModelRepository<Block>, ICustomEventListener {
     public List<Block> getBlocksListFromRelations(List<Relation> relations) {
         List<Integer> blockIDs = new ArrayList<>();
         for (Relation relation : relations) {
-            if (relation.getRelatedModel() == ScopeEnum.BLOCK) {
+            if (relation.getRelatedModel() == ModelEnum.BLOCK) {
                 blockIDs.add(relation.getRelatedID());
             }
         }

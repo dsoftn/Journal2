@@ -11,8 +11,8 @@
   "Address": "",
   "Notes": "",
   "CreationTime": "2025.02.01 15:45:27",
-  "LoginSessions": 2,
-  "LastSessionStart": "2025.02.01 16:03:01",
-  "LoginDurationSeconds": 11,
+  "LoginSessions": 5,
+  "LastSessionStart": "2025.02.03 01:16:04",
+  "LoginDurationSeconds": 36,
   "IsLoggedIn": false
 }

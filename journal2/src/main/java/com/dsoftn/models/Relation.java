@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 
 import com.dsoftn.Interfaces.IModelEntity;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
@@ -17,11 +17,11 @@ import com.dsoftn.OBJECTS;
 
 public class Relation implements IModelEntity<Relation> {
     // Properties
-    private Integer id = CONSTANTS.INVALID_ID;
-    private Integer baseModel = ScopeEnum.NONE.getValue();
-    private Integer baseID = CONSTANTS.INVALID_ID;
-    private Integer relatedModel = ScopeEnum.NONE.getValue();
-    private Integer relatedID = CONSTANTS.INVALID_ID;
+    private int id = CONSTANTS.INVALID_ID;
+    private int baseModel = ModelEnum.NONE.getValue();
+    private int baseID = CONSTANTS.INVALID_ID;
+    private int relatedModel = ModelEnum.NONE.getValue();
+    private int relatedID = CONSTANTS.INVALID_ID;
     private String description = "";
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
@@ -78,11 +78,18 @@ public class Relation implements IModelEntity<Relation> {
             this.relatedID = rs.getInt("related_id");
             this.description = rs.getString("description");
             this.created = rs.getString("created");
-            return true;
+            
+            return isValid();
         } catch (Exception e) {
             UError.exception("Relation.loadFromResultSet: Failed to load relation from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return  this.description != null &&
+                this.created != null;
     }
 
     @Override
@@ -291,16 +298,16 @@ public class Relation implements IModelEntity<Relation> {
 
     // Getters
     
-    public ScopeEnum getBaseModel() {
-        return ScopeEnum.fromInteger(this.baseModel);
+    public ModelEnum getBaseModel() {
+        return ModelEnum.fromInteger(this.baseModel);
     }
 
     public int getBaseID() {
         return this.baseID;
     }
 
-    public ScopeEnum getRelatedModel() {
-        return ScopeEnum.fromInteger(this.relatedModel);
+    public ModelEnum getRelatedModel() {
+        return ModelEnum.fromInteger(this.relatedModel);
     }
 
     public int getRelatedID() {
@@ -337,10 +344,10 @@ public class Relation implements IModelEntity<Relation> {
 
     public void setID(Integer id) { this.id = id; }
 
-    public void setBaseModel(ScopeEnum baseModel) { this.baseModel = baseModel.getValue(); }
+    public void setBaseModel(ModelEnum baseModel) { this.baseModel = baseModel.getValue(); }
     public void setBaseModel(Integer baseModel) {
-        ScopeEnum scope = ScopeEnum.fromInteger(baseModel);
-        if (scope == null || scope == ScopeEnum.NONE || scope == ScopeEnum.ALL) {
+        ModelEnum scope = ModelEnum.fromInteger(baseModel);
+        if (scope == null || scope == ModelEnum.NONE || scope == ModelEnum.ALL) {
             UError.error("Relation.setBaseModel: Failed to set base model", "Invalid base model");
             return;
         }
@@ -350,10 +357,10 @@ public class Relation implements IModelEntity<Relation> {
 
     public void setBaseID(Integer baseID) { this.baseID = baseID; }
 
-    public void setRelatedModel(ScopeEnum relatedModel) { this.relatedModel = relatedModel.getValue(); }
+    public void setRelatedModel(ModelEnum relatedModel) { this.relatedModel = relatedModel.getValue(); }
     public void setRelatedModel(Integer relatedModel) {
-        ScopeEnum scope = ScopeEnum.fromInteger(relatedModel);
-        if (scope == null || scope == ScopeEnum.NONE || scope == ScopeEnum.ALL) {
+        ModelEnum scope = ModelEnum.fromInteger(relatedModel);
+        if (scope == null || scope == ModelEnum.NONE || scope == ModelEnum.ALL) {
             UError.error("Relation.setRelatedModel: Failed to set related model", "Invalid related model");
             return;
         }

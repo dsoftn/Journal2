@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.SourceTypeEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
@@ -35,7 +35,7 @@ public class Definition implements IModelEntity<Definition>, ICustomEventListene
     private String name = "";
     private String description = "";
     private String source = "";
-    private Integer sourceType = SourceTypeEnum.UNDEFINED.getValue();
+    private int sourceType = SourceTypeEnum.UNDEFINED.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String updated = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private List<Integer> relatedDefinitions = new ArrayList<Integer>();
@@ -98,15 +98,15 @@ public class Definition implements IModelEntity<Definition>, ICustomEventListene
         }
 
         // Check if relation belongs to this definition
-        if (relation.getBaseModel() != ScopeEnum.DEFINITION && relation.getBaseID() != this.id) {
+        if (relation.getBaseModel() != ModelEnum.DEFINITION && relation.getBaseID() != this.id) {
             return;
         }
 
-        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedBlocks = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.BLOCK).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedDefinitions = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.DEFINITION, this.id, ScopeEnum.DEFINITION).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.DEFINITION, this.id, ModelEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedBlocks = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.DEFINITION, this.id, ModelEnum.BLOCK).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.DEFINITION, this.id, ModelEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.DEFINITION, this.id, ModelEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedDefinitions = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.DEFINITION, this.id, ModelEnum.DEFINITION).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedAttachments = newRelatedAttachments;
         relatedBlocks = newRelatedBlocks;
@@ -169,27 +169,27 @@ public class Definition implements IModelEntity<Definition>, ICustomEventListene
 
             this.setRelatedCategories(
                 OBJECTS.CATEGORIES.getCategoriesListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.CATEGORY))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.DEFINITION, this.id, ModelEnum.CATEGORY))
                 );
 
             this.setRelatedTags(
                 OBJECTS.TAGS.getTagsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.TAG))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.DEFINITION, this.id, ModelEnum.TAG))
             );
 
             this.setRelatedAttachments(
                 OBJECTS.ATTACHMENTS.getAttachmentsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.ATTACHMENT))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.DEFINITION, this.id, ModelEnum.ATTACHMENT))
             );
 
             this.setRelatedBlocks(
                 OBJECTS.BLOCKS.getBlocksListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.BLOCK))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.DEFINITION, this.id, ModelEnum.BLOCK))
             );
 
             this.setRelatedDefinitions(
                 OBJECTS.DEFINITIONS.getDefinitionsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.DEFINITION, this.id, ScopeEnum.DEFINITION))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.DEFINITION, this.id, ModelEnum.DEFINITION))
             );
 
             // Variants
@@ -197,11 +197,20 @@ public class Definition implements IModelEntity<Definition>, ICustomEventListene
                 OBJECTS.DEFINITIONS_VARIANTS.getVariantsWordList(this.id)
             );
 
-            return true;
+            return isValid();
         } catch (Exception e) {
             UError.exception("Definition.loadFromResultSet: Failed to load definition from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return  this.name != null &&
+                this.description != null &&
+                this.source != null &&
+                this.created != null &&
+                this.updated != null;
     }
 
     @Override

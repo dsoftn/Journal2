@@ -3,7 +3,7 @@ package com.dsoftn.enums.models;
 import java.util.Arrays;
 
 
-public enum ScopeEnum {
+public enum ModelEnum {
 
     NONE(1),
     ALL(2),
@@ -22,7 +22,7 @@ public enum ScopeEnum {
 
     // Constructor
     
-    ScopeEnum(int value) {
+    ModelEnum(int value) {
         this.value = value;
     }
 
@@ -35,7 +35,7 @@ public enum ScopeEnum {
     /**
      * Combine multiple ScopeEnum values into one
      */
-    public static int combineValues(ScopeEnum ... types) {
+    public static int combineValues(ModelEnum ... types) {
         // Convert types to integer values and use combineValues method that takes integer values
         int[] integerValues = new int[types.length];
 
@@ -44,12 +44,12 @@ public enum ScopeEnum {
         }
 
         // If types contains NONE, return ScopeEnum.NONE, If types contains ALL, return ScopeEnum.ALL
-        for (ScopeEnum type : types) {
-            if (type == ScopeEnum.NONE) {
-                return ScopeEnum.NONE.getValue();
+        for (ModelEnum type : types) {
+            if (type == ModelEnum.NONE) {
+                return ModelEnum.NONE.getValue();
             }
-            if (type == ScopeEnum.ALL) {
-                return ScopeEnum.ALL.getValue();
+            if (type == ModelEnum.ALL) {
+                return ModelEnum.ALL.getValue();
             }
         }
 
@@ -73,18 +73,18 @@ public enum ScopeEnum {
     /**
      * Get ScopeEnum array from integer value
      */
-    public static ScopeEnum[] getContent (int value) {
+    public static ModelEnum[] getContent (int value) {
         return Arrays.stream(values())
                 .filter(type -> (value & type.getValue()) != 0)
-                .toArray(ScopeEnum[]::new);
+                .toArray(ModelEnum[]::new);
     }
 
     /**
      * Get ScopeEnum object from integer value
      * <p>If value is not found, returns null</p>
      */
-    public static ScopeEnum fromInteger(int value) {
-        for (ScopeEnum type : values()) {
+    public static ModelEnum fromInteger(int value) {
+        for (ModelEnum type : values()) {
             if (type.getValue() == value) {
                 return type;
             }
@@ -96,8 +96,8 @@ public enum ScopeEnum {
      * Get ScopeEnum object from name
      * <p>If name is not found, returns null</p>
      */
-    public static ScopeEnum fromName(String name) {
-        for (ScopeEnum type : values()) {
+    public static ModelEnum fromName(String name) {
+        for (ModelEnum type : values()) {
             if (type.name().equals(name)) {
                 return type;
             }
@@ -111,7 +111,7 @@ public enum ScopeEnum {
      * Check if this integer contains specified type
      * <p>Example: hasType(12, ScopeEnum.BLOCK) = true</p>
      */
-    public static boolean hasType(int integerToExamine, ScopeEnum requiredType) {
+    public static boolean hasType(int integerToExamine, ModelEnum requiredType) {
         return (integerToExamine & requiredType.getValue()) != 0;
     }
 

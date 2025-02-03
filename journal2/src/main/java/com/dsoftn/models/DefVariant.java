@@ -63,11 +63,16 @@ public class DefVariant implements IModelEntity<DefVariant> {
             this.definitionID = rs.getInt("definition_id");
             this.matchCase = rs.getInt("match_case");
 
-            return true;
+            return isValid();
         } catch (Exception e) {
             UError.exception("DefVariant.loadFromResultSet: Failed to load DefVariant from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return this.text != null;
     }
 
     @Override

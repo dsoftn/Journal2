@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.dsoftn.Interfaces.IBlockBaseRepository;
 import com.dsoftn.Interfaces.IModelRepository;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
@@ -53,7 +53,7 @@ public class BlocksDiary implements IModelRepository<BlockDiary>, IBlockBaseRepo
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.BLOCK_TYPE,
+                    ModelEnum.BLOCK_TYPE,
                     TaskStateEnum.STARTED
                 )
             );
@@ -108,7 +108,7 @@ public class BlocksDiary implements IModelRepository<BlockDiary>, IBlockBaseRepo
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.BLOCK_TYPE, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ModelEnum.BLOCK_TYPE, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -145,7 +145,7 @@ public class BlocksDiary implements IModelRepository<BlockDiary>, IBlockBaseRepo
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.BLOCK_TYPE, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ModelEnum.BLOCK_TYPE, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -157,7 +157,7 @@ public class BlocksDiary implements IModelRepository<BlockDiary>, IBlockBaseRepo
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.BLOCK_TYPE,
+                    ModelEnum.BLOCK_TYPE,
                     TaskStateEnum.FAILED
                 )
             );
@@ -266,7 +266,7 @@ public class BlocksDiary implements IModelRepository<BlockDiary>, IBlockBaseRepo
     public List<BlockDiary> getBlocksListFromRelations(List<Relation> relations) {
         List<Integer> blockIDs = new ArrayList<>();
         for (Relation relation : relations) {
-            if (relation.getRelatedModel() == ScopeEnum.BLOCK_TYPE) {
+            if (relation.getRelatedModel() == ModelEnum.BLOCK_TYPE) {
                 blockIDs.add(relation.getRelatedID());
             }
         }

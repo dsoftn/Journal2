@@ -6,6 +6,8 @@ public interface IModelEntity<T> {
 
     public boolean load(Integer id);
 
+    public boolean isValid();
+
     public boolean add();
     public boolean canBeAdded();
 

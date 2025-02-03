@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.Interfaces.IModelRepository;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
@@ -98,7 +98,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
             return;
         }
 
-        if (relation.getBaseModel() == ScopeEnum.DEFINITION) {
+        if (relation.getBaseModel() == ModelEnum.DEFINITION) {
             Definition definition = getEntity(relation.getBaseID());
             if (definition != null) {
                 definition.onCustomEvent(event);
@@ -114,7 +114,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.DEFINITION,
+                    ModelEnum.DEFINITION,
                     TaskStateEnum.STARTED
                 )
             );
@@ -169,7 +169,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.DEFINITION, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ModelEnum.DEFINITION, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -206,7 +206,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.DEFINITION, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ModelEnum.DEFINITION, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -218,7 +218,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.DEFINITION,
+                    ModelEnum.DEFINITION,
                     TaskStateEnum.FAILED
                 )
             );
@@ -296,7 +296,7 @@ public class Definitions implements IModelRepository<Definition>, ICustomEventLi
     public List<Definition> getDefinitionsListFromRelations(List<Relation> relations) {
         List<Integer> definitionIDs = new ArrayList<>();
         for (Relation relation : relations) {
-            if (relation.getRelatedModel() == ScopeEnum.DEFINITION) {
+            if (relation.getRelatedModel() == ModelEnum.DEFINITION) {
                 definitionIDs.add(relation.getRelatedID());
             }
         }

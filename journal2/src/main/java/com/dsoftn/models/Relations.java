@@ -15,7 +15,7 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IModelRepository;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
@@ -136,7 +136,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         AttachmentAddedEvent attachmentAddedEvent = (AttachmentAddedEvent) event;
         Attachment attachment = attachmentAddedEvent.getAttachment();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ATTACHMENT, attachment.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.ATTACHMENT, attachment.getID());
 
         if (dataByScopeAndID.containsKey(scopeAndIDKey)) {
             UError.error(
@@ -152,9 +152,9 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
 
         for (int relatedAttachmentID : attachment.getRelatedAttachmentsIDs()) {
             Relation relation = new Relation();
-            relation.setBaseModel(ScopeEnum.ATTACHMENT);
+            relation.setBaseModel(ModelEnum.ATTACHMENT);
             relation.setBaseID(attachment.getID());
-            relation.setRelatedModel(ScopeEnum.ATTACHMENT);
+            relation.setRelatedModel(ModelEnum.ATTACHMENT);
             relation.setRelatedID(relatedAttachmentID);
 
             relation.add(true);
@@ -165,7 +165,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         AttachmentUpdatedEvent attachmentUpdatedEvent = (AttachmentUpdatedEvent) event;
         Attachment attachment = attachmentUpdatedEvent.getNewAttachment();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ATTACHMENT, attachment.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.ATTACHMENT, attachment.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
@@ -176,7 +176,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         List<Relation> relationsToRemove = new ArrayList<>();
         List<Integer> relationsToAdd = new ArrayList<>();
         for (Relation relation : dataByScopeAndID.get(scopeAndIDKey)) {
-            if (relation.getRelatedModel() != ScopeEnum.ATTACHMENT) continue;
+            if (relation.getRelatedModel() != ModelEnum.ATTACHMENT) continue;
 
             if (!attachment.getRelatedAttachmentsIDs().contains(relation.getRelatedID())) {
                 relationsToRemove.add(relation);
@@ -197,9 +197,9 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
             relationsToAdd.add(relatedAttachmentID);
 
             Relation relation = new Relation();
-            relation.setBaseModel(ScopeEnum.ATTACHMENT);
+            relation.setBaseModel(ModelEnum.ATTACHMENT);
             relation.setBaseID(attachment.getID());
-            relation.setRelatedModel(ScopeEnum.ATTACHMENT);
+            relation.setRelatedModel(ModelEnum.ATTACHMENT);
             relation.setRelatedID(relatedAttachmentID);
 
             relation.add(true);
@@ -210,7 +210,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         AttachmentDeletedEvent attachmentDeletedEvent = (AttachmentDeletedEvent) event;
         Attachment attachment = attachmentDeletedEvent.getAttachment();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ATTACHMENT, attachment.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.ATTACHMENT, attachment.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
@@ -235,7 +235,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         BlockAddedEvent blockAddedEvent = (BlockAddedEvent) event;
         Block block = blockAddedEvent.getBlock();
         
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.BLOCK, block.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.BLOCK, block.getID());
 
         if (dataByScopeAndID.containsKey(scopeAndIDKey)) {
             UError.error(
@@ -249,24 +249,24 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 dataByScopeAndID.remove(scopeAndIDKey);
         }
 
-        List<ScopeEnum> modelsToProcess = new ArrayList<>();
-        modelsToProcess.add(ScopeEnum.ATTACHMENT);
-        modelsToProcess.add(ScopeEnum.CATEGORY);
-        modelsToProcess.add(ScopeEnum.TAG);
-        modelsToProcess.add(ScopeEnum.BLOCK);
-        modelsToProcess.add(ScopeEnum.ACTOR);
+        List<ModelEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ModelEnum.ATTACHMENT);
+        modelsToProcess.add(ModelEnum.CATEGORY);
+        modelsToProcess.add(ModelEnum.TAG);
+        modelsToProcess.add(ModelEnum.BLOCK);
+        modelsToProcess.add(ModelEnum.ACTOR);
 
-        for (ScopeEnum model : modelsToProcess) {
+        for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
-            if (model == ScopeEnum.ATTACHMENT) relatedModelIDs = block.getRelatedAttachmentsIDs();
-            if (model == ScopeEnum.CATEGORY) relatedModelIDs = block.getRelatedCategoriesIDs();
-            if (model == ScopeEnum.TAG) relatedModelIDs = block.getRelatedTagsIDs();
-            if (model == ScopeEnum.BLOCK) relatedModelIDs = block.getRelatedBlocksIDs();
-            if (model == ScopeEnum.ACTOR) relatedModelIDs = block.getRelatedActorsIDs();
+            if (model == ModelEnum.ATTACHMENT) relatedModelIDs = block.getRelatedAttachmentsIDs();
+            if (model == ModelEnum.CATEGORY) relatedModelIDs = block.getRelatedCategoriesIDs();
+            if (model == ModelEnum.TAG) relatedModelIDs = block.getRelatedTagsIDs();
+            if (model == ModelEnum.BLOCK) relatedModelIDs = block.getRelatedBlocksIDs();
+            if (model == ModelEnum.ACTOR) relatedModelIDs = block.getRelatedActorsIDs();
 
             for (int relatedID : relatedModelIDs) {
                 Relation relation = new Relation();
-                relation.setBaseModel(ScopeEnum.BLOCK);
+                relation.setBaseModel(ModelEnum.BLOCK);
                 relation.setBaseID(block.getID());
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
@@ -281,27 +281,27 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         BlockUpdatedEvent blockUpdatedEvent = (BlockUpdatedEvent) event;
         Block block = blockUpdatedEvent.getNewBlock();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.BLOCK, block.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.BLOCK, block.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
             dataByScopeAndID.put(scopeAndIDKey, new ArrayList<>());
         }
 
-        List<ScopeEnum> modelsToProcess = new ArrayList<>();
-        modelsToProcess.add(ScopeEnum.ATTACHMENT);
-        modelsToProcess.add(ScopeEnum.CATEGORY);
-        modelsToProcess.add(ScopeEnum.TAG);
-        modelsToProcess.add(ScopeEnum.BLOCK);
-        modelsToProcess.add(ScopeEnum.ACTOR);
+        List<ModelEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ModelEnum.ATTACHMENT);
+        modelsToProcess.add(ModelEnum.CATEGORY);
+        modelsToProcess.add(ModelEnum.TAG);
+        modelsToProcess.add(ModelEnum.BLOCK);
+        modelsToProcess.add(ModelEnum.ACTOR);
 
-        for (ScopeEnum model : modelsToProcess) {
+        for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
-            if (model == ScopeEnum.ATTACHMENT) relatedModelIDs = block.getRelatedAttachmentsIDs();
-            if (model == ScopeEnum.CATEGORY) relatedModelIDs = block.getRelatedCategoriesIDs();
-            if (model == ScopeEnum.TAG) relatedModelIDs = block.getRelatedTagsIDs();
-            if (model == ScopeEnum.BLOCK) relatedModelIDs = block.getRelatedBlocksIDs();
-            if (model == ScopeEnum.ACTOR) relatedModelIDs = block.getRelatedActorsIDs();
+            if (model == ModelEnum.ATTACHMENT) relatedModelIDs = block.getRelatedAttachmentsIDs();
+            if (model == ModelEnum.CATEGORY) relatedModelIDs = block.getRelatedCategoriesIDs();
+            if (model == ModelEnum.TAG) relatedModelIDs = block.getRelatedTagsIDs();
+            if (model == ModelEnum.BLOCK) relatedModelIDs = block.getRelatedBlocksIDs();
+            if (model == ModelEnum.ACTOR) relatedModelIDs = block.getRelatedActorsIDs();
 
             // Delete not needed
             List<Relation> relationsToRemove = new ArrayList<>();
@@ -328,7 +328,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relationsToAdd.add(relatedID);
 
                 Relation relation = new Relation();
-                relation.setBaseModel(ScopeEnum.BLOCK);
+                relation.setBaseModel(ModelEnum.BLOCK);
                 relation.setBaseID(block.getID());
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
@@ -342,7 +342,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         BlockDeletedEvent BlockDeletedEvent = (BlockDeletedEvent) event;
         Block block = BlockDeletedEvent.getBlock();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.BLOCK, block.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.BLOCK, block.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
@@ -367,7 +367,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         CategoryAddedEvent categoryAddedEvent = (CategoryAddedEvent) event;
         Category category = categoryAddedEvent.getCategory();
         
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.CATEGORY, category.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.CATEGORY, category.getID());
 
         if (dataByScopeAndID.containsKey(scopeAndIDKey)) {
             UError.error(
@@ -381,18 +381,18 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 dataByScopeAndID.remove(scopeAndIDKey);
         }
 
-        List<ScopeEnum> modelsToProcess = new ArrayList<>();
-        modelsToProcess.add(ScopeEnum.CATEGORY);
-        modelsToProcess.add(ScopeEnum.TAG);
+        List<ModelEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ModelEnum.CATEGORY);
+        modelsToProcess.add(ModelEnum.TAG);
 
-        for (ScopeEnum model : modelsToProcess) {
+        for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
-            if (model == ScopeEnum.CATEGORY) relatedModelIDs = category.getRelatedCategoriesIDs();
-            if (model == ScopeEnum.TAG) relatedModelIDs = category.getRelatedTagsIDs();
+            if (model == ModelEnum.CATEGORY) relatedModelIDs = category.getRelatedCategoriesIDs();
+            if (model == ModelEnum.TAG) relatedModelIDs = category.getRelatedTagsIDs();
 
             for (int relatedID : relatedModelIDs) {
                 Relation relation = new Relation();
-                relation.setBaseModel(ScopeEnum.CATEGORY);
+                relation.setBaseModel(ModelEnum.CATEGORY);
                 relation.setBaseID(category.getID());
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
@@ -407,21 +407,21 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         CategoryUpdatedEvent categoryUpdatedEvent = (CategoryUpdatedEvent) event;
         Category category = categoryUpdatedEvent.getNewCategory();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.CATEGORY, category.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.CATEGORY, category.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
             dataByScopeAndID.put(scopeAndIDKey, new ArrayList<>());
         }
 
-        List<ScopeEnum> modelsToProcess = new ArrayList<>();
-        modelsToProcess.add(ScopeEnum.CATEGORY);
-        modelsToProcess.add(ScopeEnum.TAG);
+        List<ModelEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ModelEnum.CATEGORY);
+        modelsToProcess.add(ModelEnum.TAG);
 
-        for (ScopeEnum model : modelsToProcess) {
+        for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
-            if (model == ScopeEnum.CATEGORY) relatedModelIDs = category.getRelatedCategoriesIDs();
-            if (model == ScopeEnum.TAG) relatedModelIDs = category.getRelatedTagsIDs();
+            if (model == ModelEnum.CATEGORY) relatedModelIDs = category.getRelatedCategoriesIDs();
+            if (model == ModelEnum.TAG) relatedModelIDs = category.getRelatedTagsIDs();
 
             // Delete not needed
             List<Relation> relationsToRemove = new ArrayList<>();
@@ -448,7 +448,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relationsToAdd.add(relatedID);
 
                 Relation relation = new Relation();
-                relation.setBaseModel(ScopeEnum.CATEGORY);
+                relation.setBaseModel(ModelEnum.CATEGORY);
                 relation.setBaseID(category.getID());
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
@@ -462,7 +462,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         CategoryDeletedEvent categoryDeletedEvent = (CategoryDeletedEvent) event;
         Category category = categoryDeletedEvent.getCategory();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.CATEGORY, category.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.CATEGORY, category.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
@@ -487,7 +487,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         TagAddedEvent tagAddedEvent = (TagAddedEvent) event;
         Tag tag = tagAddedEvent.getTag();
         
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.TAG, tag.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.TAG, tag.getID());
 
         if (dataByScopeAndID.containsKey(scopeAndIDKey)) {
             UError.error(
@@ -501,16 +501,16 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 dataByScopeAndID.remove(scopeAndIDKey);
         }
 
-        List<ScopeEnum> modelsToProcess = new ArrayList<>();
-        modelsToProcess.add(ScopeEnum.TAG);
+        List<ModelEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ModelEnum.TAG);
 
-        for (ScopeEnum model : modelsToProcess) {
+        for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
-            if (model == ScopeEnum.TAG) relatedModelIDs = tag.getRelatedTagsIDs();
+            if (model == ModelEnum.TAG) relatedModelIDs = tag.getRelatedTagsIDs();
 
             for (int relatedID : relatedModelIDs) {
                 Relation relation = new Relation();
-                relation.setBaseModel(ScopeEnum.TAG);
+                relation.setBaseModel(ModelEnum.TAG);
                 relation.setBaseID(tag.getID());
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
@@ -525,19 +525,19 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         TagUpdatedEvent tagUpdatedEvent = (TagUpdatedEvent) event;
         Tag tag = tagUpdatedEvent.getNewTag();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.TAG, tag.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.TAG, tag.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
             dataByScopeAndID.put(scopeAndIDKey, new ArrayList<>());
         }
 
-        List<ScopeEnum> modelsToProcess = new ArrayList<>();
-        modelsToProcess.add(ScopeEnum.TAG);
+        List<ModelEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ModelEnum.TAG);
 
-        for (ScopeEnum model : modelsToProcess) {
+        for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
-            if (model == ScopeEnum.TAG) relatedModelIDs = tag.getRelatedTagsIDs();
+            if (model == ModelEnum.TAG) relatedModelIDs = tag.getRelatedTagsIDs();
 
             // Delete not needed
             List<Relation> relationsToRemove = new ArrayList<>();
@@ -564,7 +564,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relationsToAdd.add(relatedID);
 
                 Relation relation = new Relation();
-                relation.setBaseModel(ScopeEnum.TAG);
+                relation.setBaseModel(ModelEnum.TAG);
                 relation.setBaseID(tag.getID());
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
@@ -578,7 +578,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         TagDeletedEvent tagDeletedEvent = (TagDeletedEvent) event;
         Tag tag = tagDeletedEvent.getTag();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.TAG, tag.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.TAG, tag.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
@@ -603,7 +603,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         ActorAddedEvent actorAddedEvent = (ActorAddedEvent) event;
         Actor actor = actorAddedEvent.getActor();
         
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ACTOR, actor.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.ACTOR, actor.getID());
 
         if (dataByScopeAndID.containsKey(scopeAndIDKey)) {
             UError.error(
@@ -617,16 +617,16 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 dataByScopeAndID.remove(scopeAndIDKey);
         }
 
-        List<ScopeEnum> modelsToProcess = new ArrayList<>();
-        modelsToProcess.add(ScopeEnum.ATTACHMENT);
+        List<ModelEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ModelEnum.ATTACHMENT);
 
-        for (ScopeEnum model : modelsToProcess) {
+        for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
-            if (model == ScopeEnum.ATTACHMENT) relatedModelIDs = actor.getRelatedAttachmentsIDs();
+            if (model == ModelEnum.ATTACHMENT) relatedModelIDs = actor.getRelatedAttachmentsIDs();
 
             for (int relatedID : relatedModelIDs) {
                 Relation relation = new Relation();
-                relation.setBaseModel(ScopeEnum.ACTOR);
+                relation.setBaseModel(ModelEnum.ACTOR);
                 relation.setBaseID(actor.getID());
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
@@ -641,19 +641,19 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         ActorUpdatedEvent actorUpdatedEvent = (ActorUpdatedEvent) event;
         Actor actor = actorUpdatedEvent.getNewActor();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ACTOR, actor.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.ACTOR, actor.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
             dataByScopeAndID.put(scopeAndIDKey, new ArrayList<>());
         }
 
-        List<ScopeEnum> modelsToProcess = new ArrayList<>();
-        modelsToProcess.add(ScopeEnum.ATTACHMENT);
+        List<ModelEnum> modelsToProcess = new ArrayList<>();
+        modelsToProcess.add(ModelEnum.ATTACHMENT);
 
-        for (ScopeEnum model : modelsToProcess) {
+        for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
-            if (model == ScopeEnum.ATTACHMENT) relatedModelIDs = actor.getRelatedAttachmentsIDs();
+            if (model == ModelEnum.ATTACHMENT) relatedModelIDs = actor.getRelatedAttachmentsIDs();
 
             // Delete not needed
             List<Relation> relationsToRemove = new ArrayList<>();
@@ -680,7 +680,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 relationsToAdd.add(relatedID);
 
                 Relation relation = new Relation();
-                relation.setBaseModel(ScopeEnum.ACTOR);
+                relation.setBaseModel(ModelEnum.ACTOR);
                 relation.setBaseID(actor.getID());
                 relation.setRelatedModel(model);
                 relation.setRelatedID(relatedID);
@@ -694,7 +694,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         ActorDeletedEvent ActorDeletedEvent = (ActorDeletedEvent) event;
         Actor actor = ActorDeletedEvent.getActor();
 
-        String scopeAndIDKey = getScopeAndIdKey(ScopeEnum.ACTOR, actor.getID());
+        String scopeAndIDKey = getScopeAndIdKey(ModelEnum.ACTOR, actor.getID());
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) {
             // Add key to dataByScopeAndID
@@ -723,7 +723,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.RELATION,
+                    ModelEnum.RELATION,
                     TaskStateEnum.STARTED
                 )
             );
@@ -778,7 +778,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.RELATION, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ModelEnum.RELATION, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -815,7 +815,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.RELATION, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ModelEnum.RELATION, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -827,7 +827,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.RELATION,
+                    ModelEnum.RELATION,
                     TaskStateEnum.FAILED
                 )
             );
@@ -928,7 +928,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
     
     // Public methods
 
-    public List<Relation> getScopeAndIdList(ScopeEnum baseModel, Integer baseID, ScopeEnum relatedModel) {
+    public List<Relation> getScopeAndIdList(ModelEnum baseModel, Integer baseID, ModelEnum relatedModel) {
         String scopeAndIDKey = getScopeAndIdKey(baseModel, baseID);
         List<Relation> list = new ArrayList<>();
 
@@ -943,7 +943,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         return list;
     }
 
-    public List<Relation> getScopeAndIdList(ScopeEnum baseModel, Integer baseID) {
+    public List<Relation> getScopeAndIdList(ModelEnum baseModel, Integer baseID) {
         String scopeAndIDKey = getScopeAndIdKey(baseModel, baseID);
         List<Relation> list = new ArrayList<>();
 
@@ -974,18 +974,18 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
      * @param relatedID - use null to get all related ids
      * @return
      */
-    public List<Relation> getRelationsList(ScopeEnum baseModel, Integer baseID, ScopeEnum relatedModel, Integer relatedID) {
+    public List<Relation> getRelationsList(ModelEnum baseModel, Integer baseID, ModelEnum relatedModel, Integer relatedID) {
         List<Relation> list = new ArrayList<>();
 
-        if (baseModel == null) baseModel = ScopeEnum.ALL;
-        if (relatedModel == null) relatedModel = ScopeEnum.ALL;
+        if (baseModel == null) baseModel = ModelEnum.ALL;
+        if (relatedModel == null) relatedModel = ModelEnum.ALL;
 
         for (Map.Entry<Integer, Relation> entry : data.entrySet()) {
             Relation relation = entry.getValue();
 
-            if (baseModel != ScopeEnum.ALL && relation.getBaseModel() != baseModel) continue;
+            if (baseModel != ModelEnum.ALL && relation.getBaseModel() != baseModel) continue;
             if (baseID != null && relation.getBaseID() != baseID) continue;
-            if (relatedModel != ScopeEnum.ALL && relation.getRelatedModel() != relatedModel) continue;
+            if (relatedModel != ModelEnum.ALL && relation.getRelatedModel() != relatedModel) continue;
             if (relatedID != null && relation.getRelatedID() != relatedID) continue;
 
             list.add(relation);
@@ -994,15 +994,15 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         return list;
     }
 
-    public List<Relation> getRelationsList(ScopeEnum baseModel, Integer baseID, ScopeEnum relatedModel) {
+    public List<Relation> getRelationsList(ModelEnum baseModel, Integer baseID, ModelEnum relatedModel) {
         return getScopeAndIdList(baseModel, baseID, relatedModel);
     }
 
-    public List<Relation> getRelationsList(ScopeEnum baseModel, Integer baseID) {
+    public List<Relation> getRelationsList(ModelEnum baseModel, Integer baseID) {
         return getScopeAndIdList(baseModel, baseID);
     }
 
-    public List<Relation> getRelationsList(ScopeEnum baseModel) {
+    public List<Relation> getRelationsList(ModelEnum baseModel) {
         return getRelationsList(baseModel, null, null, null);
     }
 
@@ -1012,7 +1012,7 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         return relation.getBaseModel().toString() + ";" + String.valueOf(relation.getBaseID());
     }
 
-    private String getScopeAndIdKey(ScopeEnum baseModel, Integer baseID) {
+    private String getScopeAndIdKey(ModelEnum baseModel, Integer baseID) {
         return baseModel.toString() + ";" + String.valueOf(baseID);
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.events.TagAddedEvent;
 import com.dsoftn.events.TagDeletedEvent;
@@ -27,11 +27,11 @@ import com.dsoftn.events.RelationUpdatedEvent;
 
 public class Tag implements IModelEntity<Tag>, ICustomEventListener {
     // Properties
-    private Integer id = CONSTANTS.INVALID_ID;
+    private int id = CONSTANTS.INVALID_ID;
     private String name = "";
     private String description = "";
     private List<Integer> relatedTags = new ArrayList<>();
-    private Integer scope = ScopeEnum.ALL.getValue();
+    private int scope = ModelEnum.ALL.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
     // Constructors
@@ -86,11 +86,11 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
         }
 
         // Check if relation belongs to this block
-        if (relation.getBaseModel() != ScopeEnum.TAG && relation.getBaseID() != this.id) {
+        if (relation.getBaseModel() != ModelEnum.TAG && relation.getBaseID() != this.id) {
             return;
         }
 
-        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.TAG, this.id, ScopeEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.TAG, this.id, ModelEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedTags = newRelatedTags;
         update();
@@ -146,15 +146,22 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
 
             this.setRelatedTags(
                 OBJECTS.TAGS.getTagsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.TAG, this.id, ScopeEnum.TAG)
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.TAG, this.id, ModelEnum.TAG)
                 )
             );
 
-            return true;
+            return isValid();
         } catch (Exception e) {
             UError.exception("Tag.loadFromResultSet: Failed to load tag from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return  this.name != null &&
+                this.description != null &&
+                this.created != null;
     }
 
     @Override
@@ -404,8 +411,8 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
         this.relatedTags = relatedTags.stream().map(Tag::getID).collect(Collectors.toList());
     }
 
-    public void setScope(ScopeEnum... scopes) {
-        this.scope = ScopeEnum.combineValues(scopes);
+    public void setScope(ModelEnum... scopes) {
+        this.scope = ModelEnum.combineValues(scopes);
     }
 
     public void setScope(int scope) { this.scope = scope; }

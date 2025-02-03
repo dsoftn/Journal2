@@ -31,7 +31,7 @@
 - [Categories-Category Model](#categories-category-model-⤴)
 - [Actors-Actor Model](#actors-actor-model-⤴)
 - [Relations-Relation Model](#relations-relation-model-⤴)
-- [ScopeEnum](#scopeenum-⤴)
+- [ModelEnum (known as ScopeEnum)](#modelenum-⤴)
 
 ### Services <sup>[⤴](#table-of-contents)</sup>
 - [SQLiteDB Service](#sqlitedb-service-⤴)
@@ -281,6 +281,7 @@ Update following code in `Block` class:
 1. Add variable with new property
 2. Add getter and setter for new property
 3. Add new property in method `Block.loadFromResultSet`
+4. Update `isValid()` method if needed
 4. Add new property in method `Block.add` sql query
 5. Add new property in method `Block.update` sql query
 6. Add new property in method `Block.duplicate`
@@ -301,6 +302,7 @@ Update following code in `BlockType` class:
 1. Add variable with new property
 2. Add getter and setter for new property
 3. Add new property in method `BlockType.loadFromResultSet`
+4. Update `isValid()` method if needed
 4. Add new property in method `BlockType.add` sql query
 5. Add new property in method `BlockType.update` sql query
 6. Add new property in method `BlockType.duplicate`
@@ -348,6 +350,7 @@ Update following code in `Definition` class:
 1. Add variable with new property
 2. Add getter and setter for new property
 3. Add new property in method `Definition.loadFromResultSet`
+4. Update `isValid()` method if needed
 4. Add new property in method `Definition.add` sql query
 5. Add new property in method `Definition.update` sql query
 6. Add new property in method `Definition.duplicate`
@@ -392,6 +395,7 @@ Update following code in `Attachment` class:
 1. Add variable with new property
 2. Add getter and setter for new property
 3. Add new property in method `Attachment.loadFromResultSet`
+4. Update `isValid()` method if needed
 4. Add new property in method `Attachment.add` sql query
 5. Add new property in method `Attachment.update` sql query
 6. Add new property in method `Attachment.duplicate`
@@ -429,6 +433,7 @@ Update following code in `Tag` class:
 1. Add variable with new property
 2. Add getter and setter for new property
 3. Add new property in method `Tag.loadFromResultSet`
+4. Update `isValid()` method if needed
 4. Add new property in method `Tag.add` sql query
 5. Add new property in method `Tag.update` sql query
 6. Add new property in method `Tag.duplicate`
@@ -466,6 +471,7 @@ Update following code in `Category` class:
 1. Add variable with new property
 2. Add getter and setter for new property
 3. Add new property in method `Category.loadFromResultSet`
+4. Update `isValid()` method if needed
 4. Add new property in method `Category.add` sql query
 5. Add new property in method `Category.update` sql query
 6. Add new property in method `Category.duplicate`
@@ -500,6 +506,7 @@ Update following code in `Actor` class:
 1. Add variable with new property
 2. Add getter and setter for new property
 3. Add new property in method `Actor.loadFromResultSet`
+4. Update `isValid()` method if needed
 4. Add new property in method `actor.add` sql query
 5. Add new property in method `Actor.update` sql query
 6. Add new property in method `Actor.duplicate`
@@ -561,11 +568,13 @@ public void onRelationAddedEvent(RelationAddedEvent event) {
 }
 ```
 
-## ScopeEnum <sup>[⤴](#models-⤴)</sup>
+## ModelEnum <sup>[⤴](#models-⤴)</sup>
 ### Overview
-- `ScopeEnum` class is used to set scope of **tag**.
+- `ModelEnum` class is used to set scope of **tag**.
 Based on *scope* you can distinguish **tags** that belong to various models like **BLOCKS**, **DEFINITIONS**, etc.
-- It is also used in **Relations** model to define models entities that are related.
+- It is also used in **Relations**  model to define models entities that are related.
+- `ModelEnum` class is globally used to mark **Model** type.
+- `ModelEnum.BLOCK_TYPE` is used to mark **BlockType** models list in `BlockTypeEnum` enum.
 
 ## SQLiteDB Service <sup>[⤴](#services-⤴)</sup>
 ### Usage

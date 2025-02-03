@@ -100,11 +100,17 @@ public class BlockDiary implements IModelEntity<BlockDiary>, IBlockBaseEntity {
                 return false;
             }
 
-            return true;
+            return isValid();
         } catch (Exception e) {
             UError.exception("BlockDiary.loadFromResultSet: Failed to load block_diary from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return  this.text != null &&
+                this.textStyle != null;
     }
 
     @Override

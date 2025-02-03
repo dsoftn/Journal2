@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.enums.models.AttachmentTypeEnum;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.SourceTypeEnum;
 import com.dsoftn.events.AttachmentAddedEvent;
 import com.dsoftn.events.AttachmentDeletedEvent;
@@ -29,18 +29,18 @@ import com.dsoftn.events.RelationUpdatedEvent;
 
 public class Attachment implements IModelEntity<Attachment>, ICustomEventListener {
     // Properties
-    private Integer id = CONSTANTS.INVALID_ID;
+    private int id = CONSTANTS.INVALID_ID;
     private String name = "";
     private String description = "";
-    private Integer type = AttachmentTypeEnum.UNDEFINED.getValue();
-    private Integer isSupported = 0;
+    private int type = AttachmentTypeEnum.UNDEFINED.getValue();
+    private int isSupported = 0;
     private String source = "";
-    private Integer sourceType = SourceTypeEnum.UNDEFINED.getValue();
-    private Integer downloaded = 0;
+    private int sourceType = SourceTypeEnum.UNDEFINED.getValue();
+    private int downloaded = 0;
     private List<Integer> relatedAttachments = new ArrayList<>();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String filePath = "";
-    private Integer fileSize = CONSTANTS.INVALID_SIZE;
+    private int fileSize = CONSTANTS.INVALID_SIZE;
     private String fileCreated = CONSTANTS.INVALID_DATETIME_STRING;
     private String fileModified = CONSTANTS.INVALID_DATETIME_STRING;
     private String fileAccessed = CONSTANTS.INVALID_DATETIME_STRING;
@@ -97,11 +97,11 @@ public class Attachment implements IModelEntity<Attachment>, ICustomEventListene
         }
 
         // Check if relation belongs to this attachment
-        if (relation.getBaseModel() != ScopeEnum.ATTACHMENT && relation.getBaseID() != this.id) {
+        if (relation.getBaseModel() != ModelEnum.ATTACHMENT && relation.getBaseID() != this.id) {
             return;
         }
 
-        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.ATTACHMENT, this.id, ScopeEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.ATTACHMENT, this.id, ModelEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
         relatedAttachments = newRelatedAttachments;
         update();
     }
@@ -165,13 +165,25 @@ public class Attachment implements IModelEntity<Attachment>, ICustomEventListene
 
             this.setRelatedAttachments(
                 OBJECTS.ATTACHMENTS.getAttachmentsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.ATTACHMENT, this.id, ScopeEnum.ATTACHMENT)));
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.ATTACHMENT, this.id, ModelEnum.ATTACHMENT)));
 
-            return true;
+            return isValid();
         } catch (Exception e) {
             UError.exception("Attachment.loadFromResultSet: Failed to load attachment from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return  this.name != null &&
+                this.description != null &&
+                this.source != null &&
+                this.created != null &&
+                this.filePath != null &&
+                this.fileCreated != null &&
+                this.fileModified != null &&
+                this.fileAccessed != null;
     }
 
     @Override

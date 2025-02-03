@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
@@ -30,12 +30,12 @@ import com.dsoftn.events.RelationUpdatedEvent;
 
 public class Category implements IModelEntity<Category>, ICustomEventListener {
     // Properties
-    private Integer id = CONSTANTS.INVALID_ID;
+    private int id = CONSTANTS.INVALID_ID;
     private String name = "";
     private String description = "";
     private List<Integer> relatedCategories = new ArrayList<>();
     private List<Integer> relatedTags = new ArrayList<>();
-    private Integer parent = CONSTANTS.INVALID_ID;
+    private int parent = CONSTANTS.INVALID_ID;
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
     // Constructors
@@ -90,12 +90,12 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
         }
 
         // Check if relation belongs to this block
-        if (relation.getBaseModel() != ScopeEnum.CATEGORY && relation.getBaseID() != this.id) {
+        if (relation.getBaseModel() != ModelEnum.CATEGORY && relation.getBaseID() != this.id) {
             return;
         }
 
-        List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.CATEGORY, this.id, ScopeEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.CATEGORY, this.id, ScopeEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.CATEGORY, this.id, ModelEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.CATEGORY, this.id, ModelEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedCategories = newRelatedCategories;
         relatedTags = newRelatedTags;
@@ -151,18 +151,25 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
             this.created = rs.getString("created");
             
             this.setRelatedCategories(OBJECTS.CATEGORIES.getCategoriesListFromRelations(
-                OBJECTS.RELATIONS.getRelationsList(ScopeEnum.CATEGORY, this.id, ScopeEnum.CATEGORY)
+                OBJECTS.RELATIONS.getRelationsList(ModelEnum.CATEGORY, this.id, ModelEnum.CATEGORY)
             ));
 
             this.setRelatedTags(OBJECTS.TAGS.getTagsListFromRelations(
-                OBJECTS.RELATIONS.getRelationsList(ScopeEnum.CATEGORY, this.id, ScopeEnum.TAG)
+                OBJECTS.RELATIONS.getRelationsList(ModelEnum.CATEGORY, this.id, ModelEnum.TAG)
             ));
             
-            return true;
+            return isValid();
         } catch (Exception e) {
             UError.exception("Category.loadFromResultSet: Failed to load category from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return  name != null &&
+                description != null &&
+                created != null;
     }
 
     @Override

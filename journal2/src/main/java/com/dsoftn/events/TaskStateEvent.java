@@ -1,6 +1,6 @@
 package com.dsoftn.events;
 
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 
 import javafx.event.Event;
@@ -12,7 +12,7 @@ public class TaskStateEvent extends Event {
     public static final EventType<TaskStateEvent> TASK_STATE_EVENT = new EventType<>(Event.ANY, "TASK_STATE_EVENT");
     
     private final String id;
-    private final ScopeEnum model;
+    private final ModelEnum model;
     private final TaskStateEnum state;
     private final Integer progressPercent;
     private final Integer currentRecord;
@@ -26,7 +26,7 @@ public class TaskStateEvent extends Event {
     /**
      * Model and state only
      */
-    public TaskStateEvent(ScopeEnum model, TaskStateEnum state) {
+    public TaskStateEvent(ModelEnum model, TaskStateEnum state) {
         super(TASK_STATE_EVENT);
         this.model = model;
         this.state = state;
@@ -40,7 +40,7 @@ public class TaskStateEvent extends Event {
     /**
      * Model and state + message
      */
-    public TaskStateEvent(ScopeEnum model, TaskStateEnum state, String message) {
+    public TaskStateEvent(ModelEnum model, TaskStateEnum state, String message) {
         super(TASK_STATE_EVENT);
         this.model = model;
         this.state = state;
@@ -54,7 +54,7 @@ public class TaskStateEvent extends Event {
     /**
      * Model and state + progressPercent(0-100)
      */
-    public TaskStateEvent(ScopeEnum model, TaskStateEnum state, Integer progressPercent) {
+    public TaskStateEvent(ModelEnum model, TaskStateEnum state, Integer progressPercent) {
         super(TASK_STATE_EVENT);
         this.model = model;
         this.state = state;
@@ -68,7 +68,7 @@ public class TaskStateEvent extends Event {
     /**
      * Model and state + progressPercent(0-100) + message
      */
-    public TaskStateEvent(ScopeEnum model, TaskStateEnum state, Integer progressPercent, String message) {
+    public TaskStateEvent(ModelEnum model, TaskStateEnum state, Integer progressPercent, String message) {
         super(TASK_STATE_EVENT);
         this.model = model;
         this.state = state;
@@ -83,7 +83,7 @@ public class TaskStateEvent extends Event {
      * Model and state + currentRecord + totalRecords
      * ProgressPercent is calculated automatically
      */
-    public TaskStateEvent(ScopeEnum model, TaskStateEnum state, Integer currentRecord, Integer totalRecords) {
+    public TaskStateEvent(ModelEnum model, TaskStateEnum state, Integer currentRecord, Integer totalRecords) {
         super(TASK_STATE_EVENT);
         this.model = model;
         this.state = state;
@@ -105,7 +105,7 @@ public class TaskStateEvent extends Event {
      * Model and state + currentRecord + totalRecords + message
      * ProgressPercent is calculated automatically
      */
-    public TaskStateEvent(ScopeEnum model, TaskStateEnum state, Integer currentRecord, Integer totalRecords, String message) {
+    public TaskStateEvent(ModelEnum model, TaskStateEnum state, Integer currentRecord, Integer totalRecords, String message) {
         super(TASK_STATE_EVENT);
         this.model = model;
         this.state = state;
@@ -131,7 +131,7 @@ public class TaskStateEvent extends Event {
      */
     public TaskStateEvent(String id, TaskStateEnum state) {
         super(TASK_STATE_EVENT);
-        this.model = ScopeEnum.NONE;
+        this.model = ModelEnum.NONE;
         this.state = state;
         this.progressPercent = null;
         this.currentRecord = null;
@@ -146,7 +146,7 @@ public class TaskStateEvent extends Event {
      */
     public TaskStateEvent(String id, TaskStateEnum state, String message) {
         super(TASK_STATE_EVENT);
-        this.model = ScopeEnum.NONE;
+        this.model = ModelEnum.NONE;
         this.state = state;
         this.progressPercent = null;
         this.currentRecord = null;
@@ -161,7 +161,7 @@ public class TaskStateEvent extends Event {
      */
     public TaskStateEvent(String id, TaskStateEnum state, Integer progressPercent) {
         super(TASK_STATE_EVENT);
-        this.model = ScopeEnum.NONE;
+        this.model = ModelEnum.NONE;
         this.state = state;
         this.progressPercent = progressPercent;
         this.currentRecord = null;
@@ -176,7 +176,7 @@ public class TaskStateEvent extends Event {
      */
     public TaskStateEvent(String id, TaskStateEnum state, Integer progressPercent, String message) {
         super(TASK_STATE_EVENT);
-        this.model = ScopeEnum.NONE;
+        this.model = ModelEnum.NONE;
         this.state = state;
         this.progressPercent = progressPercent;
         this.currentRecord = null;
@@ -192,7 +192,7 @@ public class TaskStateEvent extends Event {
      */
     public TaskStateEvent(String id, TaskStateEnum state, Integer currentRecord, Integer totalRecords) {
         super(TASK_STATE_EVENT);
-        this.model = ScopeEnum.NONE;
+        this.model = ModelEnum.NONE;
         this.state = state;
         
         if (currentRecord != null && totalRecords != null && totalRecords != 0) {
@@ -215,7 +215,7 @@ public class TaskStateEvent extends Event {
      */
     public TaskStateEvent(String id, TaskStateEnum state, Integer currentRecord, Integer totalRecords, String message) {
         super(TASK_STATE_EVENT);
-        this.model = ScopeEnum.NONE;
+        this.model = ModelEnum.NONE;
         this.state = state;
         
         if (currentRecord != null && totalRecords != null && totalRecords != 0) {
@@ -234,7 +234,7 @@ public class TaskStateEvent extends Event {
 
     // Getters
 
-    public ScopeEnum getModel() { return this.model; }
+    public ModelEnum getModel() { return this.model; }
 
     public TaskStateEnum getState() { return this.state; }
 

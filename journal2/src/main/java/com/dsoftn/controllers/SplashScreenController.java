@@ -21,7 +21,7 @@ import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.utils.UError;
@@ -81,7 +81,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         imgError.setPreserveRatio(true);
 
         // Add to imgDone map ImageView for all ScopeEnum values
-        for (ScopeEnum scope : ScopeEnum.values()) {
+        for (ModelEnum scope : ModelEnum.values()) {
             imgDone.put(scope.toString(), new ImageView(imageDone));
             imgDone.get(scope.toString()).setFitHeight(20);
             imgDone.get(scope.toString()).setPreserveRatio(true);
@@ -122,15 +122,15 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         imgLoading.setImage(new Image(getClass().getResourceAsStream("/gifs/loading.gif")));
 
         // Set images for labels
-        lblTaskBlocks.setGraphic(imgSelected.get(ScopeEnum.BLOCK.toString()));
-        lblTaskBlockTypes.setGraphic(imgSelected.get(ScopeEnum.BLOCK_TYPE.toString()));
-        lblTaskDefinitions.setGraphic(imgSelected.get(ScopeEnum.DEFINITION.toString()));
-        lblTaskAttachments.setGraphic(imgSelected.get(ScopeEnum.ATTACHMENT.toString()));
-        lblTaskCategories.setGraphic(imgSelected.get(ScopeEnum.CATEGORY.toString()));
-        lblTaskTags.setGraphic(imgSelected.get(ScopeEnum.TAG.toString()));
-        lblTaskDefVariants.setGraphic(imgSelected.get(ScopeEnum.DEF_VARIANT.toString()));
-        lblTaskRelations.setGraphic(imgSelected.get(ScopeEnum.RELATION.toString()));
-        lblTaskActors.setGraphic(imgSelected.get(ScopeEnum.ACTOR.toString()));
+        lblTaskBlocks.setGraphic(imgSelected.get(ModelEnum.BLOCK.toString()));
+        lblTaskBlockTypes.setGraphic(imgSelected.get(ModelEnum.BLOCK_TYPE.toString()));
+        lblTaskDefinitions.setGraphic(imgSelected.get(ModelEnum.DEFINITION.toString()));
+        lblTaskAttachments.setGraphic(imgSelected.get(ModelEnum.ATTACHMENT.toString()));
+        lblTaskCategories.setGraphic(imgSelected.get(ModelEnum.CATEGORY.toString()));
+        lblTaskTags.setGraphic(imgSelected.get(ModelEnum.TAG.toString()));
+        lblTaskDefVariants.setGraphic(imgSelected.get(ModelEnum.DEF_VARIANT.toString()));
+        lblTaskRelations.setGraphic(imgSelected.get(ModelEnum.RELATION.toString()));
+        lblTaskActors.setGraphic(imgSelected.get(ModelEnum.ACTOR.toString()));
     }
 
     // Interface ICustomEventListener methods
@@ -139,10 +139,10 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         // Check if event belongs to SplashScreenController
         if (!(event instanceof TaskStateEvent)) { return; }
         TaskStateEvent taskStateEvent = (TaskStateEvent) event;
-        if (taskStateEvent.getModel() == ScopeEnum.NONE || taskStateEvent.getID() != null) { return; }
+        if (taskStateEvent.getModel() == ModelEnum.NONE || taskStateEvent.getID() != null) { return; }
 
         // if event is signaling that task is in progress update widgets.
-        ScopeEnum model = taskStateEvent.getModel();
+        ModelEnum model = taskStateEvent.getModel();
         switch (model) {
             case BLOCK:
                 changeTaskWidget(lblTaskBlocks, "text_Blocks", taskStateEvent);
@@ -266,7 +266,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
             if (result == true) {
                 OBJECTS.EVENT_HANDLER.fireEvent(
                     new TaskStateEvent(
-                        ScopeEnum.ALL,
+                        ModelEnum.ALL,
                         TaskStateEnum.COMPLETED
                     )
                 );
@@ -274,7 +274,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
             else {
                 OBJECTS.EVENT_HANDLER.fireEvent(
                     new TaskStateEvent(
-                        ScopeEnum.ALL,
+                        ModelEnum.ALL,
                         TaskStateEnum.FAILED
                     )
                 );
@@ -284,7 +284,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         task.setOnFailed(e -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.ALL,
+                    ModelEnum.ALL,
                     TaskStateEnum.FAILED
                 )
             );

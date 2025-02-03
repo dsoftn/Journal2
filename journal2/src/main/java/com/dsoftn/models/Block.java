@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.Interfaces.IBlockBaseEntity;
 import com.dsoftn.Interfaces.ICustomEventListener;
@@ -103,15 +103,15 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         }
 
         // Check if relation belongs to this block
-        if (relation.getBaseModel() != ScopeEnum.BLOCK && relation.getBaseID() != this.id) {
+        if (relation.getBaseModel() != ModelEnum.BLOCK && relation.getBaseID() != this.id) {
             return;
         }
 
-        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedBlocks = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.BLOCK).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
-        List<Integer>  newRelatedActors = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.BLOCK, this.id, ScopeEnum.ACTOR).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.BLOCK, this.id, ModelEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedBlocks = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.BLOCK, this.id, ModelEnum.BLOCK).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.BLOCK, this.id, ModelEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.BLOCK, this.id, ModelEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedActors = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.BLOCK, this.id, ModelEnum.ACTOR).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedAttachments = newRelatedAttachments;
         relatedBlocks = newRelatedBlocks;
@@ -176,34 +176,44 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
             this.setRelatedCategories(
                 OBJECTS.CATEGORIES.getCategoriesListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.CATEGORY))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.BLOCK, this.id, ModelEnum.CATEGORY))
                 );
 
             this.setRelatedTags(
                 OBJECTS.TAGS.getTagsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.TAG))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.BLOCK, this.id, ModelEnum.TAG))
             );
 
             this.setRelatedAttachments(
                 OBJECTS.ATTACHMENTS.getAttachmentsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.ATTACHMENT))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.BLOCK, this.id, ModelEnum.ATTACHMENT))
             );
 
             this.setRelatedBlocks(
                 OBJECTS.BLOCKS.getBlocksListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.BLOCK))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.BLOCK, this.id, ModelEnum.BLOCK))
             );
 
             this.setRelatedActors(
                 OBJECTS.ACTORS.getActorsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.BLOCK, this.id, ScopeEnum.ACTOR))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.BLOCK, this.id, ModelEnum.ACTOR))
             );
 
-            return true;
+            return isValid();
         } catch (Exception e) {
             UError.exception("Block.loadFromResultSet: Failed to load block from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return  this.name != null &&
+                this.date != null &&
+                this.text != null &&
+                this.textStyle != null &&
+                this.created != null &&
+                this.updated != null;
     }
 
     @Override

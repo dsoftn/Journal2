@@ -12,7 +12,7 @@ import javafx.application.Platform;
 import javafx.event.Event;
 
 import com.dsoftn.Interfaces.IModelRepository;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
@@ -85,7 +85,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
             return;
         }
 
-        if (relation.getBaseModel() == ScopeEnum.CATEGORY) {
+        if (relation.getBaseModel() == ModelEnum.CATEGORY) {
             Category category = getEntity(relation.getBaseID());
             if (category != null) {
                 category.onCustomEvent(event);
@@ -101,7 +101,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.CATEGORY,
+                    ModelEnum.CATEGORY,
                     TaskStateEnum.STARTED
                 )
             );
@@ -156,7 +156,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.CATEGORY, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ModelEnum.CATEGORY, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -193,7 +193,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.CATEGORY, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ModelEnum.CATEGORY, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -205,7 +205,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.CATEGORY,
+                    ModelEnum.CATEGORY,
                     TaskStateEnum.FAILED
                 )
             );
@@ -283,7 +283,7 @@ public class Categories implements IModelRepository<Category>, ICustomEventListe
     public List<Category> getCategoriesListFromRelations(List<Relation> relations) {
         List<Integer> categoryIDs = new ArrayList<>();
         for (Relation relation : relations) {
-            if (relation.getRelatedModel() == ScopeEnum.CATEGORY) {
+            if (relation.getRelatedModel() == ModelEnum.CATEGORY) {
                 categoryIDs.add(relation.getRelatedID());
             }
         }

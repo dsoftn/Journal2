@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
@@ -90,11 +90,11 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
         }
 
         // Check if relation belongs to this actor
-        if (relation.getBaseModel() != ScopeEnum.ACTOR && relation.getBaseID() != this.id) {
+        if (relation.getBaseModel() != ModelEnum.ACTOR && relation.getBaseID() != this.id) {
             return;
         }
 
-        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ScopeEnum.ACTOR, this.id, ScopeEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.ACTOR, this.id, ModelEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedAttachments = newRelatedAttachments;
         update();
@@ -152,14 +152,23 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
 
             this.setRelatedAttachments(
                 OBJECTS.ATTACHMENTS.getAttachmentsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ScopeEnum.ACTOR, this.id, ScopeEnum.ATTACHMENT))
+                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.ACTOR, this.id, ModelEnum.ATTACHMENT))
             );
 
-            return true;
+            return isValid();
         } catch (Exception e) {
             UError.exception("Actor.loadFromResultSet: Failed to load actor from result set", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isValid() {
+        return this.nick != null &&
+                this.name != null &&
+                this.description != null &&
+                this.created != null &&
+                this.updated != null;
     }
 
     @Override

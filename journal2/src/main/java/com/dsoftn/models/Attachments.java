@@ -12,7 +12,7 @@ import javafx.application.Platform;
 import javafx.event.Event;
 
 import com.dsoftn.Interfaces.IModelRepository;
-import com.dsoftn.enums.models.ScopeEnum;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
@@ -93,7 +93,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
             return;
         }
 
-        if (relation.getBaseModel() == ScopeEnum.ATTACHMENT) {
+        if (relation.getBaseModel() == ModelEnum.ATTACHMENT) {
             Attachment attachment = getEntity(relation.getBaseID());
             if (attachment != null) {
                 attachment.onCustomEvent(event);
@@ -109,7 +109,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.ATTACHMENT,
+                    ModelEnum.ATTACHMENT,
                     TaskStateEnum.STARTED
                 )
             );
@@ -164,7 +164,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
                 if (progressPercent != null) {
                     Platform.runLater(() -> {
                         OBJECTS.EVENT_HANDLER.fireEvent(
-                            new TaskStateEvent(ScopeEnum.ATTACHMENT, TaskStateEnum.EXECUTING, progressPercent)
+                            new TaskStateEvent(ModelEnum.ATTACHMENT, TaskStateEnum.EXECUTING, progressPercent)
                         );
                     });
                 }
@@ -201,7 +201,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
         }
         else {
             Platform.runLater(() -> { 
-                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ScopeEnum.ATTACHMENT, TaskStateEnum.COMPLETED));
+                OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(ModelEnum.ATTACHMENT, TaskStateEnum.COMPLETED));
             });
             isLoaded = true;
         }
@@ -213,7 +213,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
         Platform.runLater(() -> {
             OBJECTS.EVENT_HANDLER.fireEvent(
                 new TaskStateEvent(
-                    ScopeEnum.ATTACHMENT,
+                    ModelEnum.ATTACHMENT,
                     TaskStateEnum.FAILED
                 )
             );
@@ -291,7 +291,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
     public List<Attachment> getAttachmentsListFromRelations(List<Relation> relations) {
         List<Integer> attachmentIDs = new ArrayList<>();
         for (Relation relation : relations) {
-            if (relation.getRelatedModel() == ScopeEnum.ATTACHMENT) {
+            if (relation.getRelatedModel() == ModelEnum.ATTACHMENT) {
                 attachmentIDs.add(relation.getRelatedID());
             }
         }
