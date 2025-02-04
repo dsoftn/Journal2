@@ -41,6 +41,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     private String date = CONSTANTS.INVALID_DATETIME_STRING;
     private String text = "";
     private String textStyle = "";
+    private int draft = 1; // 0 = false, 1 = true
     private int blockType = BlockTypeEnum.UNDEFINED.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String updated = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -169,6 +170,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             this.date = rs.getString("date");
             this.text = rs.getString("text");
             this.textStyle = rs.getString("text_style");
+            this.draft = rs.getInt("draft");
             this.blockType = rs.getInt("block_type");
             this.created = rs.getString("created");
             this.updated = rs.getString("updated");
@@ -229,12 +231,13 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO blocks " + 
-                "(name, date, text, text_style, block_type, created, updated, default_attachment) " + 
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "(name, date, text, text_style, draft, block_type, created, updated, default_attachment) " + 
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 this.name,
                 this.date,
                 this.text,
                 this.textStyle,
+                this.draft,
                 this.blockType,
                 this.created,
                 this.updated,
@@ -297,12 +300,13 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE blocks " + 
-                "SET name = ?, date = ?, text = ?, text_style = ?, block_type = ?, created = ?, updated = ?, default_attachment = ? " + 
+                "SET name = ?, date = ?, text = ?, text_style = ?, draft = ?, block_type = ?, created = ?, updated = ?, default_attachment = ? " + 
                 "WHERE id = ?",
                 this.name,
                 this.date,
                 this.text,
                 this.textStyle,
+                this.draft,
                 this.blockType,
                 this.created,
                 this.updated,
@@ -414,6 +418,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         block.setDateSTR_JSON(this.getDateSTR_JSON());
         block.setText(this.text);
         block.setTextStyle(this.textStyle);
+        block.setDraft(this.draft);
         block.setBlockType(BlockTypeEnum.fromInteger(this.blockType));
         block.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
         block.setUpdatedSTR_JSON(this.getUpdatedSTR_JSON());
@@ -488,6 +493,8 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     public String getText() { return this.text; }
 
     public String getTextStyle() { return this.textStyle; }
+
+    public boolean getDraft() { return this.draft == 1; }
 
     public BlockTypeEnum getBlockType() { return BlockTypeEnum.fromInteger(this.blockType); }
 
@@ -601,6 +608,10 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
     public void setTextStyle(String textStyle) { this.textStyle = textStyle; }
 
+    public void setDraft(boolean draft) { this.draft = draft ? 1 : 0; }
+
+    public void setDraft(Integer draft) { this.draft = draft; }
+
     public void setBlockType(BlockTypeEnum blockType) { this.blockType = blockType.getValue(); }
 
     public void setCreated(LocalDateTime created) {
@@ -679,6 +690,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
                 this.getDateSTR_JSON().equals(other.getDateSTR_JSON()) &&
                 this.getText().equals(other.getText()) &&
                 this.getTextStyle().equals(other.getTextStyle()) &&
+                this.getDraft() == other.getDraft() &&
                 this.getBlockType() == other.getBlockType() &&
                 this.getCreatedSTR_JSON().equals(other.getCreatedSTR_JSON()) &&
                 this.getUpdatedSTR_JSON().equals(other.getUpdatedSTR_JSON()) &&
@@ -698,6 +710,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
             this.date,
             this.text,
             this.textStyle,
+            this.draft,
             this.blockType,
             this.created,
             this.updated,

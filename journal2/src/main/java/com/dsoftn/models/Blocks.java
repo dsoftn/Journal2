@@ -32,6 +32,7 @@ TABLE blocks
     date TEXT NOT NULL - date in format for JSON
     text TEXT NOT NULL - text of the block
     text_style TEXT NOT NULL - text style of the block
+    draft INTEGER NOT NULL - 0 or 1
     block_type INTEGER NOT NULL - BlockTypeEnum value
     created TEXT NOT NULL - date in format for JSON
     updated TEXT NOT NULL - date in format for JSON

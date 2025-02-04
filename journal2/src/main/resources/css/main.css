@@ -4,6 +4,54 @@
     default-background-color: rgb(15, 15, 15);
 }
 
+/* 
+Native CSS settings for Widgets:
+    Separator
+    SplitPane
+
+Custom CSS settings for Widgets:
+    Status bar
+
+CSS setting in Default class for Widgets:
+    Label
+    Combo box
+    Text field
+    Button
+    Spinner
+
+COLORS:
+
+DISABLED Text #636465
+
+Label:
+    Label Background transparent
+    Label Text #b1b1b1
+    
+    Label Title Text #00f5d4
+
+Input:
+    Input Background #051923
+    Input Text #00a6fb
+    Input Prompt Text #364257
+    Input Border #2f6690
+
+    Input Hover Border #266ba0
+
+    Input Focused Border #078fdf
+    
+    Input Disabled Background #2c2c2c
+
+List:
+    List Background #051924
+    List Text #00a6fc
+
+    List Hover Background #0c1a68
+    List Hover Text #ffff00
+
+Button:
+
+*/
+
 
 /* Label - Default */
 .label-default {
@@ -13,7 +61,7 @@
 }
 
 .label-default:disabled {
-    -fx-text-fill: #364257;
+    -fx-text-fill: #636465;
 }
 
 .label-title-default {
@@ -52,13 +100,13 @@
 
 .combo-box-default:disabled {
     -fx-background-color: #2c2c2c;
-    -fx-text-fill: #a68a64;
-    -fx-border-color: #936639;
+    -fx-text-fill: #636465;
+    -fx-border-color: #636465;
 }
 
 .combo-box-default .list-cell {
-    -fx-background-color: #051923;
-    -fx-text-fill: #00a6fb;
+    -fx-background-color: #051924;
+    -fx-text-fill: #00a6fc;
 }
 
 .combo-box-default .list-cell:hover {
@@ -75,6 +123,7 @@
     -fx-border-color: #266ba0;
     -fx-border-width: 2px;
 }
+
 
 /* Text field - Default */
 .text-field-default {
@@ -100,8 +149,8 @@
 
 .text-field-default:disabled {
     -fx-background-color: #2c2c2c;
-    -fx-text-fill: #a68a64;
-    -fx-border-color: #936639;
+    -fx-text-fill: #636465;
+    -fx-border-color: #636465;
 }
 
 
@@ -130,8 +179,9 @@
 
 .button-default:disabled {
     -fx-background-color: transparent;
-    -fx-text-fill: #a68a64;
-    -fx-border-color: #936639;
+    -fx-text-fill: #636465;
+    -fx-border-color: #636465;
+    -fx-cursor: default;
 }
 
 
@@ -170,8 +220,46 @@
     -fx-background-color: #343a40;
 }
 
+/* Status bar - Custom */
+
 .status-bar {
     -fx-background-color: rgb(25,25,25);
     -fx-text-fill: #2fa582;
     -fx-font-size: 12px;
+}
+
+/* Spinner - Default */
+.spinner-default {
+    -fx-background-color: transparent;
+    -fx-border-width: 0px;
+}
+
+.spinner-default .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-width: 0px;
+    -fx-border-color: #2f6690;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+    -fx-border-radius: 5px;
+
+}
+
+.spinner-default .increment-arrow-button, 
+.spinner-default .decrement-arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0px;
+}
+
+.spinner-default .increment-arrow-button:hover, 
+.spinner-default .decrement-arrow-button:hover {
+    -fx-border-width: 1px;
+    -fx-border-color: #2f6690;
+}
+
+.spinner-default .increment-arrow, 
+.spinner-default .decrement-arrow {
+    -fx-background-color: #a68a64;
 }

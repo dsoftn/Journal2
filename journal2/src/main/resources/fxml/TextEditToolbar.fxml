@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -11,38 +15,55 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox fx:id="hBoxTextEdit" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1084.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox fx:id="hBoxTextEdit" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Button fx:id="btnUndo" mnemonicParsing="false" styleClass="button-default" />
-            <Button fx:id="btnRedo" mnemonicParsing="false" styleClass="button-default" />
-            <Separator orientation="VERTICAL" prefHeight="200.0" />
-            <Button fx:id="btnCut" mnemonicParsing="false" styleClass="button-default" />
-            <Button fx:id="btnCopy" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" styleClass="button-default" />
-            <Button fx:id="btnPaste" layoutX="71.0" layoutY="10.0" mnemonicParsing="false" styleClass="button-default" />
-            <Separator orientation="VERTICAL" prefHeight="200.0">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </Separator>
-            <Button fx:id="btnInsertImage" mnemonicParsing="false" styleClass="button-default" />
-            <Button fx:id="btnInsertSmiley" mnemonicParsing="false" styleClass="button-default" />
-            <Button fx:id="btnInsertData" mnemonicParsing="false" styleClass="button-default" />
-            <Separator orientation="VERTICAL" prefHeight="200.0" />
-            <Button fx:id="btnFind" layoutX="212.0" layoutY="10.0" mnemonicParsing="false" styleClass="button-default" />
-            <Button fx:id="btnReplace" layoutX="301.0" layoutY="10.0" mnemonicParsing="false" styleClass="button-default" />
-            <Pane prefHeight="200.0" prefWidth="100.0" />
-            <VBox fx:id="vBoxFindReplace" maxWidth="400.0" prefWidth="400.0">
-               <children>
-                  <HBox fx:id="hBoxFind" prefHeight="100.0" prefWidth="100.0" style="-fx-border-color: #3a0ca3; -fx-border-width: 1;">
+            <ScrollPane hbarPolicy="NEVER">
+               <content>
+                  <AnchorPane>
                      <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" style="-fx-border-color: #4361ee; -fx-border-width: 1;">
+                        <HBox alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <TextField fx:id="txtFind" styleClass="text-field-default" />
-                              <Button fx:id="btnMatchCase" mnemonicParsing="false" styleClass="button-default" />
-                              <Button fx:id="btnWholeWords" mnemonicParsing="false" styleClass="button-default" />
+                              <Button fx:id="btnUndo" mnemonicParsing="false" styleClass="button-icon" />
+                              <Button fx:id="btnRedo" mnemonicParsing="false" styleClass="button-icon" />
+                              <Separator orientation="VERTICAL" />
+                              <Button fx:id="btnCut" mnemonicParsing="false" styleClass="button-icon" />
+                              <Button fx:id="btnCopy" mnemonicParsing="false" styleClass="button-icon" />
+                              <Button fx:id="btnPaste" mnemonicParsing="false" styleClass="button-icon" />
+                              <Separator orientation="VERTICAL" />
+                              <Button fx:id="btnInsertImage" mnemonicParsing="false" styleClass="button-icon" />
+                              <Button fx:id="btnInsertSmiley" mnemonicParsing="false" styleClass="button-icon" />
+                              <Button fx:id="btnInsertData" mnemonicParsing="false" styleClass="button-icon" />
+                              <Separator orientation="VERTICAL" />
+                              <Button fx:id="btnFind" mnemonicParsing="false" styleClass="button-icon" />
+                              <Button fx:id="btnReplace" mnemonicParsing="false" styleClass="button-icon" />
+                              <Separator orientation="VERTICAL" />
+                              <ComboBox fx:id="cmbFont" prefWidth="150.0" styleClass="combo-box-font" />
+                              <Spinner fx:id="spnFontSize" editable="true" maxWidth="60.0" styleClass="spinner-default" />
+                              <Button fx:id="btnForeground" mnemonicParsing="false" styleClass="button-text" text="Abc" />
+                              <Button fx:id="btnBackground" mnemonicParsing="false" styleClass="button-icon" />
+                              <Separator orientation="VERTICAL" />
+                              <Button fx:id="btnBold" mnemonicParsing="false" styleClass="button-text" text="B" />
+                              <Button fx:id="btnItalic" mnemonicParsing="false" styleClass="button-text" text="I" />
+                              <Button fx:id="btnUnderline" mnemonicParsing="false" styleClass="button-text" text="U" />
+                              <Button fx:id="btnStrike" mnemonicParsing="false" styleClass="button-text" text="S" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <Pane HBox.hgrow="SOMETIMES" />
+            <VBox fx:id="vBoxFindReplace">
+               <children>
+                  <HBox fx:id="hBoxFind" alignment="CENTER" spacing="5.0">
+                     <children>
+                        <HBox alignment="CENTER" spacing="5.0" styleClass="hbox-find-replace">
+                           <children>
+                              <TextField fx:id="txtFind" minWidth="170.0" styleClass="text-field-find" />
+                              <Button fx:id="btnMatchCase" mnemonicParsing="false" styleClass="button-icon" />
+                              <Button fx:id="btnWholeWords" mnemonicParsing="false" styleClass="button-icon" />
                            </children>
                            <padding>
                               <Insets left="3.0" right="3.0" />
@@ -51,19 +72,19 @@
                               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                            </HBox.margin>
                         </HBox>
-                        <Label fx:id="lblFindResult" text="1 of 1" />
-                        <Region prefHeight="200.0" prefWidth="20.0" />
-                        <Button fx:id="btnFindUp" mnemonicParsing="false" styleClass="button-default" />
-                        <Button fx:id="btnFindDown" mnemonicParsing="false" styleClass="button-default" />
-                        <Region prefHeight="200.0" prefWidth="10.0" />
-                        <Button fx:id="btnFindClose" mnemonicParsing="false" styleClass="button-default" />
+                        <Label fx:id="lblFindResult" minWidth="45.0" styleClass="label-find" text="Nema" />
+                        <Region prefWidth="10.0" />
+                        <Button fx:id="btnFindUp" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnFindDown" mnemonicParsing="false" styleClass="button-icon" />
+                        <Region prefWidth="10.0" />
+                        <Button fx:id="btnFindClose" mnemonicParsing="false" styleClass="button-icon" />
                      </children>
                   </HBox>
-                  <HBox fx:id="hBoxReplace" prefHeight="100.0" prefWidth="100.0" style="-fx-border-color: #3a0ca3; -fx-border-width: 1;">
+                  <HBox fx:id="hBoxReplace" alignment="CENTER_LEFT" spacing="5.0">
                      <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" style="-fx-border-color: #4361ee; -fx-border-width: 1;">
+                        <HBox alignment="CENTER" spacing="5.0" styleClass="hbox-find-replace">
                            <children>
-                              <TextField fx:id="txtReplace" styleClass="text-field-default" />
+                              <TextField fx:id="txtReplace" minWidth="238.0" styleClass="text-field-find" />
                            </children>
                            <padding>
                               <Insets left="3.0" right="3.0" />
@@ -72,8 +93,9 @@
                               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                            </HBox.margin>
                         </HBox>
-                        <Button fx:id="btnReplace" mnemonicParsing="false" styleClass="button-default" />
-                        <Button fx:id="btnReplaceAll" mnemonicParsing="false" styleClass="button-default" />
+                        <Region prefWidth="10.0" />
+                        <Button fx:id="btnReplace" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnReplaceAll" mnemonicParsing="false" styleClass="button-icon" />
                      </children>
                   </HBox>
                </children>
@@ -81,4 +103,8 @@
          </children>
       </HBox>
    </children>
+   <stylesheets>
+      <URL value="@../css/main.css" />
+      <URL value="@../css/text_edit_toolbar.css" />
+   </stylesheets>
 </AnchorPane>

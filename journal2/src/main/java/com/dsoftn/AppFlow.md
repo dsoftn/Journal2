@@ -11,6 +11,7 @@
 
 ### Application Flow <sup>[⤴](#table-of-contents)</sup>
 - [On App start](#on-app-start-⤴)
+- [CSS Management](#css-management-⤴)
 
 ### Dialogs <sup>[⤴](#table-of-contents)</sup>
 - [Login Dialog](#login-dialog-⤴)
@@ -56,7 +57,6 @@
     - [File **username.db**](#file-username.db-⤴)
     - [Folder **attachments**](#folder-attachments-⤴)
     
-
 ---
 ---
 ---
@@ -90,6 +90,13 @@
      - Calling `getErrorsInModelLoading()` will check if all models are loaded successfully.
   9. **Main Window** [⬅](#main-window-dialog-⤴):
      - Start `MainWinController.startMe()`.
+
+## CSS Management <sup>[⤴](#application-flow-⤴)</sup>
+## Overview
+- **main.css** contains all css rules used in the application.
+- For most of widgets is defined **default** class. This class needs to be set in `SceneBuilder` file for each widget.
+- Only for some widgets (for example *separator*) CSS is set directly (like *Native*). That means that this widget will have those *CSS* without setting **default** class in `SceneBuilder`.
+- Every *Scene* has its own *CSS* file named same as **FXML** file but in snake style (e.g. `MsgBox.fxml` -> `msg_box.css`).
 
 ## Login Dialog <sup>[⤴](#dialogs-⤴)</sup>
 ### Overview
