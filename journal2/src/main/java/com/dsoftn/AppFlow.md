@@ -487,6 +487,8 @@ Update following code in `Category` class:
 9. Update **DatabaseTables** settings
 10. If property is relation with other model - update in `Relations` class events **add** and **update**
 
+**NOTE**: `parent` field is **NOT** deep copy. If you try to make deep copy of `parent` field, it will cause that every Category object has its own tree.
+
 ## Actors-Actor Model <sup>[⤴](#models-⤴)</sup>
 ### Overview
 - Load all actors with `Actor.load()` method, this should be called before any other action.

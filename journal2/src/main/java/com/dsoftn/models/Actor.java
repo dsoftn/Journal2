@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.enums.models.AttachmentTypeEnum;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
 
@@ -355,17 +357,34 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
     @Override
     public Actor duplicate() {
         Actor actor = new Actor();
-        actor.setID(this.id);
-        actor.setNick(this.nick);
-        actor.setName(this.name);
-        actor.setDescription(this.description);
-        actor.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
-        actor.setUpdatedSTR_JSON(this.getUpdatedSTR_JSON());
-        actor.setDefaultAttachment(this.defaultAttachment);
+        actor.id = this.id;
+        actor.nick = this.nick;
+        actor.name = this.name;
+        actor.description = this.description;
+        actor.created = this.created;
+        actor.updated = this.updated;
+        actor.defaultAttachment = this.defaultAttachment;
 
-        actor.setRelatedAttachments(this.getRelatedAttachments());
+        actor.relatedAttachments = UList.deepCopy(this.relatedAttachments);
 
         return actor;
+    }
+
+    // Public methods
+
+    public String getImagePath() {
+        if (defaultAttachment != CONSTANTS.INVALID_ID && OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getType() == AttachmentTypeEnum.IMAGE) {
+            return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
+        }
+
+        for (Integer attachmentID : relatedAttachments) {
+            Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(attachmentID);
+            if (attachment.getType() == AttachmentTypeEnum.IMAGE) {
+                return attachment.getFilePath();
+            }
+        }
+
+        return null;
     }
 
     // Getters

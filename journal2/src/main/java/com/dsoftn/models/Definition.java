@@ -15,6 +15,7 @@ import com.dsoftn.enums.models.SourceTypeEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
 
@@ -417,21 +418,21 @@ public class Definition implements IModelEntity<Definition>, ICustomEventListene
     @Override
     public Definition duplicate() {
         Definition definition = new Definition();
-        definition.setID(this.id);
-        definition.setName(this.name);
-        definition.setDescription(this.description);
-        definition.setSource(this.source);
-        definition.setSourceType(SourceTypeEnum.fromInteger(this.sourceType));
-        definition.setCreatedSTR_JSON(this.created);
-        definition.setUpdatedSTR_JSON(this.updated);
-        definition.setDefaultAttachment(this.defaultAttachment);
-        definition.setVariants(this.variants);
+        definition.id = this.id;
+        definition.name = this.name;
+        definition.description = this.description;
+        definition.source = this.source;
+        definition.sourceType = this.sourceType;
+        definition.created = this.created;
+        definition.updated = this.updated;
+        definition.defaultAttachment = this.defaultAttachment;
+        definition.variants = this.variants;
 
-        definition.setRelatedCategories(this.getRelatedCategories());
-        definition.setRelatedTags(this.getRelatedTags());
-        definition.setRelatedAttachments(this.getRelatedAttachments());
-        definition.setRelatedBlocks(this.getRelatedBlocks());
-        definition.setRelatedDefinitions(this.getRelatedDefinitions());
+        definition.relatedCategories = UList.deepCopy(this.relatedCategories);
+        definition.relatedTags = UList.deepCopy(this.relatedTags);
+        definition.relatedAttachments = UList.deepCopy(this.relatedAttachments);
+        definition.relatedBlocks = UList.deepCopy(this.relatedBlocks);
+        definition.relatedDefinitions = UList.deepCopy(this.relatedDefinitions);
 
         return definition;
     }

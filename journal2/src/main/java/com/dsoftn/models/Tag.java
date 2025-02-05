@@ -15,6 +15,7 @@ import com.dsoftn.events.TagDeletedEvent;
 import com.dsoftn.events.TagUpdatedEvent;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
 
@@ -344,13 +345,13 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
     public Tag duplicate() {
         Tag newTag = new Tag();
 
-        newTag.setID(this.id);
-        newTag.setName(this.name);
-        newTag.setDescription(this.description);
-        newTag.setScope(this.scope);
-        newTag.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
+        newTag.id = this.id;
+        newTag.name = this.name;
+        newTag.description = this.description;
+        newTag.scope = this.scope;
+        newTag.created = this.created;
 
-        newTag.setRelatedTags(this.getRelatedTags());
+        newTag.relatedTags = UList.deepCopy(this.relatedTags);
 
         return newTag;
     }

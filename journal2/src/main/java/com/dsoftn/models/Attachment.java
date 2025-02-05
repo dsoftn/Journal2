@@ -17,6 +17,7 @@ import com.dsoftn.events.AttachmentDeletedEvent;
 import com.dsoftn.events.AttachmentUpdatedEvent;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
 
@@ -382,29 +383,29 @@ public class Attachment implements IModelEntity<Attachment>, ICustomEventListene
     @Override
     public Attachment duplicate() {
         Attachment newAttachment = new Attachment();
-        newAttachment.setID(this.id);
-        newAttachment.setName(this.name);
-        newAttachment.setDescription(this.description);
-        newAttachment.setType(AttachmentTypeEnum.fromInteger(this.type));
-        newAttachment.setIsSupported(this.isSupported);
-        newAttachment.setSource(this.source);
-        newAttachment.setSourceType(SourceTypeEnum.fromInteger(this.sourceType));
-        newAttachment.setDownloaded(this.isDownloaded());
-        newAttachment.setFilePath(this.filePath);
-        newAttachment.setFileSize(this.fileSize);
-        newAttachment.setFileCreatedSTR_JSON(getFileCreatedSTR_JSON());
-        newAttachment.setFileModifiedSTR_JSON(getFileModifiedSTR_JSON());
-        newAttachment.setFileAccessedSTR_JSON(getFileAccessedSTR_JSON());
-        newAttachment.setCreatedSTR_JSON(getCreatedSTR_JSON());
+        newAttachment.id = this.id;
+        newAttachment.name = this.name;
+        newAttachment.description = this.description;
+        newAttachment.type = this.type;
+        newAttachment.isSupported = this.isSupported;
+        newAttachment.source = this.source;
+        newAttachment.sourceType = this.sourceType;
+        newAttachment.downloaded = this.downloaded;
+        newAttachment.filePath = this.filePath;
+        newAttachment.fileSize = this.fileSize;
+        newAttachment.fileCreated = this.fileCreated;
+        newAttachment.fileModified = this.fileModified;
+        newAttachment.fileAccessed = this.fileAccessed;
+        newAttachment.created = this.created;
         
-        List<Integer> relAtt = new ArrayList<>();
-        for (Integer i : this.relatedAttachments) {
-            relAtt.add(i);
-        }
-        newAttachment.setRelatedAttachmentsFromIDsList(relAtt);
+        newAttachment.relatedAttachments = UList.deepCopy(this.relatedAttachments);
 
         return newAttachment;
     }
+
+    // Public methods
+
+
 
     // Getters
     
@@ -604,6 +605,7 @@ public class Attachment implements IModelEntity<Attachment>, ICustomEventListene
         List<Integer> ids = relatedAttachments.stream().map((Attachment attachment) -> attachment.getID()).collect(Collectors.toList());
         this.relatedAttachments = ids;
     }
+    
     public void setRelatedAttachmentsFromIDsList(List<Integer> relatedAttachments) { this.relatedAttachments = relatedAttachments; }
 
 }

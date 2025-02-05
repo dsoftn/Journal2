@@ -175,7 +175,7 @@ public class SplashScreenController implements IBaseController, ICustomEventList
                 // Check if event is signaling that task is done
                 if (taskStateEvent.getState() == TaskStateEnum.COMPLETED) {
                     // Pause for 3 seconds before closing the application
-                    try { Thread.sleep(3000); } catch (InterruptedException ex) { ex.printStackTrace(); }
+                    // try { Thread.sleep(3000); } catch (InterruptedException ex) { ex.printStackTrace(); }
                     closeMe();
                     return;
                 }

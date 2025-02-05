@@ -38,7 +38,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private String name = "";
-    private String date = CONSTANTS.INVALID_DATETIME_STRING;
+    private String date = LocalDate.now().format(CONSTANTS.DATE_FORMATTER_FOR_JSON);
     private String text = "";
     private String textStyle = "";
     private int draft = 1; // 0 = false, 1 = true
@@ -413,22 +413,22 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     @Override
     public Block duplicate() {
         Block block = new Block();
-        block.setID(this.id);
-        block.setName(this.name);
-        block.setDateSTR_JSON(this.getDateSTR_JSON());
-        block.setText(this.text);
-        block.setTextStyle(this.textStyle);
-        block.setDraft(this.draft);
-        block.setBlockType(BlockTypeEnum.fromInteger(this.blockType));
-        block.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
-        block.setUpdatedSTR_JSON(this.getUpdatedSTR_JSON());
-        block.setDefaultAttachment(this.defaultAttachment);
+        block.id = this.id;
+        block.name = this.name;
+        block.date = this.date;
+        block.text = this.text;
+        block.textStyle = this.textStyle;
+        block.draft = this.draft;
+        block.blockType = this.blockType;
+        block.created = this.created;
+        block.updated = this.updated;
+        block.defaultAttachment = this.defaultAttachment;
 
-        block.setRelatedCategories(this.getRelatedCategories());
-        block.setRelatedTags(this.getRelatedTags());
-        block.setRelatedAttachments(this.getRelatedAttachments());
-        block.setRelatedBlocks(this.getRelatedBlocks());
-        block.setRelatedActors(this.getRelatedActors());
+        block.relatedCategories = UList.deepCopy(this.relatedCategories);
+        block.relatedTags = UList.deepCopy(this.relatedTags);
+        block.relatedAttachments = UList.deepCopy(this.relatedAttachments);
+        block.relatedBlocks = UList.deepCopy(this.relatedBlocks);
+        block.relatedActors = UList.deepCopy(this.relatedActors);
 
         return block;
     }

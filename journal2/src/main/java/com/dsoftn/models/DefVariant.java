@@ -198,10 +198,11 @@ public class DefVariant implements IModelEntity<DefVariant> {
     @Override
     public DefVariant duplicate() {
         DefVariant newDefVariant = new DefVariant();
-        newDefVariant.setID(this.id);
-        newDefVariant.setText(this.text);
-        newDefVariant.setDefinitionID(this.definitionID);
-        newDefVariant.setMatchCase(this.matchCase);
+        newDefVariant.id = this.id;
+        newDefVariant.text = this.text;
+        newDefVariant.definitionID = this.definitionID;
+        newDefVariant.matchCase = this.matchCase;
+        
         return newDefVariant;
     }
     

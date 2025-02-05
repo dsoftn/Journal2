@@ -210,6 +210,20 @@
         "languageCode": "en",
         "creationDate": "2025.02.01 15:16:23",
         "userData": ""
+      },
+      "text_ChangeName": {
+        "key": "text_ChangeName",
+        "value": "Change Name",
+        "languageCode": "en",
+        "creationDate": "2025.02.04 20:26:09",
+        "userData": ""
+      },
+      "text_SetName": {
+        "key": "text_SetName",
+        "value": "Set Name",
+        "languageCode": "en",
+        "creationDate": "2025.02.04 20:27:41",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -421,6 +435,20 @@
         "value": "Vrste blokova",
         "languageCode": "sr-lat",
         "creationDate": "2025.02.01 15:16:23",
+        "userData": ""
+      },
+      "text_ChangeName": {
+        "key": "text_ChangeName",
+        "value": "Promenite ime",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.04 20:26:09",
+        "userData": ""
+      },
+      "text_SetName": {
+        "key": "text_SetName",
+        "value": "Podesite ime",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.04 20:27:41",
         "userData": ""
       }
     }

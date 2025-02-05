@@ -1,5 +1,6 @@
 package com.dsoftn.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,10 @@ public class UList {
         }
 
         return true;
+    }
+
+    public static List<Integer> deepCopy(List<Integer> list) {
+        return new ArrayList<>(list);
     }
 
 }

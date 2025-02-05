@@ -14,6 +14,7 @@ import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
 
@@ -351,14 +352,14 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
     public Category duplicate() {
         Category newCategory = new Category();
 
-        newCategory.setID(this.id);
-        newCategory.setName(this.name);
-        newCategory.setDescription(this.description);
-        newCategory.setParent(OBJECTS.CATEGORIES.getEntity(this.parent).duplicate());
-        newCategory.setCreatedSTR_JSON(this.created);
+        newCategory.id = this.id;
+        newCategory.name = this.name;
+        newCategory.description = this.description;
+        newCategory.parent = this.parent;
+        newCategory.created = this.created;
 
-        newCategory.setRelatedCategories(this.getRelatedCategories());
-        newCategory.setRelatedTags(this.getRelatedTags());
+        newCategory.relatedCategories = UList.deepCopy(this.relatedCategories);
+        newCategory.relatedTags = UList.deepCopy(this.relatedTags);
 
         return newCategory;
     }

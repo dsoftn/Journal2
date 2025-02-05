@@ -286,13 +286,14 @@ public class Relation implements IModelEntity<Relation> {
     @Override
     public Relation duplicate() {
         Relation newRelation = new Relation();
-        newRelation.setID(this.id);
-        newRelation.setBaseModel(this.baseModel);
-        newRelation.setBaseID(this.baseID);
-        newRelation.setRelatedModel(this.relatedModel);
-        newRelation.setRelatedID(this.relatedID);
-        newRelation.setDescription(this.description);
-        newRelation.setCreatedSTR_JSON(this.getCreatedSTR_JSON());
+        newRelation.id = this.id;
+        newRelation.baseModel = this.baseModel;
+        newRelation.baseID = this.baseID;
+        newRelation.relatedModel = this.relatedModel;
+        newRelation.relatedID = this.relatedID;
+        newRelation.description = this.description;
+        newRelation.created = this.created;
+        
         return newRelation;
     }
 

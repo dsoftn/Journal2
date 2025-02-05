@@ -15,11 +15,11 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
    <children>
       <HBox fx:id="hBoxTextEdit" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ScrollPane hbarPolicy="NEVER">
+            <ScrollPane>
                <content>
                   <AnchorPane>
                      <children>
@@ -72,7 +72,7 @@
                               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                            </HBox.margin>
                         </HBox>
-                        <Label fx:id="lblFindResult" minWidth="45.0" styleClass="label-find" text="Nema" />
+                        <Label fx:id="lblFindResult" minWidth="45.0" styleClass="label-default" text="1 of 1" />
                         <Region prefWidth="10.0" />
                         <Button fx:id="btnFindUp" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnFindDown" mnemonicParsing="false" styleClass="button-icon" />

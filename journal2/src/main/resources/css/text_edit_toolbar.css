@@ -12,7 +12,7 @@
 
 /* Button transparent with icon only */
 .button-icon {
-    -fx-background-color: green;
+    -fx-background-color: transparent;
     -fx-text-fill: #00a6fb;
     -fx-font-size: 12px;
     -fx-cursor: hand;
@@ -39,7 +39,7 @@
 
 /* Button with text only */
 .button-text {
-    -fx-background-color: blue;
+    -fx-background-color: transparent;
     -fx-text-fill: red;
     -fx-font-size: 14px;
     -fx-font-weight: bold;

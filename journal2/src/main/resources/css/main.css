@@ -8,6 +8,8 @@
 Native CSS settings for Widgets:
     Separator
     SplitPane
+    ScrollPane
+    ScrollBar
 
 Custom CSS settings for Widgets:
     Status bar
@@ -219,6 +221,52 @@ Button:
 .split-pane:vertical > .split-pane-divider {
     -fx-background-color: #343a40;
 }
+
+
+/* ScrollPane - Widget */
+.scroll-pane {
+    -fx-background: default-background-color;
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: default-background-color;
+}
+
+.scroll-pane .scroll-bar:vertical,
+.scroll-pane .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-width: 0px;
+    -fx-pref-height: 0px;
+}
+.scroll-pane:hover .scroll-bar:vertical,
+.scroll-pane:hover .scroll-bar:horizontal {
+    -fx-opacity: 1;
+}
+
+/* ScrollBar - Widget */
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #777;
+    -fx-background-radius: 5px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #999;
+}
+
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: #555;
+}
+
+.scroll-bar .increment-button:hover, .scroll-bar .decrement-button:hover {
+    -fx-background-color: #777;
+}
+
 
 /* Status bar - Custom */
 
