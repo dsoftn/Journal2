@@ -25,5 +25,6 @@ public class CONSTANTS {
     public static final String INVALID_DATETIME_STRING = "?";
     public static final String DEFAULT_SETTINGS_LANGUAGE_CODE = "en";
     public static final String DATA_STRUCTURE_CORRUPTED_MESSAGE_STRING = "Solution: NONE";
+    public static final int DIALOG_MARGIN = 5;
 
 }

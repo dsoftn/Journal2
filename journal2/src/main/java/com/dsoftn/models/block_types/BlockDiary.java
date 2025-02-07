@@ -41,7 +41,7 @@ public class BlockDiary implements IModelEntity<BlockDiary>, IBlockBaseEntity {
     }
 
     public BlockDiary(Block baseBlock) {
-        this.setBaseBlock(baseBlock);
+        this.setBaseBlock(baseBlock.duplicate());
     }
 
     
@@ -405,37 +405,38 @@ public class BlockDiary implements IModelEntity<BlockDiary>, IBlockBaseEntity {
     public void setBaseBlock(Block baseBlock) {
         if (baseBlock == null) {
             this.baseBlockID = CONSTANTS.INVALID_ID;
+            this.baseBlock = baseBlock;
+            return;
         }
-        else {
-            if (baseBlock.getID() == CONSTANTS.INVALID_ID) {
-                baseBlock.setBlockType(this.blockType);
-            }
 
-            if (baseBlock.getID() != this.baseBlockID) {
-                if (baseBlock.getID() != CONSTANTS.INVALID_ID && OBJECTS.BLOCKS_DIARY.isBaseExists(baseBlock)) {
-                    UError.error(
-                        "BlockDiary.setBaseBlock: Failed to set base block",
-                        "Base block already belongs to another " + this.blockType.toString(),
-                        "Base block ID: " + baseBlock.getID() + "  belongs to block_diary ID: " + OBJECTS.BLOCKS_DIARY.getEntityFromBase(baseBlock).getID()
-                    );
-                    return;
-                }
-
-                if (baseBlock.getBlockTypeObject() != null) {
-                    UError.error(
-                        "BlockDiary.setBaseBlock: Failed to set base block",
-                        "Base block already belongs to another block type",
-                        "Base block ID: " + baseBlock.getID() + "  belongs to block type: " + baseBlock.getBlockType().toString()
-                    );
-                    return;
-                }
-            }
-
-            this.baseBlockID = baseBlock.getID();
+        if (baseBlock.getID() == CONSTANTS.INVALID_ID) {
             baseBlock.setBlockType(this.blockType);
-            baseBlock.setText(this.text);
-            baseBlock.setTextStyle(this.textStyle);
         }
+
+        if (baseBlock.getID() != this.baseBlockID) {
+            if (baseBlock.getID() != CONSTANTS.INVALID_ID && OBJECTS.BLOCKS_DIARY.isBaseExists(baseBlock)) {
+                UError.error(
+                    "BlockDiary.setBaseBlock: Failed to set base block",
+                    "Base block already belongs to another " + this.blockType.toString(),
+                    "Base block ID: " + baseBlock.getID() + "  belongs to block_diary ID: " + OBJECTS.BLOCKS_DIARY.getEntityFromBase(baseBlock).getID()
+                );
+                return;
+            }
+
+            if (baseBlock.getBlockTypeObject() != null) {
+                UError.error(
+                    "BlockDiary.setBaseBlock: Failed to set base block",
+                    "Base block already belongs to another block type",
+                    "Base block ID: " + baseBlock.getID() + "  belongs to block type: " + baseBlock.getBlockType().toString()
+                );
+                return;
+            }
+        }
+
+        this.baseBlockID = baseBlock.getID();
+        baseBlock.setBlockType(this.blockType);
+        baseBlock.setText(this.text);
+        baseBlock.setTextStyle(this.textStyle);
 
         this.baseBlock = baseBlock;
     }

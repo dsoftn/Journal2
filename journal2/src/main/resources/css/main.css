@@ -20,6 +20,8 @@ CSS setting in Default class for Widgets:
     Text field
     Button
     Spinner
+    List
+
 
 COLORS:
 
@@ -30,6 +32,8 @@ Label:
     Label Text #b1b1b1
     
     Label Title Text #00f5d4
+
+    Label Link hover #00a6fb;
 
 Input:
     Input Background #051923
@@ -63,6 +67,21 @@ Button:
 }
 
 .label-default:disabled {
+    -fx-text-fill: #636465;
+}
+
+.label-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #b1b1b1;
+    -fx-font-size: 12px;
+}
+
+.label-link:hover {
+    -fx-text-fill: #00a6fb;
+    -fx-cursor: hand;
+}
+
+.label-link:disabled {
     -fx-text-fill: #636465;
 }
 
@@ -186,6 +205,31 @@ Button:
     -fx-cursor: default;
 }
 
+/* List widget - Default */
+.list-default {
+    -fx-background-color: #051924;
+    -fx-text-fill: #00a6fc;
+    -fx-font-size: 12px;
+    -fx-border-color: #2f6690;
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-border-radius: 5px;
+}
+
+.list-default .list-cell {
+    -fx-background-color: #051924;
+    -fx-text-fill: #00a6fc;
+}
+
+.list-default .list-cell:hover {
+    -fx-background-color: #0c1a68;
+    -fx-text-fill: #ffff00;
+}
+
+.list-default .list-cell:selected {
+    -fx-background-color: #005418;
+    -fx-text-fill: #00a6fb;
+}
 
 /* Separator - Widget */
 .separator {
@@ -247,7 +291,7 @@ Button:
 /* ScrollBar - Widget */
 
 .scroll-bar {
-    -fx-background-color: transparent;
+    -fx-background-color: default-background-color;
 }
 
 .scroll-bar .thumb {

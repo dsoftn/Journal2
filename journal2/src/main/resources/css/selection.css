@@ -1,0 +1,70 @@
+/* Button - Item */
+
+.button-item {
+    -fx-background-color: linear-gradient(to bottom, #015400, #05230c);
+    -fx-text-fill: #00fb3b;
+    -fx-font-size: 12px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #05ca4d;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+    -fx-padding: 5 20 5 20;
+}
+
+.button-item:hover {
+    -fx-background-color: linear-gradient(to bottom, #062305, #00540d);
+    -fx-border-color: #00fb19;
+}
+
+.button-item:pressed {
+    -fx-background-color: linear-gradient(to bottom, #005418, #00943e);
+    -fx-border-color: #19fb00;
+}
+
+.button-item:disabled {
+    -fx-background-color: transparent;
+    -fx-text-fill: #636465;
+    -fx-border-color: #636465;
+    -fx-cursor: default;
+}
+
+
+/* Selected item */
+.selected-item {
+    -fx-background-color: linear-gradient(to bottom, #015400, #05230c);
+    -fx-text-fill: #00fb3b;
+    -fx-font-size: 16px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+}
+
+.selected-item:hover {
+    -fx-background-color: linear-gradient(to bottom, #062305, #00540d);
+    -fx-border-color: #00fb19;
+    -fx-border-width: 1px;
+}
+
+/* Button transparent with icon only */
+.button-icon {
+    -fx-background-color: transparent;
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-opacity: 0.6;
+}
+
+.button-icon:hover {
+    -fx-opacity: 1.0;
+    /* -fx-background-color: linear-gradient(to bottom, #051923, #003554); */
+}
+
+.button-icon:pressed {
+    -fx-background-color: linear-gradient(to bottom, #003554, #006494);
+}
+
+.button-icon:disabled {
+    -fx-background-color: #353535;
+    -fx-text-fill: #636465;
+    -fx-cursor: default;
+}

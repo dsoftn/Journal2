@@ -10,98 +10,95 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="696.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.BlockGeneralController">
+
+<VBox fx:id="vBoxRoot" minHeight="17.0" prefWidth="686.0" spacing="5.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.BlockGeneralController">
    <children>
-      <VBox layoutX="220.0" layoutY="55.0" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <HBox fx:id="hBoxTitle" alignment="CENTER" spacing="5.0">
          <children>
-            <HBox fx:id="hBoxTitle" alignment="CENTER" spacing="5.0">
-               <children>
-                  <Label fx:id="lblID" styleClass="label-block-id" text="ID:##" />
-                  <Button fx:id="btnActors" mnemonicParsing="false" styleClass="button-default" text="Actors" />
-                  <Button fx:id="btnType" mnemonicParsing="false" styleClass="button-default" text="Block Type" />
-                  <Button fx:id="btnDate" mnemonicParsing="false" styleClass="button-default" text="Date" />
-                  <Button fx:id="btnName" mnemonicParsing="false" styleClass="button-default" text="Set Name" />
-                  <HBox fx:id="hBoxMessages" HBox.hgrow="SOMETIMES" />
-                  <Button fx:id="btnOptions" mnemonicParsing="false" styleClass="button-default" text="Opt">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="btnMinimize" mnemonicParsing="false" styleClass="button-default" text="Min" />
-                  <Button fx:id="btnRestore" mnemonicParsing="false" styleClass="button-default" text="Rst" />
-                  <Button fx:id="btnClose" mnemonicParsing="false" styleClass="button-default" text="Cls" />
-               </children>
-            </HBox>
-            <HBox fx:id="hBoxHeader" spacing="5.0">
-               <children>
-                  <Button fx:id="btnAddTag" mnemonicParsing="false" styleClass="button-default" text="Add Tag" />
-                  <Pane HBox.hgrow="SOMETIMES" />
-                  <Button fx:id="btnCategory" mnemonicParsing="false" styleClass="button-default" text="Category" />
-               </children>
-            </HBox>
-            <HBox fx:id="hBoxName" alignment="TOP_CENTER">
-               <children>
-                  <Label fx:id="lblName" styleClass="label-block-name" text="Block name" />
-               </children>
-            </HBox>
-            <HBox fx:id="hBoxContent" />
-            <HBox fx:id="hBoxAttachments">
-               <children>
-                  <ScrollPane prefWidth="400.0">
-                     <content>
-                        <AnchorPane>
-                           <children>
-                              <HBox fx:id="hBoxAttachmentsList">
-                                 <children>
-                                    <VBox fx:id="vBoxAttachmentsControl" alignment="CENTER" maxHeight="1.7976931348623157E308" spacing="5.0">
-                                       <children>
-                                          <Button fx:id="btnAddAttachment" mnemonicParsing="false" styleClass="button-default" text="Add Attachment" />
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </ScrollPane>
-               </children>
-            </HBox>
-            <HBox fx:id="hBoxBlocks">
-               <children>
-                  <ScrollPane>
-                     <content>
-                        <AnchorPane>
-                           <children>
-                              <HBox fx:id="hBoxBlocksList">
-                                 <children>
-                                    <VBox fx:id="vBoxBlockControl" alignment="CENTER" maxHeight="1.7976931348623157E308" spacing="5.0">
-                                       <children>
-                                          <Button fx:id="btnAddBlock" mnemonicParsing="false" styleClass="button-default" text="Add Block" />
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </ScrollPane>
-               </children>
-            </HBox>
-            <HBox fx:id="hBoxFooter" spacing="5.0">
-               <children>
-                  <Button fx:id="btnSave" mnemonicParsing="false" styleClass="button-default" text="Save" />
-                  <Button fx:id="btnSaveAsDraft" mnemonicParsing="false" styleClass="button-default" text="Save As Draft" />
-                  <Button fx:id="btnDelete" mnemonicParsing="false" styleClass="button-default" text="Delete" />
-                  <Button fx:id="btnRelateAttachment" mnemonicParsing="false" styleClass="button-default" text="Relate Attachment" />
-                  <Button fx:id="btnRelateBlock" mnemonicParsing="false" styleClass="button-default" text="Relate Other Block" />
-                  <Button fx:id="btnAddNewBlock" mnemonicParsing="false" styleClass="button-default" text="Add New Block" />
-               </children>
-            </HBox>
+            <Label fx:id="lblID" styleClass="label-block-id" text="ID:##" />
+            <Button fx:id="btnActors" mnemonicParsing="false" styleClass="button-default" text="Actors" />
+            <Button fx:id="btnType" mnemonicParsing="false" styleClass="button-default" text="Block Type" />
+            <Button fx:id="btnDate" mnemonicParsing="false" styleClass="button-default" text="Date" />
+            <Button fx:id="btnName" mnemonicParsing="false" styleClass="button-default" text="Set Name" />
+            <HBox fx:id="hBoxMessages" HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnOptions" mnemonicParsing="false" styleClass="button-icon">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="btnMinimize" mnemonicParsing="false" onAction="#onBtnMinimizeAction" styleClass="button-icon" />
+            <Button fx:id="btnRestore" mnemonicParsing="false" onAction="#onBtnRestoreAction" styleClass="button-icon" />
+            <Button fx:id="btnClose" mnemonicParsing="false" onAction="#onBtnCloseAction" styleClass="button-icon" />
          </children>
-      </VBox>
+      </HBox>
+      <HBox fx:id="hBoxHeader" spacing="5.0">
+         <children>
+            <Button fx:id="btnAddTag" mnemonicParsing="false" styleClass="button-default" text="Add Tag" />
+            <Pane HBox.hgrow="SOMETIMES" />
+            <Button fx:id="btnCategory" mnemonicParsing="false" styleClass="button-default" text="Category" />
+         </children>
+      </HBox>
+      <HBox fx:id="hBoxName" alignment="TOP_CENTER">
+         <children>
+            <Label fx:id="lblName" styleClass="label-block-name" textAlignment="CENTER" wrapText="true" />
+         </children>
+      </HBox>
+      <HBox fx:id="hBoxContent" />
+      <HBox fx:id="hBoxAttachments">
+         <children>
+            <ScrollPane>
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <HBox fx:id="hBoxAttachmentsList">
+                           <children>
+                              <VBox fx:id="vBoxAttachmentsControl" alignment="CENTER" maxHeight="1.7976931348623157E308" spacing="5.0">
+                                 <children>
+                                    <Button fx:id="btnAddAttachment" mnemonicParsing="false" styleClass="button-icon" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+         </children>
+      </HBox>
+      <HBox fx:id="hBoxBlocks">
+         <children>
+            <ScrollPane>
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <HBox fx:id="hBoxBlocksList">
+                           <children>
+                              <VBox fx:id="vBoxBlockControl" alignment="CENTER" maxHeight="1.7976931348623157E308" spacing="5.0">
+                                 <children>
+                                    <Button fx:id="btnAddBlock" mnemonicParsing="false" styleClass="button-icon" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+         </children>
+      </HBox>
+      <HBox fx:id="hBoxFooter" spacing="5.0">
+         <children>
+            <Button fx:id="btnSave" mnemonicParsing="false" styleClass="button-default" text="Save" />
+            <Button fx:id="btnSaveAsDraft" mnemonicParsing="false" styleClass="button-default" text="Save As Draft" />
+            <Button fx:id="btnDelete" mnemonicParsing="false" styleClass="button-default" text="Delete" />
+            <Button fx:id="btnRelateAttachment" mnemonicParsing="false" styleClass="button-default" text="Relate Attachment" />
+            <Button fx:id="btnRelateBlock" mnemonicParsing="false" styleClass="button-default" text="Relate Other Block" />
+            <Button fx:id="btnAddNewBlock" mnemonicParsing="false" styleClass="button-default" text="Add New Block" />
+         </children>
+      </HBox>
    </children>
    <stylesheets>
       <URL value="@../css/main.css" />
       <URL value="@../css/block_general.css" />
    </stylesheets>
-</AnchorPane>
+</VBox>

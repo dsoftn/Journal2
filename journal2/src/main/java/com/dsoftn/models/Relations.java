@@ -4,9 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -1006,8 +1011,50 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         return getRelationsList(baseModel, null, null, null);
     }
 
+    public List<Integer> getLastUsed(ModelEnum baseModel, Integer baseID, ModelEnum relatedModel, Integer maxCount) {
+        List<Relation> relations = lastAndMostUsedHelper(baseModel, baseID, relatedModel);
+
+        relations.sort((o1, o2) -> o2.getCreatedSTR_JSON().compareTo(o1.getCreatedSTR_JSON()));
+
+        Set<Integer> uniqueIds = new LinkedHashSet<>();
+        List<Integer> result = new ArrayList<>();
+        
+        for (Relation relation : relations) {
+            if (uniqueIds.add(relation.getRelatedID())) {
+                result.add(relation.getRelatedID());
+            }
+            if (maxCount != null && result.size() >= maxCount) break;
+        }
+
+        return result;
+    }
+
+    public List<Integer> getMostUsed(ModelEnum baseModel, Integer baseID, ModelEnum relatedModel, Integer maxCount) {
+        List<Relation> relations = lastAndMostUsedHelper(baseModel, baseID, relatedModel);
+    
+        Map<Integer, Integer> countMap = new HashMap<>();
+        for (Relation relation : relations) {
+            countMap.put(relation.getRelatedID(), countMap.getOrDefault(relation.getRelatedID(), 0) + 1);
+        }
+    
+        return countMap.entrySet()
+                .stream()
+                .sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue()))
+                .map(Map.Entry::getKey)
+                .limit(maxCount != null ? Math.min(maxCount, countMap.size()) : countMap.size())
+                .collect(Collectors.toList());
+    }
+
     // Private methods
 
+    private List<Relation> lastAndMostUsedHelper(ModelEnum baseModel, Integer baseID, ModelEnum relatedModel) {
+        return data.isEmpty() ? Collections.emptyList() : data.values().stream()
+                .filter(relation -> baseModel == null || relation.getBaseModel() == baseModel)
+                .filter(relation -> baseID == null || baseID.equals(relation.getBaseID()))
+                .filter(relation -> relatedModel == null || relation.getRelatedModel() == relatedModel)
+                .collect(Collectors.toList());
+    }
+    
     private String getScopeAndIdKey(Relation relation) {
         return relation.getBaseModel().toString() + ";" + String.valueOf(relation.getBaseID());
     }

@@ -15,7 +15,7 @@ public class DefVariant implements IModelEntity<DefVariant> {
     private int id = CONSTANTS.INVALID_ID;
     private String text = "";
     private int definitionID = CONSTANTS.INVALID_ID;
-    private int matchCase = OBJECTS.SETTINGS.getvINTEGER("DefVariantDefaultMatchCase");
+    private int matchCase = OBJECTS.SETTINGS.getvBOOLEAN("DefVariantDefaultMatchCase") ? 1 : 0;
 
     // Constructors
     

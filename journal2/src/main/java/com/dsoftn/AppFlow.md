@@ -329,6 +329,8 @@ Update following code in `BlockType` class:
 6. Add new model to `GuiMain.getErrorsInModelLoading` to properly check loading errors
 7. Update `SplashScreenController` to `load()` model properly
     - To update `SplashScreenController` class see [How to add new Model](#how-to-add-new-model-⤴)
+8. **UI changes to perform**:
+9. Update `BlockTypeBackgroundNAME` key in **Settings** (that is used for block type background)
 
 ## Definitions-Definition Model <sup>[⤴](#models-⤴)</sup>
 ### Overview

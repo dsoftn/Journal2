@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.SelectionController">
+   <children>
+      <VBox fx:id="vBoxTitle" alignment="CENTER">
+         <children>
+            <HBox>
+               <children>
+                  <Region minWidth="20.0" />
+                  <Region HBox.hgrow="SOMETIMES" />
+                  <Label fx:id="lblName" styleClass="label-title-default" text="Selection name" />
+                  <Region HBox.hgrow="SOMETIMES" />
+                  <Button fx:id="btnClose" mnemonicParsing="false" styleClass="button-icon" />
+               </children>
+            </HBox>
+            <Region fx:id="regTitleSpacer" prefHeight="20.0" />
+         </children>
+      </VBox>
+      <VBox fx:id="vBoxClip">
+         <children>
+            <Label fx:id="lblClipSelect" styleClass="label-default" text="Select from..." />
+            <HBox alignment="TOP_CENTER" spacing="30.0">
+               <children>
+                  <VBox fx:id="vBoxClipClip">
+                     <children>
+                        <Button fx:id="btnClip" mnemonicParsing="false" styleClass="button-default" text="Clipboard" />
+                        <Label fx:id="lblClipContent" text="Clip Content" />
+                     </children>
+                  </VBox>
+                  <VBox fx:id="vBoxClipFile">
+                     <children>
+                        <Button fx:id="btnFile" mnemonicParsing="false" styleClass="button-default" text="File" />
+                        <Label fx:id="lblFileContent" text="File Content" />
+                     </children>
+                  </VBox>
+                  <VBox fx:id="vBoxClipWeb">
+                     <children>
+                        <Button fx:id="btnWeb" mnemonicParsing="false" styleClass="button-default" text="Web" />
+                        <Label fx:id="lblWebContent" text="Web Content" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0">
+               <padding>
+                  <Insets left="20.0" right="20.0" />
+               </padding>
+            </Separator>
+            <Region minHeight="10.0" prefHeight="10.0" />
+         </children>
+      </VBox>
+      <SplitPane fx:id="splitPane" dividerPositions="0.4">
+        <items>
+          <AnchorPane fx:id="ancList">
+               <children>
+                  <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <TextField fx:id="txtFind" styleClass="text-field-default" />
+                        <Region minHeight="2.0" prefHeight="2.0" />
+                        <ListView fx:id="lstItems" styleClass="list-default" />
+                        <Label fx:id="lblCounter" styleClass="label-default" text="Counter" />
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+          <AnchorPane fx:id="ancRecommendations">
+               <children>
+                  <VBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Region minHeight="19.0" prefHeight="19.0" />
+                        <VBox fx:id="vBoxLast">
+                           <children>
+                              <Label fx:id="lblLast" styleClass="label-default" text="Last used:" />
+                              <HBox fx:id="hBoxLastContent" spacing="10.0" />
+                              <HBox alignment="CENTER_RIGHT">
+                                 <children>
+                                    <Label fx:id="lblLastShowMore" styleClass="label-link" text="show more..." />
+                                 </children>
+                              </HBox>
+                              <Separator prefWidth="200.0">
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
+                              </Separator>
+                           </children>
+                        </VBox>
+                        <VBox fx:id="vBoxMost">
+                           <children>
+                              <Label fx:id="lblMost" styleClass="label-default" text="Most used:" />
+                              <HBox fx:id="hBoxMostContent" spacing="10.0" />
+                              <HBox alignment="CENTER_RIGHT">
+                                 <children>
+                                    <Label fx:id="lblMostShowMore" styleClass="label-link" text="show more..." />
+                                 </children>
+                              </HBox>
+                              <Separator prefWidth="200.0">
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
+                              </Separator>
+                           </children>
+                        </VBox>
+                        <VBox fx:id="vBoxSelected">
+                           <children>
+                              <Region minHeight="25.0" prefHeight="25.0" />
+                              <Label fx:id="lblSelected" styleClass="label-default" text="Selected items" />
+                              <ScrollPane maxHeight="1.7976931348623157E308" VBox.vgrow="SOMETIMES">
+                                 <content>
+                                    <VBox fx:id="vBoxSelectedContent">
+                                       <children>
+                                          <HBox alignment="BOTTOM_LEFT">
+                                             <children>
+                                                <Label styleClass="selected-item" text="Some selected item" />
+                                                <Region minWidth="5.0" HBox.hgrow="SOMETIMES" />
+                                                <Button mnemonicParsing="false" styleClass="button-icon" text="X" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                                 <VBox.margin>
+                                    <Insets left="15.0" />
+                                 </VBox.margin>
+                              </ScrollPane>
+                              <Separator>
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
+                              </Separator>
+                           </children>
+                        </VBox>
+                        <Region VBox.vgrow="SOMETIMES" />
+                        <HBox alignment="BOTTOM_LEFT">
+                           <children>
+                              <Button fx:id="btnClear" mnemonicParsing="false" styleClass="button-default" text="Clear selection" />
+                              <Region HBox.hgrow="SOMETIMES" />
+                              <Button fx:id="btnSelect" mnemonicParsing="false" style="-fx-font-size: 18;" styleClass="button-default" text="SELECT ITEMS" />
+                           </children>
+                        </HBox>
+                        <Region minHeight="7.0" prefHeight="7.0" />
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+   <stylesheets>
+      <URL value="@../css/main.css" />
+      <URL value="@../css/selection.css" />
+   </stylesheets>
+</VBox>

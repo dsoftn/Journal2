@@ -4,9 +4,16 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.IElementController;
+import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.models.Actor;
 import com.dsoftn.models.Block;
+import com.dsoftn.utils.UList;
+import com.dsoftn.utils.UString;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.util.Duration;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,6 +23,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.List;
+
 import org.fxmisc.richtext.InlineCssTextArea;
 
 
@@ -23,10 +33,21 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     // Variables
     private Stage stage = null;
-    private AnchorPane root = null;
+    private VBox root = null;
     private Block block = null;
 
+    private VBox vLayout = null;
+    int iconSize = 20;
+    boolean minimized = false;
+    boolean showMinimize = true;
+    boolean showRestore = false;
+    boolean showClose = true;
+    boolean editable = true;
+
     // FXML variables
+
+    @FXML
+    private VBox vBoxRoot;
 
     @FXML
     private HBox hBoxTitle;
@@ -101,9 +122,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
     
 
     // Constructor
-    public BlockGeneralController() {
-        setBlock(null);
-    }
+    public BlockGeneralController() {}
 
     public BlockGeneralController(Block block) {
         setBlock(block);
@@ -111,8 +130,6 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     public void initialize() {
         // Setup icons
-        int iconSize = 20;
-
         ImageView imgOptions = new ImageView(new Image(getClass().getResourceAsStream("/images/options_bw.png")));
         imgOptions.setPreserveRatio(true);
         imgOptions.setFitHeight(iconSize);
@@ -125,11 +142,19 @@ public class BlockGeneralController implements IBaseController, IElementControll
         ImageView imgClose = new ImageView(new Image(getClass().getResourceAsStream("/images/close.png")));
         imgClose.setPreserveRatio(true);
         imgClose.setFitHeight(iconSize);
+        ImageView imgAddAttachment = new ImageView(new Image(getClass().getResourceAsStream("/images/add_bw.png")));
+        imgAddAttachment.setPreserveRatio(true);
+        imgAddAttachment.setFitHeight(iconSize);
+        ImageView imgAddBlock = new ImageView(new Image(getClass().getResourceAsStream("/images/add_bw.png")));
+        imgAddBlock.setPreserveRatio(true);
+        imgAddBlock.setFitHeight(iconSize);
 
         btnOptions.setGraphic(imgOptions);
         btnMinimize.setGraphic(imgMinimize);
         btnRestore.setGraphic(imgRestore);
         btnClose.setGraphic(imgClose);
+        btnAddAttachment.setGraphic(imgAddAttachment);
+        btnAddBlock.setGraphic(imgAddBlock);
 
     }
 
@@ -151,26 +176,98 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     @Override
     public void closeMe() {
-        if (stage == null) {
-            return;
+        if (stage != null) {
+            stage.close();
         }
 
-        stage.close();
+        removeFromLayout();
     }
 
     // Interface IElementController methods
 
     @Override
-    public AnchorPane getRoot() {
+    public VBox getRoot() {
         return root;
     }
 
     @Override
-    public void setRoot(AnchorPane root) {
+    public void setRoot(VBox root) {
+        VBox.setVgrow(root, javafx.scene.layout.Priority.ALWAYS);
+        VBox.setVgrow(vBoxRoot, javafx.scene.layout.Priority.ALWAYS);
         this.root = root;
     }
 
+    @Override
+    public void addToLayout(VBox layout) {
+        addToLayout(layout, layout.getChildren().size());
+    }
+
+    @Override
+    public void addToLayout(VBox layout, int insertIntoIndex) {
+        layout.getChildren().add(insertIntoIndex, vBoxRoot);
+
+        if (OBJECTS.SETTINGS.getvBOOLEAN("AllowAnimateAddingBlockGeneral")) {
+            animateAddingToLayout();
+        }
+
+        vLayout = layout;
+    }
+
+    @Override
+    public void removeFromLayout() {
+        removeFromLayout(this.vLayout);
+    }
+
+    @Override
+    public void removeFromLayout(VBox layout) {
+        startAnimatedRemovingFromLayout(layout);
+    }
+
     // Public methods
+
+    public void minimize(boolean minimize) {
+        if (minimize) {
+            vBoxRoot.getChildren().clear();
+            vBoxRoot.getChildren().add(hBoxTitle);
+            minimized = true;
+        }
+        else {
+            vBoxRoot.getChildren().clear();
+            vBoxRoot.getChildren().add(hBoxTitle);
+            vBoxRoot.getChildren().add(hBoxHeader);
+            vBoxRoot.getChildren().add(hBoxName);
+            vBoxRoot.getChildren().add(hBoxContent);
+            vBoxRoot.getChildren().add(hBoxAttachments);
+            vBoxRoot.getChildren().add(hBoxBlocks);
+            vBoxRoot.getChildren().add(hBoxFooter);
+            adjustWidgets(block);
+            minimized = false;
+        }
+    }
+
+    public boolean isMinimized() {
+        return this.minimized;
+    }
+
+    public void canShowMinimize(boolean show) {
+        this.showMinimize = show;
+    }
+
+    public void canShowRestore(boolean show) {
+        this.showRestore = show;
+    }
+
+    public void canShowClose(boolean show) {
+        this.showClose = show;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public boolean isEditable() {
+        return this.editable;
+    }
 
     public void setBlock(Block block) {
         this.block = block;
@@ -178,11 +275,19 @@ public class BlockGeneralController implements IBaseController, IElementControll
         refresh();
     }
 
+    public void refresh() {
+        refresh(this.block);
+    }
+
     public void refresh(Block block) {
         if (block == null) {
             return;
         }
 
+        // Show all sections that need to be visible
+        adjustWidgets(block);
+        // Set background
+        setBackground(block);
         // ID
         setLblID(block);
         // Actors
@@ -193,13 +298,59 @@ public class BlockGeneralController implements IBaseController, IElementControll
         btnDate.setText(block.getDateSTR());
         // Name
         setBtnName(block);
-        
-
-
     }
 
-    public void refresh() {
-        refresh(this.block);
+    // Private methods
+
+    private void adjustWidgets(Block block) {
+        // Related attachments
+        if (block.getRelatedAttachmentsIDs().size() > 0) {
+            hBoxAttachments.setVisible(true);
+            hBoxAttachments.setManaged(true);
+        }
+        else {
+            hBoxAttachments.setVisible(false);
+            hBoxAttachments.setManaged(false);
+        }
+
+        // Related blocks
+        if (block.getRelatedBlocksIDs().size() > 0) {
+            hBoxBlocks.setVisible(true);
+            hBoxBlocks.setManaged(true);
+        }
+        else {
+            hBoxBlocks.setVisible(false);
+            hBoxBlocks.setManaged(false);
+        }
+
+        // Button minimize
+        btnMinimize.setVisible(showMinimize);
+        btnMinimize.setManaged(showMinimize);
+        // Button restore
+        btnRestore.setVisible(showRestore);
+        btnRestore.setManaged(showRestore);
+        // Button close
+        btnClose.setVisible(showClose);
+        btnClose.setManaged(showClose);
+    }
+
+    private void setBackground(Block block) {
+        String color = "CssBlockTypeBackground" + block.getBlockType().toString();
+        if (OBJECTS.SETTINGS.isUserSettingExists(color)) {
+            String bgStyle = OBJECTS.SETTINGS.getvSTRING(color);
+            if (bgStyle.isEmpty()) {
+                vBoxRoot.setStyle("-fx-background-color: transparent;");
+            }
+            else {
+                List<String> bgStyleList = UString.splitAndStrip(bgStyle, "\n");
+                for (String style : bgStyleList) {
+                    vBoxRoot.setStyle(style);
+                }
+            }
+        }
+        else {
+            vBoxRoot.setStyle("-fx-background-color: red;");
+        }
     }
 
     private void setLblID(Block block) {
@@ -218,7 +369,10 @@ public class BlockGeneralController implements IBaseController, IElementControll
         if (actors.length() == 0) {
             Image image = new Image(getClass().getResourceAsStream("/images/actor_none.png"));
             btnActors.setText(OBJECTS.SETTINGS.getl("text_Actors"));
-            btnActors.setGraphic(new ImageView(image));
+            ImageView imageView = new ImageView(image);
+            imageView.setPreserveRatio(true);
+            imageView.setFitHeight(iconSize);
+            btnActors.setGraphic(imageView);
             return;
         }
 
@@ -229,7 +383,10 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
             if (actor.getImagePath() != null && !actor.getImagePath().isEmpty()) {
                 Image image = new Image(actor.getImagePath());
-                btnActors.setGraphic(new ImageView(image));
+                ImageView imageView = new ImageView(image);
+                imageView.setPreserveRatio(true);
+                imageView.setFitHeight(iconSize);
+                btnActors.setGraphic(imageView);
             }
             else {
                 btnActors.setGraphic(null);
@@ -245,11 +402,14 @@ public class BlockGeneralController implements IBaseController, IElementControll
     private void setBtnType(Block block) {
         btnType.setText(block.getBlockType().toString());
         Image image = new Image(block.getBlockType().getImagePath());
-        btnType.setGraphic(new ImageView(image));
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+        imageView.setFitHeight(iconSize);
+        btnType.setGraphic(imageView);
     }
 
     private void setBtnName(Block block) {
-        if (block.getName() == null && block.getName().isEmpty()) {
+        if (block.getName() == null || block.getName().isEmpty()) {
             btnName.setText(OBJECTS.SETTINGS.getl("text_SetName"));
             return;
         }
@@ -258,5 +418,73 @@ public class BlockGeneralController implements IBaseController, IElementControll
     }
 
 
+    private void animateAddingToLayout() {
+        double duration = OBJECTS.SETTINGS.getvDOUBLE("AnimateAddingBlockGeneralDuration");
 
+        Timeline timeline = new Timeline(
+            new KeyFrame(Duration.ZERO, 
+                new javafx.animation.KeyValue(vBoxRoot.opacityProperty(), 0.01)
+            ),
+            new KeyFrame(Duration.seconds(duration), 
+                new javafx.animation.KeyValue(vBoxRoot.opacityProperty(), 1)
+            )
+        );
+    
+        timeline.setCycleCount(1);
+
+        timeline.play();
+    }
+
+    private void startAnimatedRemovingFromLayout(VBox vLayout) {
+        if (OBJECTS.SETTINGS.getvBOOLEAN("AllowAnimateRemovingBlockGeneral") && vLayout != null) {
+            animateRemovingFromLayout();
+        }
+        else {
+            finishRemovingBlockFromLayout(vLayout);
+        }
+    }
+
+    private void animateRemovingFromLayout() {
+        double duration = OBJECTS.SETTINGS.getvDOUBLE("AnimateRemovingBlockGeneralDuration");
+
+        Timeline timeline = new Timeline(
+            new KeyFrame(Duration.ZERO, 
+                new javafx.animation.KeyValue(vBoxRoot.opacityProperty(), 1)
+            ),
+            new KeyFrame(Duration.seconds(duration), 
+                new javafx.animation.KeyValue(vBoxRoot.opacityProperty(), .01)
+            )
+        );
+    
+        timeline.setCycleCount(1);
+
+        timeline.setOnFinished(event -> finishRemovingBlockFromLayout());
+
+        timeline.play();
+    }
+
+    private void finishRemovingBlockFromLayout() {
+        finishRemovingBlockFromLayout(this.vLayout);
+    }
+    
+    private void finishRemovingBlockFromLayout(VBox vLayout) {
+        if (vLayout != null) {
+            vLayout.getChildren().remove(vBoxRoot);
+        }
+    }
+
+
+    // FXML Events
+
+    public void onBtnCloseAction(ActionEvent event) {
+        closeMe();
+    }
+
+    public void onBtnRestoreAction(ActionEvent event) {
+        minimize(false);
+    }
+
+    public void onBtnMinimizeAction(ActionEvent event) {
+        minimize(true);
+    }
 }

@@ -47,7 +47,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.MainWinController">
+<VBox prefHeight="614.0" prefWidth="1166.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.MainWinController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -88,51 +88,37 @@
         </Menu>
       </menus>
     </MenuBar>
-    <SplitPane dividerPositions="0.2505567928730512, 0.7505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-      <items>
-            <ScrollPane prefHeight="200.0" prefWidth="200.0">
+      <SplitPane dividerPositions="0.15, 0.85" VBox.vgrow="SOMETIMES">
+         <items>
+            <ScrollPane fx:id="scrPaneContentArea">
                <content>
-              <AnchorPane>
-                <children>
-                  <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Master" textAlignment="CENTER" wrapText="false">
-                    <font>
-                      <Font size="18.0" fx:id="x1" />
-                    </font>
-                    <textFill>
-                      <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
-                    </textFill>
-                  </Label>
-                </children>
-              </AnchorPane>
-               </content>
-            </ScrollPane>
-        <ScrollPane prefHeight="-1.0" prefWidth="-1.0">
-          <content>
-            <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0">
+                  <AnchorPane fx:id="anchorContentArea">
                      <children>
-                        <VBox fx:id="vBoxWorkArea" maxWidth="1.7976931348623157E308" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-            </AnchorPane>
-          </content>
-        </ScrollPane>
-            <ScrollPane prefHeight="200.0" prefWidth="200.0">
-               <content>
-                  <AnchorPane>
-                     <children>
-                        <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Master" textAlignment="CENTER" wrapText="false">
-                           <font>
-                              <Font size="18.0" fx:id="x11" />
-                           </font>
-                           <textFill>
-                              <Color red="0.624" green="0.624" blue="0.624" fx:id="x21" />
-                           </textFill>
-                        </Label>
+                        <VBox fx:id="vBoxContentArea" />
                      </children>
                   </AnchorPane>
                </content>
             </ScrollPane>
-      </items>
-    </SplitPane>
+            <ScrollPane fx:id="scrPaneWorkArea" hbarPolicy="NEVER" maxWidth="1.7976931348623157E308" onMouseEntered="#onScrWorkingAreaMouseEnter" onMouseExited="#onScrWorkingAreaMouseExit">
+               <content>
+                  <AnchorPane fx:id="anchorWorkArea">
+                     <children>
+                        <VBox fx:id="vBoxWorkArea" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <ScrollPane fx:id="scrPaneNewsArea">
+               <content>
+                  <AnchorPane fx:id="anchorNewsArea">
+                     <children>
+                        <VBox fx:id="vBoxNewsArea" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+         </items>
+      </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" styleClass="status-bar" VBox.vgrow="NEVER">
       <children>
         <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" styleClass="status-bar" text="Left status" HBox.hgrow="ALWAYS">

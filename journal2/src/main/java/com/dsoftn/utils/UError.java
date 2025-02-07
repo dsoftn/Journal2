@@ -8,7 +8,7 @@ public class UError {
         for (String messageString : messageStrings) {
             content += messageString + "\n";
         }
-        System.out.println(header + "\n" + content);
+        printInRed(header + "\n" + content);
     }
 
     public static void exception(String messageExplanation, Exception e, String... messageStrings){
@@ -18,7 +18,7 @@ public class UError {
             content += messageString + "\n";
         }
         e.printStackTrace();
-        System.out.println(header + "\n" + content);
+        printInRed(header + "\n" + content);
     }
 
     public static void error(String messageExplanation, String... messageStrings){
@@ -27,7 +27,7 @@ public class UError {
         for (String messageString : messageStrings) {
             content += messageString + "\n";
         }
-        System.out.println(header + "\n" + content);
+        printInRed(header + "\n" + content);
     }
 
     public static void warning(String messageExplanation, String... messageStrings){
@@ -36,7 +36,7 @@ public class UError {
         for (String messageString : messageStrings) {
             content += messageString + "\n";
         }
-        System.out.println(header + "\n" + content);
+        printInRed(header + "\n" + content);
     }
 
     public static void info(String messageExplanation, String... messageStrings){
@@ -46,6 +46,10 @@ public class UError {
             content += messageString + "\n";
         }
         System.out.println(header + "\n" + content);
+    }
+
+    public static void printInRed(String message) {
+        System.out.println("\033[31m" + message + "\033[0m");
     }
 
 }

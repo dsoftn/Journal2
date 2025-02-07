@@ -1,14 +1,16 @@
 package com.dsoftn;
 
+import com.dsoftn.controllers.EmptyDialogController;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.SplashScreenController;
-
+import com.dsoftn.controllers.EmptyDialogController.WindowBehavior;
 import com.dsoftn.utils.UError;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class DIALOGS {
 
@@ -50,6 +52,28 @@ public class DIALOGS {
             return controller;
         } catch (Exception e) {
             UError.exception("DIALOGS.getSplashScreenController: Failed to load dialog", e);
+            return null;
+        }
+    }
+
+    public static EmptyDialogController getEmptyDialogController_FRAMELESS(Stage parentStage, WindowBehavior windowBehavior) {
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/EmptyDialog.fxml"));
+        
+        Parent root;
+        try {
+            root = loader.load();
+            EmptyDialogController controller = loader.getController();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            if (parentStage != null) {
+                stage.initOwner(parentStage);
+            }
+            controller.setStage(stage);
+            controller.setWindowBehavior(windowBehavior);
+            return controller;
+        } catch (Exception e) {
+            UError.exception("DIALOGS.getEmptyDialogController: Failed to load dialog", e);
             return null;
         }
     }
