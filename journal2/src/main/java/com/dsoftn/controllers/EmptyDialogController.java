@@ -7,11 +7,17 @@ import java.util.Map;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UJavaFX;
 
-import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.geometry.Bounds;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -114,6 +120,10 @@ public class EmptyDialogController implements IBaseController {
 
             for (Node node : dragNodes) {
                 Bounds bounds = node.localToScreen(node.getBoundsInLocal());
+                if (bounds == null) {
+                    continue;
+                }
+
                 if (mouseX >= bounds.getMinX() &&
                     mouseX <= bounds.getMaxX() &&
                     mouseY >= bounds.getMinY() &&
@@ -202,14 +212,27 @@ public class EmptyDialogController implements IBaseController {
 
     // Variables
 
+    private String myName = UJavaFX.getUniqueId();
+
     Stage stage = null;
     boolean framelessWindow = false; // true = window is frameless
     Map<String, Double> mousePos = null; // Used to resize window if window is frameless
     boolean resizeEnabled = false; // Used to enable window resizing when window is frameless
     double minSize = 50;
     List<Node> dragNodes = new ArrayList<>();
+    boolean dialogPinned = false;
 
     // FXML widgets
+    @FXML
+    VBox vBoxTitle; // Title
+        @FXML
+        Button btnPin;
+        @FXML
+        Label lblTitle;
+        @FXML
+        Button btnClose;
+        @FXML
+        Region regTitleSpacer;
     @FXML
     AnchorPane ancRoot;
     @FXML
@@ -224,18 +247,50 @@ public class EmptyDialogController implements IBaseController {
     public EmptyDialogController() {}
 
     public void initialize() {
+        // Close button
+        Image imgClose = new Image(getClass().getResourceAsStream("/images/close.png"));
+        ImageView imgCloseView = new ImageView(imgClose);
+        imgCloseView.setPreserveRatio(true);
+        imgCloseView.setFitHeight(30);
+        btnClose.setGraphic(imgCloseView);
+        // Pin button
+        Image imgPin = new Image(getClass().getResourceAsStream("/images/pin_red.png"));
+        ImageView imgPinView = new ImageView(imgPin);
+        imgPinView.setPreserveRatio(true);
+        imgPinView.setFitHeight(30);
+        btnPin.setGraphic(imgPinView);
     }
 
 
     // Implementation of IBaseController
 
     @Override
+    public String getMyName() {
+        return myName;
+    }
+
+    @Override
     public void setStage(Stage stage) {
         this.stage = stage;
+
+        stage.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal && !dialogPinned) {
+                closeMe();
+            }
+        });
     }
 
     @Override
     public void startMe() {
+        if (stage == null) {
+            UError.error("EmptyDialogController.startMe: stage is null");
+            return;
+        }
+
+        stage.setOnCloseRequest(event -> {
+            closeMe();
+        });
+
         stage.show();
     }
 
@@ -246,7 +301,12 @@ public class EmptyDialogController implements IBaseController {
 
     // Public methods
 
+    public void setTitle(String title) {
+        lblTitle.setText(title);
+    }
+
     public void setWindowBehavior(WindowBehavior windowStyle) {
+        resetDragNodes();
         switch (windowStyle) {
             case ACTOR_SELECT_STANDARD:
                 setFramelessWindow(true);
@@ -261,7 +321,7 @@ public class EmptyDialogController implements IBaseController {
         }
     }
 
-    public void setDragNodes(Node... nodes) {
+    public void setDragNodes(List<Node> nodes) {
         dragNodes.clear();
 
         for (Node node : nodes) {
@@ -274,8 +334,8 @@ public class EmptyDialogController implements IBaseController {
     public void resetDragNodes() {
         dragNodes.clear();
         dragNodes.add(regTitle);
+        dragNodes.add(lblTitle);
         setMiniTitleEnabled(true);
-        System.out.println("resetDragNodes");
     }
 
     public void setContent(VBox content) {
@@ -288,9 +348,12 @@ public class EmptyDialogController implements IBaseController {
 
         if (framelessWindow) {
             stage.initStyle(StageStyle.UNDECORATED);
+            ancRoot.getStyleClass().remove("empty-dialog-root");
+            ancRoot.getStyleClass().add("empty-dialog-root");
         }
         else {
             stage.initStyle(StageStyle.DECORATED);
+            ancRoot.getStyleClass().remove("empty-dialog-root");
         }
     }
 
@@ -307,6 +370,30 @@ public class EmptyDialogController implements IBaseController {
         else {
             hBoxMiniTitle.getChildren().clear();
         }
+    }
+
+    public void setDialogPinned(Boolean dialogPinned) {
+        if (dialogPinned == null) {
+            this.dialogPinned = !this.dialogPinned;
+            dialogPinned = this.dialogPinned;
+        }
+
+        if (dialogPinned) {
+            Image imgPin = new Image(getClass().getResourceAsStream("/images/unpin_red.png"));            
+            ImageView imgPinView = new ImageView(imgPin);
+            imgPinView.setPreserveRatio(true);
+            imgPinView.setFitHeight(30);
+            btnPin.setGraphic(imgPinView);
+        }
+        else {
+            Image imgPin = new Image(getClass().getResourceAsStream("/images/pin_red.png"));
+            ImageView imgPinView = new ImageView(imgPin);
+            imgPinView.setPreserveRatio(true);
+            imgPinView.setFitHeight(30);
+            btnPin.setGraphic(imgPinView);
+        }
+        
+        this.dialogPinned = dialogPinned;
     }
 
     // Private methods
@@ -480,5 +567,14 @@ public class EmptyDialogController implements IBaseController {
 
         mousePos = null;
     }
+
+    public void onBtnCloseAction(ActionEvent event) {
+        closeMe();
+    }
+
+    public void onBtnPinAction(ActionEvent event) {
+        setDialogPinned(null);
+    }
+
 
 }

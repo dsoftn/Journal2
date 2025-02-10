@@ -2,6 +2,7 @@ package com.dsoftn.models.block_types;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Objects;
 
 import com.dsoftn.Interfaces.IBlockBaseEntity;
@@ -10,6 +11,9 @@ import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.enums.models.DefaultAttachmentShowPolicy;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UString;
+
+import javafx.scene.image.Image;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
@@ -304,6 +308,52 @@ public class BlockDiary implements IModelEntity<BlockDiary>, IBlockBaseEntity {
         block.textStyle = this.textStyle;
 
         return block;
+    }
+
+    @Override
+    public String getImagePath() {
+        Block bb = OBJECTS.BLOCKS.getEntity(this.baseBlockID);
+        return bb == null ? null : bb.getImagePath();
+    }
+
+    @Override
+    public Image getGenericImage() {
+        return new Image(getClass().getResourceAsStream("/images/block_diary_generic.png"));
+    }
+
+    @Override
+    public String getFriendlyName() {
+        String result = OBJECTS.SETTINGS.getl("BlockDiary_FriendlyName");
+        Block bb = OBJECTS.BLOCKS.getEntity(this.baseBlockID);
+        if (bb == null) {
+            return  result
+                    .replace("#1", String.valueOf(this.id))
+                    .replace("#2", "?")
+                    .replace("#3", "?");
+        }
+        else {
+            String name = bb.getName();
+            if (name == null || name.isEmpty()) {
+                List<String> textList = UString.splitAndStrip(this.text, "\n");
+                if (textList.size() > 0) {
+                    name = textList.get(0);
+                }
+            }
+            return  result
+                    .replace("#1", String.valueOf(this.id))
+                    .replace("#2", bb.getDateSTR()
+                    .replace("#3", name));
+        }
+    }
+
+    @Override
+    public String getTooltipString() {
+        String baseBlockTT = this.baseBlock == null ? "?" : this.baseBlock.getTooltipString();
+
+        return OBJECTS.SETTINGS.getl("BlockDiary_Tooltip")
+                .replace("#1", String.valueOf(this.id))
+                .replace("#2", this.text)
+                .replace("#3", baseBlockTT);
     }
 
     // Interface IBlockBaseEntity methods

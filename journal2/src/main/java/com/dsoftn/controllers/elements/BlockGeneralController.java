@@ -7,6 +7,7 @@ import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.models.Actor;
 import com.dsoftn.models.Block;
+import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UList;
 import com.dsoftn.utils.UString;
 
@@ -32,17 +33,18 @@ import org.fxmisc.richtext.InlineCssTextArea;
 public class BlockGeneralController implements IBaseController, IElementController {
 
     // Variables
+    private String myName = UJavaFX.getUniqueId();
     private Stage stage = null;
     private VBox root = null;
     private Block block = null;
 
     private VBox vLayout = null;
-    int iconSize = 20;
-    boolean minimized = false;
-    boolean showMinimize = true;
-    boolean showRestore = false;
-    boolean showClose = true;
-    boolean editable = true;
+    private int iconSize = 20;
+    private boolean minimized = false;
+    private boolean showMinimize = true;
+    private  boolean showRestore = false;
+    private boolean showClose = true;
+    private boolean editable = true;
 
     // FXML variables
 
@@ -159,6 +161,11 @@ public class BlockGeneralController implements IBaseController, IElementControll
     }
 
     // Interface IBaseController methods
+
+    @Override
+    public String getMyName() {
+        return myName;
+    }
 
     @Override
     public void setStage(Stage stage) {

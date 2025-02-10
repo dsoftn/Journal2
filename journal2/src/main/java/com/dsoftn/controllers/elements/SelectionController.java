@@ -1,31 +1,41 @@
 package com.dsoftn.controllers.elements;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.dsoftn.OBJECTS;
+import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.Interfaces.IElementController;
+import com.dsoftn.models.Block;
+import com.dsoftn.utils.UJavaFX;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-public class SelectionController {
+public class SelectionController implements IElementController {
     // Variables
+    private String myName = UJavaFX.getUniqueId();    
 
+    private VBox root = null;
+
+    private VBox vLayout = null;
 
     // FXML widgets
-
-    // Title
-    @FXML
-    VBox vBoxTitle; // Title
-        @FXML
-        Label lblName;
-        @FXML
-        Button btnClose;
-        @FXML
-        Region regTitleSpacer;
     @FXML
     VBox vBoxClip; // From Clipboard
         @FXML
@@ -53,6 +63,8 @@ public class SelectionController {
         @FXML
         AnchorPane ancList; // 1st pane
             @FXML
+            ImageView imgLoadingList;
+            @FXML
             TextField txtFind;
             @FXML
             ListView<String> lstItems;
@@ -65,7 +77,9 @@ public class SelectionController {
                 @FXML
                 Label lblLast;
                 @FXML
-                HBox hBoxLastContent; // This should be populated with items
+                FlowPane flowLastContent; // This should be populated with items
+                    @FXML
+                    ImageView imgLoadingLast;
                 @FXML
                 Label lblLastShowMore;
             @FXML
@@ -73,7 +87,9 @@ public class SelectionController {
                 @FXML
                 Label lblMost;
                 @FXML
-                HBox hBoxMostContent; // This should be populated with items
+                FlowPane flowMostContent; // This should be populated with items
+                    @FXML
+                    ImageView imgLoadingMost;
                 @FXML
                 Label lblMostShowMore;
             @FXML
@@ -87,6 +103,61 @@ public class SelectionController {
             @FXML
             Button btnSelect; // Select items
 
+    public void initialize() {
+        // Loading icons
+        Platform.runLater(() -> {
+            // Set images
+            imgLoadingList.setImage(new Image(getClass().getResourceAsStream("/gifs/loading2.gif")));
+            imgLoadingLast.setImage(new Image(getClass().getResourceAsStream("/gifs/loading2.gif")));
+            imgLoadingMost.setImage(new Image(getClass().getResourceAsStream("/gifs/loading2.gif")));
+        });
+    }
+
+    // Implementation of IElementController
+
+    @Override
+    public String getMyName() {
+        return myName;
+    }
+
+    @Override
+    public VBox getRoot() {
+        return root;
+    }
+
+    @Override
+    public void setRoot(VBox root) {
+        this.root = root;
+        VBox.setVgrow(root, Priority.ALWAYS);
+    }
+
+    @Override
+    public void addToLayout(VBox layout) {
+        layout.getChildren().add(root);
+
+        vLayout = layout;
+    }
+
+    @Override
+    public void addToLayout(VBox layout, int insertIntoIndex) {
+        layout.getChildren().add(insertIntoIndex, root);
+
+        vLayout = layout;
+    }
+
+    @Override
+    public void removeFromLayout() {
+        removeFromLayout(this.vLayout);
+    }
+
+    @Override
+    public void removeFromLayout(VBox layout) {
+        if (vLayout != null) {
+            vLayout.getChildren().remove(root);
+        }
+    }
+
+    // Public methods
 
 
     

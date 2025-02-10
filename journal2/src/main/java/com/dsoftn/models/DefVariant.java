@@ -7,6 +7,8 @@ import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 
+import javafx.scene.image.Image;
+
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 
@@ -205,7 +207,32 @@ public class DefVariant implements IModelEntity<DefVariant> {
         
         return newDefVariant;
     }
-    
+
+    @Override
+    public String getImagePath() {
+        return null;
+    }
+
+    @Override
+    public Image getGenericImage() {
+        return new Image(getClass().getResourceAsStream("/images/variant_generic.png"));
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return  OBJECTS.SETTINGS.getl("DefVariant_FriendlyName")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", text);
+    }
+
+    @Override
+    public String getTooltipString() {
+        return  OBJECTS.SETTINGS.getl("DefVariant_Tooltip")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", text)
+                .replace("#3", definitionID == CONSTANTS.INVALID_ID ? "?" : OBJECTS.DEFINITIONS.getEntity(definitionID).getFriendlyName())
+                .replace("#4", matchCase == 1 ? OBJECTS.SETTINGS.getl("text_True") : OBJECTS.SETTINGS.getl("text_False"));
+    }
 
     // Getters
    

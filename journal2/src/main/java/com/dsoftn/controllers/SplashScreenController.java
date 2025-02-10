@@ -25,11 +25,15 @@ import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.events.TaskStateEvent;
 
 
 public class SplashScreenController implements IBaseController, ICustomEventListener {
+    
     // Variables
+    private String myName = UJavaFX.getUniqueId();
+
     private Stage stage;
     private Image imageSelected = new Image(getClass().getResourceAsStream("/images/item_selected.png"));
     private Map<String, ImageView> imgSelected = new HashMap<>();
@@ -233,6 +237,11 @@ public class SplashScreenController implements IBaseController, ICustomEventList
     }
 
     // Interface IBaseController methods
+    @Override
+    public String getMyName () {
+        return myName;
+    }
+
     @Override
     public void setStage (Stage stage) {
         this.stage = stage;

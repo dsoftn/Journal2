@@ -224,6 +224,146 @@
         "languageCode": "en",
         "creationDate": "2025.02.04 20:27:41",
         "userData": ""
+      },
+      "Actor_FriendlyName": {
+        "key": "Actor_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "en",
+        "creationDate": "2025.02.09 22:17:27",
+        "userData": ""
+      },
+      "Actor_Tooltip": {
+        "key": "Actor_Tooltip",
+        "value": "Actor ID: #1\nNick: #2\nName: #3\nDescription: #4\nCreated: #5\nUpdated: #6",
+        "languageCode": "en",
+        "creationDate": "2025.02.09 22:17:56",
+        "userData": ""
+      },
+      "BlockDiary_FriendlyName": {
+        "key": "BlockDiary_FriendlyName",
+        "value": "(#1) Block Diary (#2): #3",
+        "languageCode": "en",
+        "creationDate": "2025.02.09 22:18:14",
+        "userData": ""
+      },
+      "BlockDiary_Tooltip": {
+        "key": "BlockDiary_Tooltip",
+        "value": "Block Diary ID: #1\nText:\n#2\n\nBase block:\n#3",
+        "languageCode": "en",
+        "creationDate": "2025.02.09 22:18:33",
+        "userData": ""
+      },
+      "Attachment_FriendlyName": {
+        "key": "Attachment_FriendlyName",
+        "value": "(#1) #2: #3",
+        "languageCode": "en",
+        "creationDate": "2025.02.09 23:55:01",
+        "userData": ""
+      },
+      "Attachment_Tooltip": {
+        "key": "Attachment_Tooltip",
+        "value": "Attachment ID: #1\nAttachment type: #2\nName: #3\nDescription: #4\nSource: #5\nThe attachment was downloaded: #6\nFile path: #7\nCreated: #8",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:02:21",
+        "userData": ""
+      },
+      "text_True": {
+        "key": "text_True",
+        "value": "True",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:03:38",
+        "userData": ""
+      },
+      "text_False": {
+        "key": "text_False",
+        "value": "False",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:03:57",
+        "userData": ""
+      },
+      "Block_FriendlyName": {
+        "key": "Block_FriendlyName",
+        "value": "(#1) Block (#2): #3",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:18:50",
+        "userData": ""
+      },
+      "Block_Tooltip": {
+        "key": "Block_Tooltip",
+        "value": "Block ID: #1\nName: #2\nDate: #3\nText: #4\nCreated: #5\nUpdated: #6\nRelations: #7",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:20:26",
+        "userData": ""
+      },
+      "Category_FriendlyName": {
+        "key": "Category_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:31:44",
+        "userData": ""
+      },
+      "Category_Tooltip": {
+        "key": "Category_Tooltip",
+        "value": "Category ID: #1\nName: #2\nDescription: #3\nCreated: #4",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:32:50",
+        "userData": ""
+      },
+      "Definition_FriendlyName": {
+        "key": "Definition_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:37:46",
+        "userData": ""
+      },
+      "Definition_Tooltip": {
+        "key": "Definition_Tooltip",
+        "value": "Definition ID: #1\nName: #2\nDescription: #3\nSource: #4\nRelated attachments: #5\nCreated: #6\nUpdated: #7",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:40:04",
+        "userData": ""
+      },
+      "DefVariant_FriendlyName": {
+        "key": "DefVariant_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:46:17",
+        "userData": ""
+      },
+      "DefVariant_Tooltip": {
+        "key": "DefVariant_Tooltip",
+        "value": "Variant Definition ID: #1\nText: #2\nRelated to the definition: #3\nMatchcase: #4",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:47:59",
+        "userData": ""
+      },
+      "Relation_FriendlyName": {
+        "key": "Relation_FriendlyName",
+        "value": "(#1) Relation: #2 -\u003e #3",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 00:59:24",
+        "userData": ""
+      },
+      "Relation_Tooltip": {
+        "key": "Relation_Tooltip",
+        "value": "Relation ID: #1 \nRelation: #2 -\u003e #3",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 01:03:49",
+        "userData": ""
+      },
+      "Tag_FriendlyName": {
+        "key": "Tag_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 01:02:17",
+        "userData": ""
+      },
+      "Tag_Tooltip": {
+        "key": "Tag_Tooltip",
+        "value": "Tag ID: #1\nName: #2\nDescription: #3\nCreated: #4",
+        "languageCode": "en",
+        "creationDate": "2025.02.10 01:03:08",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -449,6 +589,146 @@
         "value": "Podesite ime",
         "languageCode": "sr-lat",
         "creationDate": "2025.02.04 20:27:41",
+        "userData": ""
+      },
+      "Actor_FriendlyName": {
+        "key": "Actor_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.09 22:17:27",
+        "userData": ""
+      },
+      "Actor_Tooltip": {
+        "key": "Actor_Tooltip",
+        "value": "Uloga ID: #1\nNadimak: #2\nIme: #3\nOpis: #4\nKreirano: #5\nAžurirano: #6",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.09 22:17:56",
+        "userData": ""
+      },
+      "BlockDiary_FriendlyName": {
+        "key": "BlockDiary_FriendlyName",
+        "value": "(#1) Blok Dnevnik (#2): #3",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.09 22:18:14",
+        "userData": ""
+      },
+      "BlockDiary_Tooltip": {
+        "key": "BlockDiary_Tooltip",
+        "value": "Block Dnevnik ID: #1\nTekst:\n#2\n\nBazni blok:\n#3",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.09 22:18:33",
+        "userData": ""
+      },
+      "Attachment_FriendlyName": {
+        "key": "Attachment_FriendlyName",
+        "value": "(#1) #2: #3",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.09 23:55:01",
+        "userData": ""
+      },
+      "Attachment_Tooltip": {
+        "key": "Attachment_Tooltip",
+        "value": "Prilog ID: #1\nTip priloga: #2\nNaziv: #3\nOpis: #4\nIzvor: #5\nPrilog je preuzet: #6\nPutanja datoteke: #7\nKreiran: #8",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:02:21",
+        "userData": ""
+      },
+      "text_True": {
+        "key": "text_True",
+        "value": "Tačno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:03:38",
+        "userData": ""
+      },
+      "text_False": {
+        "key": "text_False",
+        "value": "Netačno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:03:57",
+        "userData": ""
+      },
+      "Block_FriendlyName": {
+        "key": "Block_FriendlyName",
+        "value": "(#1) Blok (#2): #3",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:18:50",
+        "userData": ""
+      },
+      "Block_Tooltip": {
+        "key": "Block_Tooltip",
+        "value": "Blok ID: #1\nNaziv: #2\nDatum: #3\nTekst: #4\nKreiran: #5\nAžuriran: #6\nRelacije: #7",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:20:26",
+        "userData": ""
+      },
+      "Category_FriendlyName": {
+        "key": "Category_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:31:44",
+        "userData": ""
+      },
+      "Category_Tooltip": {
+        "key": "Category_Tooltip",
+        "value": "Kategorija ID: #1\nNaziv: #2\nOpis: #3\nKreirana: #4",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:32:50",
+        "userData": ""
+      },
+      "Definition_FriendlyName": {
+        "key": "Definition_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:37:46",
+        "userData": ""
+      },
+      "Definition_Tooltip": {
+        "key": "Definition_Tooltip",
+        "value": "Definicija ID: #1\nNaziv: #2\nOpis: #3\nIzvor: #4\nPovezanih priloga: #5\nKreirana: #6\nAžurirana: #7",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:40:04",
+        "userData": ""
+      },
+      "DefVariant_FriendlyName": {
+        "key": "DefVariant_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:46:17",
+        "userData": ""
+      },
+      "DefVariant_Tooltip": {
+        "key": "DefVariant_Tooltip",
+        "value": "Varijanta definicije ID: #1\nTekst: #2\nPovezana sa definicijom: #3\nOsetljiva na velika/mala slova: #4",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:47:59",
+        "userData": ""
+      },
+      "Relation_FriendlyName": {
+        "key": "Relation_FriendlyName",
+        "value": "(#1) Relacija: #2 -\u003e #3",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 00:59:24",
+        "userData": ""
+      },
+      "Relation_Tooltip": {
+        "key": "Relation_Tooltip",
+        "value": "Relacija ID: #1)\nRelacija: #2 -\u003e #3",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 01:03:49",
+        "userData": ""
+      },
+      "Tag_FriendlyName": {
+        "key": "Tag_FriendlyName",
+        "value": "(#1) #2",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 01:02:17",
+        "userData": ""
+      },
+      "Tag_Tooltip": {
+        "key": "Tag_Tooltip",
+        "value": "Oznaka ID: #1\nNaziv: #2\nOpis: #3\nKreirana: #4",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.10 01:03:08",
         "userData": ""
       }
     }

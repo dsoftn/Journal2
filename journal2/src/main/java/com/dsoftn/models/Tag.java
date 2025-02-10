@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.enums.models.AttachmentTypeEnum;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.events.TagAddedEvent;
@@ -18,6 +19,7 @@ import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
+import javafx.scene.image.Image;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
@@ -355,6 +357,33 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
 
         return newTag;
     }
+
+    @Override
+    public String getImagePath() {
+        return null;
+    }
+
+    @Override
+    public Image getGenericImage() {
+        return new Image(getClass().getResourceAsStream("/images/tag_generic.png"));
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return  OBJECTS.SETTINGS.getl("Tag_FriendlyName")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", name);
+    }
+
+    @Override
+    public String getTooltipString() {
+        return  OBJECTS.SETTINGS.getl("Tag_Tooltip")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", name)
+                .replace("#3", description)
+                .replace("#4", created);
+    }
+
 
     // Getters
     

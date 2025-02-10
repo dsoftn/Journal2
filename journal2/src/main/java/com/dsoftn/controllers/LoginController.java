@@ -22,11 +22,15 @@ import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.models.User;
 import com.dsoftn.utils.LanguagesEnum;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UJavaFX;
 
 
 public class LoginController implements IBaseController {
 
     // Variables
+
+    private String myName = UJavaFX.getUniqueId();
+
     private Stage stage;
     private User selectedUser = null;
 
@@ -69,7 +73,12 @@ public class LoginController implements IBaseController {
 
     
     // Interface IBaseController methods
-    
+
+    @Override
+    public String getMyName () {
+        return myName;
+    }
+
     @Override
     public void setStage (Stage stage) {
         this.stage = stage;

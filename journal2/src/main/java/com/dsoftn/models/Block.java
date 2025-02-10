@@ -14,14 +14,17 @@ import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.enums.models.ModelEnum;
+import com.dsoftn.enums.models.AttachmentTypeEnum;
 import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.Interfaces.IBlockBaseEntity;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UList;
+import com.dsoftn.utils.UString;
 
 import javafx.event.Event;
+import javafx.scene.image.Image;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
@@ -432,6 +435,85 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
 
         return block;
     }
+
+    @Override
+    public String getImagePath() {
+        if (defaultAttachment != CONSTANTS.INVALID_ID && OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getType() == AttachmentTypeEnum.IMAGE) {
+            return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
+        }
+
+        for (Integer attachmentID : relatedAttachments) {
+            Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(attachmentID);
+            if (attachment.getType() == AttachmentTypeEnum.IMAGE) {
+                return attachment.getFilePath();
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Image getGenericImage() {
+        return new Image(getClass().getResourceAsStream("/images/block_generic.png"));
+    }
+
+    @Override
+    public String getFriendlyName() {
+        String blockName = this.name;
+        if (blockName == null || blockName.isEmpty()) {
+            List<String> textList = UString.splitAndStrip(this.text, "\n");
+            if (textList.size() > 0) {
+                blockName = textList.get(0);
+            }
+        }
+
+        return  OBJECTS.SETTINGS.getl("Block_FriendlyName")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", date)
+                .replace("#3", blockName);
+    }
+
+    @Override
+    public String getTooltipString() {
+        String relations = "";
+
+        if (relatedCategories.size() > 0) {
+            relations += OBJECTS.SETTINGS.getl("text_Categories") + "(" + relatedCategories.size() + "), ";
+        }
+
+        if (relatedTags.size() > 0) {
+            relations += OBJECTS.SETTINGS.getl("text_Tags") + "(" + relatedTags.size() + "), ";
+        }
+
+        if (relatedActors.size() > 0) {
+            relations += OBJECTS.SETTINGS.getl("text_Actors") + "(" + relatedActors.size() + "), ";
+        }
+
+        if (relatedBlocks.size() > 0) {
+            relations += OBJECTS.SETTINGS.getl("text_Blocks") + "(" + relatedBlocks.size() + "), ";
+        }
+
+        if (relatedAttachments.size() > 0) {
+            relations += OBJECTS.SETTINGS.getl("text_Attachments") + "(" + relatedAttachments.size() + "), ";
+        }
+
+        if (relations.endsWith(", ")) {
+            relations = relations.substring(0, relations.length() - 2);
+        }
+        else {
+            relations = "---";
+        }
+
+        return  OBJECTS.SETTINGS.getl("Block_Tooltip")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", name)
+                .replace("#3", date)
+                .replace("#4", text)
+                .replace("#5", created)
+                .replace("#6", updated)
+                .replace("#7", relations);
+    }
+
 
     // Public methods
 

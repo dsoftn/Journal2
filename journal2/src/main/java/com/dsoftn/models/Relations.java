@@ -934,13 +934,30 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
     // Public methods
 
     public List<Relation> getScopeAndIdList(ModelEnum baseModel, Integer baseID, ModelEnum relatedModel) {
-        String scopeAndIDKey = getScopeAndIdKey(baseModel, baseID);
+        if (relatedModel == null) relatedModel = ModelEnum.ALL;
+        if (baseModel == null) baseModel = ModelEnum.ALL;
+
         List<Relation> list = new ArrayList<>();
+
+        if (baseModel == ModelEnum.NONE || relatedModel == ModelEnum.NONE) return list;
+
+        // Case if baseModel is ALL
+        if (baseModel == ModelEnum.ALL) {
+            for (Relation relation : data.values()) {
+                if (relation.getRelatedModel() == relatedModel || relatedModel == ModelEnum.ALL) {
+                    list.add(relation);
+                }
+            }
+            return list;
+        }
+
+        // Case if baseModel is not ALL
+        String scopeAndIDKey = getScopeAndIdKey(baseModel, baseID);
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) return list;
 
         for (Relation relation : dataByScopeAndID.get(scopeAndIDKey)) {
-            if (relation.getRelatedModel() == relatedModel) {
+            if (relation.getRelatedModel() == relatedModel || relatedModel == ModelEnum.ALL) {
                 list.add(relation);
             }
         }
@@ -949,8 +966,22 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
     }
 
     public List<Relation> getScopeAndIdList(ModelEnum baseModel, Integer baseID) {
-        String scopeAndIDKey = getScopeAndIdKey(baseModel, baseID);
+        if (baseModel == null) baseModel = ModelEnum.ALL;
+
         List<Relation> list = new ArrayList<>();
+
+        if (baseModel == ModelEnum.NONE) return list;
+
+        // Case if baseModel is ALL
+        if (baseModel == ModelEnum.ALL) {
+            for (Relation relation : data.values()) {
+                list.add(relation);
+            }
+            return list;
+        }
+
+        // Case if baseModel is not ALL
+        String scopeAndIDKey = getScopeAndIdKey(baseModel, baseID);
 
         if (!dataByScopeAndID.containsKey(scopeAndIDKey)) return list;
 
@@ -984,6 +1015,8 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
 
         if (baseModel == null) baseModel = ModelEnum.ALL;
         if (relatedModel == null) relatedModel = ModelEnum.ALL;
+
+        if (baseModel == ModelEnum.NONE || relatedModel == ModelEnum.NONE) return list;
 
         for (Map.Entry<Integer, Relation> entry : data.entrySet()) {
             Relation relation = entry.getValue();

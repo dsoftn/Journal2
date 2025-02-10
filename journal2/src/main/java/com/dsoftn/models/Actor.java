@@ -17,6 +17,7 @@ import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
+import javafx.scene.image.Image;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
@@ -370,8 +371,7 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
         return actor;
     }
 
-    // Public methods
-
+    @Override
     public String getImagePath() {
         if (defaultAttachment != CONSTANTS.INVALID_ID && OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getType() == AttachmentTypeEnum.IMAGE) {
             return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
@@ -385,6 +385,29 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
         }
 
         return null;
+    }
+
+    @Override
+    public Image getGenericImage() {
+        return new Image(getClass().getResourceAsStream("/images/actor_generic.png"));
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return  OBJECTS.SETTINGS.getl("Actor_FriendlyName")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", nick);
+    }
+
+    @Override
+    public String getTooltipString() {
+        return  OBJECTS.SETTINGS.getl("Actor_Tooltip")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", nick)
+                .replace("#3", name)
+                .replace("#4", description)
+                .replace("#5", created)
+                .replace("#6", updated);
     }
 
     // Getters

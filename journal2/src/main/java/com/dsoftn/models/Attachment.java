@@ -20,6 +20,7 @@ import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
+import javafx.scene.image.Image;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
@@ -402,6 +403,39 @@ public class Attachment implements IModelEntity<Attachment>, ICustomEventListene
 
         return newAttachment;
     }
+
+    @Override
+    public String getImagePath() {
+        if (this.type == AttachmentTypeEnum.IMAGE.getValue()) return this.filePath;
+        return null;
+    }
+
+    @Override
+    public Image getGenericImage() {
+        return new Image(getClass().getResourceAsStream("/images/attachment_generic.png"));
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return  OBJECTS.SETTINGS.getl("Attachment_FriendlyName")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", AttachmentTypeEnum.fromInteger(this.type).toString())
+                .replace("#3", name);
+    }
+
+    @Override
+    public String getTooltipString() {
+        return  OBJECTS.SETTINGS.getl("Attachment_Tooltip")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", AttachmentTypeEnum.fromInteger(this.type).toString())
+                .replace("#3", name)
+                .replace("#4", description)
+                .replace("#5", source)
+                .replace("#6", downloaded == 1 ? OBJECTS.SETTINGS.getl("text_True") : OBJECTS.SETTINGS.getl("text_False"))
+                .replace("#7", filePath)
+                .replace("#8", created);
+    }
+
 
     // Public methods
 

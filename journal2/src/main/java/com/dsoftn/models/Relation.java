@@ -5,12 +5,16 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.enums.models.AttachmentTypeEnum;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
+
+import javafx.scene.image.Image;
+
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 
@@ -296,6 +300,49 @@ public class Relation implements IModelEntity<Relation> {
         
         return newRelation;
     }
+
+    @Override
+    public String getImagePath() {
+        return null;
+    }
+
+    @Override
+    public Image getGenericImage() {
+        return new Image(getClass().getResourceAsStream("/images/relation_generic.png"));
+    }
+
+    @Override
+    public String getFriendlyName() {
+        String baseName = getFriendlyNameFromModel(this.baseModel, this.baseID);
+        String relatedName = getFriendlyNameFromModel(this.relatedModel, this.relatedID);
+        
+        return  OBJECTS.SETTINGS.getl("Relation_FriendlyName")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", baseName)
+                .replace("#3", relatedName);
+    }
+
+    private String getFriendlyNameFromModel(int model, int id) {
+        if (model == ModelEnum.BLOCK.getValue()) return OBJECTS.BLOCKS.getEntity(id).getFriendlyName();
+        if (model == ModelEnum.DEFINITION.getValue()) return OBJECTS.DEFINITIONS.getEntity(id).getFriendlyName();
+        if (model == ModelEnum.CATEGORY.getValue()) return OBJECTS.CATEGORIES.getEntity(id).getFriendlyName();
+        if (model == ModelEnum.ACTOR.getValue()) return OBJECTS.ACTORS.getEntity(id).getFriendlyName();
+        if (model == ModelEnum.ATTACHMENT.getValue()) return OBJECTS.ATTACHMENTS.getEntity(id).getFriendlyName();
+        if (model == ModelEnum.TAG.getValue()) return OBJECTS.TAGS.getEntity(id).getFriendlyName();
+        return "?";
+    }
+
+    @Override
+    public String getTooltipString() {
+        String baseName = getFriendlyNameFromModel(this.baseModel, this.baseID);
+        String relatedName = getFriendlyNameFromModel(this.relatedModel, this.relatedID);
+        
+        return  OBJECTS.SETTINGS.getl("Relation_Tooltip")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", baseName)
+                .replace("#3", relatedName);
+    }
+
 
     // Getters
     

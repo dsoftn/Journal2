@@ -17,6 +17,7 @@
 - [Login Dialog](#login-dialog-⤴)
 - [MsgBox Dialog](#msgbox-dialog-⤴)
 - [Main Window Dialog](#main-window-dialog-⤴)
+- [Empty Dialog](#empty-dialog-⤴)
 
 ### Models <sup>[⤴](#table-of-contents)</sup>
 - [General Models Rules](#general-models-rules-⤴)
@@ -158,6 +159,32 @@ String result = msgBoxController.getResult();
 ## Main Window Dialog <sup>[⤴](#dialogs-⤴)</sup>
 ### Overview
 
+## Empty Dialog <sup>[⤴](#dialogs-⤴)</sup>
+### Overview
+**EmptyDialog** is used to show stage, then in this stage user can add some element as content.
+- Purpose: Shows stage for some element
+- Has predefined setting for each element
+- Controller: **EmptyDialogController.java**
+
+### Usage
+- Make a new `EmptyDialogController` object and set content
+- Call `startMe()` method
+
+### Example
+```java
+// Create a new EmptyDialogController for selecting actor
+EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController(
+    primaryStage,
+    WindowBehavior.ACTOR_SELECT_STANDARD);
+
+// Set content
+emptyDialogController.setContent(ELEMENTS.getSelectionController(primaryStage));
+
+// Show the dialog
+emptyDialogController.startMe();
+```
+
+
 ## General Models Rules <sup>[⤴](#models-⤴)</sup>
 ### Overview
 All models contain 2 classes:
@@ -172,10 +199,11 @@ All models contain 2 classes:
 1. Create `Model classes` **Repository** and **Entity** classes
 2. Add **Repository** class to `OBJECTS` class
 3. Make **events** for `Model` if necessary
-4. Add **Events** to `Relations` class if necessary
+4. Add **Events** to `Relations` class if necessary. [See here](#how-to-add-events-to-relations-class)
 5. Add new model to `ScopeEnum` class
 6. Add new model to `GuiMain.getErrorsInModelLoading` to properly check loading errors
-7. Update `SplashScreenController` to `load()` model properly
+7. Update `SplashScreenController` to `load()` model properly [See here](#how-to-update-splashscreencontroller-class)
+8. If needed update `getFriendlyNameFromModel` method in `Relation` class
 
 #### How to add events to `Relations` class
 - Add event for new *Model*  in *Relations* **Constructor** to register with **EventHandler**

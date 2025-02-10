@@ -1,5 +1,7 @@
 package com.dsoftn.Interfaces;
 
+import javafx.scene.image.Image;
+
 public interface IModelEntity<T> {
 
     public Integer getID();
@@ -19,6 +21,12 @@ public interface IModelEntity<T> {
 
     public T duplicate();
 
+    public String getImagePath();
     
+    public Image getGenericImage();
+
+    public String getFriendlyName();
+
+    public String getTooltipString();
 
 }

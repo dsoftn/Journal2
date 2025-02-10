@@ -9,28 +9,15 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.SelectionController">
+<VBox prefWidth="532.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.SelectionController">
    <children>
-      <VBox fx:id="vBoxTitle" alignment="CENTER">
-         <children>
-            <HBox>
-               <children>
-                  <Region minWidth="20.0" />
-                  <Region HBox.hgrow="SOMETIMES" />
-                  <Label fx:id="lblName" styleClass="label-title-default" text="Selection name" />
-                  <Region HBox.hgrow="SOMETIMES" />
-                  <Button fx:id="btnClose" mnemonicParsing="false" styleClass="button-icon" />
-               </children>
-            </HBox>
-            <Region fx:id="regTitleSpacer" prefHeight="20.0" />
-         </children>
-      </VBox>
       <VBox fx:id="vBoxClip">
          <children>
             <Label fx:id="lblClipSelect" styleClass="label-default" text="Select from..." />
@@ -56,23 +43,28 @@
                   </VBox>
                </children>
             </HBox>
-            <Separator prefWidth="200.0">
+            <Separator>
                <padding>
                   <Insets left="20.0" right="20.0" />
                </padding>
             </Separator>
-            <Region minHeight="10.0" prefHeight="10.0" />
+            <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
          </children>
       </VBox>
-      <SplitPane fx:id="splitPane" dividerPositions="0.4">
+      <SplitPane fx:id="splitPane" dividerPositions="0.4" VBox.vgrow="ALWAYS">
         <items>
           <AnchorPane fx:id="ancList">
                <children>
                   <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TextField fx:id="txtFind" styleClass="text-field-default" />
+                        <HBox alignment="CENTER_LEFT">
+                           <children>
+                              <ImageView fx:id="imgLoadingList" fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true" />
+                              <TextField fx:id="txtFind" styleClass="text-field-default" HBox.hgrow="SOMETIMES" />
+                           </children>
+                        </HBox>
                         <Region minHeight="2.0" prefHeight="2.0" />
-                        <ListView fx:id="lstItems" styleClass="list-default" />
+                        <ListView fx:id="lstItems" styleClass="list-default" VBox.vgrow="ALWAYS" />
                         <Label fx:id="lblCounter" styleClass="label-default" text="Counter" />
                      </children>
                   </VBox>
@@ -80,19 +72,23 @@
             </AnchorPane>
           <AnchorPane fx:id="ancRecommendations">
                <children>
-                  <VBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <VBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Region minHeight="19.0" prefHeight="19.0" />
                         <VBox fx:id="vBoxLast">
                            <children>
                               <Label fx:id="lblLast" styleClass="label-default" text="Last used:" />
-                              <HBox fx:id="hBoxLastContent" spacing="10.0" />
+                              <FlowPane fx:id="flowLastContent">
+                                 <children>
+                                    <ImageView fx:id="imgLoadingLast" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                                 </children>
+                              </FlowPane>
                               <HBox alignment="CENTER_RIGHT">
                                  <children>
                                     <Label fx:id="lblLastShowMore" styleClass="label-link" text="show more..." />
                                  </children>
                               </HBox>
-                              <Separator prefWidth="200.0">
+                              <Separator>
                                  <padding>
                                     <Insets left="20.0" right="20.0" />
                                  </padding>
@@ -102,13 +98,17 @@
                         <VBox fx:id="vBoxMost">
                            <children>
                               <Label fx:id="lblMost" styleClass="label-default" text="Most used:" />
-                              <HBox fx:id="hBoxMostContent" spacing="10.0" />
+                              <FlowPane fx:id="flowMostContent">
+                                 <children>
+                                    <ImageView fx:id="imgLoadingMost" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                                 </children>
+                              </FlowPane>
                               <HBox alignment="CENTER_RIGHT">
                                  <children>
                                     <Label fx:id="lblMostShowMore" styleClass="label-link" text="show more..." />
                                  </children>
                               </HBox>
-                              <Separator prefWidth="200.0">
+                              <Separator>
                                  <padding>
                                     <Insets left="20.0" right="20.0" />
                                  </padding>
@@ -149,7 +149,7 @@
                            <children>
                               <Button fx:id="btnClear" mnemonicParsing="false" styleClass="button-default" text="Clear selection" />
                               <Region HBox.hgrow="SOMETIMES" />
-                              <Button fx:id="btnSelect" mnemonicParsing="false" style="-fx-font-size: 18;" styleClass="button-default" text="SELECT ITEMS" />
+                              <Button fx:id="btnSelect" mnemonicParsing="false" styleClass="button-large" text="SELECT ITEMS" />
                            </children>
                         </HBox>
                         <Region minHeight="7.0" prefHeight="7.0" />

@@ -1,0 +1,32 @@
+/* Root element */
+.empty-dialog-root {
+    -fx-border-width: 2px;
+    -fx-border-color: #2f6690;
+}
+
+.empty-dialog-root:hover {
+    -fx-border-color: #2977b2;
+}
+
+/* Button transparent with icon only */
+.button-icon {
+    -fx-background-color: transparent;
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-opacity: 0.6;
+}
+
+.button-icon:hover {
+    -fx-opacity: 1.0;
+}
+
+.button-icon:pressed {
+    -fx-background-color: linear-gradient(to bottom, #003554, #006494);
+}
+
+.button-icon:disabled {
+    -fx-background-color: #353535;
+    -fx-text-fill: #636465;
+    -fx-cursor: default;
+}

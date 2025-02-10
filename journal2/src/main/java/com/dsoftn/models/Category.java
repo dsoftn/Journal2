@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
+import com.dsoftn.enums.models.AttachmentTypeEnum;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.services.SQLiteDB;
@@ -17,6 +18,7 @@ import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UList;
 
 import javafx.event.Event;
+import javafx.scene.image.Image;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
@@ -362,6 +364,32 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
         newCategory.relatedTags = UList.deepCopy(this.relatedTags);
 
         return newCategory;
+    }
+
+    @Override
+    public String getImagePath() {
+        return null;
+    }
+
+    @Override
+    public Image getGenericImage() {
+        return new Image(getClass().getResourceAsStream("/images/category_generic.png"));
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return  OBJECTS.SETTINGS.getl("Category_FriendlyName")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", this.name);
+    }
+
+    @Override
+    public String getTooltipString() {
+        return  OBJECTS.SETTINGS.getl("Category_Tooltip")
+                .replace("#1", String.valueOf(id))
+                .replace("#2", name)
+                .replace("#3", description)
+                .replace("#4", created);
     }
 
     // Getters

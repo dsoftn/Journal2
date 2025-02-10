@@ -2,7 +2,7 @@ package com.dsoftn;
 
 import com.dsoftn.models.Block;
 import com.dsoftn.controllers.elements.BlockGeneralController;
-
+import com.dsoftn.controllers.elements.SelectionController;
 import com.dsoftn.utils.UError;
 
 import javafx.fxml.FXMLLoader;
@@ -25,5 +25,20 @@ public class ELEMENTS {
             return null;
         }
     }
+
+    public static SelectionController getSelectionController() {
+        FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/Selection.fxml"));
+        
+        try {
+            VBox root = loader.load();
+            SelectionController controller = loader.getController();
+            controller.setRoot(root);
+            return controller;
+        } catch (Exception e) {
+            UError.exception("ELEMENTS.getSelectionController: Failed to load element", e);
+            return null;
+        }
+    }
+
 
 }

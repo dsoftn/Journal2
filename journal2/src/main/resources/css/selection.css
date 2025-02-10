@@ -56,7 +56,6 @@
 
 .button-icon:hover {
     -fx-opacity: 1.0;
-    /* -fx-background-color: linear-gradient(to bottom, #051923, #003554); */
 }
 
 .button-icon:pressed {
@@ -68,3 +67,35 @@
     -fx-text-fill: #636465;
     -fx-cursor: default;
 }
+
+/* Button - Large */
+.button-large {
+    -fx-background-color: linear-gradient(to bottom, #003554, #051923);
+    -fx-text-fill: #c3c315;
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-background-radius: 5px;
+    -fx-border-color: #0582ca;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+    -fx-padding: 5 20 5 20;
+}
+
+.button-large:hover {
+    -fx-background-color: linear-gradient(to bottom, #051923, #003554);
+    -fx-border-color: #00a6fb;
+}
+
+.button-large:pressed {
+    -fx-background-color: linear-gradient(to bottom, #003554, #006494);
+    -fx-border-color: #00a6fb;
+}
+
+.button-large:disabled {
+    -fx-background-color: transparent;
+    -fx-text-fill: #636465;
+    -fx-border-color: #636465;
+    -fx-cursor: default;
+}
+

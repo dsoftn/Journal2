@@ -10,4 +10,6 @@ public interface IBaseController {
 
     public void closeMe();
 
+    public String getMyName();
+
 }

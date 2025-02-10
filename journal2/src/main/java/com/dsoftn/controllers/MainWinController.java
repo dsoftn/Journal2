@@ -7,8 +7,10 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.controllers.EmptyDialogController.WindowBehavior;
 import com.dsoftn.controllers.elements.BlockGeneralController;
+import com.dsoftn.controllers.elements.SelectionController;
 import com.dsoftn.models.Block;
 import com.dsoftn.models.block_types.BlockDiary;
+import com.dsoftn.utils.UJavaFX;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,6 +23,9 @@ import javafx.stage.Stage;
 public class MainWinController implements IBaseController {
 
     // Variables
+    
+    private String myName = UJavaFX.getUniqueId();
+    
     private Stage stage;
 
     //      ---   FXML Variables   ---
@@ -56,6 +61,11 @@ public class MainWinController implements IBaseController {
 
 
     // Interface IBaseController methods
+
+    @Override
+    public String getMyName() {
+        return myName;
+    }
 
     @Override
     public void setStage(Stage stage) {
@@ -101,6 +111,9 @@ public class MainWinController implements IBaseController {
     public void onMnuNew() {
         EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.ACTOR_SELECT_STANDARD);
 
+        SelectionController selectionController = ELEMENTS.getSelectionController();
+
+        emptyDialogController.setContent(selectionController.getRoot());
         emptyDialogController.startMe();
 
 

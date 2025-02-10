@@ -14,4 +14,6 @@ public interface IElementController {
     public void removeFromLayout();
     public void removeFromLayout(VBox layout);
 
+    public String getMyName();
+
 }

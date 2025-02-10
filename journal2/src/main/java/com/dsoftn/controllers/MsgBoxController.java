@@ -17,6 +17,7 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.utils.UFile;
+import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.services.RichText;
 
 public class MsgBoxController implements IBaseController {
@@ -81,6 +82,8 @@ public class MsgBoxController implements IBaseController {
     }
 
     // Variables
+    private String myName = UJavaFX.getUniqueId();
+
     private Stage stage;
     private List<MsgBoxButton> buttons = new ArrayList<>() { { add(MsgBoxButton.OK); } };
     private MsgBoxButton defaultButton = null;
@@ -188,6 +191,11 @@ public class MsgBoxController implements IBaseController {
     }
 
     // Interface IBaseController methods
+
+    @Override
+    public String getMyName () {
+        return myName;
+    }
 
     @Override
     public void setStage (Stage stage) {
