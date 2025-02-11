@@ -2,9 +2,14 @@ package com.dsoftn.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.dsoftn.CONSTANTS;
+import com.dsoftn.OBJECTS;
+import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.enums.models.ModelEnum;
+import com.dsoftn.models.*;
+import com.dsoftn.utils.UFile;
 
 import javafx.scene.image.Image;
 
@@ -14,26 +19,32 @@ public class SelectionData {
         private String name = "";
         private int id = CONSTANTS.INVALID_ID;
         private String tooltip = "";
-        private Image image = null;
+        private String imagePath = "";
+        private Boolean selected = null;
     
-        public Item(String name, int id, String tooltip) {
+        // Constructors
+        public Item(String name, int id, String tooltip, String imagePath, Boolean selected) {
             this.name = name;
             this.id = id;
             this.tooltip = tooltip;
+            this.imagePath = imagePath;
+            this.selected = selected;
         }
-    
+
+        // Getters and setters
         public String getName() { return name; }
         public int getId() { return id; }
         public String getTooltip() { return tooltip; }
-        public Image getImage() { return image; }
+        public String getImagePath() { return imagePath; }
+        public Boolean isSelected() { return selected; }
     
         public void setName(String name) { this.name = name; }
         public void setId(int id) { this.id = id; }
         public void setTooltip(String tooltip) { this.tooltip = tooltip; }
-        public void setImage(Image image) { this.image = image; }
+        public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+        public void setSelected(Boolean selected) { this.selected = selected; }
 
         // Public methods
-
         public String getShortName(int maxLength) {
             if (name.length() > maxLength) {
                 return name.substring(0, maxLength - 3) + "...";
@@ -41,6 +52,33 @@ public class SelectionData {
                 return name;
             }
         }
+
+        public Image getImage() {
+            if (imagePath != null && imagePath.length() > 0) {
+                if (!UFile.isFile(imagePath)) return null;
+                return new Image(imagePath);
+            }
+            else {
+                return null;
+            }
+        }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Item item = (Item) obj;
+        return  Objects.equals(name, item.name) &&
+                Objects.equals(id, item.id) &&
+                Objects.equals(tooltip, item.tooltip) &&
+                Objects.equals(imagePath, item.imagePath);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, id, tooltip, imagePath);
+    }
+
     }
 
     // Variables
@@ -51,12 +89,10 @@ public class SelectionData {
     private List<Item> itemsSelected = new ArrayList<>();
     private ModelEnum baseModel = ModelEnum.NONE;
     private ModelEnum relatedModel = ModelEnum.NONE;
+    private Integer maxLastCount = OBJECTS.SETTINGS.getvINTEGER("MaxLastCount");
+    private Integer maxMostCount = OBJECTS.SETTINGS.getvINTEGER("MaxMostCount");
 
     // Constructors
-
-    public SelectionData() {
-        this.baseModel = ModelEnum.NONE;
-    }
 
     public SelectionData(ModelEnum baseModel, ModelEnum relatedModel) {
         if (baseModel == null) baseModel = ModelEnum.NONE;
@@ -87,7 +123,7 @@ public class SelectionData {
     }
 
     public List<Item> getAllItems() {
-        itemsAll = calculateAllItems(this.baseModel);
+        itemsAll = calculateAllItems();
         return itemsAll;
     }
 
@@ -96,7 +132,7 @@ public class SelectionData {
     }
 
     public List<Item> getLastItems() {
-        itemsLast = calculateLastItems(this.baseModel);
+        itemsLast = calculateLastItems();
         return itemsLast;
     }
 
@@ -105,7 +141,7 @@ public class SelectionData {
     }
 
     public List<Item> getMostItems() {
-        itemsMost = calculateMostItems(this.baseModel);
+        itemsMost = calculateMostItems();
         return itemsMost;
     }
 
@@ -129,20 +165,104 @@ public class SelectionData {
         this.itemsSelected = items;
     }
 
+    public Integer getMaxLastCount() {
+        return maxLastCount;
+    }
+
+    public void setMaxLastCount(Integer count) {
+        this.maxLastCount = count;
+    }
+
+    public Integer getMaxMostCount() {
+        return maxMostCount;
+    }
+
+    public void setMaxMostCount(Integer count) {
+        this.maxMostCount = count;
+    }
+
+    // Public methods
+
+    public void addSelectedItem(Item item) {
+        if (item == null) return;
+        if (itemsSelected.contains(item)) return;
+        itemsSelected.add(item);
+    }
+
+    public void removeSelectedItem(Item item) {
+        if (item == null) return;
+        if (!itemsSelected.contains(item)) return;
+        itemsSelected.remove(item);
+    }
+
+    public Item getItem(int id) {
+        for (Item item : itemsAll) {
+            if (item.getId() == id) return item;
+        }
+        return null;
+    }
+
     // Private methods
 
-    private List<Item> calculateAllItems(ModelEnum model) {
-        List<Item> items = new ArrayList<>();
+    private List<Item> calculateAllItems() {
+        if (relatedModel == null || relatedModel == ModelEnum.NONE) return this.itemsLast;
 
+        ModelEnum  model = this.relatedModel;
+        
+        List<Item> items = new ArrayList<>();
+        Item item = null;
         switch (model) {
             case BLOCK:
+                for (Block modelOBJ : OBJECTS.BLOCKS.getEntityAll()) {
+                    item = getItem((IModelEntity) modelOBJ);
+                    if (item == null) continue;
+                    items.add(item);
+                }
+                break;
             case DEFINITION:
+                for (Definition modelOBJ : OBJECTS.DEFINITIONS.getEntityAll()) {
+                    item = getItem((IModelEntity) modelOBJ);
+                    if (item == null) continue;
+                    items.add(item);
+                }
+                break;
             case ATTACHMENT:
+                for (Attachment modelOBJ : OBJECTS.ATTACHMENTS.getEntityAll()) {
+                    item = getItem((IModelEntity) modelOBJ);
+                    if (item == null) continue;
+                    items.add(item);
+                }
+                break;
             case CATEGORY:
+                for (Category modelOBJ : OBJECTS.CATEGORIES.getEntityAll()) {
+                    item = getItem((IModelEntity) modelOBJ);
+                    if (item == null) continue;
+                    items.add(item);
+                }
+                break;
             case TAG:
+                for (Tag modelOBJ : OBJECTS.TAGS.getEntityAll()) {
+                    item = getItem((IModelEntity) modelOBJ);
+                    if (item == null) continue;
+                    items.add(item);
+                }
+                break;
             case RELATION:
-            case DEF_VARIANT:
+                for (Relation modelOBJ : OBJECTS.RELATIONS.getEntityAll()) {
+                    item = getItem((IModelEntity) modelOBJ);
+                    if (item == null) continue;
+                    items.add(item);
+                }
+                break;
             case ACTOR:
+                for (Actor modelOBJ : OBJECTS.ACTORS.getEntityAll()) {
+                    item = getItem((IModelEntity) modelOBJ);
+                    if (item == null) continue;
+                    items.add(item);
+                }
+                break;
+            case DEF_VARIANT:
+            case ALL:
             default:
                 break;
         }
@@ -150,81 +270,71 @@ public class SelectionData {
         return items;
     }
 
-    private List<Item> calculateLastItems(ModelEnum model) {
-        List<Item> items = new ArrayList<>();
-
+    private IModelEntity getEntity(int id, ModelEnum model) {
         switch (model) {
             case BLOCK:
+                return OBJECTS.BLOCKS.getEntity(id);
             case DEFINITION:
+                return OBJECTS.DEFINITIONS.getEntity(id);
             case ATTACHMENT:
+                return OBJECTS.ATTACHMENTS.getEntity(id);
             case CATEGORY:
+                return OBJECTS.CATEGORIES.getEntity(id);
             case TAG:
+                return OBJECTS.TAGS.getEntity(id);
             case RELATION:
-            case DEF_VARIANT:
+                return OBJECTS.RELATIONS.getEntity(id);
             case ACTOR:
+                return OBJECTS.ACTORS.getEntity(id);
+            case DEF_VARIANT:
+            case ALL:
             default:
-                break;
+                return null;
         }
-    
-        return items;
     }
-    
-    private List<Item> calculateMostItems(ModelEnum model) {
+
+    private Item getItem(IModelEntity modelObject) {
+        if (modelObject == null) return null;
+
+        Item newItem = new Item(
+            modelObject.getFriendlyName(),
+            modelObject.getID(),
+            modelObject.getTooltipString(),
+            modelObject.getImagePath(),
+            null);
+        
+        boolean selected = this.itemsSelected.contains(newItem);
+        newItem.setSelected(selected);
+        
+        if (itemsIgnored.contains(newItem)) return null;
+        
+        return newItem;
+    }
+
+    private List<Item> calculateLastItems() {
+        return getLastAndMostItemsHelper(OBJECTS.RELATIONS.getLastUsed(baseModel, null, relatedModel, null));
+    }
+
+    private List<Item> calculateMostItems() {
+        return getLastAndMostItemsHelper(OBJECTS.RELATIONS.getMostUsed(baseModel, null, relatedModel, null));
+    }
+
+    private List<Item> getLastAndMostItemsHelper(List<Integer> listOfIntegers) {
+        if (baseModel == null || baseModel == ModelEnum.NONE) return this.itemsLast;
+        if (relatedModel == null || relatedModel == ModelEnum.NONE) return this.itemsLast;
+        
         List<Item> items = new ArrayList<>();
 
-        switch (model) {
-            case BLOCK:
-            case DEFINITION:
-            case ATTACHMENT:
-            case CATEGORY:
-            case TAG:
-            case RELATION:
-            case DEF_VARIANT:
-            case ACTOR:
-            default:
-                break;
+        int counter = 0;
+        for (int entityID : listOfIntegers) {
+            Item newItem = getItem(getEntity(entityID, relatedModel));
+            if (itemsIgnored.contains(newItem)) continue;
+            items.add(newItem);
+            counter++;
+            if (maxLastCount != null && counter >= maxLastCount) break;
         }
-    
+
         return items;
     }
-
-    private List<Item> calculateIgnoredItems(List<Integer> itemIDs, ModelEnum model) {
-        List<Item> items = new ArrayList<>();
-
-        switch (model) {
-            case BLOCK:
-            case DEFINITION:
-            case ATTACHMENT:
-            case CATEGORY:
-            case TAG:
-            case RELATION:
-            case DEF_VARIANT:
-            case ACTOR:
-            default:
-                break;
-        }
-    
-        return items;
-    }
-
-    private List<Item> calculateSelectedItems(List<Integer> itemIDs, ModelEnum model) {
-        List<Item> items = new ArrayList<>();
-
-        switch (model) {
-            case BLOCK:
-            case DEFINITION:
-            case ATTACHMENT:
-            case CATEGORY:
-            case TAG:
-            case RELATION:
-            case DEF_VARIANT:
-            case ACTOR:
-            default:
-                break;
-        }
-    
-        return items;
-    }
-
 
 }

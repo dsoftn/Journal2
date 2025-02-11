@@ -28,12 +28,14 @@ import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
 
 
-public class Tag implements IModelEntity<Tag>, ICustomEventListener {
+public class Tag implements IModelEntity, ICustomEventListener {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private String name = "";
     private String description = "";
     private List<Integer> relatedTags = new ArrayList<>();
+    private List<Integer> relatedAttachments = new ArrayList<>();
+    private int defaultAttachment = CONSTANTS.INVALID_ID;
     private int scope = ModelEnum.ALL.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
@@ -94,8 +96,10 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
         }
 
         List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.TAG, this.id, ModelEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.TAG, this.id, ModelEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedTags = newRelatedTags;
+        relatedAttachments = newRelatedAttachments;
         update();
     }
 
@@ -146,12 +150,15 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
             this.description = rs.getString("description");
             this.scope = rs.getInt("scope");
             this.created = rs.getString("created");
+            this.defaultAttachment = rs.getInt("default_attachment");
 
-            this.setRelatedTags(
-                OBJECTS.TAGS.getTagsListFromRelations(
-                    OBJECTS.RELATIONS.getRelationsList(ModelEnum.TAG, this.id, ModelEnum.TAG)
-                )
-            );
+            this.setRelatedTags(OBJECTS.TAGS.getTagsListFromRelations(
+                OBJECTS.RELATIONS.getRelationsList(ModelEnum.TAG, this.id, ModelEnum.TAG)
+            ));
+
+            this.setRelatedAttachments(OBJECTS.ATTACHMENTS.getAttachmentsListFromRelations(
+                OBJECTS.RELATIONS.getRelationsList(ModelEnum.TAG, this.id, ModelEnum.ATTACHMENT)
+            ));
 
             return isValid();
         } catch (Exception e) {
@@ -180,12 +187,13 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO tags " + 
-                "(name, description, scope, created) " + 
+                "(name, description, scope, created, default_attachment) " + 
                 "VALUES (?, ?, ?, ?)",
                 this.name,
                 this.description,
                 this.scope,
-                this.created);
+                this.created,
+                this.defaultAttachment);
 
             if (stmt == null) {
                 UError.error("Tag.add: Failed to add tag", "Statement is unexpectedly null");
@@ -241,12 +249,13 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE tags " + 
-                "SET name = ?, description = ?, scope = ?, created = ? " + 
+                "SET name = ?, description = ?, scope = ?, created = ? default_attachment = ?" + 
                 "WHERE id = ?",
                 this.name,
                 this.description,
                 this.scope,
                 this.created,
+                this.defaultAttachment,
                 this.id);
 
             if (stmt == null) {
@@ -344,7 +353,7 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
     }
 
     @Override
-    public Tag duplicate() {
+    public IModelEntity duplicateModel() {
         Tag newTag = new Tag();
 
         newTag.id = this.id;
@@ -352,14 +361,35 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
         newTag.description = this.description;
         newTag.scope = this.scope;
         newTag.created = this.created;
+        newTag.defaultAttachment = this.defaultAttachment;
 
         newTag.relatedTags = UList.deepCopy(this.relatedTags);
+        newTag.relatedAttachments = UList.deepCopy(this.relatedAttachments);
 
         return newTag;
     }
 
+    public Tag duplicate() {
+        Tag block = (Tag) this.duplicateModel();
+        return block;
+    }
+
     @Override
     public String getImagePath() {
+        if (defaultAttachment != CONSTANTS.INVALID_ID && OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getType() == AttachmentTypeEnum.IMAGE) {
+            if (OBJECTS.ATTACHMENTS.prepare(OBJECTS.ATTACHMENTS.getEntity(defaultAttachment))) {
+                return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
+            }
+        }
+
+        for (Integer attachmentID : relatedAttachments) {
+            Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(attachmentID);
+            if (attachment.getType() == AttachmentTypeEnum.IMAGE) {
+                if (!OBJECTS.ATTACHMENTS.prepare(attachment)) continue;
+                return attachment.getFilePath();
+            }
+        }
+
         return null;
     }
 
@@ -395,12 +425,24 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
         return this.description;
     }
 
-    private List<Tag> getRelatedTags() {
+    public List<Tag> getRelatedTags() {
         return OBJECTS.TAGS.getTagsListFromIDs(this.relatedTags);
     }
 
     public List<Integer> getRelatedTagsIDs() {
         return this.relatedTags;
+    }
+
+    public List<Attachment> getRelatedAttachments() {
+        return OBJECTS.ATTACHMENTS.getAttachmentsListFromIDs(this.relatedAttachments);
+    }
+
+    public List<Integer> getRelatedAttachmentsIDs() {
+        return this.relatedAttachments;
+    }
+
+    public int getDefaultAttachment() {
+        return this.defaultAttachment;
     }
 
     public int getScope() {
@@ -439,6 +481,14 @@ public class Tag implements IModelEntity<Tag>, ICustomEventListener {
 
     public void setRelatedTags(List<Tag> relatedTags) {
         this.relatedTags = relatedTags.stream().map(Tag::getID).collect(Collectors.toList());
+    }
+
+    public void setRelatedAttachments(List<Attachment> relatedAttachments) {
+        this.relatedAttachments = relatedAttachments.stream().map(Attachment::getID).collect(Collectors.toList());
+    }
+
+    public void setDefaultAttachment(int defaultAttachment) {
+        this.defaultAttachment = defaultAttachment;
     }
 
     public void setScope(ModelEnum... scopes) {

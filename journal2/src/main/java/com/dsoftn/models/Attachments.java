@@ -278,6 +278,11 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
 
     // Public methods
 
+    public boolean prepare(Attachment attachment) {
+        // TODO prepare attachment in Attachemnst or Cashe
+        return true;
+    }
+
     public List<Attachment> getAttachmentsListFromIDs(List<Integer> attachmentIDs) {
         List<Attachment> attachments = new ArrayList<>();
         for (Integer attachmentID : attachmentIDs) {

@@ -204,6 +204,7 @@ All models contain 2 classes:
 6. Add new model to `GuiMain.getErrorsInModelLoading` to properly check loading errors
 7. Update `SplashScreenController` to `load()` model properly [See here](#how-to-update-splashscreencontroller-class)
 8. If needed update `getFriendlyNameFromModel` method in `Relation` class
+9. Update methods `calculateAllItems` and `getEntity` in `SelectionData` class
 
 #### How to add events to `Relations` class
 - Add event for new *Model*  in *Relations* **Constructor** to register with **EventHandler**

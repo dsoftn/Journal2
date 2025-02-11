@@ -24,7 +24,7 @@ import com.dsoftn.events.BlockTypeDeletedEvent;
 import com.dsoftn.models.Block;
 
 
-public class BlockDiary implements IModelEntity<BlockDiary>, IBlockBaseEntity {
+public class BlockDiary implements IModelEntity, IBlockBaseEntity {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private int baseBlockID = CONSTANTS.INVALID_ID;
@@ -298,7 +298,7 @@ public class BlockDiary implements IModelEntity<BlockDiary>, IBlockBaseEntity {
     }
 
     @Override
-    public BlockDiary duplicate() {
+    public IModelEntity duplicateModel() {
         BlockDiary block = new BlockDiary();
         block.id = this.id;
         block.baseBlock = this.baseBlock == null ? null : this.baseBlock.duplicate();
@@ -307,6 +307,11 @@ public class BlockDiary implements IModelEntity<BlockDiary>, IBlockBaseEntity {
         block.text = this.text;
         block.textStyle = this.textStyle;
 
+        return block;
+    }
+
+    public BlockDiary duplicate() {
+        BlockDiary block = (BlockDiary) this.duplicateModel();
         return block;
     }
 

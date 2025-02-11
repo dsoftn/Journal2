@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 
 import com.dsoftn.Interfaces.IModelEntity;
-import com.dsoftn.enums.models.AttachmentTypeEnum;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.events.RelationAddedEvent;
 import com.dsoftn.events.RelationDeletedEvent;
@@ -19,7 +18,7 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 
 
-public class Relation implements IModelEntity<Relation> {
+public class Relation implements IModelEntity {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private int baseModel = ModelEnum.NONE.getValue();
@@ -288,7 +287,7 @@ public class Relation implements IModelEntity<Relation> {
     }
 
     @Override
-    public Relation duplicate() {
+    public IModelEntity duplicateModel() {
         Relation newRelation = new Relation();
         newRelation.id = this.id;
         newRelation.baseModel = this.baseModel;
@@ -299,6 +298,11 @@ public class Relation implements IModelEntity<Relation> {
         newRelation.created = this.created;
         
         return newRelation;
+    }
+
+    public Relation duplicate() {
+        Relation block = (Relation) this.duplicateModel();
+        return block;
     }
 
     @Override

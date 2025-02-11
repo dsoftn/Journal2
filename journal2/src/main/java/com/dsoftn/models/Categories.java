@@ -32,9 +32,11 @@ TABLE categories
     description TEXT NOT NULL - description of the category
     parent INTEGER NOT NULL - id of the parent category
     created TEXT NOT NULL - date in format for JSON
+    default_attachment INTEGER NOT NULL - id of the default attachment
 RELATED TO:
     Categories    
     Tags
+    Attachments
  */
 public class Categories implements IModelRepository<Category>, ICustomEventListener {
     // Variables

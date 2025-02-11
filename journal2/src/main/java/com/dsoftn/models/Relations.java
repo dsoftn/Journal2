@@ -389,11 +389,13 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         List<ModelEnum> modelsToProcess = new ArrayList<>();
         modelsToProcess.add(ModelEnum.CATEGORY);
         modelsToProcess.add(ModelEnum.TAG);
+        modelsToProcess.add(ModelEnum.ATTACHMENT);
 
         for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
             if (model == ModelEnum.CATEGORY) relatedModelIDs = category.getRelatedCategoriesIDs();
             if (model == ModelEnum.TAG) relatedModelIDs = category.getRelatedTagsIDs();
+            if (model == ModelEnum.ATTACHMENT) relatedModelIDs = category.getRelatedAttachmentsIDs();
 
             for (int relatedID : relatedModelIDs) {
                 Relation relation = new Relation();
@@ -422,11 +424,13 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
         List<ModelEnum> modelsToProcess = new ArrayList<>();
         modelsToProcess.add(ModelEnum.CATEGORY);
         modelsToProcess.add(ModelEnum.TAG);
+        modelsToProcess.add(ModelEnum.ATTACHMENT);
 
         for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
             if (model == ModelEnum.CATEGORY) relatedModelIDs = category.getRelatedCategoriesIDs();
             if (model == ModelEnum.TAG) relatedModelIDs = category.getRelatedTagsIDs();
+            if (model == ModelEnum.ATTACHMENT) relatedModelIDs = category.getRelatedAttachmentsIDs();
 
             // Delete not needed
             List<Relation> relationsToRemove = new ArrayList<>();
@@ -508,10 +512,12 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
 
         List<ModelEnum> modelsToProcess = new ArrayList<>();
         modelsToProcess.add(ModelEnum.TAG);
+        modelsToProcess.add(ModelEnum.ATTACHMENT);
 
         for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
             if (model == ModelEnum.TAG) relatedModelIDs = tag.getRelatedTagsIDs();
+            if (model == ModelEnum.ATTACHMENT) relatedModelIDs = tag.getRelatedAttachmentsIDs();
 
             for (int relatedID : relatedModelIDs) {
                 Relation relation = new Relation();
@@ -539,10 +545,12 @@ public class Relations implements IModelRepository<Relation>, ICustomEventListen
 
         List<ModelEnum> modelsToProcess = new ArrayList<>();
         modelsToProcess.add(ModelEnum.TAG);
+        modelsToProcess.add(ModelEnum.ATTACHMENT);
 
         for (ModelEnum model : modelsToProcess) {
             List<Integer> relatedModelIDs = new ArrayList<>();
             if (model == ModelEnum.TAG) relatedModelIDs = tag.getRelatedTagsIDs();
+            if (model == ModelEnum.ATTACHMENT) relatedModelIDs = tag.getRelatedAttachmentsIDs();
 
             // Delete not needed
             List<Relation> relationsToRemove = new ArrayList<>();

@@ -30,7 +30,7 @@ import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
 
 
-public class Actor implements IModelEntity<Actor>, ICustomEventListener {
+public class Actor implements IModelEntity, ICustomEventListener {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private String nick = "";
@@ -356,7 +356,7 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
     }
 
     @Override
-    public Actor duplicate() {
+    public IModelEntity duplicateModel() {
         Actor actor = new Actor();
         actor.id = this.id;
         actor.nick = this.nick;
@@ -371,15 +371,23 @@ public class Actor implements IModelEntity<Actor>, ICustomEventListener {
         return actor;
     }
 
+    public Actor duplicate() {
+        Actor block = (Actor) this.duplicateModel();
+        return block;
+    }
+
     @Override
     public String getImagePath() {
         if (defaultAttachment != CONSTANTS.INVALID_ID && OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getType() == AttachmentTypeEnum.IMAGE) {
-            return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
+            if (OBJECTS.ATTACHMENTS.prepare(OBJECTS.ATTACHMENTS.getEntity(defaultAttachment))) {
+                return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
+            }
         }
 
         for (Integer attachmentID : relatedAttachments) {
             Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(attachmentID);
             if (attachment.getType() == AttachmentTypeEnum.IMAGE) {
+                if (!OBJECTS.ATTACHMENTS.prepare(attachment)) continue;
                 return attachment.getFilePath();
             }
         }

@@ -13,7 +13,7 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 
 
-public class DefVariant implements IModelEntity<DefVariant> {
+public class DefVariant implements IModelEntity {
     private int id = CONSTANTS.INVALID_ID;
     private String text = "";
     private int definitionID = CONSTANTS.INVALID_ID;
@@ -198,7 +198,7 @@ public class DefVariant implements IModelEntity<DefVariant> {
     }
 
     @Override
-    public DefVariant duplicate() {
+    public IModelEntity duplicateModel() {
         DefVariant newDefVariant = new DefVariant();
         newDefVariant.id = this.id;
         newDefVariant.text = this.text;
@@ -206,6 +206,11 @@ public class DefVariant implements IModelEntity<DefVariant> {
         newDefVariant.matchCase = this.matchCase;
         
         return newDefVariant;
+    }
+
+    public DefVariant duplicate() {
+        DefVariant block = (DefVariant) this.duplicateModel();
+        return block;
     }
 
     @Override

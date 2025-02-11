@@ -321,16 +321,16 @@ public class SplashScreenController implements IBaseController, ICustomEventList
             UError.error("GuiMain.createGlobalDataModels -> OBJECTS.DEFINITIONS_VARIANTS.load() failed");
             return false;
         }
+        if (!OBJECTS.ATTACHMENTS.load()) {
+            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.ATTACHMENTS.load() failed");
+            return false;
+        }
         if (!OBJECTS.TAGS.load()) {
             UError.error("GuiMain.createGlobalDataModels -> OBJECTS.TAGS.load() failed");
             return false;
         }
         if (!OBJECTS.CATEGORIES.load()) {
             UError.error("GuiMain.createGlobalDataModels -> OBJECTS.CATEGORIES.load() failed");
-            return false;
-        }
-        if (!OBJECTS.ATTACHMENTS.load()) {
-            UError.error("GuiMain.createGlobalDataModels -> OBJECTS.ATTACHMENTS.load() failed");
             return false;
         }
         if (!OBJECTS.ACTORS.load()) {

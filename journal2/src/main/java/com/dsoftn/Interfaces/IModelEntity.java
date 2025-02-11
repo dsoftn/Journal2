@@ -2,7 +2,7 @@ package com.dsoftn.Interfaces;
 
 import javafx.scene.image.Image;
 
-public interface IModelEntity<T> {
+public interface IModelEntity {
 
     public Integer getID();
 
@@ -19,7 +19,7 @@ public interface IModelEntity<T> {
     public boolean delete();
     public boolean canBeDeleted();
 
-    public T duplicate();
+    public IModelEntity duplicateModel();
 
     public String getImagePath();
     

@@ -37,7 +37,7 @@ import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
 
 
-public class Block implements IModelEntity<Block>, ICustomEventListener {
+public class Block implements IModelEntity, ICustomEventListener {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private String name = "";
@@ -414,7 +414,7 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
     }
 
     @Override
-    public Block duplicate() {
+    public IModelEntity duplicateModel() {
         Block block = new Block();
         block.id = this.id;
         block.name = this.name;
@@ -436,15 +436,23 @@ public class Block implements IModelEntity<Block>, ICustomEventListener {
         return block;
     }
 
+    public Block duplicate() {
+        Block block = (Block) this.duplicateModel();
+        return block;
+    }
+
     @Override
     public String getImagePath() {
         if (defaultAttachment != CONSTANTS.INVALID_ID && OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getType() == AttachmentTypeEnum.IMAGE) {
-            return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
+            if (OBJECTS.ATTACHMENTS.prepare(OBJECTS.ATTACHMENTS.getEntity(defaultAttachment))) {
+                return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
+            }
         }
 
         for (Integer attachmentID : relatedAttachments) {
             Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(attachmentID);
             if (attachment.getType() == AttachmentTypeEnum.IMAGE) {
+                if (!OBJECTS.ATTACHMENTS.prepare(attachment)) continue;
                 return attachment.getFilePath();
             }
         }

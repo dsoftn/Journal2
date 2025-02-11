@@ -31,13 +31,15 @@ import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
 
 
-public class Category implements IModelEntity<Category>, ICustomEventListener {
+public class Category implements IModelEntity, ICustomEventListener {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private String name = "";
     private String description = "";
     private List<Integer> relatedCategories = new ArrayList<>();
     private List<Integer> relatedTags = new ArrayList<>();
+    private List<Integer> relatedAttachments = new ArrayList<>();
+    private int defaultAttachment = CONSTANTS.INVALID_ID;
     private int parent = CONSTANTS.INVALID_ID;
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
@@ -99,9 +101,11 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
 
         List<Integer>  newRelatedCategories = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.CATEGORY, this.id, ModelEnum.CATEGORY).stream().map(Relation::getRelatedID).collect(Collectors.toList());
         List<Integer>  newRelatedTags = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.CATEGORY, this.id, ModelEnum.TAG).stream().map(Relation::getRelatedID).collect(Collectors.toList());
+        List<Integer>  newRelatedAttachments = OBJECTS.RELATIONS.getScopeAndIdList(ModelEnum.CATEGORY, this.id, ModelEnum.ATTACHMENT).stream().map(Relation::getRelatedID).collect(Collectors.toList());
 
         relatedCategories = newRelatedCategories;
         relatedTags = newRelatedTags;
+        relatedAttachments = newRelatedAttachments;
         update();
     }
 
@@ -152,6 +156,7 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
             this.description = rs.getString("description");
             this.parent = rs.getInt("parent");
             this.created = rs.getString("created");
+            this.defaultAttachment = rs.getInt("default_attachment");
             
             this.setRelatedCategories(OBJECTS.CATEGORIES.getCategoriesListFromRelations(
                 OBJECTS.RELATIONS.getRelationsList(ModelEnum.CATEGORY, this.id, ModelEnum.CATEGORY)
@@ -188,12 +193,13 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO categories " + 
-                "(name, description, parent, created) " + 
+                "(name, description, parent, created, default_attachment) " + 
                 "VALUES (?, ?, ?, ?)",
                 this.name,
                 this.description,
                 this.parent,
-                this.created);
+                this.created,
+                this.defaultAttachment);
 
             if (stmt == null) {
                 UError.error("Category.add: Failed to add category", "Statement is unexpectedly null");
@@ -248,12 +254,13 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE categories " + 
-                "SET name = ?, description = ?, parent = ?, created = ? " + 
+                "SET name = ?, description = ?, parent = ?, created = ? default_attachment = ?" + 
                 "WHERE id = ?",
                 this.name,
                 this.description,
                 this.parent,
                 this.created,
+                this.defaultAttachment,
                 this.id);
 
             if (stmt == null) {
@@ -351,7 +358,7 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
     }
 
     @Override
-    public Category duplicate() {
+    public IModelEntity duplicateModel() {
         Category newCategory = new Category();
 
         newCategory.id = this.id;
@@ -359,15 +366,36 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
         newCategory.description = this.description;
         newCategory.parent = this.parent;
         newCategory.created = this.created;
+        newCategory.defaultAttachment = this.defaultAttachment;
 
         newCategory.relatedCategories = UList.deepCopy(this.relatedCategories);
         newCategory.relatedTags = UList.deepCopy(this.relatedTags);
+        newCategory.relatedAttachments = UList.deepCopy(this.relatedAttachments);
 
         return newCategory;
     }
 
+    public Category duplicate() {
+        Category block = (Category) this.duplicateModel();
+        return block;
+    }
+
     @Override
     public String getImagePath() {
+        if (defaultAttachment != CONSTANTS.INVALID_ID && OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getType() == AttachmentTypeEnum.IMAGE) {
+            if (OBJECTS.ATTACHMENTS.prepare(OBJECTS.ATTACHMENTS.getEntity(defaultAttachment))) {
+                return OBJECTS.ATTACHMENTS.getEntity(defaultAttachment).getFilePath();
+            }
+        }
+
+        for (Integer attachmentID : relatedAttachments) {
+            Attachment attachment = OBJECTS.ATTACHMENTS.getEntity(attachmentID);
+            if (attachment.getType() == AttachmentTypeEnum.IMAGE) {
+                if (!OBJECTS.ATTACHMENTS.prepare(attachment)) continue;
+                return attachment.getFilePath();
+            }
+        }
+
         return null;
     }
 
@@ -418,6 +446,18 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
         return this.relatedTags;
     }
 
+    public List<Attachment> getRelatedAttachments() {
+        return OBJECTS.ATTACHMENTS.getAttachmentsListFromIDs(this.relatedAttachments);
+    }
+
+    public List<Integer> getRelatedAttachmentsIDs() {
+        return this.relatedAttachments;
+    }
+
+    public int getDefaultAttachment() {
+        return this.defaultAttachment;
+    }
+
     public Category getParent() {
         return OBJECTS.CATEGORIES.getEntity(this.parent);
     }
@@ -458,6 +498,14 @@ public class Category implements IModelEntity<Category>, ICustomEventListener {
 
     public void setRelatedTags(List<Tag> relatedTags) {
         this.relatedTags = relatedTags.stream().map((Tag tag) -> tag.getID()).collect(Collectors.toList());
+    }
+
+    public void setRelatedAttachments(List<Attachment> relatedAttachments) {
+        this.relatedAttachments = relatedAttachments.stream().map((Attachment attachment) -> attachment.getID()).collect(Collectors.toList());
+    }
+
+    public void setDefaultAttachment(int defaultAttachment) {
+        this.defaultAttachment = defaultAttachment;
     }
 
     public void setParent(Category parent) {

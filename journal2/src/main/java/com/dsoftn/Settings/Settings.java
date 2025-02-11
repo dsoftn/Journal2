@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.LocalDateTime;
 
 import com.dsoftn.utils.PyDict;
+import com.dsoftn.utils.UError;
 import com.dsoftn.utils.LanguagesEnum;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,7 +31,7 @@ import com.google.gson.reflect.TypeToken;
 //
 // Language:
 // { "available_languages": [ [ "code": "en", "name": "English" ],
-//                            [ "code": "de", "name": "Deutsch" ],
+//                            [ "code": "de", "name": "Serbian" ],
 //                            ...],
 //  "active_language": "en",
 //  "data": { "langCode1": { "key1":"value1", "key2":"value2", ... },
@@ -1205,6 +1206,12 @@ public class Settings {
                     success = false;
                 }
             }
+            if (success) {
+                String logicLanguageErrors = checkLanguagesForLogicErrors();
+                if (!logicLanguageErrors.isEmpty()) {
+                    UError.error("Settings.load(): LANGUAGES LOGIC ERROR", logicLanguageErrors);
+                }
+            }
         }
 
         if (loadAppData) {
@@ -1269,6 +1276,51 @@ public class Settings {
     }
 
     // Private methods
+
+    /**
+     * <p>Checks languages for logic errors</p>
+     * <ol>
+     *   <li>Entry has suspicious #<space>1 characters</li>
+     * </ol>
+     * @return <b>String</b> <i>errors</i> - list of errors
+     */
+    private String checkLanguagesForLogicErrors() {
+        String errors = "";
+
+        if (lang == null) {
+            UError.error("Settings.checkLanguagesForLogicErrors: lang is null");
+            return errors;
+        }
+
+        if (lang.get("data") == null) {
+            UError.error("Settings.checkLanguagesForLogicErrors: lang.data is null");
+            return errors;
+        }
+
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> data = (Map<String, Object>) lang.get("data");
+
+            for (Map.Entry<String, Object> dataEntry : data.entrySet()) {
+                String dataKey = dataEntry.getKey();
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> dataValue = (Map<String, Object>) dataEntry.getValue();
+
+                for (Map.Entry<String, Object> dataValueEntry : dataValue.entrySet()) {
+                    LanguageItem langItem = (LanguageItem) dataValueEntry.getValue();
+
+                    if (langItem.getValue().contains("# ")) {
+                        errors += "Suspicious #1 entry: \"" + langItem.getKey() + "\" in \"" + dataKey + "\" language\n";
+                    }
+                }
+            }
+        } catch (Exception e) {
+            UError.exception("Settings.checkLanguagesForLogicErrors: Exception while checking languages" + e);
+        }
+
+        return errors;
+    }
 
     /**
      * <p>Saves SettingsData (Data that have SettingsItems) <b>dataToSave</b> to <b>filePath</b></p>

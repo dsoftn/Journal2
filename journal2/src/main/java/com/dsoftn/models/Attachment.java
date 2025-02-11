@@ -29,7 +29,7 @@ import com.dsoftn.events.RelationDeletedEvent;
 import com.dsoftn.events.RelationUpdatedEvent;
 
 
-public class Attachment implements IModelEntity<Attachment>, ICustomEventListener {
+public class Attachment implements IModelEntity, ICustomEventListener {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private String name = "";
@@ -382,7 +382,7 @@ public class Attachment implements IModelEntity<Attachment>, ICustomEventListene
     }
 
     @Override
-    public Attachment duplicate() {
+    public IModelEntity duplicateModel() {
         Attachment newAttachment = new Attachment();
         newAttachment.id = this.id;
         newAttachment.name = this.name;
@@ -404,8 +404,14 @@ public class Attachment implements IModelEntity<Attachment>, ICustomEventListene
         return newAttachment;
     }
 
+    public Attachment duplicate() {
+        Attachment block = (Attachment) this.duplicateModel();
+        return block;
+    }
+
     @Override
     public String getImagePath() {
+        if (!OBJECTS.ATTACHMENTS.prepare(this)) return null;
         if (this.type == AttachmentTypeEnum.IMAGE.getValue()) return this.filePath;
         return null;
     }

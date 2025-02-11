@@ -33,8 +33,10 @@ TABLE tags
     description TEXT NOT NULL - description of the tag
     scope INTEGER NOT NULL - ScopeEnum combined value
     created TEXT NOT NULL - date in format for JSON
+    default_attachment INTEGER NOT NULL
 RELATED PROPERTIES:
     Tags
+    Attachments
  */
 public class Tags implements IModelRepository<Tag>, ICustomEventListener {
     // Variables
