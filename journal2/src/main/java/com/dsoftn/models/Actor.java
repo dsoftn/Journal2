@@ -41,6 +41,8 @@ public class Actor implements IModelEntity, ICustomEventListener {
     private List<Integer> relatedAttachments = new ArrayList<Integer>();
     private int defaultAttachment = CONSTANTS.INVALID_ID;
 
+    private boolean eventsIgnored = false;
+
     // Constructors
 
     public Actor() {
@@ -56,6 +58,8 @@ public class Actor implements IModelEntity, ICustomEventListener {
 
     @Override
     public void onCustomEvent(Event event) {
+        if (eventsIgnored) { return; }
+        
         if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
             Relation newRelation = null;
             Relation oldRelation = null;
@@ -400,6 +404,10 @@ public class Actor implements IModelEntity, ICustomEventListener {
         return new Image(getClass().getResourceAsStream("/images/actor_generic.png"));
     }
 
+    public String getGenericImageResourceURL() {
+        return "/images/actor_generic.png";
+    }
+
     @Override
     public String getFriendlyName() {
         return  OBJECTS.SETTINGS.getl("Actor_FriendlyName")
@@ -417,6 +425,9 @@ public class Actor implements IModelEntity, ICustomEventListener {
                 .replace("#5", created)
                 .replace("#6", updated);
     }
+
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
 
     // Getters
 

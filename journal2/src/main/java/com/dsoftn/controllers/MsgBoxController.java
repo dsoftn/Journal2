@@ -208,6 +208,11 @@ public class MsgBoxController implements IBaseController {
     }
 
     @Override
+    public Stage getStage () {
+        return stage;
+    }
+
+    @Override
     public void startMe () {
         setupWidgetText();
         setupMsgBox();

@@ -24,9 +24,11 @@ import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
+import com.dsoftn.utils.LanguagesEnum;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.events.TaskStateEvent;
+import com.dsoftn.services.TextFilter;
 
 
 public class SplashScreenController implements IBaseController, ICustomEventListener {
@@ -248,8 +250,17 @@ public class SplashScreenController implements IBaseController, ICustomEventList
     }
 
     @Override
+    public Stage getStage () {
+        return stage;
+    }
+
+    @Override
     public void startMe () {
         stage.initStyle(StageStyle.UNDECORATED);
+
+        stage.onCloseRequestProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.exit();
+        });
         
         // Register dialog to EventHandler
         OBJECTS.EVENT_HANDLER.register(
@@ -264,6 +275,16 @@ public class SplashScreenController implements IBaseController, ICustomEventList
         Task<Boolean> task = new Task<Boolean>() {
             @Override
             protected Boolean call() throws Exception {
+                // Create TextFilter in OBJECTS
+                OBJECTS.TEXT_FILTER = new TextFilter();
+                if (OBJECTS.ACTIVE_USER.getLanguage() == LanguagesEnum.SERBIAN_LAT ||
+                    OBJECTS.ACTIVE_USER.getLanguage() == LanguagesEnum.CROATIAN ||
+                    OBJECTS.ACTIVE_USER.getLanguage() == LanguagesEnum.BOSNIAN) {
+
+                    OBJECTS.TEXT_FILTER.setIgnoreSerbianCharacters(true);
+                    }
+                
+                // Global models
                 return createGlobalDataModels();
             }
         };

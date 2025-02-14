@@ -28,6 +28,8 @@ public class Relation implements IModelEntity {
     private String description = "";
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
+    private boolean eventsIgnored = false;
+
     // Constructors
     
     public Relation() {}
@@ -347,7 +349,10 @@ public class Relation implements IModelEntity {
                 .replace("#3", relatedName);
     }
 
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
 
+    
     // Getters
     
     public ModelEnum getBaseModel() {

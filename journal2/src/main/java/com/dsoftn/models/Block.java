@@ -55,6 +55,8 @@ public class Block implements IModelEntity, ICustomEventListener {
     private List<Integer> relatedBlocks = new ArrayList<Integer>();
     private List<Integer> relatedActors = new ArrayList<Integer>();
 
+    private boolean eventsIgnored = false;
+
     // Constructors
 
     public Block() {
@@ -70,6 +72,8 @@ public class Block implements IModelEntity, ICustomEventListener {
 
     @Override
     public void onCustomEvent(Event event) {
+        if (eventsIgnored) { return; }
+        
         if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
             Relation newRelation = null;
             Relation oldRelation = null;
@@ -126,7 +130,7 @@ public class Block implements IModelEntity, ICustomEventListener {
         update();
     }
     
-    // Interface methods
+    // Interface IModelEntity methods
 
     @Override
     public Integer getID() {
@@ -521,6 +525,9 @@ public class Block implements IModelEntity, ICustomEventListener {
                 .replace("#6", updated)
                 .replace("#7", relations);
     }
+
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
 
 
     // Public methods

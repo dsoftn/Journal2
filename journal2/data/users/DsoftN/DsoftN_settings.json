@@ -154,5 +154,41 @@
     "description": "Maximum number of most used items",
     "creationDate": "2025.02.11 19:07:05",
     "userData": ""
+  },
+  "SelectionLastMost_MaxChars": {
+    "key": "SelectionLastMost_MaxChars",
+    "value": "30",
+    "defaultValue": "30",
+    "min": "1",
+    "max": "300",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Maximum number of most used items",
+    "creationDate": "2025.02.12 21:00:29",
+    "userData": ""
+  },
+  "Selection_ImageHeight": {
+    "key": "Selection_ImageHeight",
+    "value": "30",
+    "defaultValue": "30",
+    "min": "5",
+    "max": "10000",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Image height of icon displayed left by item name",
+    "creationDate": "2025.02.12 23:19:22",
+    "userData": ""
+  },
+  "Selection_ImageWidth": {
+    "key": "Selection_ImageWidth",
+    "value": "30",
+    "defaultValue": "30",
+    "min": "5",
+    "max": "10000",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Image height of icon displayed left by item name",
+    "creationDate": "2025.02.12 23:19:32",
+    "userData": ""
   }
 }

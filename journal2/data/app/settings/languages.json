@@ -364,6 +364,90 @@
         "languageCode": "en",
         "creationDate": "2025.02.10 01:03:08",
         "userData": ""
+      },
+      "text_SelectFrom3dots": {
+        "key": "text_SelectFrom3dots",
+        "value": "Select from...",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:13:20",
+        "userData": ""
+      },
+      "text_Clipboard": {
+        "key": "text_Clipboard",
+        "value": "Clipboard",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:14:03",
+        "userData": ""
+      },
+      "text_File": {
+        "key": "text_File",
+        "value": "File",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:14:34",
+        "userData": ""
+      },
+      "text_Web": {
+        "key": "text_Web",
+        "value": "Web",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:15:16",
+        "userData": ""
+      },
+      "text_LastUsed": {
+        "key": "text_LastUsed",
+        "value": "Last used",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:16:00",
+        "userData": ""
+      },
+      "text_MostUsed": {
+        "key": "text_MostUsed",
+        "value": "Most used",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:16:36",
+        "userData": ""
+      },
+      "text_ShowMore": {
+        "key": "text_ShowMore",
+        "value": "Show more",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:17:09",
+        "userData": ""
+      },
+      "text_SelectedItems": {
+        "key": "text_SelectedItems",
+        "value": "Selected items",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:19:52",
+        "userData": ""
+      },
+      "Counter1of1ItemsSelected1": {
+        "key": "Counter1of1ItemsSelected1",
+        "value": "#1 of #2   Selected: #3",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:18:28",
+        "userData": ""
+      },
+      "text_ClearSelection": {
+        "key": "text_ClearSelection",
+        "value": "Clear selection",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:20:09",
+        "userData": ""
+      },
+      "text_SelectItems": {
+        "key": "text_SelectItems",
+        "value": "Select items",
+        "languageCode": "en",
+        "creationDate": "2025.02.12 01:19:43",
+        "userData": ""
+      },
+      "text_SelectActors": {
+        "key": "text_SelectActors",
+        "value": "Select actors",
+        "languageCode": "en",
+        "creationDate": "2025.02.14 11:04:00",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -729,6 +813,90 @@
         "value": "Oznaka ID: #1\nNaziv: #2\nOpis: #3\nKreirana: #4",
         "languageCode": "sr-lat",
         "creationDate": "2025.02.10 01:03:08",
+        "userData": ""
+      },
+      "text_SelectFrom3dots": {
+        "key": "text_SelectFrom3dots",
+        "value": "Izaberite iz...",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:13:20",
+        "userData": ""
+      },
+      "text_Clipboard": {
+        "key": "text_Clipboard",
+        "value": "Clipboard",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:14:03",
+        "userData": ""
+      },
+      "text_File": {
+        "key": "text_File",
+        "value": "Datoteka",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:14:34",
+        "userData": ""
+      },
+      "text_Web": {
+        "key": "text_Web",
+        "value": "Web",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:15:16",
+        "userData": ""
+      },
+      "text_LastUsed": {
+        "key": "text_LastUsed",
+        "value": "Poslednje korišteno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:16:00",
+        "userData": ""
+      },
+      "text_MostUsed": {
+        "key": "text_MostUsed",
+        "value": "Najčešće korišteno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:16:36",
+        "userData": ""
+      },
+      "text_ShowMore": {
+        "key": "text_ShowMore",
+        "value": "Prikaži više",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:17:09",
+        "userData": ""
+      },
+      "text_SelectedItems": {
+        "key": "text_SelectedItems",
+        "value": "Izabrane stavke",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:19:52",
+        "userData": ""
+      },
+      "Counter1of1ItemsSelected1": {
+        "key": "Counter1of1ItemsSelected1",
+        "value": "#1 od #2   Izabrano: #3",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:18:28",
+        "userData": ""
+      },
+      "text_ClearSelection": {
+        "key": "text_ClearSelection",
+        "value": "Očisti izabrano",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:20:09",
+        "userData": ""
+      },
+      "text_SelectItems": {
+        "key": "text_SelectItems",
+        "value": "Izaberi stavke",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.12 01:19:43",
+        "userData": ""
+      },
+      "text_SelectActors": {
+        "key": "text_SelectActors",
+        "value": "Izaberite uloge",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.14 11:04:00",
         "userData": ""
       }
     }

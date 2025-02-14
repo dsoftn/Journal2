@@ -26,19 +26,19 @@
                   <VBox fx:id="vBoxClipClip">
                      <children>
                         <Button fx:id="btnClip" mnemonicParsing="false" styleClass="button-default" text="Clipboard" />
-                        <Label fx:id="lblClipContent" text="Clip Content" />
+                        <Label fx:id="lblClipContent" />
                      </children>
                   </VBox>
                   <VBox fx:id="vBoxClipFile">
                      <children>
                         <Button fx:id="btnFile" mnemonicParsing="false" styleClass="button-default" text="File" />
-                        <Label fx:id="lblFileContent" text="File Content" />
+                        <Label fx:id="lblFileContent" />
                      </children>
                   </VBox>
                   <VBox fx:id="vBoxClipWeb">
                      <children>
                         <Button fx:id="btnWeb" mnemonicParsing="false" styleClass="button-default" text="Web" />
-                        <Label fx:id="lblWebContent" text="Web Content" />
+                        <Label fx:id="lblWebContent" />
                      </children>
                   </VBox>
                </children>
@@ -59,13 +59,13 @@
                      <children>
                         <HBox alignment="CENTER_LEFT">
                            <children>
-                              <ImageView fx:id="imgLoadingList" fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true" />
                               <TextField fx:id="txtFind" styleClass="text-field-default" HBox.hgrow="SOMETIMES" />
+                              <ImageView fx:id="imgLoadingList" fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true" />
                            </children>
                         </HBox>
                         <Region minHeight="2.0" prefHeight="2.0" />
                         <ListView fx:id="lstItems" styleClass="list-default" VBox.vgrow="ALWAYS" />
-                        <Label fx:id="lblCounter" styleClass="label-default" text="Counter" />
+                        <Label fx:id="lblCounter" styleClass="label-default" />
                      </children>
                   </VBox>
                </children>
@@ -77,15 +77,18 @@
                         <Region minHeight="19.0" prefHeight="19.0" />
                         <VBox fx:id="vBoxLast">
                            <children>
-                              <Label fx:id="lblLast" styleClass="label-default" text="Last used:" />
-                              <FlowPane fx:id="flowLastContent">
+                              <Label fx:id="lblLast" styleClass="label-default" text="Last used:">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" />
+                                 </VBox.margin></Label>
+                              <FlowPane fx:id="flowLastContent" hgap="10.0" vgap="5.0">
                                  <children>
                                     <ImageView fx:id="imgLoadingLast" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </FlowPane>
                               <HBox alignment="CENTER_RIGHT">
                                  <children>
-                                    <Label fx:id="lblLastShowMore" styleClass="label-link" text="show more..." />
+                                    <Label fx:id="lblLastShowMore" onMouseClicked="#onLblLastShowMoreClick" styleClass="label-link" text="show more..." />
                                  </children>
                               </HBox>
                               <Separator>
@@ -97,15 +100,18 @@
                         </VBox>
                         <VBox fx:id="vBoxMost">
                            <children>
-                              <Label fx:id="lblMost" styleClass="label-default" text="Most used:" />
-                              <FlowPane fx:id="flowMostContent">
+                              <Label fx:id="lblMost" styleClass="label-default" text="Most used:">
+                                 <padding>
+                                    <Insets bottom="10.0" />
+                                 </padding></Label>
+                              <FlowPane fx:id="flowMostContent" hgap="10.0" vgap="5.0">
                                  <children>
                                     <ImageView fx:id="imgLoadingMost" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </FlowPane>
                               <HBox alignment="CENTER_RIGHT">
                                  <children>
-                                    <Label fx:id="lblMostShowMore" styleClass="label-link" text="show more..." />
+                                    <Label fx:id="lblMostShowMore" onMouseClicked="#onLblMostShowMoreClick" styleClass="label-link" text="show more..." />
                                  </children>
                               </HBox>
                               <Separator>
@@ -118,7 +124,10 @@
                         <VBox fx:id="vBoxSelected">
                            <children>
                               <Region minHeight="25.0" prefHeight="25.0" />
-                              <Label fx:id="lblSelected" styleClass="label-default" text="Selected items" />
+                              <Label fx:id="lblSelected" styleClass="label-default" text="Selected items">
+                                 <padding>
+                                    <Insets bottom="10.0" />
+                                 </padding></Label>
                               <ScrollPane maxHeight="1.7976931348623157E308" VBox.vgrow="SOMETIMES">
                                  <content>
                                     <VBox fx:id="vBoxSelectedContent">
@@ -147,9 +156,9 @@
                         <Region VBox.vgrow="SOMETIMES" />
                         <HBox alignment="BOTTOM_LEFT">
                            <children>
-                              <Button fx:id="btnClear" mnemonicParsing="false" styleClass="button-default" text="Clear selection" />
+                              <Button fx:id="btnClear" mnemonicParsing="false" onAction="#onBtnClearAction" styleClass="button-default" text="Clear selection" />
                               <Region HBox.hgrow="SOMETIMES" />
-                              <Button fx:id="btnSelect" mnemonicParsing="false" styleClass="button-large" text="SELECT ITEMS" />
+                              <Button fx:id="btnSelect" mnemonicParsing="false" onAction="#onBtnSelectAction" styleClass="button-large" text="SELECT ITEMS" />
                            </children>
                         </HBox>
                         <Region minHeight="7.0" prefHeight="7.0" />

@@ -1,12 +1,20 @@
 package com.dsoftn.controllers.elements;
 
 import com.dsoftn.CONSTANTS;
+import com.dsoftn.DIALOGS;
+import com.dsoftn.ELEMENTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
+import com.dsoftn.controllers.EmptyDialogController;
+import com.dsoftn.controllers.EmptyDialogController.WindowBehavior;
 import com.dsoftn.enums.models.BlockTypeEnum;
+import com.dsoftn.enums.models.ModelEnum;
+import com.dsoftn.events.MessageEvent;
 import com.dsoftn.models.Actor;
 import com.dsoftn.models.Block;
+import com.dsoftn.services.SelectionData;
 import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UList;
 import com.dsoftn.utils.UString;
@@ -14,6 +22,7 @@ import com.dsoftn.utils.UString;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.util.Duration;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -26,15 +35,19 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.tools.Diagnostic;
 
 import org.fxmisc.richtext.InlineCssTextArea;
 
 
-public class BlockGeneralController implements IBaseController, IElementController {
+public class BlockGeneralController implements IBaseController, IElementController, ICustomEventListener {
 
     // Variables
     private String myName = UJavaFX.getUniqueId();
     private Stage stage = null;
+    private IBaseController parentController = null;
     private VBox root = null;
     private Block block = null;
 
@@ -160,6 +173,32 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     }
 
+    // Interface ICustomEventListener methods
+
+    @Override
+    public void onCustomEvent(Event event) {
+        if (event instanceof MessageEvent) {
+            MessageEvent messageEvent = (MessageEvent) event;
+            eventMessage(messageEvent);
+        }
+    }
+
+    private void eventMessage(MessageEvent messageEvent) {
+        if (!messageEvent.getReceiverID().startsWith(myName)) {
+            return;
+        }
+
+        if (messageEvent.getReceiverID().endsWith("ACTORS")) {
+            block.setRelatedActors(
+                OBJECTS.ACTORS.getActorsListFromIDs(
+                UList.listStringToInteger(
+                UString.splitAndStrip(messageEvent.getMessageSTRING(), ","))));
+
+            setBtnActors(block);
+            return;
+        }
+    }
+
     // Interface IBaseController methods
 
     @Override
@@ -173,12 +212,13 @@ public class BlockGeneralController implements IBaseController, IElementControll
     }
 
     @Override
-    public void startMe() {
-        if (stage == null) {
-            return;
-        }
+    public Stage getStage() {
+        return stage;
+    }
 
-        stage.show();
+    @Override
+    public void startMe() {
+        return;
     }
 
     @Override
@@ -205,6 +245,12 @@ public class BlockGeneralController implements IBaseController, IElementControll
     }
 
     @Override
+    public void setParentController(IBaseController parentController) { this.parentController = parentController; }
+
+    @Override
+    public IBaseController getParentController() { return parentController; }
+
+    @Override
     public void addToLayout(VBox layout) {
         addToLayout(layout, layout.getChildren().size());
     }
@@ -228,6 +274,14 @@ public class BlockGeneralController implements IBaseController, IElementControll
     @Override
     public void removeFromLayout(VBox layout) {
         startAnimatedRemovingFromLayout(layout);
+    }
+
+    @Override
+    public void calculateData() {
+        OBJECTS.EVENT_HANDLER.register(
+            this,
+            MessageEvent.RESULT_EVENT
+            );
     }
 
     // Public methods
@@ -371,7 +425,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     private void setBtnActors(Block block) {
         String actors = "";
-        actors = block.getRelatedActors().stream().map(Actor::getName).reduce(actors, (a, b) -> a + ", " + b);
+        actors = block.getRelatedActors().stream().map(Actor::getNick).collect(Collectors.joining(", "));
 
         if (actors.length() == 0) {
             Image image = new Image(getClass().getResourceAsStream("/images/actor_none.png"));
@@ -386,18 +440,9 @@ public class BlockGeneralController implements IBaseController, IElementControll
         if (block.getRelatedActorsIDs().size() == 1) {
             Actor actor = block.getRelatedActors().get(0);
 
-            btnActors.setText(actor.getName());
+            btnActors.setText(actor.getNick());
 
-            if (actor.getImagePath() != null && !actor.getImagePath().isEmpty()) {
-                Image image = new Image(actor.getImagePath());
-                ImageView imageView = new ImageView(image);
-                imageView.setPreserveRatio(true);
-                imageView.setFitHeight(iconSize);
-                btnActors.setGraphic(imageView);
-            }
-            else {
-                btnActors.setGraphic(null);
-            }
+            btnActors.setGraphic(actor.getImageAny(iconSize, iconSize));
             
             return;
         }
@@ -494,4 +539,19 @@ public class BlockGeneralController implements IBaseController, IElementControll
     public void onBtnMinimizeAction(ActionEvent event) {
         minimize(true);
     }
+
+    public void onBtnActorsAction(ActionEvent event) {
+        EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.ACTOR_SELECT_STANDARD);
+        SelectionController selectionController = ELEMENTS.getSelectionController(ModelEnum.BLOCK, ModelEnum.ACTOR, stage, this.myName + "ACTORS");
+
+        selectionController.disableSections(SelectionController.Section.CLIPBOARD);
+        selectionController.setParentController(emptyDialogController);
+        selectionController.setSelectedItems(block.getRelatedActorsIDs(), ModelEnum.ACTOR);
+        emptyDialogController.setContent(selectionController.getRoot());
+
+        emptyDialogController.startMe();
+    }
+
+
+
 }

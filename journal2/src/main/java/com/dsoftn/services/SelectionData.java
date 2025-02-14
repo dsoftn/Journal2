@@ -20,14 +20,16 @@ public class SelectionData {
         private int id = CONSTANTS.INVALID_ID;
         private String tooltip = "";
         private String imagePath = "";
+        private String genericImageResourcePath = null;
         private Boolean selected = null;
     
         // Constructors
-        public Item(String name, int id, String tooltip, String imagePath, Boolean selected) {
+        public Item(String name, int id, String tooltip, String imagePath, String genericImageResourcePath, Boolean selected) {
             this.name = name;
             this.id = id;
             this.tooltip = tooltip;
             this.imagePath = imagePath;
+            this.genericImageResourcePath = genericImageResourcePath;
             this.selected = selected;
         }
 
@@ -37,11 +39,13 @@ public class SelectionData {
         public String getTooltip() { return tooltip; }
         public String getImagePath() { return imagePath; }
         public Boolean isSelected() { return selected; }
+        public String getGenericImageResourcePath() { return genericImageResourcePath; }
     
         public void setName(String name) { this.name = name; }
         public void setId(int id) { this.id = id; }
         public void setTooltip(String tooltip) { this.tooltip = tooltip; }
         public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+        public void setGenericImageResourcePath(String genericImageResourcePath) { this.genericImageResourcePath = genericImageResourcePath; }
         public void setSelected(Boolean selected) { this.selected = selected; }
 
         // Public methods
@@ -59,7 +63,12 @@ public class SelectionData {
                 return new Image(imagePath);
             }
             else {
-                return null;
+                if (genericImageResourcePath != null) {
+                    return new Image(getClass().getResourceAsStream(genericImageResourcePath));
+                }
+                else {
+                    return null;
+                }
             }
         }
 
@@ -82,9 +91,9 @@ public class SelectionData {
     }
 
     // Variables
-    private List<Item> itemsAll = new ArrayList<>();
-    private List<Item> itemsLast = new ArrayList<>();
-    private List<Item> itemsMost = new ArrayList<>();
+    private List<Item> itemsAll = null;
+    private List<Item> itemsLast = null;
+    private List<Item> itemsMost = null;
     private List<Item> itemsIgnored = new ArrayList<>();
     private List<Item> itemsSelected = new ArrayList<>();
     private ModelEnum baseModel = ModelEnum.NONE;
@@ -123,6 +132,8 @@ public class SelectionData {
     }
 
     public List<Item> getAllItems() {
+        if (itemsAll != null) return itemsAll;
+
         itemsAll = calculateAllItems();
         return itemsAll;
     }
@@ -132,6 +143,8 @@ public class SelectionData {
     }
 
     public List<Item> getLastItems() {
+        if (itemsLast != null) return itemsLast;
+
         itemsLast = calculateLastItems();
         return itemsLast;
     }
@@ -141,6 +154,8 @@ public class SelectionData {
     }
 
     public List<Item> getMostItems() {
+        if (itemsMost != null) return itemsMost;
+
         itemsMost = calculateMostItems();
         return itemsMost;
     }
@@ -163,6 +178,13 @@ public class SelectionData {
     
     public void setSelectedItems(List<Item> items) {
         this.itemsSelected = items;
+    }
+
+    public void setSelectedItems(List<Integer> itemsIDs, ModelEnum model) {
+        this.itemsSelected = new ArrayList<>();
+        for (int itemID : itemsIDs) {
+            this.itemsSelected.add(getItemEntity(getEntity(itemID, model)));
+        }
     }
 
     public Integer getMaxLastCount() {
@@ -214,49 +236,49 @@ public class SelectionData {
         switch (model) {
             case BLOCK:
                 for (Block modelOBJ : OBJECTS.BLOCKS.getEntityAll()) {
-                    item = getItem((IModelEntity) modelOBJ);
+                    item = getItemEntity((IModelEntity) modelOBJ);
                     if (item == null) continue;
                     items.add(item);
                 }
                 break;
             case DEFINITION:
                 for (Definition modelOBJ : OBJECTS.DEFINITIONS.getEntityAll()) {
-                    item = getItem((IModelEntity) modelOBJ);
+                    item = getItemEntity((IModelEntity) modelOBJ);
                     if (item == null) continue;
                     items.add(item);
                 }
                 break;
             case ATTACHMENT:
                 for (Attachment modelOBJ : OBJECTS.ATTACHMENTS.getEntityAll()) {
-                    item = getItem((IModelEntity) modelOBJ);
+                    item = getItemEntity((IModelEntity) modelOBJ);
                     if (item == null) continue;
                     items.add(item);
                 }
                 break;
             case CATEGORY:
                 for (Category modelOBJ : OBJECTS.CATEGORIES.getEntityAll()) {
-                    item = getItem((IModelEntity) modelOBJ);
+                    item = getItemEntity((IModelEntity) modelOBJ);
                     if (item == null) continue;
                     items.add(item);
                 }
                 break;
             case TAG:
                 for (Tag modelOBJ : OBJECTS.TAGS.getEntityAll()) {
-                    item = getItem((IModelEntity) modelOBJ);
+                    item = getItemEntity((IModelEntity) modelOBJ);
                     if (item == null) continue;
                     items.add(item);
                 }
                 break;
             case RELATION:
                 for (Relation modelOBJ : OBJECTS.RELATIONS.getEntityAll()) {
-                    item = getItem((IModelEntity) modelOBJ);
+                    item = getItemEntity((IModelEntity) modelOBJ);
                     if (item == null) continue;
                     items.add(item);
                 }
                 break;
             case ACTOR:
                 for (Actor modelOBJ : OBJECTS.ACTORS.getEntityAll()) {
-                    item = getItem((IModelEntity) modelOBJ);
+                    item = getItemEntity((IModelEntity) modelOBJ);
                     if (item == null) continue;
                     items.add(item);
                 }
@@ -293,7 +315,7 @@ public class SelectionData {
         }
     }
 
-    private Item getItem(IModelEntity modelObject) {
+    private Item getItemEntity(IModelEntity modelObject) {
         if (modelObject == null) return null;
 
         Item newItem = new Item(
@@ -301,6 +323,7 @@ public class SelectionData {
             modelObject.getID(),
             modelObject.getTooltipString(),
             modelObject.getImagePath(),
+            "/images/actor_generic.png",
             null);
         
         boolean selected = this.itemsSelected.contains(newItem);
@@ -327,7 +350,7 @@ public class SelectionData {
 
         int counter = 0;
         for (int entityID : listOfIntegers) {
-            Item newItem = getItem(getEntity(entityID, relatedModel));
+            Item newItem = getItemEntity(getEntity(entityID, relatedModel));
             if (itemsIgnored.contains(newItem)) continue;
             items.add(newItem);
             counter++;

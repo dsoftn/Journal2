@@ -83,6 +83,11 @@ public class LoginController implements IBaseController {
     public void setStage (Stage stage) {
         this.stage = stage;
     }
+
+    @Override
+    public Stage getStage () {
+        return stage;
+    }
     
     @Override
     public void startMe () {
@@ -104,6 +109,10 @@ public class LoginController implements IBaseController {
     // Public methods
 
     public User getAuthenticatedUser() {
+        if (selectedUser != null) {
+            selectedUser.setLanguage(LanguagesEnum.fromLangCode(OBJECTS.SETTINGS.getActiveLanguage()));
+        }
+        
         return selectedUser;
     }
 

@@ -34,4 +34,15 @@ public class UList {
         return new ArrayList<>(list);
     }
 
+    public static List<Integer> listStringToInteger(List<String> list) {
+        List<Integer> result = new ArrayList<>();
+        for (String str : list) {
+            if (!UNumbers.isStringInteger(str)) {
+                UError.error("UList.listStringToInteger: String is not a valid integer: " + str, "Application will exit.");
+                System.exit(1);
+            }
+            result.add(Integer.parseInt(str));
+        }
+        return result;
+    }
 }

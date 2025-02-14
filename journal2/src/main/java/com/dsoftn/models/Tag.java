@@ -39,6 +39,8 @@ public class Tag implements IModelEntity, ICustomEventListener {
     private int scope = ModelEnum.ALL.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
+    private boolean eventsIgnored = false;
+
     // Constructors
     
     public Tag() {
@@ -54,6 +56,8 @@ public class Tag implements IModelEntity, ICustomEventListener {
 
     @Override
     public void onCustomEvent(Event event) {
+        if (eventsIgnored) { return; }
+
         if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
             Relation newRelation = null;
             Relation oldRelation = null;
@@ -414,7 +418,10 @@ public class Tag implements IModelEntity, ICustomEventListener {
                 .replace("#4", created);
     }
 
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
 
+    
     // Getters
     
     public String getName() {

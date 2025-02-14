@@ -43,6 +43,8 @@ public class Category implements IModelEntity, ICustomEventListener {
     private int parent = CONSTANTS.INVALID_ID;
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
+    private boolean eventsIgnored = false;
+
     // Constructors
     
     public Category() {
@@ -58,6 +60,8 @@ public class Category implements IModelEntity, ICustomEventListener {
 
     @Override
     public void onCustomEvent(Event event) {
+        if (eventsIgnored) { return; }
+
         if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
             Relation newRelation = null;
             Relation oldRelation = null;
@@ -109,7 +113,7 @@ public class Category implements IModelEntity, ICustomEventListener {
         update();
     }
 
-    // Interface methods
+    // Interface IModelEntity methods
     
     @Override
     public Integer getID() {
@@ -419,6 +423,9 @@ public class Category implements IModelEntity, ICustomEventListener {
                 .replace("#3", description)
                 .replace("#4", created);
     }
+
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
 
     // Getters
     

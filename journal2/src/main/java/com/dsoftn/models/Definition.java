@@ -49,6 +49,8 @@ public class Definition implements IModelEntity, ICustomEventListener {
     private int defaultAttachment = CONSTANTS.INVALID_ID;
     private String variants = "";
 
+    private boolean eventsIgnored = false;
+
     // Constructors
 
     public Definition() {
@@ -64,6 +66,7 @@ public class Definition implements IModelEntity, ICustomEventListener {
 
     @Override
     public void onCustomEvent(Event event) {
+        if (eventsIgnored) { return; }
         if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
             Relation newRelation = null;
             Relation oldRelation = null;
@@ -487,6 +490,10 @@ public class Definition implements IModelEntity, ICustomEventListener {
                 .replace("#7", updated);
     }
 
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
+
+    
     // Getters
 
     public String getName() { return this.name; }

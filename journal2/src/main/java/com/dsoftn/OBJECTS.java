@@ -13,6 +13,7 @@ import com.dsoftn.models.Actors;
 import com.dsoftn.models.User;
 import com.dsoftn.services.EventHandler;
 import com.dsoftn.services.SQLiteDB;
+import com.dsoftn.services.TextFilter;
 import com.dsoftn.models.block_types.BlocksDiary;
 
 
@@ -25,6 +26,8 @@ public class OBJECTS {
     public static final EventHandler EVENT_HANDLER = new EventHandler();
 
     public static SQLiteDB DATABASE;
+
+    public static TextFilter TEXT_FILTER; // will be created in SplashScreen
 
     // Models
     

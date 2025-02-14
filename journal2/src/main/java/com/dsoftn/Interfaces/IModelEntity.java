@@ -1,6 +1,7 @@
 package com.dsoftn.Interfaces;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public interface IModelEntity {
 
@@ -25,8 +26,28 @@ public interface IModelEntity {
     
     public Image getGenericImage();
 
+    default ImageView getImageAny(double width, double height) {
+        Image image = null;
+
+        if (getImagePath() != null && !getImagePath().isEmpty()) {
+            image = new Image(getImagePath());
+        }
+        else {
+            image = getGenericImage();
+        }
+
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        imageView.setPreserveRatio(true);
+
+        return imageView;
+    }
+
     public String getFriendlyName();
 
     public String getTooltipString();
+
+    public void ignoreEvents(boolean ignore);
 
 }

@@ -18,6 +18,11 @@ public class DefVariant implements IModelEntity {
     private String text = "";
     private int definitionID = CONSTANTS.INVALID_ID;
     private int matchCase = OBJECTS.SETTINGS.getvBOOLEAN("DefVariantDefaultMatchCase") ? 1 : 0;
+    private boolean wild = false; // Automatically calculated when text is changed
+    private final String[] wildChars = {"*", "?"};
+    private final String[] matchSwitch = {"_", "^"};
+
+    private boolean eventsIgnored = false;
 
     // Constructors
     
@@ -64,6 +69,8 @@ public class DefVariant implements IModelEntity {
             this.text = rs.getString("text");
             this.definitionID = rs.getInt("definition_id");
             this.matchCase = rs.getInt("match_case");
+            
+            calcIsWild(this.text, true); // Used to calculate if text contain wild characters
 
             return isValid();
         } catch (Exception e) {
@@ -204,6 +211,7 @@ public class DefVariant implements IModelEntity {
         newDefVariant.text = this.text;
         newDefVariant.definitionID = this.definitionID;
         newDefVariant.matchCase = this.matchCase;
+        newDefVariant.wild = this.wild;
         
         return newDefVariant;
     }
@@ -239,6 +247,31 @@ public class DefVariant implements IModelEntity {
                 .replace("#4", matchCase == 1 ? OBJECTS.SETTINGS.getl("text_True") : OBJECTS.SETTINGS.getl("text_False"));
     }
 
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
+
+    
+    // Public methods
+
+    public boolean isWild() {
+        return calcIsWild(this.text, true);
+    }
+
+    // Private methods
+
+    private boolean calcIsWild(String text, boolean updateWildVariable) {
+        if (text == null) return false;
+
+        for (int i = 0; i < wildChars.length; i++) {
+            if (text.contains(wildChars[i])) {
+                if (updateWildVariable) wild = true;
+                return true;
+            }
+        }
+        if (updateWildVariable) wild = false;
+        return false;
+    }
+
     // Getters
    
     public String getText() { return text; }
@@ -253,7 +286,10 @@ public class DefVariant implements IModelEntity {
 
     public void setID(int id) { this.id = id; }
     
-    public void setText(String text) { this.text = text; }
+    public void setText(String text) {
+        this.text = text;
+        calcIsWild(this.text, true);
+    }
     
     public void setDefinitionID(int definitionID) { this.definitionID = definitionID; }
     

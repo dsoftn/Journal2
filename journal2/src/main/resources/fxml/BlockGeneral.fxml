@@ -10,13 +10,12 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox fx:id="vBoxRoot" minHeight="17.0" prefWidth="686.0" spacing="5.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.BlockGeneralController">
+<VBox fx:id="vBoxRoot" minHeight="17.0" prefWidth="686.0" spacing="5.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.BlockGeneralController">
    <children>
       <HBox fx:id="hBoxTitle" alignment="CENTER" spacing="5.0">
          <children>
             <Label fx:id="lblID" styleClass="label-block-id" text="ID:##" />
-            <Button fx:id="btnActors" mnemonicParsing="false" styleClass="button-default" text="Actors" />
+            <Button fx:id="btnActors" mnemonicParsing="false" onAction="#onBtnActorsAction" styleClass="button-default" text="Actors" />
             <Button fx:id="btnType" mnemonicParsing="false" styleClass="button-default" text="Block Type" />
             <Button fx:id="btnDate" mnemonicParsing="false" styleClass="button-default" text="Date" />
             <Button fx:id="btnName" mnemonicParsing="false" styleClass="button-default" text="Set Name" />

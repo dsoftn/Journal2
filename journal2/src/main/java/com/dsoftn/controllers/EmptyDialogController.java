@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.CONSTANTS;
+import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
@@ -281,6 +282,11 @@ public class EmptyDialogController implements IBaseController {
     }
 
     @Override
+    public Stage getStage() {
+        return stage;
+    }
+
+    @Override
     public void startMe() {
         if (stage == null) {
             UError.error("EmptyDialogController.startMe: stage is null");
@@ -291,6 +297,11 @@ public class EmptyDialogController implements IBaseController {
             closeMe();
         });
 
+        // Ensure that root always responds to mouse moved events even if mouse is over widgets like Buttons or ListView
+        stage.getScene().addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
+            onRootMouseMoved(event);
+        });
+        
         stage.show();
     }
 
@@ -312,11 +323,13 @@ public class EmptyDialogController implements IBaseController {
                 setFramelessWindow(true);
                 setResizeEnabled(true);
                 setMiniTitleEnabled(false);
+                lblTitle.setText(OBJECTS.SETTINGS.getl("text_SelectActors"));
                 break;
             default:
                 setFramelessWindow(false);
                 setResizeEnabled(false);
                 setMiniTitleEnabled(false);
+                lblTitle.setText("---");
                 break;
         }
     }
@@ -379,7 +392,7 @@ public class EmptyDialogController implements IBaseController {
         }
 
         if (dialogPinned) {
-            Image imgPin = new Image(getClass().getResourceAsStream("/images/unpin_red.png"));            
+            Image imgPin = new Image(getClass().getResourceAsStream("/images/unpin.png"));            
             ImageView imgPinView = new ImageView(imgPin);
             imgPinView.setPreserveRatio(true);
             imgPinView.setFitHeight(30);
@@ -419,6 +432,10 @@ public class EmptyDialogController implements IBaseController {
 
     public void onRootMouseMoved(MouseEvent event) {
         if (!resizeEnabled) {
+            // If cursor is not NORMAl change to default cursor
+            if (ancRoot.getCursor() != Cursor.DEFAULT) {
+                ancRoot.setCursor(Cursor.DEFAULT);
+            }
             return;
         }
 

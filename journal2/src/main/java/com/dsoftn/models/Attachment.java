@@ -47,6 +47,8 @@ public class Attachment implements IModelEntity, ICustomEventListener {
     private String fileModified = CONSTANTS.INVALID_DATETIME_STRING;
     private String fileAccessed = CONSTANTS.INVALID_DATETIME_STRING;
 
+    private boolean eventsIgnored = false;
+
     // Constructors
     
     public Attachment() {
@@ -62,6 +64,8 @@ public class Attachment implements IModelEntity, ICustomEventListener {
 
     @Override
     public void onCustomEvent(Event event) {
+        if (eventsIgnored) { return; }
+
         if (event instanceof RelationAddedEvent || event instanceof RelationUpdatedEvent || event instanceof RelationDeletedEvent) {
             Relation newRelation = null;
             Relation oldRelation = null;
@@ -442,7 +446,10 @@ public class Attachment implements IModelEntity, ICustomEventListener {
                 .replace("#8", created);
     }
 
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
 
+    
     // Public methods
 
 

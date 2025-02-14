@@ -29,6 +29,7 @@ public class BlockDiary implements IModelEntity, IBlockBaseEntity {
     private int id = CONSTANTS.INVALID_ID;
     private int baseBlockID = CONSTANTS.INVALID_ID;
     private int showDefAttachment = DefaultAttachmentShowPolicy.DEFAULT.getValue();
+    private boolean eventsIgnored = false;
     
     private String text = "";
     private String textStyle = "";
@@ -502,6 +503,8 @@ public class BlockDiary implements IModelEntity, IBlockBaseEntity {
     @Override
     public String getTextStyleForBaseBlock() { return createTextStyleForBaseBlock(); }
 
+    @Override
+    public void ignoreEvents(boolean ignore) { this.eventsIgnored = ignore; }
 
     // Private methods
 

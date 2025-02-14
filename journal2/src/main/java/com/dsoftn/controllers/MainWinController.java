@@ -8,6 +8,7 @@ import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.controllers.EmptyDialogController.WindowBehavior;
 import com.dsoftn.controllers.elements.BlockGeneralController;
 import com.dsoftn.controllers.elements.SelectionController;
+import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.models.Block;
 import com.dsoftn.models.block_types.BlockDiary;
 import com.dsoftn.utils.UJavaFX;
@@ -73,6 +74,11 @@ public class MainWinController implements IBaseController {
     }
 
     @Override
+    public Stage getStage() {
+        return stage;
+    }
+
+    @Override
     public void startMe() {
         stage.setTitle(CONSTANTS.APPLICATION_NAME);
 
@@ -109,23 +115,23 @@ public class MainWinController implements IBaseController {
 
     @FXML
     public void onMnuNew() {
-        EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.ACTOR_SELECT_STANDARD);
+        // EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.ACTOR_SELECT_STANDARD);
 
-        SelectionController selectionController = ELEMENTS.getSelectionController();
+        // SelectionController selectionController = ELEMENTS.getSelectionController(ModelEnum.ACTOR, ModelEnum.ATTACHMENT, stage);
 
-        emptyDialogController.setContent(selectionController.getRoot());
-        emptyDialogController.startMe();
+        // emptyDialogController.setContent(selectionController.getRoot());
+        // emptyDialogController.startMe();
 
 
 
-        // int loadBlockDiaryID = 96;
+        int loadBlockDiaryID = 96;
 
-        // BlockDiary blockDiary = OBJECTS.BLOCKS_DIARY.getEntity(loadBlockDiaryID).duplicate();
+        BlockDiary blockDiary = OBJECTS.BLOCKS_DIARY.getEntity(loadBlockDiaryID).duplicate();
 
-        // BlockGeneralController blockController = ELEMENTS.getBlockGeneralController(blockDiary.getBaseBlock());
+        BlockGeneralController blockController = ELEMENTS.getBlockGeneralController(blockDiary.getBaseBlock(), stage);
 
-        // blockController.addToLayout(vBoxWorkArea);
-        // scrollToElement(vBoxWorkArea.getChildren().size() - 1, vBoxWorkArea, scrPaneWorkArea);
+        blockController.addToLayout(vBoxWorkArea);
+        scrollToElement(vBoxWorkArea.getChildren().size() - 1, vBoxWorkArea, scrPaneWorkArea);
         
     }
 
