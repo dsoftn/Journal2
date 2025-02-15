@@ -341,7 +341,6 @@ public class SelectionController implements IElementController, ICustomEventList
             items = dataFiltered;
         }
 
-        txtFind.setDisable(false);
         imgLoadingList.setVisible(false);
 
         lstItems.getItems().clear();
@@ -394,6 +393,15 @@ public class SelectionController implements IElementController, ICustomEventList
             imgV.preserveRatioProperty();
             btnElement.setGraphic(imgV);
         }
+
+        UJavaFX.setTooltip(
+            btnElement,
+            item.getTooltip(),
+            item.getName(),
+            item.getImage(),
+            null,
+            null
+        );
 
         btnElement.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -499,6 +507,14 @@ public class SelectionController implements IElementController, ICustomEventList
         
         Label lblName = new Label(item.getName());
         lblName.getStyleClass().add("selected-item");
+        UJavaFX.setTooltip(
+            lblName,
+            item.getTooltip(),
+            item.getName(),
+            item.getImage(),
+            null,
+            null
+        );
         
         Region regSpacer = new Region();
         regSpacer.setPrefHeight(HBox.USE_COMPUTED_SIZE);
@@ -506,6 +522,7 @@ public class SelectionController implements IElementController, ICustomEventList
         
         Button btnRemove = new Button();
         btnRemove.getStyleClass().add("button-icon");
+        UJavaFX.setTooltip(btnRemove, OBJECTS.SETTINGS.getl("text_Remove"));
         ImageView img = new ImageView(new Image(getClass().getResourceAsStream("/images/close.png")));
         img.setFitWidth(20);
         img.setFitHeight(20);
@@ -564,16 +581,25 @@ public class SelectionController implements IElementController, ICustomEventList
         btnWeb.setText(OBJECTS.SETTINGS.getl("text_Web"));
 
         lblLast.setText(OBJECTS.SETTINGS.getl("text_LastUsed"));
+        UJavaFX.setTooltip(lblLast, OBJECTS.SETTINGS.getl("tt_Selection_lblLast"));
         lblMost.setText(OBJECTS.SETTINGS.getl("text_MostUsed"));
+        UJavaFX.setTooltip(lblMost, OBJECTS.SETTINGS.getl("tt_Selection_lblMost"));
         lblLastShowMore.setText(OBJECTS.SETTINGS.getl("text_ShowMore"));
+        UJavaFX.setTooltip(lblLastShowMore, OBJECTS.SETTINGS.getl("tt_Selection_lblLastShowMore"));
+        lblMostShowMore.setText(OBJECTS.SETTINGS.getl("text_ShowMore"));
+        UJavaFX.setTooltip(lblMostShowMore, OBJECTS.SETTINGS.getl("tt_Selection_lblMostShowMore"));
         lblSelected.setText(OBJECTS.SETTINGS.getl("text_SelectedItems"));
+        UJavaFX.setTooltip(lblSelected, OBJECTS.SETTINGS.getl("tt_Selection_lblSelected"));
         lblCounter.setText(OBJECTS.SETTINGS.getl("Counter1of1ItemsSelected1"));
         btnClear.setText(OBJECTS.SETTINGS.getl("text_ClearSelection"));
+        UJavaFX.setTooltip(btnClear, OBJECTS.SETTINGS.getl("tt_Selection_btnClear"));
         btnSelect.setText(OBJECTS.SETTINGS.getl("text_SelectItems"));
+        UJavaFX.setTooltip(btnSelect, null, OBJECTS.SETTINGS.getl("tt_Selection_btnSelect"), new Image(getClass().getResourceAsStream("/images/ok.png")), 30, 30);
     }
 
     private void setupWidgetsAppearance() {
-        txtFind.setDisable(true);
+        txtFind.requestFocus();
+
         lstItems.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         lstItems.setCellFactory(lv -> new ListCell<>() {

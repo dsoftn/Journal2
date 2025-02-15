@@ -8,9 +8,11 @@ import java.util.Map;
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
@@ -28,6 +30,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 public class EmptyDialogController implements IBaseController {
 
@@ -222,6 +225,7 @@ public class EmptyDialogController implements IBaseController {
     double minSize = 50;
     List<Node> dragNodes = new ArrayList<>();
     boolean dialogPinned = false;
+    IElementController myContentController = null;
 
     // FXML widgets
     @FXML
@@ -294,7 +298,7 @@ public class EmptyDialogController implements IBaseController {
         }
 
         stage.setOnCloseRequest(event -> {
-            closeMe();
+            closeMe(event);
         });
 
         // Ensure that root always responds to mouse moved events even if mouse is over widgets like Buttons or ListView
@@ -307,7 +311,19 @@ public class EmptyDialogController implements IBaseController {
 
     @Override
     public void closeMe() {
+
         stage.close();
+    }
+
+    public void closeMe(WindowEvent event) {
+        if (myContentController != null) {
+            if (!myContentController.canBeClosed()) {
+                event.consume();
+                return;
+            }
+        }
+
+        closeMe();
     }
 
     // Public methods
@@ -407,6 +423,10 @@ public class EmptyDialogController implements IBaseController {
         }
         
         this.dialogPinned = dialogPinned;
+    }
+
+    public void setContentController(IElementController contentController) {
+        myContentController = contentController;
     }
 
     // Private methods

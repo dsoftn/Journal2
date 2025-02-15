@@ -190,5 +190,41 @@
     "description": "Image height of icon displayed left by item name",
     "creationDate": "2025.02.12 23:19:32",
     "userData": ""
+  },
+  "CssTooltip_Root": {
+    "key": "CssTooltip_Root",
+    "value": "-fx-background-color: #070327;\n-fx-border-color: white;\n-fx-border-width: 1px;\n-fx-border-style: solid;\n-fx-border-radius: 5px;\n-fx-padding: 5 10 5 10;",
+    "defaultValue": "-fx-background-color: #070327;\n-fx-border-color: white;\n-fx-border-width: 1px;\n-fx-border-style: solid;\n-fx-border-radius: 5px;\n-fx-padding: 5 10 5 10;",
+    "min": "None",
+    "max": "None",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "CSS settings for tooltip Root.",
+    "creationDate": "2025.02.15 16:32:24",
+    "userData": ""
+  },
+  "CssTooltip_Text": {
+    "key": "CssTooltip_Text",
+    "value": "-fx-background-color: transparent;\n-fx-text-fill: #befa5d;\n-fx-font-size: 16px;",
+    "defaultValue": "-fx-background-color: transparent;\n-fx-text-fill: #befa5d;\n-fx-font-size: 16px;",
+    "min": "None",
+    "max": "None",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "CSS settings for tooltip Root.",
+    "creationDate": "2025.02.15 16:45:41",
+    "userData": ""
+  },
+  "CssTooltip_Title": {
+    "key": "CssTooltip_Title",
+    "value": "-fx-background-color: transparent;\n-fx-text-fill: #ffff00;\n-fx-font-size: 22px;",
+    "defaultValue": "-fx-background-color: transparent;\n-fx-text-fill: #ffff00;\n-fx-font-size: 22px;",
+    "min": "None",
+    "max": "None",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "CSS settings for tooltip Root.",
+    "creationDate": "2025.02.15 16:45:57",
+    "userData": ""
   }
 }

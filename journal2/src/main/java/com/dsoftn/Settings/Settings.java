@@ -1590,7 +1590,7 @@ public class Settings {
     }
 
     private void printError(String message) {
-        System.out.println("Settings: " + message);
+        System.out.println("\033[31m" + message + "\033[0m");
     }
 
     private void updateLastErrorString(String message) {

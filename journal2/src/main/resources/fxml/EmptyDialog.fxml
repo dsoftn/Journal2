@@ -21,11 +21,11 @@
                <children>
                   <HBox>
                      <children>
-                        <Button fx:id="btnPin" mnemonicParsing="false" onAction="#onBtnPinAction" styleClass="button-icon" />
+                        <Button fx:id="btnPin" focusTraversable="false" mnemonicParsing="false" onAction="#onBtnPinAction" styleClass="button-icon" />
                         <Region HBox.hgrow="SOMETIMES" />
-                        <Label fx:id="lblTitle" styleClass="label-title-default" text="Empty dialog name" />
+                        <Label fx:id="lblTitle" focusTraversable="false" styleClass="label-title-default" text="Empty dialog name" />
                         <Region HBox.hgrow="SOMETIMES" />
-                        <Button fx:id="btnClose" mnemonicParsing="false" onAction="#onBtnCloseAction" styleClass="button-icon" />
+                        <Button fx:id="btnClose" focusTraversable="false" mnemonicParsing="false" onAction="#onBtnCloseAction" styleClass="button-icon" />
                      </children>
                   </HBox>
                   <Region fx:id="regTitleSpacer" maxHeight="20.0" minHeight="20.0" prefHeight="20.0" />

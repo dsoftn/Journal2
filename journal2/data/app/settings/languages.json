@@ -448,6 +448,153 @@
         "languageCode": "en",
         "creationDate": "2025.02.14 11:04:00",
         "userData": ""
+      },
+      "DIARY": {
+        "key": "DIARY",
+        "value": "Diary",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 14:59:45",
+        "userData": ""
+      },
+      "text_ReadOnly": {
+        "key": "text_ReadOnly",
+        "value": "Read Only",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 15:13:14",
+        "userData": ""
+      },
+      "MsgBox_BlockReadOnly_Header": {
+        "key": "MsgBox_BlockReadOnly_Header",
+        "value": "Read Only Block",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 15:15:20",
+        "userData": ""
+      },
+      "MsgBox_BlockReadOnly_Content": {
+        "key": "MsgBox_BlockReadOnly_Content",
+        "value": "This block is open to read only.\nUnable to enter data in the read-only block.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 15:16:38",
+        "userData": ""
+      },
+      "tt_BlockGeneral_imgReadOnly_True": {
+        "key": "tt_BlockGeneral_imgReadOnly_True",
+        "value": "This block is open to read only.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 17:20:42",
+        "userData": ""
+      },
+      "tt_BlockGeneral_imgReadOnly_False": {
+        "key": "tt_BlockGeneral_imgReadOnly_False",
+        "value": "This block is open for reading and writing.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 17:21:13",
+        "userData": ""
+      },
+      "tt_BlockGeneral_lblID_Valid": {
+        "key": "tt_BlockGeneral_lblID_Valid",
+        "value": "Unique block identifier (ID).",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 17:35:44",
+        "userData": ""
+      },
+      "tt_BlockGeneral_lblID_Invalid": {
+        "key": "tt_BlockGeneral_lblID_Invalid",
+        "value": "Unique block identifier (ID).\nThis block does not have the correct ID.\nThe most common reason for this is when the block was not recorded in the database.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 17:37:13",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnActors": {
+        "key": "tt_BlockGeneral_btnActors",
+        "value": "Click to select the Actor(s) for this block.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 17:46:49",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnType_Title": {
+        "key": "tt_BlockGeneral_btnType_Title",
+        "value": "Block type (#1)",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 18:06:46",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnType_Text": {
+        "key": "tt_BlockGeneral_btnType_Text",
+        "value": "Every block must have a defined type: Diary, Costs, Film, Music ...\nThe block type cannot be changed.\nIf you do not need a block of this type, you can always delete this block and add other that suit you.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 18:09:46",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnDate": {
+        "key": "tt_BlockGeneral_btnDate",
+        "value": "Click to set the date.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 18:49:10",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnName": {
+        "key": "tt_BlockGeneral_btnName",
+        "value": "Click to set or change the block title.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 19:00:50",
+        "userData": ""
+      },
+      "tt_Selection_lblLast": {
+        "key": "tt_Selection_lblLast",
+        "value": "The last items you used.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 21:49:33",
+        "userData": ""
+      },
+      "tt_Selection_lblMost": {
+        "key": "tt_Selection_lblMost",
+        "value": "The most commonly used items.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 21:50:11",
+        "userData": ""
+      },
+      "tt_Selection_lblLastShowMore": {
+        "key": "tt_Selection_lblLastShowMore",
+        "value": "Populating a list with last items used.\nSorted from the most recent item.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 21:52:59",
+        "userData": ""
+      },
+      "tt_Selection_lblMostShowMore": {
+        "key": "tt_Selection_lblMostShowMore",
+        "value": "Populating list with the most commonly used items.\nSorted from the most used item.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 21:53:52",
+        "userData": ""
+      },
+      "tt_Selection_lblSelected": {
+        "key": "tt_Selection_lblSelected",
+        "value": "List of selected items.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 21:54:45",
+        "userData": ""
+      },
+      "tt_Selection_btnClear": {
+        "key": "tt_Selection_btnClear",
+        "value": "Resets the list of selected items.",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 21:56:20",
+        "userData": ""
+      },
+      "tt_Selection_btnSelect": {
+        "key": "tt_Selection_btnSelect",
+        "value": "Confirms the selection",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 21:56:58",
+        "userData": ""
+      },
+      "text_Remove": {
+        "key": "text_Remove",
+        "value": "Remove",
+        "languageCode": "en",
+        "creationDate": "2025.02.15 22:12:09",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -897,6 +1044,153 @@
         "value": "Izaberite uloge",
         "languageCode": "sr-lat",
         "creationDate": "2025.02.14 11:04:00",
+        "userData": ""
+      },
+      "DIARY": {
+        "key": "DIARY",
+        "value": "Dnevnik",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 14:59:45",
+        "userData": ""
+      },
+      "text_ReadOnly": {
+        "key": "text_ReadOnly",
+        "value": "Samo za čitanje",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 15:13:14",
+        "userData": ""
+      },
+      "MsgBox_BlockReadOnly_Header": {
+        "key": "MsgBox_BlockReadOnly_Header",
+        "value": "Ovaj blok je samo za čitanje",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 15:15:20",
+        "userData": ""
+      },
+      "MsgBox_BlockReadOnly_Content": {
+        "key": "MsgBox_BlockReadOnly_Content",
+        "value": "Ovaj blok je otvoren samo za čitanje.\nNije moguće upisivati podatke u blok otvoren samo za čitanje !",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 15:16:38",
+        "userData": ""
+      },
+      "tt_BlockGeneral_imgReadOnly_True": {
+        "key": "tt_BlockGeneral_imgReadOnly_True",
+        "value": "Ovaj blok je otvoren samo za čitanje.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 17:20:42",
+        "userData": ""
+      },
+      "tt_BlockGeneral_imgReadOnly_False": {
+        "key": "tt_BlockGeneral_imgReadOnly_False",
+        "value": "Ovaj blok je otvoren za čitanje i pisanje.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 17:21:13",
+        "userData": ""
+      },
+      "tt_BlockGeneral_lblID_Valid": {
+        "key": "tt_BlockGeneral_lblID_Valid",
+        "value": "Jedinstveni identifikator bloka (ID).",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 17:35:44",
+        "userData": ""
+      },
+      "tt_BlockGeneral_lblID_Invalid": {
+        "key": "tt_BlockGeneral_lblID_Invalid",
+        "value": "Jedinstveni identifikator bloka (ID).\nOvaj blok nema ispravan ID.\nNajčešći razlog za to je kada blok nije snimljen u bazu podataka.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 17:37:13",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnActors": {
+        "key": "tt_BlockGeneral_btnActors",
+        "value": "Kliknite da izaberete Uloge za ovaj blok.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 17:46:49",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnType_Title": {
+        "key": "tt_BlockGeneral_btnType_Title",
+        "value": "Vrsta bloka (#1)",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 18:06:46",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnType_Text": {
+        "key": "tt_BlockGeneral_btnType_Text",
+        "value": "Svaki blok mora imati definisanu vrstu: Dnevnik, Troškovi, Film, Muzika...\nVrsta bloka ne može da se promeni.\nUkoliko vam ne treba blok ove vrste uvek možete da obrišete ovaj blok i dodate drugi koji vam odgovara.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 18:09:46",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnDate": {
+        "key": "tt_BlockGeneral_btnDate",
+        "value": "Kliknite da postavite datum.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 18:49:10",
+        "userData": ""
+      },
+      "tt_BlockGeneral_btnName": {
+        "key": "tt_BlockGeneral_btnName",
+        "value": "Kliknite da postavite ili promenite naslov bloka.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 19:00:50",
+        "userData": ""
+      },
+      "tt_Selection_lblLast": {
+        "key": "tt_Selection_lblLast",
+        "value": "Poslednje stavke koje ste koristili.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 21:49:33",
+        "userData": ""
+      },
+      "tt_Selection_lblMost": {
+        "key": "tt_Selection_lblMost",
+        "value": "Najčešće korištene stavke.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 21:50:11",
+        "userData": ""
+      },
+      "tt_Selection_lblLastShowMore": {
+        "key": "tt_Selection_lblLastShowMore",
+        "value": "Popunjava listu sa poslednje korištenim stavkama.\nSortirano od najskorije stavke.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 21:52:59",
+        "userData": ""
+      },
+      "tt_Selection_lblMostShowMore": {
+        "key": "tt_Selection_lblMostShowMore",
+        "value": "Popunjava listu sa najčešće korištenim stavkama.\nSortirano od najviše korištene stavke.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 21:53:52",
+        "userData": ""
+      },
+      "tt_Selection_lblSelected": {
+        "key": "tt_Selection_lblSelected",
+        "value": "Lista stavki koje su selektovane.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 21:54:45",
+        "userData": ""
+      },
+      "tt_Selection_btnClear": {
+        "key": "tt_Selection_btnClear",
+        "value": "Resetuje listu selektovanih stavki.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 21:56:20",
+        "userData": ""
+      },
+      "tt_Selection_btnSelect": {
+        "key": "tt_Selection_btnSelect",
+        "value": "Potvrđuje selekciju",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 21:56:58",
+        "userData": ""
+      },
+      "text_Remove": {
+        "key": "text_Remove",
+        "value": "Ukloni",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.02.15 22:12:09",
         "userData": ""
       }
     }

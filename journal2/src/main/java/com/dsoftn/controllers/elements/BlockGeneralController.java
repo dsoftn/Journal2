@@ -8,6 +8,9 @@ import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.controllers.EmptyDialogController;
+import com.dsoftn.controllers.MsgBoxController;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.controllers.EmptyDialogController.WindowBehavior;
 import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.enums.models.ModelEnum;
@@ -25,10 +28,12 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.util.Duration;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -55,9 +60,11 @@ public class BlockGeneralController implements IBaseController, IElementControll
     private int iconSize = 20;
     private boolean minimized = false;
     private boolean showMinimize = true;
-    private  boolean showRestore = false;
+    private boolean showRestore = false;
     private boolean showClose = true;
-    private boolean editable = true;
+    private boolean showOptions = true;
+    private boolean showReadOnly = true;
+    private boolean readOnly = false;
 
     // FXML variables
 
@@ -66,6 +73,8 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     @FXML
     private HBox hBoxTitle;
+        @FXML
+        private ImageView imgReadOnly;
         @FXML
         private Label lblID;
         @FXML
@@ -278,10 +287,12 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     @Override
     public void calculateData() {
+        setupWidgetsText();
+
         OBJECTS.EVENT_HANDLER.register(
             this,
             MessageEvent.RESULT_EVENT
-            );
+        );
     }
 
     // Public methods
@@ -291,6 +302,8 @@ public class BlockGeneralController implements IBaseController, IElementControll
             vBoxRoot.getChildren().clear();
             vBoxRoot.getChildren().add(hBoxTitle);
             minimized = true;
+            showMinimize = false;
+            showRestore = true;
         }
         else {
             vBoxRoot.getChildren().clear();
@@ -301,38 +314,49 @@ public class BlockGeneralController implements IBaseController, IElementControll
             vBoxRoot.getChildren().add(hBoxAttachments);
             vBoxRoot.getChildren().add(hBoxBlocks);
             vBoxRoot.getChildren().add(hBoxFooter);
-            adjustWidgets(block);
             minimized = false;
+            showMinimize = true;
+            showRestore = false;
         }
+
+        adjustWidgets(block);
     }
 
     public boolean isMinimized() {
         return this.minimized;
     }
 
-    public void canShowMinimize(boolean show) {
+    public void canShowMinimizeAndRestore(boolean show) {
         this.showMinimize = show;
-    }
-
-    public void canShowRestore(boolean show) {
+        showNode(btnMinimize, show);
         this.showRestore = show;
+        showNode(btnRestore, show);
     }
 
     public void canShowClose(boolean show) {
         this.showClose = show;
+        showNode(btnClose, show);
     }
 
-    public void setEditable(boolean editable) {
-        this.editable = editable;
+    public void canShowOptions(boolean show) {
+        this.showOptions = show;
+        showNode(btnOptions, show);
     }
 
-    public boolean isEditable() {
-        return this.editable;
+    public void canShowReadOnly(boolean show) {
+        this.showReadOnly = show;
+        showNode(imgReadOnly, show);
     }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        setImgReadOnly();
+    }
+
+    public boolean isReadOnly() { return readOnly; }
 
     public void setBlock(Block block) {
         this.block = block;
-
         refresh();
     }
 
@@ -349,6 +373,8 @@ public class BlockGeneralController implements IBaseController, IElementControll
         adjustWidgets(block);
         // Set background
         setBackground(block);
+        // Read only
+        setImgReadOnly();
         // ID
         setLblID(block);
         // Actors
@@ -356,43 +382,72 @@ public class BlockGeneralController implements IBaseController, IElementControll
         // Block Type
         setBtnType(block);
         // Date
-        btnDate.setText(block.getDateSTR());
+        setBtnDate(block);
         // Name
         setBtnName(block);
     }
 
     // Private methods
 
+    private void setupWidgetsText() {
+        UJavaFX.setTooltip(btnActors, OBJECTS.SETTINGS.getl("tt_BlockGeneral_btnActors"));
+        
+        String bType = OBJECTS.SETTINGS.isLanguageKeyExists(block.getBlockType().toString()) ? OBJECTS.SETTINGS.getl(block.getBlockType().toString()) : block.getBlockType().toString();
+        UJavaFX.setTooltip(
+            btnType,
+            OBJECTS.SETTINGS.getl("tt_BlockGeneral_btnType_Text"),
+            OBJECTS.SETTINGS.getl("tt_BlockGeneral_btnType_Title").replace("#1", bType),
+            new Image(getClass().getResourceAsStream("/images/block_type_general.png")),
+            null,null
+        );
+
+        UJavaFX.setTooltip(btnDate, OBJECTS.SETTINGS.getl("tt_BlockGeneral_btnDate"));
+
+        UJavaFX.setTooltip(btnName, OBJECTS.SETTINGS.getl("tt_BlockGeneral_btnName"));
+
+
+    }
+
     private void adjustWidgets(Block block) {
-        // Related attachments
-        if (block.getRelatedAttachmentsIDs().size() > 0) {
-            hBoxAttachments.setVisible(true);
-            hBoxAttachments.setManaged(true);
+        // Block Title
+        if (block.getName() == null || block.getName().isEmpty()) {
+            showNode(hBoxName, false);
         }
         else {
-            hBoxAttachments.setVisible(false);
-            hBoxAttachments.setManaged(false);
+            showNode(hBoxName, true);
+        }
+        
+        // Related attachments
+        if (block.getRelatedAttachmentsIDs().size() > 0) {
+            showNode(hBoxAttachments, true);
+        }
+        else {
+            showNode(hBoxAttachments, false);
         }
 
         // Related blocks
         if (block.getRelatedBlocksIDs().size() > 0) {
-            hBoxBlocks.setVisible(true);
-            hBoxBlocks.setManaged(true);
+            showNode(hBoxBlocks, true);
         }
         else {
-            hBoxBlocks.setVisible(false);
-            hBoxBlocks.setManaged(false);
+            showNode(hBoxBlocks, false);
         }
 
         // Button minimize
-        btnMinimize.setVisible(showMinimize);
-        btnMinimize.setManaged(showMinimize);
+        showNode(btnMinimize, showMinimize);
         // Button restore
-        btnRestore.setVisible(showRestore);
-        btnRestore.setManaged(showRestore);
+        showNode(btnRestore, showRestore);
         // Button close
-        btnClose.setVisible(showClose);
-        btnClose.setManaged(showClose);
+        showNode(btnClose, showClose);
+        // Button options
+        showNode(btnOptions, showOptions);
+        // ImageView read only
+        showNode(imgReadOnly, showReadOnly);
+    }
+
+    private void showNode(Node node, boolean show) {
+        node.setVisible(show);
+        node.setManaged(show);
     }
 
     private void setBackground(Block block) {
@@ -414,12 +469,38 @@ public class BlockGeneralController implements IBaseController, IElementControll
         }
     }
 
+
+    private void setImgReadOnly() {
+        if (readOnly) {
+            Image imgRO = new Image(getClass().getResourceAsStream("/images/read_only.png"));
+            imgReadOnly.setImage(imgRO);
+            UJavaFX.setTooltip(imgReadOnly, OBJECTS.SETTINGS.getl("tt_BlockGeneral_imgReadOnly_True"));
+            }
+        else {
+            Image imgRO = new Image(getClass().getResourceAsStream("/images/write.png"));
+            imgReadOnly.setImage(imgRO);
+            UJavaFX.setTooltip(imgReadOnly, OBJECTS.SETTINGS.getl("tt_BlockGeneral_imgReadOnly_False"));
+        }
+    }
+
     private void setLblID(Block block) {
         if (block.getID() != CONSTANTS.INVALID_ID) {
             lblID.setText("ID: " + block.getID());
+            UJavaFX.setTooltip(
+                lblID,
+                OBJECTS.SETTINGS.getl("tt_BlockGeneral_lblID_Valid"),
+                "ID: " + block.getID(),
+                new Image(getClass().getResourceAsStream("/images/id.png")),
+                70,70);
         }
         else {
             lblID.setText("ID: ?");
+            UJavaFX.setTooltip(
+                lblID,
+                OBJECTS.SETTINGS.getl("tt_BlockGeneral_lblID_Invalid"),
+                "ID: " + block.getID(),
+                new Image(getClass().getResourceAsStream("/images/error.png")),
+                70,70);
         }
     }
 
@@ -452,12 +533,21 @@ public class BlockGeneralController implements IBaseController, IElementControll
     }
 
     private void setBtnType(Block block) {
-        btnType.setText(block.getBlockType().toString());
+        String name = block.getBlockType().toString();
+        if (OBJECTS.SETTINGS.isLanguageKeyExists(name)) {
+            name = OBJECTS.SETTINGS.getl(name);
+        }
+
+        btnType.setText(name);
         Image image = new Image(block.getBlockType().getImagePath());
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
         imageView.setFitHeight(iconSize);
         btnType.setGraphic(imageView);
+    }
+
+    private void setBtnDate(Block block) {
+        btnDate.setText(block.getDateSTR());
     }
 
     private void setBtnName(Block block) {
@@ -525,22 +615,47 @@ public class BlockGeneralController implements IBaseController, IElementControll
         }
     }
 
+    private void showReadOnlyMessage() {
+        MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(stage);
+        msgBoxController.setTitleText(OBJECTS.SETTINGS.getl("text_ReadOnly"));
+        msgBoxController.setHeaderText(OBJECTS.SETTINGS.getl("MsgBox_BlockReadOnly_Header"));
+        msgBoxController.setHeaderIcon(MsgBoxIcon.READ_ONLY);
+        msgBoxController.setContentText(OBJECTS.SETTINGS.getl("MsgBox_BlockReadOnly_Content"));
+        msgBoxController.setContentIcon(MsgBoxIcon.BLOCK_GENERIC);
+        msgBoxController.setButtons(MsgBoxButton.OK);
+        msgBoxController.setDefaultButton(MsgBoxButton.OK);
+        msgBoxController.startMe();
+    }
 
     // FXML Events
 
+    @FXML
     public void onBtnCloseAction(ActionEvent event) {
         closeMe();
     }
 
+    @FXML
     public void onBtnRestoreAction(ActionEvent event) {
         minimize(false);
     }
 
+    @FXML
     public void onBtnMinimizeAction(ActionEvent event) {
         minimize(true);
     }
 
+    @FXML
+    public void onImgReadOnlyMouseClicked(MouseEvent event) {
+        setReadOnly(!readOnly);
+    }
+
+    @FXML
     public void onBtnActorsAction(ActionEvent event) {
+        if (readOnly) {
+            showReadOnlyMessage();
+            return;
+        }
+
         EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.ACTOR_SELECT_STANDARD);
         SelectionController selectionController = ELEMENTS.getSelectionController(ModelEnum.BLOCK, ModelEnum.ACTOR, stage, this.myName + "ACTORS");
 
@@ -548,10 +663,9 @@ public class BlockGeneralController implements IBaseController, IElementControll
         selectionController.setParentController(emptyDialogController);
         selectionController.setSelectedItems(block.getRelatedActorsIDs(), ModelEnum.ACTOR);
         emptyDialogController.setContent(selectionController.getRoot());
+        emptyDialogController.setContentController(selectionController);
 
         emptyDialogController.startMe();
     }
-
-
 
 }

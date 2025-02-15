@@ -24,6 +24,8 @@ public interface IElementController {
 
     public String getMyName();
 
+    default boolean canBeClosed() { return true; }
+
     public void calculateData();
 
 }

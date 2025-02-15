@@ -13,6 +13,8 @@ Native CSS settings for Widgets:
 
 Custom CSS settings for Widgets:
     Status bar
+    Tooltip-title
+    Tooltip-text
 
 CSS setting in Default class for Widgets:
     Label
@@ -354,4 +356,29 @@ Button:
 .spinner-default .increment-arrow, 
 .spinner-default .decrement-arrow {
     -fx-background-color: #a68a64;
+}
+
+/* Tooltip - Title */
+.tooltip-title {
+-fx-background-color: transparent;
+-fx-text-fill: #ffff00;
+-fx-font-size: 22px;
+}
+
+/* Tooltip - Text */
+.tooltip-text {
+-fx-background-color: transparent;
+-fx-text-fill: #befa5d;
+-fx-font-size: 16px;
+}
+
+/* Tooltip - Root */
+.tooltip-root {
+-fx-background-color: transparent;
+-fx-font-size: 16px;
+-fx-border-color: #070327;
+-fx-border-width: 1px;
+-fx-border-style: solid;
+-fx-border-radius: 5px;
+-fx-padding: 5 10 5 10;
 }
