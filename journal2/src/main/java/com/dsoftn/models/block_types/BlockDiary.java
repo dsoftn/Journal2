@@ -328,6 +328,11 @@ public class BlockDiary implements IModelEntity, IBlockBaseEntity {
     }
 
     @Override
+    public String getGenericImageResourcePath() {
+        return "/images/block_diary_generic.png";
+    }
+
+    @Override
     public String getFriendlyName() {
         String result = OBJECTS.SETTINGS.getl("BlockDiary_FriendlyName");
         Block bb = OBJECTS.BLOCKS.getEntity(this.baseBlockID);

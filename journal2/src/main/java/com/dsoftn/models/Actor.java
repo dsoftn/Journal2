@@ -404,7 +404,8 @@ public class Actor implements IModelEntity, ICustomEventListener {
         return new Image(getClass().getResourceAsStream("/images/actor_generic.png"));
     }
 
-    public String getGenericImageResourceURL() {
+    @Override
+    public String getGenericImageResourcePath() {
         return "/images/actor_generic.png";
     }
 

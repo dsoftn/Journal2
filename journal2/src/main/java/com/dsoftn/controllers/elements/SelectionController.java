@@ -417,9 +417,65 @@ public class SelectionController implements IElementController, ICustomEventList
         return btnElement;
     }
 
+    private Label getElementForClipboard(SelectionData.Item item) {
+        Label lblElement = new Label(item.getShortName(OBJECTS.SETTINGS.getvINTEGER("SelectionLastMost_MaxChars")));
+        lblElement.getStyleClass().remove("label-clipboard");
+        lblElement.getStyleClass().remove("label-clipboard-selected");
+
+        if (item.getImage() != null) {
+            ImageView imgV = new ImageView(item.getImage());
+            imgV.setFitHeight(25);
+            imgV.setFitWidth(25);
+            imgV.preserveRatioProperty();
+            lblElement.setGraphic(imgV);
+        }
+
+        if (currentlySelected.contains(item)) {
+            lblElement.getStyleClass().add("label-clipboard-selected");
+        }
+        else {
+            lblElement.getStyleClass().add("label-clipboard");
+        }
+
+        UJavaFX.setTooltip(lblElement, item.getTooltip(), item.getName(), item.getImage(), null, null);
+
+        lblElement.onMouseClickedProperty().set(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                if (event.isControlDown()) {
+                    if (currentlySelected.contains(item)) {
+                        currentlySelected.remove(item);
+                    }
+                    else {
+                        currentlySelected.add(item);
+                    }
+                    Platform.runLater(() -> updateSelectedItemAppearance(true, true, true));
+                }
+                else {
+                    currentlySelected.clear();
+                    currentlySelected.add(item);
+                    Platform.runLater(() -> updateSelectedItemAppearance(true, true, true));
+                }
+            }
+        });
+        
+        return lblElement;
+    }
+
     private void updateSelectedItemAppearance(boolean updateList, boolean updateLast, boolean updateMost) {
         // Update counter
         updateCounter();
+        // Update Clipboard
+        if (selectionData.getClipItems().size() == 0) {
+            disableSections(Section.CLIPBOARD);
+            return;
+        }
+        enableSections(Section.CLIPBOARD);
+        lblClipCounter.setText(OBJECTS.SETTINGS.getl("ClipboardItemsCounter").replace("#1", String.valueOf(selectionData.getClipItems().size())));
+        flowClipContent.getChildren().clear();
+        for (SelectionData.Item item : selectionData.getClipItems()) {
+            Label lblElement = getElementForClipboard(item);
+            flowClipContent.getChildren().add(lblElement);
+        }
         // List
         List<Integer> indices = new ArrayList<>();
         for (SelectionData.Item item : currentlySelected) {
@@ -569,6 +625,7 @@ public class SelectionController implements IElementController, ICustomEventList
 
     private void setupWidgetsText() {
         lblClipboard.setText(OBJECTS.SETTINGS.getl("text_ClipboardContent"));
+        lblClipCounter.setText(OBJECTS.SETTINGS.getl("ClipboardItemsCounter").replace("#1", String.valueOf(selectionData.getClipItems().size())));
         btnClipSelectAll.setText(OBJECTS.SETTINGS.getl("text_SelectAll"));
         btnClipSelectNone.setText(OBJECTS.SETTINGS.getl("text_SelectNone"));
 
@@ -836,4 +893,46 @@ public class SelectionController implements IElementController, ICustomEventList
             getParentController().closeMe();
         }
     }
+
+    @FXML
+    public void onBtnClipSelectAllAction() {
+        for (int idx = 0; idx < flowClipContent.getChildren().size(); idx++) {
+            if (flowClipContent.getChildren().get(idx) instanceof Label) {
+                Label lbl = (Label) flowClipContent.getChildren().get(idx);
+                lbl.getStyleClass().remove("label-clipboard");
+                lbl.getStyleClass().remove("label-clipboard-selected");
+
+                lbl.getStyleClass().add("label-clipboard-selected");
+            }
+        }
+
+        for (SelectionData.Item item : selectionData.getClipItems()) {
+            if (!currentlySelected.contains(item)) {
+                currentlySelected.add(item);
+            }
+        }
+
+        updateSelectedItemAppearance(true, true, true);
+    }
+
+    @FXML
+    public void onBtnClipSelectNoneAction() {
+        for (int idx = 0; idx < flowClipContent.getChildren().size(); idx++) {
+            if (flowClipContent.getChildren().get(idx) instanceof Label) {
+                Label lbl = (Label) flowClipContent.getChildren().get(idx);
+                lbl.getStyleClass().remove("label-clipboard");
+                lbl.getStyleClass().remove("label-clipboard-selected");
+
+                lbl.getStyleClass().add("label-clipboard");
+            }
+        }
+
+        for (SelectionData.Item item : selectionData.getClipItems()) {
+            currentlySelected.remove(item);
+        }
+
+        updateSelectedItemAppearance(true, true, true);
+    }
+
+
 }

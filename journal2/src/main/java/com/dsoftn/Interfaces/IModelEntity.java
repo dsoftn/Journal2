@@ -26,6 +26,8 @@ public interface IModelEntity {
     
     public Image getGenericImage();
 
+    public String getGenericImageResourcePath();
+
     default ImageView getImageAny(double width, double height) {
         Image image = null;
 

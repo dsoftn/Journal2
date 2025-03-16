@@ -138,6 +138,10 @@ public class SelectionData {
         return itemsAll;
     }
 
+    public List<Item> getClipItems() {
+        return calculateClipItems();
+    }
+
     public void setAllItems(List<Item> items) {
         this.itemsAll = items;
     }
@@ -292,6 +296,22 @@ public class SelectionData {
         return items;
     }
 
+    private List<Item> calculateClipItems() {
+        List<Integer> itemsInClip = OBJECTS.CLIP.getIDs(relatedModel);
+
+        if (itemsInClip == null || itemsInClip.isEmpty()) return new ArrayList<Item>();
+
+        List<Item> itemsClip = new ArrayList<>();
+
+        for (int clipID : itemsInClip) {
+            Item newItem = getItemEntity(getEntity(clipID, relatedModel));
+            if (newItem == null) continue;
+            itemsClip.add(newItem);
+        }
+
+        return itemsClip;
+    }
+
     private IModelEntity getEntity(int id, ModelEnum model) {
         switch (model) {
             case BLOCK:
@@ -323,7 +343,7 @@ public class SelectionData {
             modelObject.getID(),
             modelObject.getTooltipString(),
             modelObject.getImagePath(),
-            "/images/actor_generic.png",
+            modelObject.getGenericImageResourcePath(),
             null);
         
         boolean selected = this.itemsSelected.contains(newItem);

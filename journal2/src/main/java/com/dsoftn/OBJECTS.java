@@ -11,6 +11,7 @@ import com.dsoftn.models.Attachments;
 import com.dsoftn.models.Relations;
 import com.dsoftn.models.Actors;
 import com.dsoftn.models.User;
+import com.dsoftn.services.Clip;
 import com.dsoftn.services.EventHandler;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.services.TextFilter;
@@ -22,6 +23,8 @@ public class OBJECTS {
     // Services
     
     public static final Settings SETTINGS = new Settings();
+
+    public static final Clip CLIP = new Clip();
 
     public static final EventHandler EVENT_HANDLER = new EventHandler();
 

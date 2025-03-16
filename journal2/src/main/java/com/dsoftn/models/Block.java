@@ -470,6 +470,11 @@ public class Block implements IModelEntity, ICustomEventListener {
     }
 
     @Override
+    public String getGenericImageResourcePath() {
+        return "/images/block_generic.png";
+    }
+
+    @Override
     public String getFriendlyName() {
         String blockName = this.name;
         if (blockName == null || blockName.isEmpty()) {

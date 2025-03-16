@@ -318,6 +318,11 @@ public class Relation implements IModelEntity {
     }
 
     @Override
+    public String getGenericImageResourcePath() {
+        return "/images/relation_generic.png";
+    }
+
+    @Override
     public String getFriendlyName() {
         String baseName = getFriendlyNameFromModel(this.baseModel, this.baseID);
         String relatedName = getFriendlyNameFromModel(this.relatedModel, this.relatedID);

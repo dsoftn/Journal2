@@ -398,6 +398,11 @@ public class Tag implements IModelEntity, ICustomEventListener {
     }
 
     @Override
+    public String getGenericImageResourcePath() {
+        return "/images/tag_generic.png";
+    }
+
+    @Override
     public String getFriendlyName() {
         return  OBJECTS.SETTINGS.getl("Tag_FriendlyName")
                 .replace("#1", String.valueOf(id))

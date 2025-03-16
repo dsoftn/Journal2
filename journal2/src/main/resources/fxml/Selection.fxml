@@ -26,8 +26,8 @@
                   <VBox fx:id="vBoxClipControls" alignment="CENTER" spacing="10.0">
                      <children>
                         <Label fx:id="lblClipCounter" style="-fx-font-size: 16; -fx-underline: true;" styleClass="label-default" text="Items (2)" />
-                        <Button fx:id="btnClipSelectAll" mnemonicParsing="false" styleClass="button-default" text="Select All" />
-                        <Button fx:id="btnClip2" mnemonicParsing="false" styleClass="button-default" text="Select None" />
+                        <Button fx:id="btnClipSelectAll" mnemonicParsing="false" onAction="#onBtnClipSelectAllAction" styleClass="button-default" text="Select All" />
+                        <Button fx:id="btnClipSelectNone" mnemonicParsing="false" onAction="#onBtnClipSelectNoneAction" styleClass="button-default" text="Select None" />
                      </children>
                   </VBox>
                   <Separator orientation="VERTICAL" />

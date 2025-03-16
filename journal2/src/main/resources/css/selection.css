@@ -182,3 +182,34 @@
     -fx-border-color: #636465;
 }
 
+/* Label from clipboard */
+.label-clipboard {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 14px;
+    -fx-border-color: #17374e;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+    -fx-border-radius: 5px;
+    -fx-padding: 2 10 2 10;
+}
+
+.label-clipboard:hover {
+    -fx-border-color: #00a6fb;
+    -fx-border-style: solid;
+}
+
+/* Label from clipboard - selected */
+.label-clipboard-selected {
+    -fx-background-color: #013a0e;
+    -fx-background-radius: 5px;
+    -fx-text-fill: #00fb3b;
+    -fx-font-size: 14px;
+    -fx-border-color: #17374e;
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-border-radius: 5px;
+    -fx-padding: 2 10 2 10;
+}
+

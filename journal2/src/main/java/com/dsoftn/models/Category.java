@@ -409,6 +409,11 @@ public class Category implements IModelEntity, ICustomEventListener {
     }
 
     @Override
+    public String getGenericImageResourcePath() {
+        return "/images/category_generic.png";
+    }
+
+    @Override
     public String getFriendlyName() {
         return  OBJECTS.SETTINGS.getl("Category_FriendlyName")
                 .replace("#1", String.valueOf(id))

@@ -232,6 +232,11 @@ public class DefVariant implements IModelEntity {
     }
 
     @Override
+    public String getGenericImageResourcePath() {
+        return "/images/variant_generic.png";
+    }
+
+    @Override
     public String getFriendlyName() {
         return  OBJECTS.SETTINGS.getl("DefVariant_FriendlyName")
                 .replace("#1", String.valueOf(id))

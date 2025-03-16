@@ -472,6 +472,11 @@ public class Definition implements IModelEntity, ICustomEventListener {
     }
 
     @Override
+    public String getGenericImageResourcePath() {
+        return "/images/definition_generic.png";
+    }
+
+    @Override
     public String getFriendlyName() {
         return  OBJECTS.SETTINGS.getl("Definition_FriendlyName")
                 .replace("#1", String.valueOf(id))

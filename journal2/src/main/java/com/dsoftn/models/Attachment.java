@@ -426,6 +426,11 @@ public class Attachment implements IModelEntity, ICustomEventListener {
     }
 
     @Override
+    public String getGenericImageResourcePath() {
+        return "/images/attachment_generic.png";
+    }
+    
+    @Override
     public String getFriendlyName() {
         return  OBJECTS.SETTINGS.getl("Attachment_FriendlyName")
                 .replace("#1", String.valueOf(id))

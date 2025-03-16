@@ -616,6 +616,13 @@
         "languageCode": "en",
         "creationDate": "2025.03.14 21:31:43",
         "userData": ""
+      },
+      "ClipboardItemsCounter": {
+        "key": "ClipboardItemsCounter",
+        "value": "Items (#1)",
+        "languageCode": "en",
+        "creationDate": "2025.03.16 16:19:58",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -1233,6 +1240,13 @@
         "value": "Izaberite Ništa",
         "languageCode": "sr-lat",
         "creationDate": "2025.03.14 21:31:43",
+        "userData": ""
+      },
+      "ClipboardItemsCounter": {
+        "key": "ClipboardItemsCounter",
+        "value": "Stavki (#1)",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.16 16:19:58",
         "userData": ""
       }
     }
