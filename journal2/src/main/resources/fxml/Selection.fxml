@@ -16,40 +16,34 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="532.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.SelectionController">
+<VBox prefWidth="532.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.SelectionController">
    <children>
       <VBox fx:id="vBoxClip">
          <children>
-            <Label fx:id="lblClipSelect" styleClass="label-default" text="Select from..." />
-            <HBox alignment="TOP_CENTER" spacing="30.0">
+            <Label fx:id="lblClipboard" styleClass="label-default" text="Clipboard content" />
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
-                  <VBox fx:id="vBoxClipClip">
+                  <VBox fx:id="vBoxClipControls" alignment="CENTER" spacing="10.0">
                      <children>
-                        <Button fx:id="btnClip" mnemonicParsing="false" styleClass="button-default" text="Clipboard" />
-                        <Label fx:id="lblClipContent" />
+                        <Label fx:id="lblClipCounter" style="-fx-font-size: 16; -fx-underline: true;" styleClass="label-default" text="Items (2)" />
+                        <Button fx:id="btnClipSelectAll" mnemonicParsing="false" styleClass="button-default" text="Select All" />
+                        <Button fx:id="btnClip2" mnemonicParsing="false" styleClass="button-default" text="Select None" />
                      </children>
                   </VBox>
-                  <VBox fx:id="vBoxClipFile">
-                     <children>
-                        <Button fx:id="btnFile" mnemonicParsing="false" styleClass="button-default" text="File" />
-                        <Label fx:id="lblFileContent" />
-                     </children>
-                  </VBox>
-                  <VBox fx:id="vBoxClipWeb">
-                     <children>
-                        <Button fx:id="btnWeb" mnemonicParsing="false" styleClass="button-default" text="Web" />
-                        <Label fx:id="lblWebContent" />
-                     </children>
-                  </VBox>
+                  <Separator orientation="VERTICAL" />
+                  <FlowPane fx:id="flowClipContent" alignment="CENTER" columnHalignment="CENTER" hgap="10.0" vgap="5.0" />
                </children>
             </HBox>
             <Separator>
                <padding>
-                  <Insets left="20.0" right="20.0" />
+                  <Insets left="20.0" right="20.0" top="10.0" />
                </padding>
             </Separator>
             <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
          </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
       </VBox>
       <SplitPane fx:id="splitPane" dividerPositions="0.4" VBox.vgrow="ALWAYS">
         <items>
@@ -167,6 +161,9 @@
                </children>
             </AnchorPane>
         </items>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
       </SplitPane>
    </children>
    <stylesheets>

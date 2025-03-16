@@ -6,7 +6,6 @@ import com.dsoftn.controllers.elements.BlockGeneralController;
 import com.dsoftn.controllers.elements.SelectionController;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.utils.UError;
-import com.dsoftn.services.SelectionData;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;

@@ -36,7 +36,6 @@ public class Tag implements IModelEntity, ICustomEventListener {
     private List<Integer> relatedTags = new ArrayList<>();
     private List<Integer> relatedAttachments = new ArrayList<>();
     private int defaultAttachment = CONSTANTS.INVALID_ID;
-    private int scope = ModelEnum.ALL.getValue();
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
 
     private boolean eventsIgnored = false;
@@ -152,7 +151,6 @@ public class Tag implements IModelEntity, ICustomEventListener {
             this.id = rs.getInt("id");
             this.name = rs.getString("name");
             this.description = rs.getString("description");
-            this.scope = rs.getInt("scope");
             this.created = rs.getString("created");
             this.defaultAttachment = rs.getInt("default_attachment");
 
@@ -191,11 +189,10 @@ public class Tag implements IModelEntity, ICustomEventListener {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO tags " + 
-                "(name, description, scope, created, default_attachment) " + 
+                "(name, description, created, default_attachment) " + 
                 "VALUES (?, ?, ?, ?)",
                 this.name,
                 this.description,
-                this.scope,
                 this.created,
                 this.defaultAttachment);
 
@@ -253,11 +250,10 @@ public class Tag implements IModelEntity, ICustomEventListener {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE tags " + 
-                "SET name = ?, description = ?, scope = ?, created = ? default_attachment = ?" + 
+                "SET name = ?, description = ?, created = ? default_attachment = ?" + 
                 "WHERE id = ?",
                 this.name,
                 this.description,
-                this.scope,
                 this.created,
                 this.defaultAttachment,
                 this.id);
@@ -363,7 +359,6 @@ public class Tag implements IModelEntity, ICustomEventListener {
         newTag.id = this.id;
         newTag.name = this.name;
         newTag.description = this.description;
-        newTag.scope = this.scope;
         newTag.created = this.created;
         newTag.defaultAttachment = this.defaultAttachment;
 
@@ -452,10 +447,6 @@ public class Tag implements IModelEntity, ICustomEventListener {
         return this.defaultAttachment;
     }
 
-    public int getScope() {
-        return this.scope;
-    }
-
     public LocalDateTime getCreatedOBJ() {
         try {
             return LocalDateTime.parse(this.created, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -497,12 +488,6 @@ public class Tag implements IModelEntity, ICustomEventListener {
     public void setDefaultAttachment(int defaultAttachment) {
         this.defaultAttachment = defaultAttachment;
     }
-
-    public void setScope(ModelEnum... scopes) {
-        this.scope = ModelEnum.combineValues(scopes);
-    }
-
-    public void setScope(int scope) { this.scope = scope; }
 
     public void setCreated(LocalDateTime created) {
         this.created = created.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);

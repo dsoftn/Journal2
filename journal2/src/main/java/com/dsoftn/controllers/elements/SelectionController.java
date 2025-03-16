@@ -75,25 +75,18 @@ public class SelectionController implements IElementController, ICustomEventList
     @FXML
     VBox vBoxClip; // From Clipboard
         @FXML
-        Label lblClipSelect;
+        Label lblClipboard;
         @FXML
-        VBox vBoxClipClip; // Data from clipboard
+        VBox vBoxClipControls; // Clipboard controls like select all, select none...
             @FXML
-            Button btnClip;
+            Label lblClipCounter;
             @FXML
-            Label lblClipContent;
+            Button btnClipSelectAll;
+            @FXML
+            Button btnClipSelectNone;
         @FXML
-        VBox vBoxClipFile; // Clipboard has text that points to a file
-            @FXML
-            Button btnFile;
-            @FXML
-            Label lblFileContent;
-        @FXML
-        VBox vBoxClipWeb; // Clipboard has text that points to a web
-            @FXML
-            Button btnWeb;
-            @FXML
-            Label lblWebContent;
+        FlowPane flowClipContent; // This should be populated with items
+
     @FXML
     SplitPane splitPane; // SplitPane with List and Recommendations
         @FXML
@@ -404,8 +397,8 @@ public class SelectionController implements IElementController, ICustomEventList
         );
 
         btnElement.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
-                if (event.isControlDown()) {
+            if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
+                if (event.isControlDown() || event.getButton() == MouseButton.SECONDARY) {
                     if (currentlySelected.contains(item)) {
                         currentlySelected.remove(item);
                     }
@@ -575,10 +568,9 @@ public class SelectionController implements IElementController, ICustomEventList
     // Setup widgets
 
     private void setupWidgetsText() {
-        lblClipSelect.setText(OBJECTS.SETTINGS.getl("text_SelectFrom3dots"));
-        btnClip.setText(OBJECTS.SETTINGS.getl("text_Clipboard"));
-        btnFile.setText(OBJECTS.SETTINGS.getl("text_File"));
-        btnWeb.setText(OBJECTS.SETTINGS.getl("text_Web"));
+        lblClipboard.setText(OBJECTS.SETTINGS.getl("text_ClipboardContent"));
+        btnClipSelectAll.setText(OBJECTS.SETTINGS.getl("text_SelectAll"));
+        btnClipSelectNone.setText(OBJECTS.SETTINGS.getl("text_SelectNone"));
 
         lblLast.setText(OBJECTS.SETTINGS.getl("text_LastUsed"));
         UJavaFX.setTooltip(lblLast, OBJECTS.SETTINGS.getl("tt_Selection_lblLast"));

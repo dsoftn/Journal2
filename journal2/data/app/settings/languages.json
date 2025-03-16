@@ -595,6 +595,27 @@
         "languageCode": "en",
         "creationDate": "2025.02.15 22:12:09",
         "userData": ""
+      },
+      "text_ClipboardContent": {
+        "key": "text_ClipboardContent",
+        "value": "Clipboard content",
+        "languageCode": "en",
+        "creationDate": "2025.03.14 20:56:40",
+        "userData": ""
+      },
+      "text_SelectAll": {
+        "key": "text_SelectAll",
+        "value": "Select All",
+        "languageCode": "en",
+        "creationDate": "2025.03.14 21:30:48",
+        "userData": ""
+      },
+      "text_SelectNone": {
+        "key": "text_SelectNone",
+        "value": "Select None",
+        "languageCode": "en",
+        "creationDate": "2025.03.14 21:31:43",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -1191,6 +1212,27 @@
         "value": "Ukloni",
         "languageCode": "sr-lat",
         "creationDate": "2025.02.15 22:12:09",
+        "userData": ""
+      },
+      "text_ClipboardContent": {
+        "key": "text_ClipboardContent",
+        "value": "Clipboard sadržaj",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.14 20:56:40",
+        "userData": ""
+      },
+      "text_SelectAll": {
+        "key": "text_SelectAll",
+        "value": "Izaberite sve",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.14 21:30:48",
+        "userData": ""
+      },
+      "text_SelectNone": {
+        "key": "text_SelectNone",
+        "value": "Izaberite Ništa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.14 21:31:43",
         "userData": ""
       }
     }
