@@ -205,6 +205,7 @@ All models contain 2 classes:
 7. Update `SplashScreenController` to `load()` model properly [See here](#how-to-update-splashscreencontroller-class)
 8. If needed update `getFriendlyNameFromModel` method in `Relation` class
 9. Update methods `calculateAllItems` and `getEntity` in `SelectionData` class
+10. Update method `modelEventsHandler` in `SelectionController` class
 
 #### How to add events to `Relations` class
 - Add event for new *Model*  in *Relations* **Constructor** to register with **EventHandler**
@@ -687,6 +688,7 @@ Folders:
 - **data** - contains all data files
   - **app** - contains all application files
       - **settings** - contains all settings files (***settings.json*** and ***language.json***)
+      - **schemas** - contains all schemas files
   - **user** - contains all user folders
       - Every user has folder with name equal to `username` (Special characters are replaced with `_`)
       - User folder contains files:

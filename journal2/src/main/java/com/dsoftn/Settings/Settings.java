@@ -1397,11 +1397,13 @@ public class Settings {
         Map<String, Object> translatedData = new PyDict();
         for (Map.Entry<String, Object> entry : dataToSave.entrySet()) {
             Map<String, Object> map = new PyDict();
-            SettingsItem item = (SettingsItem) entry.getValue();
-
-            if (item == null || (! item.canBeSavedInFile)) {
+            if (entry.getValue() instanceof SettingsItem) {
+                SettingsItem item = (SettingsItem) entry.getValue();
+                if (! item.canBeSavedInFile) {
+                    continue;
+                }
                 if (! item.isValid()) {
-                    printError("SettingsItem is not valid: " + item.getKey());
+                    printError("ApplicationSettingsItem is not valid: " + item.getKey());
                 }
                 map = item.toMap();
                 translatedData.put(entry.getKey(), map);

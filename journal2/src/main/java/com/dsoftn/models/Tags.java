@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.Interfaces.IModelRepository;
+import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
-import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
@@ -31,7 +31,6 @@ TABLE tags
     id INTEGER PRIMARY KEY AUTOINCREMENT
     name TEXT NOT NULL - name of the tag
     description TEXT NOT NULL - description of the tag
-    scope INTEGER NOT NULL - ScopeEnum combined value
     created TEXT NOT NULL - date in format for JSON
     default_attachment INTEGER NOT NULL
 RELATED PROPERTIES:

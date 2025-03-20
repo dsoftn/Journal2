@@ -1,5 +1,8 @@
 package com.dsoftn.utils;
 
+import java.util.Map;
+import java.util.LinkedHashMap;
+
 import com.dsoftn.OBJECTS;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
@@ -16,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class UJavaFX {
 
@@ -133,5 +137,86 @@ public class UJavaFX {
         setTooltip(node, text, null, null, null, null);
     }
 
+    public static void setStageGeometry(String keyName, Stage stage) {
+        if (!OBJECTS.SETTINGS.isAppSettingExists(keyName)) {
+            OBJECTS.SETTINGS.addAppSettings(keyName, "", true);
+        }
+
+        Map<String, Double> geometry = getStageGeometryMap(OBJECTS.SETTINGS.getAppSTRING(keyName));
+
+        if (geometry.containsKey("PosX")) {
+            stage.setX(geometry.get("PosX"));
+        }
+        if (geometry.containsKey("PosY")) {
+            stage.setY(geometry.get("PosY"));
+        }
+        if (geometry.containsKey("Width")) {
+            stage.setWidth(geometry.get("Width"));
+        }
+        if (geometry.containsKey("Height")) {
+            stage.setHeight(geometry.get("Height"));
+        }
+        
+        if (geometry.containsKey("status")) {
+            // 0=normal, 1=maximized, 2=minimized
+            if (geometry.get("status") == 1.0) {
+                stage.setMaximized(true);
+            }
+            else if (geometry.get("status") == 2.0) {
+                stage.setIconified(true);
+            }
+        }
+    }
+    
+    public static void saveStageGeometry(String keyName, Stage stage) {
+        if (!OBJECTS.SETTINGS.isAppSettingExists(keyName)) {
+            OBJECTS.SETTINGS.addAppSettings(keyName, "", true);
+        }
+
+        Map<String, Double> geometry = getStageGeometryMap(OBJECTS.SETTINGS.getAppSTRING(keyName));
+
+        if (stage.isMaximized()) {
+            geometry.put("status", 1.0);
+            OBJECTS.SETTINGS.setApp(keyName, getStageGeometryString(geometry));
+            return;
+        }
+        if (stage.isIconified()) {
+            geometry.put("status", 2.0);
+            OBJECTS.SETTINGS.setApp(keyName, getStageGeometryString(geometry));
+            return;
+        }
+        
+        geometry.put("status", 0.0);
+        geometry.put("PosX", stage.getX());
+        geometry.put("PosY", stage.getY());
+        geometry.put("Width", stage.getWidth());
+        geometry.put("Height", stage.getHeight());
+
+        OBJECTS.SETTINGS.setApp(keyName, getStageGeometryString(geometry));
+    }
+
+    private static Map<String, Double> getStageGeometryMap(String geometryString) {
+        Map<String, Double> result = new LinkedHashMap<>();
+        if (geometryString == null || geometryString.isEmpty()) {
+            return result;
+        }
+
+        String[] parts = geometryString.split("\n");
+        for (String part : parts) {
+            String[] keyValue = part.split("=");
+            if (keyValue.length == 2) {
+                result.put(keyValue[0], Double.parseDouble(keyValue[1]));
+            }
+        }
+        return result;
+    }
+
+    private static String getStageGeometryString(Map<String, Double> geometryMap) {
+        String result = "";
+        for (Map.Entry<String, Double> entry : geometryMap.entrySet()) {
+            result += entry.getKey() + "=" + entry.getValue() + "\n";
+        }
+        return result;
+    }
 
 }

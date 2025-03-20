@@ -1,0 +1,47 @@
+// HIERARCHY:
+// Everything in [] is language key
+// Everything in {} is language and setting key
+// Everything in () is special value as: CSS, ReadOnly...
+// Indentation represent hierarchy of settings
+//
+// DEFINITIONS:
+// You can define content of [] language key.
+// Defined [] language key can be used as [@key_name] in hierarchy.
+
+
+// HIERARCHY:
+
+[h_application]
+    {AllowMultipleLogins}(ReadOnly)
+    {DatabaseTables}(ReadOnly)
+
+[h_tooltips]
+    {CssTooltip_Root}(CSS)
+    {CssTooltip_Title}(CSS)
+    {CssTooltip_Text}(CSS)
+
+[h_definitions]
+    {DefVariantDefaultMatchCase}
+
+[h_blocks_general]
+    {AllowAnimateAddingBlockGeneral}
+    {AnimateAddingBlockGeneralDuration}
+    {AllowAnimateRemovingBlockGeneral}
+    {AnimateRemovingBlockGeneralDuration}
+    {CssBlockTypeBackgroundUNDEFINED}(CSS)
+
+    [h_selecting_block_relations]
+        {MaxLastCount}
+        {MaxMostCount}
+        {SelectionLastMost_MaxChars}
+        {Selection_ImageHeight}
+        {Selection_ImageWidth}
+        {MaxShownItemsInClipboard}
+
+    [h_block_type_diary]
+        {CssBlockTypeBackgroundDIARY}(CSS)
+
+
+
+// DEFINITIONS:
+

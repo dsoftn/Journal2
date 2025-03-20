@@ -1,1 +1,15 @@
-{}
+{
+  "EmptyDialog_ACTOR_SELECT_STANDARD": {
+    "key": "EmptyDialog_ACTOR_SELECT_STANDARD",
+    "value": "status\u003d0.0\nPosX\u003d687.0\nPosY\u003d124.0\nWidth\u003d746.0\nHeight\u003d669.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.03.20 12:10:15",
+    "userData": "",
+    "canBeSavedInFile": true
+  }
+}

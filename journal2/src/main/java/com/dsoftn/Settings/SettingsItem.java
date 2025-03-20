@@ -174,6 +174,7 @@ public class SettingsItem {
         result.put("description", description);
         result.put("creationDate", creationDate);
         result.put("userData", userData);
+        result.put("canBeSavedInFile", canBeSavedInFile);
         
         return result;
     }
@@ -228,6 +229,8 @@ public class SettingsItem {
         }
 
         userData = (String) map.get("userData");
+
+        canBeSavedInFile = (Boolean) map.getOrDefault("canBeSavedInFile", false);
 
     }
 

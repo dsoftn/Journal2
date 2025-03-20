@@ -623,6 +623,13 @@
         "languageCode": "en",
         "creationDate": "2025.03.16 16:19:58",
         "userData": ""
+      },
+      "AndSomeMoreItems": {
+        "key": "AndSomeMoreItems",
+        "value": "#1 more",
+        "languageCode": "en",
+        "creationDate": "2025.03.17 08:19:30",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -1247,6 +1254,13 @@
         "value": "Stavki (#1)",
         "languageCode": "sr-lat",
         "creationDate": "2025.03.16 16:19:58",
+        "userData": ""
+      },
+      "AndSomeMoreItems": {
+        "key": "AndSomeMoreItems",
+        "value": "još #1",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.17 08:19:30",
         "userData": ""
       }
     }

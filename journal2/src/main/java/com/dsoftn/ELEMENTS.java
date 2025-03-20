@@ -41,7 +41,7 @@ public class ELEMENTS {
             controller.setStage(parentStage);
             controller.setData(new SelectionData(baseModel, relatedModel));
             controller.calculateData();
-            controller.setExpectingResultDialogID(expectingResultID);
+            controller.setReceiverID(expectingResultID);
             return controller;
         } catch (Exception e) {
             UError.exception("ELEMENTS.getSelectionController: Failed to load element", e);

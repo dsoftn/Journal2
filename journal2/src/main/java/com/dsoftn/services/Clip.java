@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.dsoftn.OBJECTS;
+import com.dsoftn.enums.events.ClipboardActionEnum;
 import com.dsoftn.enums.models.ModelEnum;
+import com.dsoftn.events.ClipboardChangedEvent;
+import com.dsoftn.utils.UString;
 
 
 public class Clip {
@@ -23,6 +27,9 @@ public class Clip {
         }
 
         clipMap.put(clipModel, ids);
+
+        ClipboardChangedEvent event = new ClipboardChangedEvent(ClipboardActionEnum.COPY, ModelEnum.fromName(clipModel), UString.joinListOfInteger(ids, ","));
+        OBJECTS.EVENT_HANDLER.fireEvent(event);
     }
 
     public void setIDs(String clipModel, Integer id) {
@@ -50,6 +57,9 @@ public class Clip {
         else {
             clipMap.put(clipModel, ids);
         }
+        
+        ClipboardChangedEvent event = new ClipboardChangedEvent(ClipboardActionEnum.ADD, ModelEnum.fromName(clipModel), UString.joinListOfInteger(ids, ","));
+        OBJECTS.EVENT_HANDLER.fireEvent(event);
     }
 
     public void addIDs(String clipModel, Integer id) {
@@ -92,6 +102,10 @@ public class Clip {
         if (clipMap.containsKey(clipModel)) {
             clipMap.remove(clipModel);
         }
+
+        ClipboardChangedEvent event = new ClipboardChangedEvent(ClipboardActionEnum.DELETE_MODEL, ModelEnum.fromName(clipModel), null);
+        OBJECTS.EVENT_HANDLER.fireEvent(event);
+        
     }
 
     public void clearIDs(ModelEnum model) {
@@ -100,6 +114,9 @@ public class Clip {
 
     public void clearIDs() {
         clipMap = null;
+
+        ClipboardChangedEvent event = new ClipboardChangedEvent(ClipboardActionEnum.DELETE_ALL, null, null);
+        OBJECTS.EVENT_HANDLER.fireEvent(event);
     }
 
     public void clear() {

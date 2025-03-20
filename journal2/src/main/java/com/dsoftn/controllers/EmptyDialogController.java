@@ -217,6 +217,7 @@ public class EmptyDialogController implements IBaseController {
     // Variables
 
     private String myName = UJavaFX.getUniqueId();
+    private String mySettingsName = "EmptyDialog";
 
     Stage stage = null;
     boolean framelessWindow = false; // true = window is frameless
@@ -311,7 +312,7 @@ public class EmptyDialogController implements IBaseController {
 
     @Override
     public void closeMe() {
-
+        saveStageGeometry();
         stage.close();
     }
 
@@ -340,6 +341,8 @@ public class EmptyDialogController implements IBaseController {
                 setResizeEnabled(true);
                 setMiniTitleEnabled(false);
                 lblTitle.setText(OBJECTS.SETTINGS.getl("text_SelectActors"));
+                mySettingsName = "EmptyDialog_" + windowStyle.toString();
+                setStageGeometry();
                 break;
             default:
                 setFramelessWindow(false);
@@ -430,6 +433,20 @@ public class EmptyDialogController implements IBaseController {
     }
 
     // Private methods
+
+    private void setStageGeometry() {
+        if (stage == null) {
+            return;
+        }
+        UJavaFX.setStageGeometry(mySettingsName, stage);
+    }
+
+    private void saveStageGeometry() {
+        if (stage == null) {
+            return;
+        }
+        UJavaFX.saveStageGeometry(mySettingsName, stage);
+    }
 
     private boolean isStageInBounds(double posX, double posY, double width, double height) {
         if (posX < 0 || posY < 0 || width < minSize || height < minSize) return false;

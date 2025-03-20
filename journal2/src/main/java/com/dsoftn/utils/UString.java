@@ -39,6 +39,18 @@ public class UString {
         return parts;
     }
 
+    /**
+     * Join a list of strings with a delimiter
+     */
+    public static String joinListOfString(List<String> list, String delimiter) {
+        return String.join(delimiter, list.stream().map(String::strip).toList());
+    }
 
+    /**
+     * Join a list of integers with a delimiter
+     */
+    public static String joinListOfInteger(List<Integer> list, String delimiter) {
+        return String.join(delimiter, list.stream().map(String::valueOf).toList());
+    }
 
 }

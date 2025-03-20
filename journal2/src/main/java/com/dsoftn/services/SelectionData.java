@@ -335,7 +335,7 @@ public class SelectionData {
         }
     }
 
-    private Item getItemEntity(IModelEntity modelObject) {
+    public Item getItemEntity(IModelEntity modelObject) {
         if (modelObject == null) return null;
 
         Item newItem = new Item(

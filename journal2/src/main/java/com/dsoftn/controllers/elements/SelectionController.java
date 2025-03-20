@@ -9,13 +9,33 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
+import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
+import com.dsoftn.events.ActorAddedEvent;
+import com.dsoftn.events.ActorDeletedEvent;
+import com.dsoftn.events.ActorUpdatedEvent;
+import com.dsoftn.events.AttachmentAddedEvent;
+import com.dsoftn.events.AttachmentDeletedEvent;
+import com.dsoftn.events.AttachmentUpdatedEvent;
+import com.dsoftn.events.BlockAddedEvent;
+import com.dsoftn.events.BlockDeletedEvent;
+import com.dsoftn.events.BlockUpdatedEvent;
+import com.dsoftn.events.CategoryAddedEvent;
+import com.dsoftn.events.CategoryDeletedEvent;
+import com.dsoftn.events.CategoryUpdatedEvent;
+import com.dsoftn.events.ClipboardChangedEvent;
+import com.dsoftn.events.DefinitionAddedEvent;
+import com.dsoftn.events.DefinitionDeletedEvent;
+import com.dsoftn.events.DefinitionUpdatedEvent;
 import com.dsoftn.events.MessageEvent;
+import com.dsoftn.events.TagAddedEvent;
+import com.dsoftn.events.TagDeletedEvent;
+import com.dsoftn.events.TagUpdatedEvent;
 import com.dsoftn.services.SelectionData;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
@@ -61,7 +81,7 @@ public class SelectionController implements IElementController, ICustomEventList
     private VBox vLayout = null;
     private SelectionData selectionData = null;
     private boolean ignoreListChanges = false;
-    private String expectingResultDialogID = null;
+    private String receiverID = null;
     private IBaseController parentController = null;
 
     private List<SelectionData.Item> dataAll = new ArrayList<>();
@@ -146,6 +166,17 @@ public class SelectionController implements IElementController, ICustomEventList
 
     @Override
     public void onCustomEvent(Event event) {
+        // Handle events for all Models
+        modelEventsHandler(event);
+
+        // Handle events for Clipboard
+        if (event instanceof ClipboardChangedEvent) {
+            ClipboardChangedEvent clipboardChangedEvent = (ClipboardChangedEvent) event;
+            if (clipboardChangedEvent.getClipModel() == selectionData.getRelatedModel()) {
+                updateClipboardAppearance();
+            }
+        }
+
         if (!(event instanceof TaskStateEvent)) { return; }
 
         TaskStateEvent taskStateEvent = (TaskStateEvent) event;
@@ -241,6 +272,131 @@ public class SelectionController implements IElementController, ICustomEventList
                 this.dataFiltered = new ArrayList<>(); // Clear filtered list
             }
         }
+    }
+
+    private void modelEventsHandler(Event event) {
+        if (selectionData.getRelatedModel() == null) return;
+
+        SelectionData.Item addedModel = null;
+        SelectionData.Item updatedModelOld = null;
+        SelectionData.Item updatedModelNew = null;
+        SelectionData.Item deletedModel = null;
+
+        switch (selectionData.getRelatedModel()) {
+            case ACTOR: {
+                if (event instanceof ActorAddedEvent) {
+                    addedModel = selectionData.getItemEntity(((ActorAddedEvent) event).getActor());
+                }
+                if (event instanceof ActorUpdatedEvent) {
+                    updatedModelOld = selectionData.getItemEntity(((ActorUpdatedEvent) event).getOldBActor());
+                    updatedModelNew = selectionData.getItemEntity(((ActorUpdatedEvent) event).getNewActor());
+                }
+                if (event instanceof ActorDeletedEvent) {
+                    deletedModel = selectionData.getItemEntity(((ActorDeletedEvent) event).getActor());
+                }
+                break;
+            }
+            case ATTACHMENT: {
+                if (event instanceof AttachmentAddedEvent) {
+                    addedModel = selectionData.getItemEntity(((AttachmentAddedEvent) event).getAttachment());
+                }
+                if (event instanceof AttachmentUpdatedEvent) {
+                    updatedModelOld = selectionData.getItemEntity(((AttachmentUpdatedEvent) event).getOldAttachment());
+                    updatedModelNew = selectionData.getItemEntity(((AttachmentUpdatedEvent) event).getNewAttachment());
+                }
+                if (event instanceof AttachmentDeletedEvent) {
+                    deletedModel = selectionData.getItemEntity(((AttachmentDeletedEvent) event).getAttachment());
+                }
+                break;
+            }
+            case BLOCK: {
+                if (event instanceof BlockAddedEvent) {
+                    addedModel = selectionData.getItemEntity(((BlockAddedEvent) event).getBlock());
+                }
+                if (event instanceof BlockUpdatedEvent) {
+                    updatedModelOld = selectionData.getItemEntity(((BlockUpdatedEvent) event).getOldBlock());
+                    updatedModelNew = selectionData.getItemEntity(((BlockUpdatedEvent) event).getNewBlock());
+                }
+                if (event instanceof BlockDeletedEvent) {
+                    deletedModel = selectionData.getItemEntity(((BlockDeletedEvent) event).getBlock());
+                }
+                break;
+            }
+            case CATEGORY: {
+                if (event instanceof CategoryAddedEvent) {
+                    addedModel = selectionData.getItemEntity(((CategoryAddedEvent) event).getCategory());
+                }
+                if (event instanceof CategoryUpdatedEvent) {
+                    updatedModelOld = selectionData.getItemEntity(((CategoryUpdatedEvent) event).getOldCategory());
+                    updatedModelNew = selectionData.getItemEntity(((CategoryUpdatedEvent) event).getNewCategory());
+                }
+                if (event instanceof CategoryDeletedEvent) {
+                    deletedModel = selectionData.getItemEntity(((CategoryDeletedEvent) event).getCategory());
+                }
+                break;
+            }
+            case DEFINITION: {
+                if (event instanceof DefinitionAddedEvent) {
+                    addedModel = selectionData.getItemEntity(((DefinitionAddedEvent) event).getDefinition());
+                }
+                if (event instanceof DefinitionUpdatedEvent) {
+                    updatedModelOld = selectionData.getItemEntity(((DefinitionUpdatedEvent) event).getOldDefinition());
+                    updatedModelNew = selectionData.getItemEntity(((DefinitionUpdatedEvent) event).getNewDefinition());
+                }
+                if (event instanceof DefinitionDeletedEvent) {
+                    deletedModel = selectionData.getItemEntity(((DefinitionDeletedEvent) event).getDefinition());
+                }
+                break;
+            }
+            case TAG: {
+                if (event instanceof TagAddedEvent) {
+                    addedModel = selectionData.getItemEntity(((TagAddedEvent) event).getTag());
+                }
+                if (event instanceof TagUpdatedEvent) {
+                    updatedModelOld = selectionData.getItemEntity(((TagUpdatedEvent) event).getOldTag());
+                    updatedModelNew = selectionData.getItemEntity(((TagUpdatedEvent) event).getNewTag());
+                }
+                if (event instanceof TagDeletedEvent) {
+                    deletedModel = selectionData.getItemEntity(((TagDeletedEvent) event).getTag());
+                }
+                break;
+            }
+            default: {
+                return;
+            }
+        }
+
+        if (addedModel != null) {
+            dataAll.add(addedModel);
+        }
+        if (updatedModelOld != null && updatedModelNew != null) {
+            int index = dataAll.indexOf(updatedModelOld);
+            if (index != -1) dataAll.set(index, updatedModelNew);
+
+            index = dataLast.indexOf(updatedModelOld);
+            if (index != -1) dataLast.set(index, updatedModelNew);
+
+            index = dataMost.indexOf(updatedModelOld);
+            if (index != -1) dataMost.set(index, updatedModelNew);
+
+            index = currentlySelected.indexOf(updatedModelOld);
+            if (index != -1) currentlySelected.set(index, updatedModelNew);
+        }
+        if (deletedModel != null) {
+            int index = dataAll.indexOf(deletedModel);
+            if (index != -1) dataAll.remove(index);
+
+            index = dataLast.indexOf(deletedModel);
+            if (index != -1) dataLast.remove(index);
+
+            index = dataMost.indexOf(deletedModel);
+            if (index != -1) dataMost.remove(index);
+
+            index = currentlySelected.indexOf(deletedModel);
+            if (index != -1) currentlySelected.remove(index);
+        }
+
+        updateSelectedItemAppearance(true, true, true);
     }
 
     // Implementation of IElementController
@@ -461,21 +617,26 @@ public class SelectionController implements IElementController, ICustomEventList
         return lblElement;
     }
 
+    private Label getElementForClipboardThatNotShown(int moreItems) {
+        Label lblElement = new Label(OBJECTS.SETTINGS.getl("AndSomeMoreItems").replace("#1", String.valueOf(moreItems)));
+        lblElement.getStyleClass().remove("label-clipboard");
+        lblElement.setStyle("-fx-text-fill: white;");
+
+        Image imgMore = new Image(getClass().getResourceAsStream("/images/more.png"));
+        ImageView imgV = new ImageView(imgMore);
+        imgV.setFitHeight(25);
+        imgV.setFitWidth(25);
+        imgV.preserveRatioProperty();
+        lblElement.setGraphic(imgV);
+
+        return lblElement;
+    }
+
     private void updateSelectedItemAppearance(boolean updateList, boolean updateLast, boolean updateMost) {
         // Update counter
         updateCounter();
         // Update Clipboard
-        if (selectionData.getClipItems().size() == 0) {
-            disableSections(Section.CLIPBOARD);
-            return;
-        }
-        enableSections(Section.CLIPBOARD);
-        lblClipCounter.setText(OBJECTS.SETTINGS.getl("ClipboardItemsCounter").replace("#1", String.valueOf(selectionData.getClipItems().size())));
-        flowClipContent.getChildren().clear();
-        for (SelectionData.Item item : selectionData.getClipItems()) {
-            Label lblElement = getElementForClipboard(item);
-            flowClipContent.getChildren().add(lblElement);
-        }
+        updateClipboardAppearance();
         // List
         List<Integer> indices = new ArrayList<>();
         for (SelectionData.Item item : currentlySelected) {
@@ -539,6 +700,29 @@ public class SelectionController implements IElementController, ICustomEventList
         }
 
         showSelectedItemsWidgets();
+    }
+
+    private void updateClipboardAppearance() {
+        if (selectionData.getClipItems().size() == 0) {
+            disableSections(Section.CLIPBOARD);
+            return;
+        }
+        enableSections(Section.CLIPBOARD);
+        lblClipCounter.setText(OBJECTS.SETTINGS.getl("ClipboardItemsCounter").replace("#1", String.valueOf(selectionData.getClipItems().size())));
+        flowClipContent.getChildren().clear();
+        int counter = 0;
+        int totalClipItems = selectionData.getClipItems().size();
+        for (SelectionData.Item item : selectionData.getClipItems()) {
+            Label lblElement = getElementForClipboard(item);
+            flowClipContent.getChildren().add(lblElement);
+
+            counter++;
+            if (counter >= OBJECTS.SETTINGS.getvINTEGER("MaxShownItemsInClipboard") && counter < totalClipItems) {
+                Label lblElement2 = getElementForClipboardThatNotShown(totalClipItems - counter);
+                flowClipContent.getChildren().add(lblElement2);
+                break;
+            }
+        }
     }
 
     private void showSelectedItemsWidgets() {
@@ -611,9 +795,9 @@ public class SelectionController implements IElementController, ICustomEventList
         this.selectionData = data;
     }
     
-    public String getExpectingResultDialogID() { return expectingResultDialogID; }
+    public String getReceiverID() { return receiverID; }
 
-    public void setExpectingResultDialogID(String expectingResultDialogID) { this.expectingResultDialogID = expectingResultDialogID; }
+    public void setReceiverID(String expectingResultDialogID) { this.receiverID = expectingResultDialogID; }
 
     public void setSelectedItems(List<Integer> itemIds, ModelEnum model) {
         selectionData.setSelectedItems(itemIds, model);
@@ -887,7 +1071,7 @@ public class SelectionController implements IElementController, ICustomEventList
             result += currentlySelected.stream().map(item -> String.valueOf(item.getId())).collect(Collectors.joining(","));
         }
 
-        OBJECTS.EVENT_HANDLER.fireEvent(new MessageEvent(expectingResultDialogID, myName, result));
+        OBJECTS.EVENT_HANDLER.fireEvent(new MessageEvent(receiverID, myName, result));
 
         if (getParentController() != null) {
             getParentController().closeMe();
