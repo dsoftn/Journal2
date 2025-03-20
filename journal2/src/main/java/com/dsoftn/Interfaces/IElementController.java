@@ -28,4 +28,6 @@ public interface IElementController {
 
     public void calculateData();
 
+    public void closeMe();
+
 }

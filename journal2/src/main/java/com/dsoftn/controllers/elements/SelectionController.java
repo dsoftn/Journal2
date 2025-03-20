@@ -77,6 +77,8 @@ public class SelectionController implements IElementController, ICustomEventList
     // Variables
     private Stage stage = null;
     private String myName = UJavaFX.getUniqueId();
+    private String mySettingsName = "Selection";
+    private int listFontSize = 12;
     private VBox root = null;
     private VBox vLayout = null;
     private SelectionData selectionData = null;
@@ -456,6 +458,11 @@ public class SelectionController implements IElementController, ICustomEventList
     }
 
     @Override
+    public void closeMe() {
+        saveSettings();
+    }
+
+    @Override
     public void calculateData() {
         if (selectionData == null) {
             UError.error("SelectionController.calculateData: SelectionData is null");
@@ -466,6 +473,7 @@ public class SelectionController implements IElementController, ICustomEventList
 
         setupWidgetsText();
         setupWidgetsAppearance();
+        loadSettings();
 
         // Calc list items
         UJavaFX.taskStart(this::calcListItems, myName + "LIST");
@@ -475,6 +483,41 @@ public class SelectionController implements IElementController, ICustomEventList
         UJavaFX.taskStart(this::calcMostItems, myName + "MOST");
 
         return;
+    }
+
+    private void loadSettings() {
+        // Define element name for settings
+        if (selectionData.getBaseModel() != null) {
+            mySettingsName += "_" + selectionData.getBaseModel().toString();
+        }
+        if (selectionData.getRelatedModel() != null) {
+            mySettingsName += "_" + selectionData.getRelatedModel().toString();
+        }
+
+        // List Font Size
+        if (OBJECTS.SETTINGS.isAppSettingExists(mySettingsName + "_ListFontSize")) {
+            listFontSize = OBJECTS.SETTINGS.getAppINTEGER(mySettingsName + "_ListFontSize");
+            lstItems.setStyle("-fx-font-size: " + listFontSize + "px;");
+        }
+        // SplitPane divider position
+        if (OBJECTS.SETTINGS.isAppSettingExists(mySettingsName + "_SplitPaneDividerPosition")) {
+            splitPane.setDividerPositions(OBJECTS.SETTINGS.getAppDOUBLE(mySettingsName + "_SplitPaneDividerPosition"));
+        }
+
+    }
+
+    private void saveSettings() {
+        if (!OBJECTS.SETTINGS.isAppSettingExists(mySettingsName + "_ListFontSize")) {
+            OBJECTS.SETTINGS.addAppSettings(mySettingsName + "_ListFontSize", listFontSize, true);
+        } else {
+            OBJECTS.SETTINGS.setApp(mySettingsName + "_ListFontSize", listFontSize);
+        }
+
+        if (!OBJECTS.SETTINGS.isAppSettingExists(mySettingsName + "_SplitPaneDividerPosition")) {
+            OBJECTS.SETTINGS.addAppSettings(mySettingsName + "_SplitPaneDividerPosition", splitPane.getDividerPositions()[0], true);
+        } else {
+            OBJECTS.SETTINGS.setApp(mySettingsName + "_SplitPaneDividerPosition", splitPane.getDividerPositions()[0]);
+        }
     }
 
     private void calcListItems() {
@@ -797,7 +840,7 @@ public class SelectionController implements IElementController, ICustomEventList
     
     public String getReceiverID() { return receiverID; }
 
-    public void setReceiverID(String expectingResultDialogID) { this.receiverID = expectingResultDialogID; }
+    public void setReceiverID(String receiverID) { this.receiverID = receiverID; }
 
     public void setSelectedItems(List<Integer> itemIds, ModelEnum model) {
         selectionData.setSelectedItems(itemIds, model);
@@ -861,6 +904,24 @@ public class SelectionController implements IElementController, ICustomEventList
             listSelectionChanged();
         });
 
+        lstItems.setOnScroll(event -> {
+            if (event.isControlDown()) {
+                double deltaY = event.getDeltaY();
+                if (deltaY > 0) {
+                    if (OBJECTS.SETTINGS.getvINTEGER("MaxListFontSize") > listFontSize) {
+                        listFontSize++;
+                        lstItems.setStyle("-fx-font-size: " + listFontSize + "px;");
+                    }
+                } else {
+                    if (OBJECTS.SETTINGS.getvINTEGER("MinListFontSize") < listFontSize) {
+                        listFontSize--;
+                        lstItems.setStyle("-fx-font-size: " + listFontSize + "px;");
+                    }
+                }
+                event.consume();
+            }
+        });
+        
         txtFind.textProperty().addListener((observable, oldValue, newValue) -> onFilterTextChanged(newValue));
     }
 

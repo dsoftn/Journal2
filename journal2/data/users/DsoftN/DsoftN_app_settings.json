@@ -1,14 +1,40 @@
 {
   "EmptyDialog_ACTOR_SELECT_STANDARD": {
     "key": "EmptyDialog_ACTOR_SELECT_STANDARD",
-    "value": "status\u003d0.0\nPosX\u003d687.0\nPosY\u003d124.0\nWidth\u003d746.0\nHeight\u003d669.0\n",
+    "value": "status\u003d0.0\nPosX\u003d687.0\nPosY\u003d124.0\nWidth\u003d680.0\nHeight\u003d669.0\n",
     "defaultValue": "",
     "min": "null",
     "max": "null",
     "settingType": 2,
     "dataType": 4,
     "description": "",
-    "creationDate": "2025.03.20 12:10:15",
+    "creationDate": "2025.03.20 19:41:58",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "Selection_BLOCK_ACTOR_ListFontSize": {
+    "key": "Selection_BLOCK_ACTOR_ListFontSize",
+    "value": "22",
+    "defaultValue": "12",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.03.20 19:41:59",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "Selection_BLOCK_ACTOR_SplitPaneDividerPosition": {
+    "key": "Selection_BLOCK_ACTOR_SplitPaneDividerPosition",
+    "value": "0.35993975903614456",
+    "defaultValue": "0.4",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 64,
+    "description": "",
+    "creationDate": "2025.03.20 19:41:59",
     "userData": "",
     "canBeSavedInFile": true
   }

@@ -31,7 +31,7 @@ public class ELEMENTS {
         }
     }
 
-    public static SelectionController getSelectionController(ModelEnum baseModel, ModelEnum relatedModel, Stage parentStage, String expectingResultID) {
+    public static SelectionController getSelectionController(ModelEnum baseModel, ModelEnum relatedModel, Stage parentStage, String receiverID) {
         FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/Selection.fxml"));
         
         try {
@@ -40,8 +40,8 @@ public class ELEMENTS {
             controller.setRoot(root);
             controller.setStage(parentStage);
             controller.setData(new SelectionData(baseModel, relatedModel));
+            controller.setReceiverID(receiverID);
             controller.calculateData();
-            controller.setReceiverID(expectingResultID);
             return controller;
         } catch (Exception e) {
             UError.exception("ELEMENTS.getSelectionController: Failed to load element", e);

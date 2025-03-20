@@ -9,7 +9,8 @@
     "dataType": 128,
     "description": "Allow already loged user to login on another instance of application.",
     "creationDate": "2024.12.23 16:52:00",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "DatabaseTables": {
     "key": "DatabaseTables",
@@ -21,7 +22,8 @@
     "dataType": 4,
     "description": "SQL commands to create table structure in database.",
     "creationDate": "2025.01.03 21:56:26",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "DefVariantDefaultMatchCase": {
     "key": "DefVariantDefaultMatchCase",
@@ -33,7 +35,8 @@
     "dataType": 128,
     "description": "It determines whether to look at upper and lower case letters.",
     "creationDate": "2025.01.17 15:36:38",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "AllowAnimateAddingBlockGeneral": {
     "key": "AllowAnimateAddingBlockGeneral",
@@ -45,7 +48,8 @@
     "dataType": 128,
     "description": "Adding base Block can be animated.",
     "creationDate": "2025.02.05 16:11:03",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "AnimateAddingBlockGeneralDuration": {
     "key": "AnimateAddingBlockGeneralDuration",
@@ -57,7 +61,8 @@
     "dataType": 64,
     "description": "Duration in seconds while animating base Block in process of adding to layout.",
     "creationDate": "2025.02.05 16:13:40",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "AllowAnimateRemovingBlockGeneral": {
     "key": "AllowAnimateRemovingBlockGeneral",
@@ -69,7 +74,8 @@
     "dataType": 128,
     "description": "Removing base Block can be animated.",
     "creationDate": "2025.02.05 17:56:04",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "AnimateRemovingBlockGeneralDuration": {
     "key": "AnimateRemovingBlockGeneralDuration",
@@ -81,7 +87,8 @@
     "dataType": 64,
     "description": "Duration in seconds while animating base Block in process of removing from layout.",
     "creationDate": "2025.02.05 17:56:34",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "CssBlockTypeBackgroundUNDEFINED": {
     "key": "CssBlockTypeBackgroundUNDEFINED",
@@ -93,7 +100,8 @@
     "dataType": 4,
     "description": "CSS settings for backround if BlockType is UNDEFINED",
     "creationDate": "2025.02.05 22:36:42",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "CssBlockTypeBackgroundDIARY": {
     "key": "CssBlockTypeBackgroundDIARY",
@@ -105,7 +113,8 @@
     "dataType": 4,
     "description": "CSS settings for backround if BlockType is DIARY",
     "creationDate": "2025.02.05 22:36:53",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "MaxLastCount": {
     "key": "MaxLastCount",
@@ -117,7 +126,8 @@
     "dataType": 8,
     "description": "Maximum number of last used items",
     "creationDate": "2025.02.11 19:06:48",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "MaxMostCount": {
     "key": "MaxMostCount",
@@ -129,7 +139,8 @@
     "dataType": 8,
     "description": "Maximum number of most used items",
     "creationDate": "2025.02.11 19:07:05",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "SelectionLastMost_MaxChars": {
     "key": "SelectionLastMost_MaxChars",
@@ -141,7 +152,8 @@
     "dataType": 8,
     "description": "Maximum number of most used items",
     "creationDate": "2025.02.12 21:00:29",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "Selection_ImageHeight": {
     "key": "Selection_ImageHeight",
@@ -153,7 +165,8 @@
     "dataType": 8,
     "description": "Image height of icon displayed left by item name",
     "creationDate": "2025.02.12 23:19:22",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "Selection_ImageWidth": {
     "key": "Selection_ImageWidth",
@@ -165,7 +178,8 @@
     "dataType": 8,
     "description": "Image height of icon displayed left by item name",
     "creationDate": "2025.02.12 23:19:32",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "CssTooltip_Root": {
     "key": "CssTooltip_Root",
@@ -177,7 +191,8 @@
     "dataType": 4,
     "description": "CSS settings for tooltip Root.",
     "creationDate": "2025.02.15 16:32:24",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "CssTooltip_Text": {
     "key": "CssTooltip_Text",
@@ -189,7 +204,8 @@
     "dataType": 4,
     "description": "CSS settings for tooltip Root.",
     "creationDate": "2025.02.15 16:45:41",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "CssTooltip_Title": {
     "key": "CssTooltip_Title",
@@ -201,7 +217,8 @@
     "dataType": 4,
     "description": "CSS settings for tooltip Root.",
     "creationDate": "2025.02.15 16:45:57",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
   },
   "MaxShownItemsInClipboard": {
     "key": "MaxShownItemsInClipboard",
@@ -213,6 +230,33 @@
     "dataType": 8,
     "description": "Maximum items in clipboard that can be shown i dialogs like Selection",
     "creationDate": "2025.03.17 08:24:31",
-    "userData": ""
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "MaxListFontSize": {
+    "key": "MaxListFontSize",
+    "value": "40",
+    "defaultValue": "40",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Maximum font size in ListView",
+    "creationDate": "2025.03.20 19:52:42",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "MinListFontSize": {
+    "key": "MinListFontSize",
+    "value": "8",
+    "defaultValue": "8",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Minimum font size in ListView",
+    "creationDate": "2025.03.20 19:53:08",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

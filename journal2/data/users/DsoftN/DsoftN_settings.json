@@ -258,5 +258,31 @@
     "creationDate": "2025.03.17 08:24:31",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "MaxListFontSize": {
+    "key": "MaxListFontSize",
+    "value": "40",
+    "defaultValue": "40",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Maximum font size in ListView",
+    "creationDate": "2025.03.20 19:52:42",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "MinListFontSize": {
+    "key": "MinListFontSize",
+    "value": "8",
+    "defaultValue": "8",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Minimum font size in ListView",
+    "creationDate": "2025.03.20 19:53:08",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

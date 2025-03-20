@@ -313,6 +313,9 @@ public class EmptyDialogController implements IBaseController {
     @Override
     public void closeMe() {
         saveStageGeometry();
+        if (myContentController != null) {
+            myContentController.closeMe();
+        }
         stage.close();
     }
 

@@ -934,6 +934,7 @@ public class Settings {
         SettingsItem newItem = new SettingsItem();
         newItem.setKey(key);
         newItem.setValue(value);
+        newItem.setDefaultValue(value);
         newItem.setDataType();
         newItem.setSettingType(SettingType.APP);
         newItem.setCanBeSavedInFile(saveInFile);
