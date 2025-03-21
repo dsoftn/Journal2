@@ -18,6 +18,8 @@ import com.dsoftn.events.MessageEvent;
 import com.dsoftn.models.Actor;
 import com.dsoftn.models.Block;
 import com.dsoftn.services.SelectionData;
+import com.dsoftn.utils.UDate;
+import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UList;
 import com.dsoftn.utils.UString;
@@ -27,22 +29,28 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.tools.Diagnostic;
 
 import org.fxmisc.richtext.InlineCssTextArea;
 
@@ -82,7 +90,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
         @FXML
         private Button btnType;
         @FXML
-        private Button btnDate;
+        private DatePicker dpDate;
         @FXML
         private Button btnName;
         @FXML
@@ -382,7 +390,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
         // Block Type
         setBtnType(block);
         // Date
-        setBtnDate(block);
+        setDpDate(block);
         // Name
         setBtnName(block);
     }
@@ -401,9 +409,34 @@ public class BlockGeneralController implements IBaseController, IElementControll
             null,null
         );
 
-        UJavaFX.setTooltip(btnDate, OBJECTS.SETTINGS.getl("tt_BlockGeneral_btnDate"));
-
         UJavaFX.setTooltip(btnName, OBJECTS.SETTINGS.getl("tt_BlockGeneral_btnName"));
+
+        // Fix DatePicker Displaying dates
+        dpDate.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                if (date != null) {
+                    return CONSTANTS.DATE_FORMATTER.format(date);
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.trim().isEmpty()) {
+                    try {
+                        return LocalDate.parse(string, CONSTANTS.DATE_FORMATTER);
+                    } catch (DateTimeParseException e) {
+                        UError.exception("BlockGeneralController.dpDate.fromString: Failed to parse date", e);
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }
+        });
+
 
 
     }
@@ -546,8 +579,14 @@ public class BlockGeneralController implements IBaseController, IElementControll
         btnType.setGraphic(imageView);
     }
 
-    private void setBtnDate(Block block) {
-        btnDate.setText(block.getDateSTR());
+    private void setDpDate(Block block) {
+        if (block.getDateOBJ() == null) {
+            UJavaFX.setTooltip(dpDate, OBJECTS.SETTINGS.getl("tt_BlockGeneral_dpDateEmpty"));
+        } else {
+            UJavaFX.setTooltip(dpDate, UDate.getPeriodString(LocalDate.now(), block.getDateOBJ()), UDate.getDateWithWeekdayAndMonthName(block.getDateOBJ()), new Image(getClass().getResourceAsStream("/images/date.png")), 30, 30);
+        }
+
+        dpDate.setValue(block.getDateOBJ());
     }
 
     private void setBtnName(Block block) {
@@ -651,6 +690,10 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     @FXML
     public void onBtnActorsAction(ActionEvent event) {
+        selectActors();
+    }
+
+    private void selectActors() {
         if (readOnly) {
             showReadOnlyMessage();
             return;
@@ -671,5 +714,86 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
         emptyDialogController.startMe();
     }
+
+    @FXML
+    public void onBtnActorsClicked(MouseEvent event) {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            // Show Context Menu
+            ContextMenu contextMenu = new ContextMenu();
+
+            // Select actors
+            MenuItem select = new MenuItem(OBJECTS.SETTINGS.getl("text_SelectActors"));
+            Image imgSelect = new Image(getClass().getResourceAsStream("/images/select.png"));
+            ImageView imgSelectView = new ImageView(imgSelect);
+            imgSelectView.setPreserveRatio(true);
+            imgSelectView.setFitHeight(20);
+            select.setGraphic(imgSelectView);
+
+            SeparatorMenuItem separator = new SeparatorMenuItem();
+            
+            // Copy added actors in block
+            MenuItem copy = new MenuItem(OBJECTS.SETTINGS.getl("text_Copy"));
+            Image imgCopy = new Image(getClass().getResourceAsStream("/images/copy.png"));
+            ImageView imgCopyView = new ImageView(imgCopy);
+            imgCopyView.setPreserveRatio(true);
+            imgCopyView.setFitHeight(20);
+            copy.setGraphic(imgCopyView);
+
+            // Paste actors from clipboard in block
+            MenuItem paste = new MenuItem(OBJECTS.SETTINGS.getl("text_Paste"));
+            Image imgPaste = new Image(getClass().getResourceAsStream("/images/paste.png"));
+            ImageView imgPasteView = new ImageView(imgPaste);
+            imgPasteView.setPreserveRatio(true);
+            imgPasteView.setFitHeight(20);
+            paste.setGraphic(imgPasteView);
+
+            contextMenu.getItems().addAll(select, separator, copy, paste);
+
+            select.setOnAction(event1 -> {
+                selectActors();
+            });
+
+            copy.setOnAction(event1 -> {
+                OBJECTS.CLIP.setIDs(ModelEnum.ACTOR, block.getRelatedActorsIDs());
+            });
+
+            paste.setOnAction(event1 -> {
+                List<Actor> actorIDs = new ArrayList<>();
+                for (int actorID : OBJECTS.CLIP.getIDs(ModelEnum.ACTOR)) {
+                    if (OBJECTS.ACTORS.isExists(actorID)) {
+                        actorIDs.add(OBJECTS.ACTORS.getEntity(actorID));
+                    }
+                }
+                block.setRelatedActors(actorIDs);
+                setBtnActors(block);
+            });
+
+            // Disable unnecessary items
+            if (block.getRelatedActorsIDs().size() == 0) {
+                copy.setDisable(true);
+            }
+            if (OBJECTS.CLIP.getIDs(ModelEnum.ACTOR).size() == 0) {
+                paste.setDisable(true);
+            }
+
+            contextMenu.show(btnActors, event.getScreenX(), event.getScreenY());
+        }
+    }
+
+    @FXML
+    public void onDpDateAction(ActionEvent event) {
+        changeDate();
+        setDpDate(block);
+    }
+
+    private void changeDate() {
+        if (readOnly) {
+            showReadOnlyMessage();
+            return;
+        }
+
+        block.setDate(dpDate.getValue());
+    }
+
 
 }

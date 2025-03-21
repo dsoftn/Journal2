@@ -15,9 +15,10 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
+
+<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
    <children>
-      <HBox fx:id="hBoxTextEdit" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox fx:id="hBoxTextEdit" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
          <children>
             <ScrollPane>
                <content>
@@ -107,4 +108,4 @@
       <URL value="@../css/main.css" />
       <URL value="@../css/text_edit_toolbar.css" />
    </stylesheets>
-</AnchorPane>
+</VBox>

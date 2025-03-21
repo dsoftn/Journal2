@@ -526,13 +526,6 @@
         "creationDate": "2025.02.15 18:09:46",
         "userData": ""
       },
-      "tt_BlockGeneral_btnDate": {
-        "key": "tt_BlockGeneral_btnDate",
-        "value": "Click to set the date.",
-        "languageCode": "en",
-        "creationDate": "2025.02.15 18:49:10",
-        "userData": ""
-      },
       "tt_BlockGeneral_btnName": {
         "key": "tt_BlockGeneral_btnName",
         "value": "Click to set or change the block title.",
@@ -629,6 +622,328 @@
         "value": "#1 more",
         "languageCode": "en",
         "creationDate": "2025.03.17 08:19:30",
+        "userData": ""
+      },
+      "text_Copy": {
+        "key": "text_Copy",
+        "value": "Copy",
+        "languageCode": "en",
+        "creationDate": "2025.03.20 22:17:27",
+        "userData": ""
+      },
+      "text_Paste": {
+        "key": "text_Paste",
+        "value": "Paste",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 09:55:32",
+        "userData": ""
+      },
+      "tt_BlockGeneral_dpDateEmpty": {
+        "key": "tt_BlockGeneral_dpDateEmpty",
+        "value": "Click to set the date.",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:26:06",
+        "userData": ""
+      },
+      "month_1": {
+        "key": "month_1",
+        "value": "January",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:48:38",
+        "userData": ""
+      },
+      "month_2": {
+        "key": "month_2",
+        "value": "February",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:48:55",
+        "userData": ""
+      },
+      "month_3": {
+        "key": "month_3",
+        "value": "March",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:49:05",
+        "userData": ""
+      },
+      "month_4": {
+        "key": "month_4",
+        "value": "April",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:49:27",
+        "userData": ""
+      },
+      "month_5": {
+        "key": "month_5",
+        "value": "May",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:49:37",
+        "userData": ""
+      },
+      "month_6": {
+        "key": "month_6",
+        "value": "June",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:49:47",
+        "userData": ""
+      },
+      "month_7": {
+        "key": "month_7",
+        "value": "July",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:49:57",
+        "userData": ""
+      },
+      "month_8": {
+        "key": "month_8",
+        "value": "August",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:50:14",
+        "userData": ""
+      },
+      "month_9": {
+        "key": "month_9",
+        "value": "September",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:50:30",
+        "userData": ""
+      },
+      "month_10": {
+        "key": "month_10",
+        "value": "October",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:50:41",
+        "userData": ""
+      },
+      "month_11": {
+        "key": "month_11",
+        "value": "November",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:50:56",
+        "userData": ""
+      },
+      "month_12": {
+        "key": "month_12",
+        "value": "December",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:51:09",
+        "userData": ""
+      },
+      "weekday_1": {
+        "key": "weekday_1",
+        "value": "Monday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:51:40",
+        "userData": ""
+      },
+      "weekday_2": {
+        "key": "weekday_2",
+        "value": "Tuesday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:51:50",
+        "userData": ""
+      },
+      "weekday_3": {
+        "key": "weekday_3",
+        "value": "Wednesday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:52:00",
+        "userData": ""
+      },
+      "weekday_4": {
+        "key": "weekday_4",
+        "value": "Thursday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:52:26",
+        "userData": ""
+      },
+      "weekday_5": {
+        "key": "weekday_5",
+        "value": "Friday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:52:35",
+        "userData": ""
+      },
+      "weekday_6": {
+        "key": "weekday_6",
+        "value": "Saturday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:52:47",
+        "userData": ""
+      },
+      "weekday_7": {
+        "key": "weekday_7",
+        "value": "Sunday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 17:53:05",
+        "userData": ""
+      },
+      "text_Today": {
+        "key": "text_Today",
+        "value": "Today",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 20:46:56",
+        "userData": ""
+      },
+      "text_Yesterday": {
+        "key": "text_Yesterday",
+        "value": "Yesterday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 20:50:24",
+        "userData": ""
+      },
+      "text_DayBeforeYesterday": {
+        "key": "text_DayBeforeYesterday",
+        "value": "Day Before Yesterday",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 20:50:17",
+        "userData": ""
+      },
+      "text_Tomorrow": {
+        "key": "text_Tomorrow",
+        "value": "Tomorrow",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 20:50:43",
+        "userData": ""
+      },
+      "text_DayAfterTomorrow": {
+        "key": "text_DayAfterTomorrow",
+        "value": "Day After Tomorrow",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 20:51:10",
+        "userData": ""
+      },
+      "period_Before": {
+        "key": "period_Before",
+        "value": "Before",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:01:22",
+        "userData": ""
+      },
+      "period_After": {
+        "key": "period_After",
+        "value": "After",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:01:46",
+        "userData": ""
+      },
+      "period_Before1Year": {
+        "key": "period_Before1Year",
+        "value": "one year",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:08:38",
+        "userData": ""
+      },
+      "period_Before2_4Year": {
+        "key": "period_Before2_4Year",
+        "value": "#1 years",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:09:35",
+        "userData": ""
+      },
+      "period_Before5Years": {
+        "key": "period_Before5Years",
+        "value": "#1 years",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:09:57",
+        "userData": ""
+      },
+      "period_After1Year": {
+        "key": "period_After1Year",
+        "value": "one year",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:10:49",
+        "userData": ""
+      },
+      "period_After2_4Year": {
+        "key": "period_After2_4Year",
+        "value": "#1 years",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:11:28",
+        "userData": ""
+      },
+      "period_After5Years": {
+        "key": "period_After5Years",
+        "value": "#1 years",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:11:56",
+        "userData": ""
+      },
+      "period_Before1Month": {
+        "key": "period_Before1Month",
+        "value": "one month",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:17:18",
+        "userData": ""
+      },
+      "period_Before2_4Month": {
+        "key": "period_Before2_4Month",
+        "value": "#1 months",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:17:46",
+        "userData": ""
+      },
+      "period_Before5Months": {
+        "key": "period_Before5Months",
+        "value": "#1 months",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:18:04",
+        "userData": ""
+      },
+      "period_After1Month": {
+        "key": "period_After1Month",
+        "value": "one month",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:18:28",
+        "userData": ""
+      },
+      "period_After2_4Month": {
+        "key": "period_After2_4Month",
+        "value": "#1 months",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:18:51",
+        "userData": ""
+      },
+      "period_After5Months": {
+        "key": "period_After5Months",
+        "value": "#1 months",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:19:07",
+        "userData": ""
+      },
+      "period_Before1Day": {
+        "key": "period_Before1Day",
+        "value": "one day",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:19:33",
+        "userData": ""
+      },
+      "period_BeforeMoreDays": {
+        "key": "period_BeforeMoreDays",
+        "value": "#1 days",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:19:54",
+        "userData": ""
+      },
+      "period_After1Day": {
+        "key": "period_After1Day",
+        "value": "one day",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:20:20",
+        "userData": ""
+      },
+      "period_AfterMoreDays": {
+        "key": "period_AfterMoreDays",
+        "value": "#1 days",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:20:36",
+        "userData": ""
+      },
+      "text_and": {
+        "key": "text_and",
+        "value": "and",
+        "languageCode": "en",
+        "creationDate": "2025.03.21 21:26:21",
         "userData": ""
       }
     },
@@ -1158,13 +1473,6 @@
         "creationDate": "2025.02.15 18:09:46",
         "userData": ""
       },
-      "tt_BlockGeneral_btnDate": {
-        "key": "tt_BlockGeneral_btnDate",
-        "value": "Kliknite da postavite datum.",
-        "languageCode": "sr-lat",
-        "creationDate": "2025.02.15 18:49:10",
-        "userData": ""
-      },
       "tt_BlockGeneral_btnName": {
         "key": "tt_BlockGeneral_btnName",
         "value": "Kliknite da postavite ili promenite naslov bloka.",
@@ -1261,6 +1569,328 @@
         "value": "još #1",
         "languageCode": "sr-lat",
         "creationDate": "2025.03.17 08:19:30",
+        "userData": ""
+      },
+      "text_Copy": {
+        "key": "text_Copy",
+        "value": "Kopiraj",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.20 22:17:27",
+        "userData": ""
+      },
+      "text_Paste": {
+        "key": "text_Paste",
+        "value": "Nalepi",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 09:55:32",
+        "userData": ""
+      },
+      "tt_BlockGeneral_dpDateEmpty": {
+        "key": "tt_BlockGeneral_dpDateEmpty",
+        "value": "Kliknite da postavite datum.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:26:06",
+        "userData": ""
+      },
+      "month_1": {
+        "key": "month_1",
+        "value": "Januar",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:48:38",
+        "userData": ""
+      },
+      "month_2": {
+        "key": "month_2",
+        "value": "Februar",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:48:55",
+        "userData": ""
+      },
+      "month_3": {
+        "key": "month_3",
+        "value": "Mart",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:49:05",
+        "userData": ""
+      },
+      "month_4": {
+        "key": "month_4",
+        "value": "April",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:49:27",
+        "userData": ""
+      },
+      "month_5": {
+        "key": "month_5",
+        "value": "Maj",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:49:37",
+        "userData": ""
+      },
+      "month_6": {
+        "key": "month_6",
+        "value": "Jun",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:49:47",
+        "userData": ""
+      },
+      "month_7": {
+        "key": "month_7",
+        "value": "Jul",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:49:57",
+        "userData": ""
+      },
+      "month_8": {
+        "key": "month_8",
+        "value": "Avgust",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:50:14",
+        "userData": ""
+      },
+      "month_9": {
+        "key": "month_9",
+        "value": "Septembar",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:50:30",
+        "userData": ""
+      },
+      "month_10": {
+        "key": "month_10",
+        "value": "Oktobar",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:50:41",
+        "userData": ""
+      },
+      "month_11": {
+        "key": "month_11",
+        "value": "Novembar",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:50:56",
+        "userData": ""
+      },
+      "month_12": {
+        "key": "month_12",
+        "value": "Decembar",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:51:09",
+        "userData": ""
+      },
+      "weekday_1": {
+        "key": "weekday_1",
+        "value": "Ponedeljak",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:51:40",
+        "userData": ""
+      },
+      "weekday_2": {
+        "key": "weekday_2",
+        "value": "Utorak",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:51:50",
+        "userData": ""
+      },
+      "weekday_3": {
+        "key": "weekday_3",
+        "value": "Sreda",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:52:00",
+        "userData": ""
+      },
+      "weekday_4": {
+        "key": "weekday_4",
+        "value": "Četvrtak",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:52:26",
+        "userData": ""
+      },
+      "weekday_5": {
+        "key": "weekday_5",
+        "value": "Petak",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:52:35",
+        "userData": ""
+      },
+      "weekday_6": {
+        "key": "weekday_6",
+        "value": "Subota",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:52:47",
+        "userData": ""
+      },
+      "weekday_7": {
+        "key": "weekday_7",
+        "value": "Nedelja",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 17:53:05",
+        "userData": ""
+      },
+      "text_Today": {
+        "key": "text_Today",
+        "value": "Danas",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 20:46:56",
+        "userData": ""
+      },
+      "text_Yesterday": {
+        "key": "text_Yesterday",
+        "value": "Juče",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 20:50:24",
+        "userData": ""
+      },
+      "text_DayBeforeYesterday": {
+        "key": "text_DayBeforeYesterday",
+        "value": "Prekjuče",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 20:50:17",
+        "userData": ""
+      },
+      "text_Tomorrow": {
+        "key": "text_Tomorrow",
+        "value": "Sutra",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 20:50:43",
+        "userData": ""
+      },
+      "text_DayAfterTomorrow": {
+        "key": "text_DayAfterTomorrow",
+        "value": "Prekosutra",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 20:51:10",
+        "userData": ""
+      },
+      "period_Before": {
+        "key": "period_Before",
+        "value": "Pre",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:01:22",
+        "userData": ""
+      },
+      "period_After": {
+        "key": "period_After",
+        "value": "Za",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:01:46",
+        "userData": ""
+      },
+      "period_Before1Year": {
+        "key": "period_Before1Year",
+        "value": "jednu godinu",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:08:38",
+        "userData": ""
+      },
+      "period_Before2_4Year": {
+        "key": "period_Before2_4Year",
+        "value": "#1 godine",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:09:35",
+        "userData": ""
+      },
+      "period_Before5Years": {
+        "key": "period_Before5Years",
+        "value": "#1 godina",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:09:57",
+        "userData": ""
+      },
+      "period_After1Year": {
+        "key": "period_After1Year",
+        "value": "jednu godinu",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:10:49",
+        "userData": ""
+      },
+      "period_After2_4Year": {
+        "key": "period_After2_4Year",
+        "value": "#1 godine",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:11:28",
+        "userData": ""
+      },
+      "period_After5Years": {
+        "key": "period_After5Years",
+        "value": "#1 godina",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:11:56",
+        "userData": ""
+      },
+      "period_Before1Month": {
+        "key": "period_Before1Month",
+        "value": "jedan mesec",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:17:18",
+        "userData": ""
+      },
+      "period_Before2_4Month": {
+        "key": "period_Before2_4Month",
+        "value": "#1 meseca",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:17:46",
+        "userData": ""
+      },
+      "period_Before5Months": {
+        "key": "period_Before5Months",
+        "value": "#1 meseci",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:18:04",
+        "userData": ""
+      },
+      "period_After1Month": {
+        "key": "period_After1Month",
+        "value": "jedan mesec",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:18:28",
+        "userData": ""
+      },
+      "period_After2_4Month": {
+        "key": "period_After2_4Month",
+        "value": "#1 meseca",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:18:51",
+        "userData": ""
+      },
+      "period_After5Months": {
+        "key": "period_After5Months",
+        "value": "#1 meseci",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:19:07",
+        "userData": ""
+      },
+      "period_Before1Day": {
+        "key": "period_Before1Day",
+        "value": "jedan dan",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:19:33",
+        "userData": ""
+      },
+      "period_BeforeMoreDays": {
+        "key": "period_BeforeMoreDays",
+        "value": "#1 dana",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:19:54",
+        "userData": ""
+      },
+      "period_After1Day": {
+        "key": "period_After1Day",
+        "value": "jedan dan",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:20:20",
+        "userData": ""
+      },
+      "period_AfterMoreDays": {
+        "key": "period_AfterMoreDays",
+        "value": "#1 dana",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:20:36",
+        "userData": ""
+      },
+      "text_and": {
+        "key": "text_and",
+        "value": "i",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.21 21:26:21",
         "userData": ""
       }
     }

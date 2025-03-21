@@ -78,14 +78,14 @@ public class Clip {
 
     public List<Integer> getIDs(String clipModel) {
         if (clipMap == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         if (clipMap.containsKey(clipModel)) {
             return clipMap.get(clipModel);
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public List<Integer> getIDs(ModelEnum model) {
