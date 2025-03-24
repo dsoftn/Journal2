@@ -30,4 +30,8 @@ public interface IElementController {
 
     public void closeMe();
 
+    default void message(String senderID, String receiverID, String messageSTRING) {}
+
+    default void beforeShowing() {}
+
 }

@@ -9,62 +9,56 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
    <children>
-      <HBox fx:id="hBoxTextEdit" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
+      <HBox fx:id="hBoxTextEdit" minWidth="500.0" spacing="5.0">
          <children>
-            <ScrollPane>
+            <ScrollPane minWidth="50.0">
                <content>
-                  <AnchorPane>
+                  <HBox alignment="CENTER" minWidth="50.0" spacing="5.0">
                      <children>
-                        <HBox alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <Button fx:id="btnUndo" mnemonicParsing="false" styleClass="button-icon" />
-                              <Button fx:id="btnRedo" mnemonicParsing="false" styleClass="button-icon" />
-                              <Separator orientation="VERTICAL" />
-                              <Button fx:id="btnCut" mnemonicParsing="false" styleClass="button-icon" />
-                              <Button fx:id="btnCopy" mnemonicParsing="false" styleClass="button-icon" />
-                              <Button fx:id="btnPaste" mnemonicParsing="false" styleClass="button-icon" />
-                              <Separator orientation="VERTICAL" />
-                              <Button fx:id="btnInsertImage" mnemonicParsing="false" styleClass="button-icon" />
-                              <Button fx:id="btnInsertSmiley" mnemonicParsing="false" styleClass="button-icon" />
-                              <Button fx:id="btnInsertData" mnemonicParsing="false" styleClass="button-icon" />
-                              <Separator orientation="VERTICAL" />
-                              <Button fx:id="btnFind" mnemonicParsing="false" styleClass="button-icon" />
-                              <Button fx:id="btnReplace" mnemonicParsing="false" styleClass="button-icon" />
-                              <Separator orientation="VERTICAL" />
-                              <ComboBox fx:id="cmbFont" prefWidth="150.0" styleClass="combo-box-font" />
-                              <Spinner fx:id="spnFontSize" editable="true" maxWidth="60.0" styleClass="spinner-default" />
-                              <Button fx:id="btnForeground" mnemonicParsing="false" styleClass="button-text" text="Abc" />
-                              <Button fx:id="btnBackground" mnemonicParsing="false" styleClass="button-icon" />
-                              <Separator orientation="VERTICAL" />
-                              <Button fx:id="btnBold" mnemonicParsing="false" styleClass="button-text" text="B" />
-                              <Button fx:id="btnItalic" mnemonicParsing="false" styleClass="button-text" text="I" />
-                              <Button fx:id="btnUnderline" mnemonicParsing="false" styleClass="button-text" text="U" />
-                              <Button fx:id="btnStrike" mnemonicParsing="false" styleClass="button-text" text="S" />
-                           </children>
-                        </HBox>
+                        <Button fx:id="btnUndo" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnRedo" mnemonicParsing="false" styleClass="button-icon" />
+                        <Separator orientation="VERTICAL" />
+                        <Button fx:id="btnCut" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnCopy" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnPaste" mnemonicParsing="false" styleClass="button-icon" />
+                        <Separator orientation="VERTICAL" />
+                        <Button fx:id="btnInsertImage" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnInsertSmiley" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnInsertData" mnemonicParsing="false" styleClass="button-icon" />
+                        <Separator orientation="VERTICAL" />
+                        <Button fx:id="btnFind" mnemonicParsing="false" onAction="#onBtnFindAction" styleClass="button-icon" />
+                        <Button fx:id="btnReplace" mnemonicParsing="false" onAction="#onBtnReplaceAction" styleClass="button-icon" />
+                        <Separator orientation="VERTICAL" />
+                        <ComboBox fx:id="cmbFont" prefWidth="150.0" styleClass="combo-box-font" />
+                        <Spinner fx:id="spnFontSize" editable="true" maxWidth="60.0" styleClass="spinner-default" />
+                        <Button fx:id="btnForeground" mnemonicParsing="false" onAction="#onBtnForegroundAction" styleClass="button-text" text="Abc" />
+                        <Button fx:id="btnBackground" mnemonicParsing="false" onAction="#onBtnBackgroundAction" style="-fx-border-color: gray;" styleClass="button-icon" />
+                        <Separator orientation="VERTICAL" />
+                        <Button fx:id="btnBold" mnemonicParsing="false" onAction="#onBtnBoldAction" styleClass="button-icon-small" />
+                        <Button fx:id="btnItalic" mnemonicParsing="false" onAction="#onBtnItalicAction" styleClass="button-icon-small" />
+                        <Button fx:id="btnUnderline" mnemonicParsing="false" onAction="#onBtnUnderlineAction" styleClass="button-icon-small" />
+                        <Button fx:id="btnStrike" mnemonicParsing="false" onAction="#onBtnStrikeAction" styleClass="button-icon-small" />
                      </children>
-                  </AnchorPane>
+                  </HBox>
                </content>
             </ScrollPane>
             <Pane HBox.hgrow="SOMETIMES" />
-            <VBox fx:id="vBoxFindReplace">
+            <VBox fx:id="vBoxFindReplace" minWidth="440.0">
                <children>
                   <HBox fx:id="hBoxFind" alignment="CENTER" spacing="5.0">
                      <children>
                         <HBox alignment="CENTER" spacing="5.0" styleClass="hbox-find-replace">
                            <children>
                               <TextField fx:id="txtFind" minWidth="170.0" styleClass="text-field-find" />
-                              <Button fx:id="btnMatchCase" mnemonicParsing="false" styleClass="button-icon" />
-                              <Button fx:id="btnWholeWords" mnemonicParsing="false" styleClass="button-icon" />
+                              <Button fx:id="btnMatchCase" mnemonicParsing="false" onAction="#onBtnMatchCaseAction" styleClass="button-icon" />
+                              <Button fx:id="btnWholeWords" mnemonicParsing="false" onAction="#onBtnWholeWordsAction" styleClass="button-icon" />
                            </children>
                            <padding>
                               <Insets left="3.0" right="3.0" />
@@ -78,14 +72,17 @@
                         <Button fx:id="btnFindUp" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnFindDown" mnemonicParsing="false" styleClass="button-icon" />
                         <Region prefWidth="10.0" />
-                        <Button fx:id="btnFindClose" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnFindClose" mnemonicParsing="false" onAction="#onBtnFindCloseAction" styleClass="button-icon-small" />
                      </children>
                   </HBox>
                   <HBox fx:id="hBoxReplace" alignment="CENTER_LEFT" spacing="5.0">
                      <children>
                         <HBox alignment="CENTER" spacing="5.0" styleClass="hbox-find-replace">
                            <children>
-                              <TextField fx:id="txtReplace" minWidth="238.0" styleClass="text-field-find" />
+                              <TextField fx:id="txtReplace" minWidth="238.0" styleClass="text-field-find">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin></TextField>
                            </children>
                            <padding>
                               <Insets left="3.0" right="3.0" />
@@ -95,7 +92,7 @@
                            </HBox.margin>
                         </HBox>
                         <Region prefWidth="10.0" />
-                        <Button fx:id="btnReplace" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnReplaceOne" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnReplaceAll" mnemonicParsing="false" styleClass="button-icon" />
                      </children>
                   </HBox>

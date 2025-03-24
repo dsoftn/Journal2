@@ -29,6 +29,7 @@ import com.dsoftn.utils.UNumbers;
 TABLE blocks
     id INTEGER PRIMARY KEY AUTOINCREMENT
     name TEXT NOT NULL - name of the block
+    name_style TEXT NOT NULL - style of the name
     date TEXT NOT NULL - date in format for JSON
     text TEXT NOT NULL - text of the block
     text_style TEXT NOT NULL - text style of the block

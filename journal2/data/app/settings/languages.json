@@ -945,6 +945,153 @@
         "languageCode": "en",
         "creationDate": "2025.03.21 21:26:21",
         "userData": ""
+      },
+      "text_EnterBlockName": {
+        "key": "text_EnterBlockName",
+        "value": "Enter block name",
+        "languageCode": "en",
+        "creationDate": "2025.03.22 16:22:03",
+        "userData": ""
+      },
+      "text_Undo": {
+        "key": "text_Undo",
+        "value": "Undo",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 15:47:40",
+        "userData": ""
+      },
+      "text_Redo": {
+        "key": "text_Redo",
+        "value": "Redo",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 15:55:28",
+        "userData": ""
+      },
+      "text_Cut": {
+        "key": "text_Cut",
+        "value": "Cut",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 15:57:11",
+        "userData": ""
+      },
+      "text_InsertImage": {
+        "key": "text_InsertImage",
+        "value": "Insert image",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:01:40",
+        "userData": ""
+      },
+      "text_InsertSmiley": {
+        "key": "text_InsertSmiley",
+        "value": "Insert smiley",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:04:52",
+        "userData": ""
+      },
+      "text_InsertData": {
+        "key": "text_InsertData",
+        "value": "Insert data",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:05:50",
+        "userData": ""
+      },
+      "text_Find": {
+        "key": "text_Find",
+        "value": "Find",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:21:25",
+        "userData": ""
+      },
+      "text_Replace": {
+        "key": "text_Replace",
+        "value": "Replace",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:21:44",
+        "userData": ""
+      },
+      "text_Bold": {
+        "key": "text_Bold",
+        "value": "Bold",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:42:00",
+        "userData": ""
+      },
+      "text_Italic": {
+        "key": "text_Italic",
+        "value": "Italic",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:42:26",
+        "userData": ""
+      },
+      "text_Underline": {
+        "key": "text_Underline",
+        "value": "Underline",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:42:53",
+        "userData": ""
+      },
+      "text_Strikethrough": {
+        "key": "text_Strikethrough",
+        "value": "Strikethrough",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:43:23",
+        "userData": ""
+      },
+      "text_BackgroundColor": {
+        "key": "text_BackgroundColor",
+        "value": "Background color",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 16:46:43",
+        "userData": ""
+      },
+      "text_MatchCase": {
+        "key": "text_MatchCase",
+        "value": "Match case",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 17:12:31",
+        "userData": ""
+      },
+      "text_WholeWords": {
+        "key": "text_WholeWords",
+        "value": "Whole words",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 17:28:36",
+        "userData": ""
+      },
+      "text_FindUp": {
+        "key": "text_FindUp",
+        "value": "Find the following upwards",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 17:33:40",
+        "userData": ""
+      },
+      "text_FindDown": {
+        "key": "text_FindDown",
+        "value": "Find the following down",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 17:33:57",
+        "userData": ""
+      },
+      "text_Close": {
+        "key": "text_Close",
+        "value": "Close",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 17:34:35",
+        "userData": ""
+      },
+      "text_ReplaceNextItem": {
+        "key": "text_ReplaceNextItem",
+        "value": "Replace next item",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 17:37:28",
+        "userData": ""
+      },
+      "text_ReplaceAllItems": {
+        "key": "text_ReplaceAllItems",
+        "value": "Replace all items",
+        "languageCode": "en",
+        "creationDate": "2025.03.23 17:38:10",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -1891,6 +2038,153 @@
         "value": "i",
         "languageCode": "sr-lat",
         "creationDate": "2025.03.21 21:26:21",
+        "userData": ""
+      },
+      "text_EnterBlockName": {
+        "key": "text_EnterBlockName",
+        "value": "Unesite ime bloka",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.22 16:22:03",
+        "userData": ""
+      },
+      "text_Undo": {
+        "key": "text_Undo",
+        "value": "Poništi",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 15:47:40",
+        "userData": ""
+      },
+      "text_Redo": {
+        "key": "text_Redo",
+        "value": "Ponovi",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 15:55:28",
+        "userData": ""
+      },
+      "text_Cut": {
+        "key": "text_Cut",
+        "value": "Iseci",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 15:57:11",
+        "userData": ""
+      },
+      "text_InsertImage": {
+        "key": "text_InsertImage",
+        "value": "Ubaci sliku",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:01:40",
+        "userData": ""
+      },
+      "text_InsertSmiley": {
+        "key": "text_InsertSmiley",
+        "value": "Ubaci smajli",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:04:52",
+        "userData": ""
+      },
+      "text_InsertData": {
+        "key": "text_InsertData",
+        "value": "Umetnite podatke",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:05:50",
+        "userData": ""
+      },
+      "text_Find": {
+        "key": "text_Find",
+        "value": "Pronađi",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:21:25",
+        "userData": ""
+      },
+      "text_Replace": {
+        "key": "text_Replace",
+        "value": "Zameni",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:21:44",
+        "userData": ""
+      },
+      "text_Bold": {
+        "key": "text_Bold",
+        "value": "Podebljano",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:42:00",
+        "userData": ""
+      },
+      "text_Italic": {
+        "key": "text_Italic",
+        "value": "Nakošeno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:42:26",
+        "userData": ""
+      },
+      "text_Underline": {
+        "key": "text_Underline",
+        "value": "Podvučeno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:42:53",
+        "userData": ""
+      },
+      "text_Strikethrough": {
+        "key": "text_Strikethrough",
+        "value": "Precrtano",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:43:23",
+        "userData": ""
+      },
+      "text_BackgroundColor": {
+        "key": "text_BackgroundColor",
+        "value": "Boja pozadine",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 16:46:43",
+        "userData": ""
+      },
+      "text_MatchCase": {
+        "key": "text_MatchCase",
+        "value": "Velika i mala slova",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 17:12:31",
+        "userData": ""
+      },
+      "text_WholeWords": {
+        "key": "text_WholeWords",
+        "value": "Cele reči",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 17:28:36",
+        "userData": ""
+      },
+      "text_FindUp": {
+        "key": "text_FindUp",
+        "value": "Pronađi sledeće na gore",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 17:33:40",
+        "userData": ""
+      },
+      "text_FindDown": {
+        "key": "text_FindDown",
+        "value": "Pronađi sledeće na dole",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 17:33:57",
+        "userData": ""
+      },
+      "text_Close": {
+        "key": "text_Close",
+        "value": "Zatvori",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 17:34:35",
+        "userData": ""
+      },
+      "text_ReplaceNextItem": {
+        "key": "text_ReplaceNextItem",
+        "value": "Zameni sledeću stavku",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 17:37:28",
+        "userData": ""
+      },
+      "text_ReplaceAllItems": {
+        "key": "text_ReplaceAllItems",
+        "value": "Zameni sve stavke",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.23 17:38:10",
         "userData": ""
       }
     }

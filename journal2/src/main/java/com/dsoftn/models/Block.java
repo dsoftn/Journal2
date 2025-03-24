@@ -41,6 +41,7 @@ public class Block implements IModelEntity, ICustomEventListener {
     // Properties
     private int id = CONSTANTS.INVALID_ID;
     private String name = "";
+    private String nameStyle = "";
     private String date = LocalDate.now().format(CONSTANTS.DATE_FORMATTER_FOR_JSON);
     private String text = "";
     private String textStyle = "";
@@ -174,6 +175,7 @@ public class Block implements IModelEntity, ICustomEventListener {
         try {
             this.id = rs.getInt("id");
             this.name = rs.getString("name");
+            this.nameStyle = rs.getString("name_style");
             this.date = rs.getString("date");
             this.text = rs.getString("text");
             this.textStyle = rs.getString("text_style");
@@ -238,9 +240,10 @@ public class Block implements IModelEntity, ICustomEventListener {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO blocks " + 
-                "(name, date, text, text_style, draft, block_type, created, updated, default_attachment) " + 
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "(name, name_style, date, text, text_style, draft, block_type, created, updated, default_attachment) " + 
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 this.name,
+                this.nameStyle,
                 this.date,
                 this.text,
                 this.textStyle,
@@ -307,9 +310,10 @@ public class Block implements IModelEntity, ICustomEventListener {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE blocks " + 
-                "SET name = ?, date = ?, text = ?, text_style = ?, draft = ?, block_type = ?, created = ?, updated = ?, default_attachment = ? " + 
+                "SET name = ?, name_style = ?, date = ?, text = ?, text_style = ?, draft = ?, block_type = ?, created = ?, updated = ?, default_attachment = ? " + 
                 "WHERE id = ?",
                 this.name,
+                this.nameStyle,
                 this.date,
                 this.text,
                 this.textStyle,
@@ -422,6 +426,7 @@ public class Block implements IModelEntity, ICustomEventListener {
         Block block = new Block();
         block.id = this.id;
         block.name = this.name;
+        block.nameStyle = this.nameStyle;
         block.date = this.date;
         block.text = this.text;
         block.textStyle = this.textStyle;
@@ -569,6 +574,8 @@ public class Block implements IModelEntity, ICustomEventListener {
     // Getters
 
     public String getName() { return this.name; }
+
+    public String getNameStyle() { return this.nameStyle; }
     
     public LocalDate getDateOBJ() {
         try {
@@ -691,6 +698,8 @@ public class Block implements IModelEntity, ICustomEventListener {
     public void setID(int id) { this.id = id; }
 
     public void setName(String name) { this.name = name; }
+
+    public void setNameStyle(String nameStyle) { this.nameStyle = nameStyle; }
     
     public void setDate(LocalDate date) {
         this.date = date.format(CONSTANTS.DATE_FORMATTER_FOR_JSON);
@@ -789,6 +798,7 @@ public class Block implements IModelEntity, ICustomEventListener {
 
         return  this.getID() == other.getID() &&
                 this.getName().equals(other.getName()) &&
+                this.getNameStyle().equals(other.getNameStyle()) &&
                 this.getDateSTR_JSON().equals(other.getDateSTR_JSON()) &&
                 this.getText().equals(other.getText()) &&
                 this.getTextStyle().equals(other.getTextStyle()) &&
@@ -809,6 +819,7 @@ public class Block implements IModelEntity, ICustomEventListener {
         return Objects.hash(
             this.id,
             this.name,
+            this.nameStyle,
             this.date,
             this.text,
             this.textStyle,

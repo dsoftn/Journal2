@@ -37,12 +37,97 @@
     -fx-cursor: default;
 }
 
+/* Button SELECTED with icon only */
+.button-icon-selected {
+    -fx-background-color: #083b0c;
+    -fx-border-color: #62cf47;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    /* Button size */
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 30px;
+    -fx-max-height: 30px;
+}
+
+.button-icon-selected:hover {
+    -fx-background-color: #22a32b;
+}
+
+.button-icon-selected:pressed {
+    -fx-background-color: #126b18
+}
+
+.button-icon-selected:disabled {
+    -fx-background-color: #353535;
+    -fx-text-fill: #636465;
+    -fx-cursor: default;
+}
+
+/* Button SELECTED transparent with icon only - SMALL*/
+.button-icon-small-selected {
+    -fx-background-color: #083b0c;
+    -fx-border-color: #62cf47;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-font-size: 8px;
+    -fx-cursor: hand;
+    /* Button size */
+    -fx-min-width: 20px;
+    -fx-min-height: 20px;
+    -fx-max-width: 20px;
+    -fx-max-height: 20px;
+}
+
+.button-icon-small-selected:hover {
+    -fx-background-color: #22a32b;
+}
+
+.button-icon-small-selected:pressed {
+    -fx-background-color: #126b18
+}
+
+.button-icon-small-selected:disabled {
+    -fx-background-color: #353535;
+    -fx-text-fill: #636465;
+    -fx-cursor: default;
+}
+
+/* Button transparent with icon only - SMALL*/
+.button-icon-small {
+    -fx-background-color: transparent;
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 8px;
+    -fx-cursor: hand;
+    /* Button size */
+    -fx-min-width: 20px;
+    -fx-min-height: 20px;
+    -fx-max-width: 20px;
+    -fx-max-height: 20px;
+}
+
+.button-icon-small:hover {
+    -fx-background-color: linear-gradient(to bottom, #051923, #003554);
+}
+
+.button-icon-small:pressed {
+    -fx-background-color: linear-gradient(to bottom, #003554, #006494);
+}
+
+.button-icon-small:disabled {
+    -fx-background-color: #353535;
+    -fx-text-fill: #636465;
+    -fx-cursor: default;
+}
+
 /* Button with text only */
 .button-text {
     -fx-background-color: transparent;
     -fx-text-fill: red;
     -fx-font-size: 14px;
-    -fx-font-weight: bold;
     -fx-cursor: hand;
     /* Button size */
     -fx-min-height: 30px;

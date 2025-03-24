@@ -9,7 +9,6 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
-import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
@@ -460,6 +459,13 @@ public class SelectionController implements IElementController, ICustomEventList
     @Override
     public void closeMe() {
         saveSettings();
+    }
+
+    @Override
+    public void beforeShowing() {
+        System.out.println("SelectionController.beforeShowing");
+        txtFind.setText("");
+        txtFind.requestFocus();
     }
 
     @Override

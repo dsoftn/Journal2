@@ -1,40 +1,53 @@
 {
-  "EmptyDialog_ACTOR_SELECT_STANDARD": {
-    "key": "EmptyDialog_ACTOR_SELECT_STANDARD",
-    "value": "status\u003d0.0\nPosX\u003d911.0\nPosY\u003d152.0\nWidth\u003d680.0\nHeight\u003d669.0\n",
+  "EmptyDialog_BLOCK_NAME_ENTER": {
+    "key": "EmptyDialog_BLOCK_NAME_ENTER",
+    "value": "status\u003d0.0\nPosX\u003d369.0\nPosY\u003d291.0\nWidth\u003d1270.0\nHeight\u003d235.0\n",
     "defaultValue": "",
     "min": "null",
     "max": "null",
     "settingType": 2,
     "dataType": 4,
     "description": "",
-    "creationDate": "2025.03.20 19:41:58",
+    "creationDate": "2025.03.23 15:20:28",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "EmptyDialog_ACTOR_SELECT_STANDARD": {
+    "key": "EmptyDialog_ACTOR_SELECT_STANDARD",
+    "value": "status\u003d0.0\nPosX\u003d687.0\nPosY\u003d124.0\nWidth\u003d546.0\nHeight\u003d669.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.03.24 20:12:59",
     "userData": "",
     "canBeSavedInFile": true
   },
   "Selection_BLOCK_ACTOR_ListFontSize": {
     "key": "Selection_BLOCK_ACTOR_ListFontSize",
-    "value": "22",
+    "value": "12",
     "defaultValue": "12",
     "min": "null",
     "max": "null",
     "settingType": 2,
     "dataType": 8,
     "description": "",
-    "creationDate": "2025.03.20 19:41:59",
+    "creationDate": "2025.03.24 20:13:16",
     "userData": "",
     "canBeSavedInFile": true
   },
   "Selection_BLOCK_ACTOR_SplitPaneDividerPosition": {
     "key": "Selection_BLOCK_ACTOR_SplitPaneDividerPosition",
-    "value": "0.4819277108433735",
+    "value": "0.4",
     "defaultValue": "0.4",
     "min": "null",
     "max": "null",
     "settingType": 2,
     "dataType": 64,
     "description": "",
-    "creationDate": "2025.03.20 19:41:59",
+    "creationDate": "2025.03.24 20:13:16",
     "userData": "",
     "canBeSavedInFile": true
   }

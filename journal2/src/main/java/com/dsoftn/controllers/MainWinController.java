@@ -9,6 +9,7 @@ import com.dsoftn.controllers.EmptyDialogController.WindowBehavior;
 import com.dsoftn.controllers.elements.BlockGeneralController;
 import com.dsoftn.controllers.elements.SelectionController;
 import com.dsoftn.enums.models.ModelEnum;
+import com.dsoftn.models.Actor;
 import com.dsoftn.models.Block;
 import com.dsoftn.models.block_types.BlockDiary;
 import com.dsoftn.utils.UJavaFX;
@@ -115,16 +116,29 @@ public class MainWinController implements IBaseController {
 
     @FXML
     public void onMnuNew() {
-        // EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.ACTOR_SELECT_STANDARD);
+        // BlockDiary blockDiary = new BlockDiary();
+        // blockDiary.add();
+        // System.out.println(blockDiary.getID());
+        // System.out.println(blockDiary.getBaseBlockID());
 
-        // SelectionController selectionController = ELEMENTS.getSelectionController(ModelEnum.ACTOR, ModelEnum.ATTACHMENT, stage);
+        // Actor ac1 = new Actor();
+        // ac1.setName("Danijel Nisevic");
+        // ac1.setNick("Dado");
+        // ac1.add();
+        // Actor ac2 = new Actor();
+        // ac2.setName("Danica Nisevic");
+        // ac2.setNick("Mama");
+        // ac2.add();
+        // Actor ac3 = new Actor();
+        // ac3.setName("Vojislav Nisevic");
+        // ac3.setNick("Vox");
+        // ac3.add();
 
-        // emptyDialogController.setContent(selectionController.getRoot());
-        // emptyDialogController.startMe();
+        // return;
 
 
 
-        int loadBlockDiaryID = 96;
+        int loadBlockDiaryID = 1;
 
         BlockDiary blockDiary = OBJECTS.BLOCKS_DIARY.getEntity(loadBlockDiaryID).duplicate();
 

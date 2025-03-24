@@ -12,7 +12,6 @@ import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
@@ -27,6 +26,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -191,7 +191,8 @@ public class EmptyDialogController implements IBaseController {
     public enum WindowBehavior {
         // If you want to add new window behavior please update method "setWindowBehavior"
         DEFAULT(0),
-        ACTOR_SELECT_STANDARD(1);
+        ACTOR_SELECT_STANDARD(1),
+        BLOCK_NAME_ENTER(2);
 
         private final int value;
 
@@ -307,6 +308,10 @@ public class EmptyDialogController implements IBaseController {
             onRootMouseMoved(event);
         });
         
+        if (myContentController != null) {
+            myContentController.beforeShowing();
+        }
+        
         stage.show();
     }
 
@@ -346,6 +351,19 @@ public class EmptyDialogController implements IBaseController {
                 lblTitle.setText(OBJECTS.SETTINGS.getl("text_SelectActors"));
                 mySettingsName = "EmptyDialog_" + windowStyle.toString();
                 setStageGeometry();
+                break;
+            case BLOCK_NAME_ENTER:
+                setFramelessWindow(true);
+                setResizeEnabled(true);
+                setMiniTitleEnabled(false);
+                lblTitle.setText(OBJECTS.SETTINGS.getl("text_EnterBlockName"));
+                mySettingsName = "EmptyDialog_" + windowStyle.toString();
+                stage.setWidth(1300);
+                stage.setHeight(240);
+                setStageGeometry();
+                btnPin.setVisible(false);
+                btnPin.setManaged(false);
+                // stage.initModality(Modality.APPLICATION_MODAL);
                 break;
             default:
                 setFramelessWindow(false);

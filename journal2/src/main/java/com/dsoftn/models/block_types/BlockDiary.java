@@ -127,6 +127,15 @@ public class BlockDiary implements IModelEntity, IBlockBaseEntity {
             return false;
         }
 
+        // Add base block
+        if (this.baseBlock.getID() == CONSTANTS.INVALID_ID) {
+            if (!this.baseBlock.add()) {
+                UError.error("BlockDiary.add: Failed to add block_diary", "Adding base block failed");
+                return false;
+            }
+            this.baseBlockID = this.baseBlock.getID();
+        }
+
         SQLiteDB db = OBJECTS.DATABASE;
         PreparedStatement stmt = null;
         try {

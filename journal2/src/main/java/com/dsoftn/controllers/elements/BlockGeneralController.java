@@ -795,5 +795,27 @@ public class BlockGeneralController implements IBaseController, IElementControll
         block.setDate(dpDate.getValue());
     }
 
+    @FXML
+    public void onBtnNameAction(ActionEvent event) {
+        changeName();
+    }
+
+    private void changeName() {
+        if (readOnly) {
+            showReadOnlyMessage();
+            return;
+        }
+
+        EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.BLOCK_NAME_ENTER);
+        TextInputController textInputController = ELEMENTS.getTextInputController(stage, TextInputController.Behavior.BLOCK_NAME, myName);
+
+        textInputController.setParentController(emptyDialogController);
+        textInputController.setReceiverID(myName);
+        emptyDialogController.setContent(textInputController.getRoot());
+        emptyDialogController.setContentController(textInputController);
+
+        emptyDialogController.startMe();
+    }
+
 
 }
