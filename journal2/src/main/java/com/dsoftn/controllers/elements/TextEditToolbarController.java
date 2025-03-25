@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.IElementController;
+import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.models.StyleSheet;
 import com.dsoftn.services.TextHandler;
 import com.dsoftn.utils.ColorPopup;
@@ -16,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
@@ -321,6 +323,10 @@ public class TextEditToolbarController implements IElementController {
     private void setupWidgetsAppearance() {
         hideFindSection();
 
+        btnUndo.setDisable(true);
+        btnRedo.setDisable(true);
+
+
         // Initialize font size spinner
         SpinnerValueFactory<Integer> valueFactory = 
             new SpinnerValueFactory.IntegerSpinnerValueFactory(
@@ -331,6 +337,19 @@ public class TextEditToolbarController implements IElementController {
         spnFontSize.setValueFactory(valueFactory);
 
         // Populate font ComboBox
+        cmbFont.setCellFactory(cb -> new ListCell<>() {
+            @Override
+            protected void updateItem(String fontName, boolean empty) {
+                super.updateItem(fontName, empty);
+                if (empty || fontName == null) {
+                    setText(null);
+                    setFont(Font.getDefault());
+                } else {
+                    setText(fontName);
+                    setFont(new Font(fontName, 14));
+                }
+            }
+        });        
         cmbFont.setItems(FXCollections.observableArrayList(Font.getFamilies()));
 
         // Link Spinner value to StyleSheet
@@ -419,6 +438,9 @@ public class TextEditToolbarController implements IElementController {
         ColorPopup colorPopup = new ColorPopup(color -> {
             curStyleSheet.setFgColor(color);
             updateStylesheet(curStyleSheet);
+
+            messageSent(curStyleSheet);
+            messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
         });
 
         colorPopup.startMe(root.getScene().getWindow());
@@ -429,6 +451,9 @@ public class TextEditToolbarController implements IElementController {
         ColorPopup colorPopup = new ColorPopup(color -> {
             curStyleSheet.setBgColor(color);
             updateStylesheet(curStyleSheet);
+
+            messageSent(curStyleSheet);
+            messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
         });
 
         colorPopup.startMe(root.getScene().getWindow());

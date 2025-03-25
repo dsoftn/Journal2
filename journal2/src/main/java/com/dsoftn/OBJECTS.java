@@ -15,6 +15,7 @@ import com.dsoftn.services.Clip;
 import com.dsoftn.services.EventHandler;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.services.TextFilter;
+import com.dsoftn.services.timer.GlobalTimer;
 import com.dsoftn.models.block_types.BlocksDiary;
 
 
@@ -23,6 +24,8 @@ public class OBJECTS {
     // Services
     
     public static final Settings SETTINGS = new Settings();
+
+    public static final GlobalTimer GLOBAL_TIMER = new GlobalTimer();
 
     public static final Clip CLIP = new Clip();
 

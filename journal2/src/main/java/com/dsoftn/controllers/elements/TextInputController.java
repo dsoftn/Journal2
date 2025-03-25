@@ -136,8 +136,6 @@ public class TextInputController implements IElementController {
 
         setupWidgetsText();
         setupWidgetsAppearance();
-
-        rTxtRichText.requestFocus();
     }
 
     @Override

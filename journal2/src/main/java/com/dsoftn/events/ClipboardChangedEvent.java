@@ -25,6 +25,14 @@ public class ClipboardChangedEvent extends Event {
         this.clipValue = clipValue;
     }
 
+    public ClipboardChangedEvent(ClipboardActionEnum clipActionTaken) {
+        super(CLIPBOARD_CHANGED_EVENT);
+
+        this.clipActionTaken = clipActionTaken;
+        this.clipModel = null;
+        this.clipValue = null;
+    }
+
     // Getters
 
     public ClipboardActionEnum getClipActionTaken() { return clipActionTaken; }

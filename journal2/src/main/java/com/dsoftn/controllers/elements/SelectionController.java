@@ -463,8 +463,6 @@ public class SelectionController implements IElementController, ICustomEventList
 
     @Override
     public void beforeShowing() {
-        System.out.println("SelectionController.beforeShowing");
-        txtFind.setText("");
         txtFind.requestFocus();
     }
 

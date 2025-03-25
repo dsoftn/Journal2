@@ -261,8 +261,8 @@
   },
   "MaxTextToolbarFontSize": {
     "key": "MaxTextToolbarFontSize",
-    "value": "72",
-    "defaultValue": "72",
+    "value": "150",
+    "defaultValue": "150",
     "min": "Null",
     "max": "Null",
     "settingType": 8,
@@ -332,8 +332,21 @@
     "max": "Null",
     "settingType": 8,
     "dataType": 8,
-    "description": "Default font size.",
+    "description": "",
     "creationDate": "2025.03.24 19:17:43",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "GlobalTimerTickIntervalMS": {
+    "key": "GlobalTimerTickIntervalMS",
+    "value": "50",
+    "defaultValue": "50",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.03.25 00:08:55",
     "userData": "",
     "canBeSavedInFile": false
   }

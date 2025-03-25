@@ -40,6 +40,10 @@ public class RTWidget extends InlineCssTextArea {
         }
     }
 
+    public StyleSheet getCss() {
+        return this.css;
+    }
+
     public void setMinTextWidgetHeight(int minTextWidgetHeight) {
         this.minTextWidgetHeight = minTextWidgetHeight;
     }

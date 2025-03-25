@@ -11,13 +11,35 @@ import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.events.ClipboardChangedEvent;
 import com.dsoftn.utils.UString;
 
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+
 
 public class Clip {
     private Map<String, List<Integer>> clipMap = null;
+    private Clipboard sysClip = Clipboard.getSystemClipboard();
 
     // Constructor
 
-    public Clip() { }
+    public Clip() {}
+
+    // GET from system clipboard
+
+    public String getClipText() {
+        if (sysClip.hasString()) {
+            return sysClip.getString();
+        }
+        return null;
+    }
+
+    // SET to system clipboard
+
+    public void setClipText(String text) {
+        ClipboardContent content = new ClipboardContent();
+        content.putString(text);
+        sysClip.setContent(content);
+    }
+
 
     // Set new IDs
 
