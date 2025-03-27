@@ -5,6 +5,7 @@ import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.models.StyleSheetChar;
+import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.TextHandler;
 import com.dsoftn.utils.ColorPopup;
 import com.dsoftn.utils.UError;
@@ -53,7 +54,8 @@ public class TextEditToolbarController implements IElementController {
     private IBaseController parentController = null;
     private TextHandler textHandler = null;
     // Properties
-    private StyleSheetChar curStyleSheet = new StyleSheetChar();
+    private StyleSheetChar curCharStyle = new StyleSheetChar();
+    private StyleSheetParagraph curParagraphStyle = new StyleSheetParagraph();
     private boolean matchCase = false;
     private boolean wholeWords = false;
     private AlignmentEnum alignment = AlignmentEnum.LEFT;
@@ -221,7 +223,7 @@ public class TextEditToolbarController implements IElementController {
     public void calculateData() {
         setupWidgetsText();
         setupWidgetsAppearance();
-        updateStylesheet(curStyleSheet);
+        updateCharStyle(curCharStyle);
     }
 
     @Override
@@ -230,13 +232,18 @@ public class TextEditToolbarController implements IElementController {
 
     // Public methods
 
-    public void messageReceived(String messageSTRING) {
+    public void msgFromHandler(String messageSTRING) {
         // TODO Auto-generated method stub
     }
 
-    public void messageReceived(StyleSheetChar styleSheet) {
-        this.curStyleSheet = styleSheet;
-        updateStylesheet(styleSheet);
+    public void msgFromHandler(StyleSheetChar styleSheet) {
+        this.curCharStyle = styleSheet;
+        updateCharStyle(styleSheet);
+    }
+
+    public void msgFromHandler(StyleSheetParagraph styleSheet) {
+        this.curParagraphStyle = styleSheet;
+        updateParagraphStyle(styleSheet);
     }
 
     public String getReceiverID() { return receiverID; }
@@ -281,8 +288,8 @@ public class TextEditToolbarController implements IElementController {
         hBoxReplace.setManaged(false);
     }
 
-    public void updateStylesheet(StyleSheetChar styleSheet) {
-        this.curStyleSheet = styleSheet;
+    public void updateCharStyle(StyleSheetChar styleSheet) {
+        this.curCharStyle = styleSheet;
         
         cmbFont.setValue(styleSheet.getFontName());
         spnFontSize.getValueFactory().setValue(styleSheet.getFontSize());
@@ -292,6 +299,11 @@ public class TextEditToolbarController implements IElementController {
         setButtonSelectedSmall(btnItalic, styleSheet.isItalic());
         setButtonSelectedSmall(btnUnderline, styleSheet.isUnderline());
         setButtonSelectedSmall(btnStrike, styleSheet.isStrikethrough());
+    }
+
+    public void updateParagraphStyle(StyleSheetParagraph styleSheet) {
+        this.curParagraphStyle = styleSheet;
+        setAlignment(styleSheet.getAlignmentEnum());
     }
 
     public void setAlignment(AlignmentEnum alignment) {
@@ -399,7 +411,7 @@ public class TextEditToolbarController implements IElementController {
         btnAlignJustify.setManaged(visible);
     }
 
-    private void messageSent(String messageSTRING) {
+    private void msgForHandler(String messageSTRING) {
         if (textHandler == null) {
             return;
         }
@@ -407,12 +419,20 @@ public class TextEditToolbarController implements IElementController {
         textHandler.msgFromToolbar(messageSTRING);
     }
 
-    private void messageSent(StyleSheetChar styleSheet) {
+    private void msgForHandler(StyleSheetChar styleSheet) {
         if (textHandler == null) {
             return;
         }
         // Send message to TextHandler
-        textHandler.msgFromToolbar(styleSheet);
+        textHandler.msgFromToolbar(styleSheet.duplicate());
+    }
+
+    private void msgForHandler(StyleSheetParagraph styleSheet) {
+        if (textHandler == null) {
+            return;
+        }
+        // Send message to TextHandler
+        textHandler.msgFromToolbar(styleSheet.duplicate());
     }
     
     private void setupWidgetsText() {
@@ -479,20 +499,17 @@ public class TextEditToolbarController implements IElementController {
 
         // Link Spinner value to StyleSheet
         spnFontSize.valueProperty().addListener((obs, oldValue, newValue) -> {
-            curStyleSheet.setFontSize(newValue);
-            updateStylesheet(curStyleSheet);
-            messageSent(curStyleSheet);
-            messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
+            curCharStyle.setFontSize(newValue);
+            updateCharStyle(curCharStyle);
+            msgForHandler(curCharStyle);
         });
 
         // Link ComboBox value to StyleSheet
         cmbFont.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                curStyleSheet.setFontName(newValue);
-                System.out.println("Font: " + newValue);
-                updateStylesheet(curStyleSheet);
-                messageSent(curStyleSheet);
-                messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
+                curCharStyle.setFontName(newValue);
+                updateCharStyle(curCharStyle);
+                msgForHandler(curCharStyle);
             }
         });
 
@@ -575,11 +592,10 @@ public class TextEditToolbarController implements IElementController {
     @FXML
     public void onBtnForegroundAction() {
         ColorPopup colorPopup = new ColorPopup(color -> {
-            curStyleSheet.setFgColor(color);
-            updateStylesheet(curStyleSheet);
+            curCharStyle.setFgColor(color);
+            updateCharStyle(curCharStyle);
 
-            messageSent(curStyleSheet);
-            messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
+            msgForHandler(curCharStyle);
         });
 
         colorPopup.startMe(root.getScene().getWindow());
@@ -588,11 +604,10 @@ public class TextEditToolbarController implements IElementController {
     @FXML
     public void onBtnBackgroundAction() {
         ColorPopup colorPopup = new ColorPopup(color -> {
-            curStyleSheet.setBgColor(color);
-            updateStylesheet(curStyleSheet);
+            curCharStyle.setBgColor(color);
+            updateCharStyle(curCharStyle);
 
-            messageSent(curStyleSheet);
-            messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
+            msgForHandler(curCharStyle);
         });
 
         colorPopup.startMe(root.getScene().getWindow());
@@ -600,26 +615,26 @@ public class TextEditToolbarController implements IElementController {
 
     @FXML
     public void onBtnBoldAction() {
-        curStyleSheet.setBold(!curStyleSheet.isBold());
-        updateStylesheet(curStyleSheet);
+        curCharStyle.setBold(!curCharStyle.isBold());
+        updateCharStyle(curCharStyle);
     }
 
     @FXML
     public void onBtnItalicAction() {
-        curStyleSheet.setItalic(!curStyleSheet.isItalic());
-        updateStylesheet(curStyleSheet);
+        curCharStyle.setItalic(!curCharStyle.isItalic());
+        updateCharStyle(curCharStyle);
     }
 
     @FXML
     public void onBtnUnderlineAction() {
-        curStyleSheet.setUnderline(!curStyleSheet.isUnderline());
-        updateStylesheet(curStyleSheet);
+        curCharStyle.setUnderline(!curCharStyle.isUnderline());
+        updateCharStyle(curCharStyle);
     }
 
     @FXML
     public void onBtnStrikeAction() {
-        curStyleSheet.setStrikethrough(!curStyleSheet.isStrikethrough());
-        updateStylesheet(curStyleSheet);
+        curCharStyle.setStrikethrough(!curCharStyle.isStrikethrough());
+        updateCharStyle(curCharStyle);
     }
 
     @FXML
@@ -662,23 +677,29 @@ public class TextEditToolbarController implements IElementController {
     @FXML
     public void onAlignLeftAction() {
         setAlignment(AlignmentEnum.LEFT);
+        curParagraphStyle.setAlignmentEnum(AlignmentEnum.LEFT);
+        msgForHandler(curParagraphStyle);
     }
 
     @FXML
     public void onBtnAlignCenterAction() {
         setAlignment(AlignmentEnum.CENTER);
-        messageSent(TextToolbarActionEnum.ALIGNMENT + "\ncenter");
-        messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
+        curParagraphStyle.setAlignmentEnum(AlignmentEnum.CENTER);
+        msgForHandler(curParagraphStyle);
     }
 
     @FXML
     public void onBtnAlignRightAction() {
         setAlignment(AlignmentEnum.RIGHT);
+        curParagraphStyle.setAlignmentEnum(AlignmentEnum.RIGHT);
+        msgForHandler(curParagraphStyle);
     }
 
     @FXML
     public void onBtnAlignJustifyAction() {
         setAlignment(AlignmentEnum.JUSTIFY);
+        curParagraphStyle.setAlignmentEnum(AlignmentEnum.JUSTIFY);
+        msgForHandler(curParagraphStyle);
     }
 
 }

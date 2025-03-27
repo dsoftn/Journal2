@@ -3,6 +3,7 @@ package com.dsoftn.services;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.models.StyleSheetChar;
+import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.utils.UError;
 
 
@@ -18,12 +19,10 @@ public class TextHandler {
         this.toolbarController = toolbarController;
         toolbarController.setTextHandler(this);
         this.txtWidget = txtWidget;
+        this.txtWidget.setTextHandler(this);
         this.txtWidget.setupWidget();
-        this.txtWidget.setUpdateToolbar(() -> {
-            msgForToolbar(txtWidget.getCss());
-        });
-
         msgForToolbar(txtWidget.getCss());
+        msgForToolbar(txtWidget.getParagraphCss());
     }
 
     // Public methods
@@ -51,18 +50,20 @@ public class TextHandler {
             else if (messageParts[i].equals(TextToolbarActionEnum.REDO.name())) {
                 // TODO Implement redo
             }
-            else if (messageParts[i].equals(TextToolbarActionEnum.ALIGNMENT.name())) {
-                // get current paragraph
-                int paragraphIndex = txtWidget.getCurrentParagraph();
-                txtWidget.setParagraphStyle(paragraphIndex, "-fx-text-alignment: " + messageParts[i + 1] + ";-fx-border-with: 1px;-fx-border-color: red;-fx-border-radius: 5px;-fx-padding: 10px;");
-                txtWidget.setStyle(2, 5, "-fx-border-with: 1px;");
-            }
 
         }
     }
 
     public void msgFromToolbar(StyleSheetChar styleSheet) {
-        txtWidget.setCss(styleSheet);
+        // Forward message to widget
+        msgForWidget(styleSheet);
+        txtWidget.requestFocus();
+    }
+
+    public void msgFromToolbar(StyleSheetParagraph styleSheet) {
+        // Forward message to widget
+        msgForWidget(styleSheet);
+        txtWidget.requestFocus();
     }
 
     public void msgFromWidget(String messageSTRING) {
@@ -70,7 +71,13 @@ public class TextHandler {
     }
 
     public void msgFromWidget(StyleSheetChar styleSheet) {
-        // Process information from widget
+        // Forward message to toolbar
+        msgForToolbar(styleSheet);
+    }
+
+    public void msgFromWidget(StyleSheetParagraph styleSheet) {
+        // Forward message to toolbar
+        msgForToolbar(styleSheet);
     }
 
     
@@ -79,11 +86,16 @@ public class TextHandler {
     // Messages for toolbar
     private void msgForToolbar(String messageSTRING) {
         // Send message to toolbar
-        toolbarController.messageReceived(messageSTRING);
+        toolbarController.msgFromHandler(messageSTRING);
     }
     private void msgForToolbar(StyleSheetChar styleSheet) {
         // Send message to toolbar
-        toolbarController.messageReceived(styleSheet);
+        toolbarController.msgFromHandler(styleSheet);
+    }
+
+    private void msgForToolbar(StyleSheetParagraph styleSheet) {
+        // Send message to toolbar
+        toolbarController.msgFromHandler(styleSheet);
     }
 
     // Messages for Widget
@@ -92,6 +104,12 @@ public class TextHandler {
     }
     private void msgForWidget(StyleSheetChar styleSheet) {
         // Send message to widget
+        txtWidget.msgFromHandler(styleSheet);
+    }
+
+    private void msgForWidget(StyleSheetParagraph styleSheet) {
+        // Send message to widget
+        txtWidget.msgFromHandler(styleSheet);
     }
 
 

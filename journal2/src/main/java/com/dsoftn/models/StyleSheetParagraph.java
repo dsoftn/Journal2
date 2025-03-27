@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.dsoftn.OBJECTS;
+import com.dsoftn.controllers.elements.TextEditToolbarController.AlignmentEnum;
 import com.dsoftn.utils.UString;
 
 public class StyleSheetParagraph {
@@ -24,6 +25,12 @@ public class StyleSheetParagraph {
     private Integer borderRadius = null; // -fx-border-radius: 0;
     private String padding = null; // -fx-padding: 0;
     private String alignment = null; // -fx-text-alignment: (left, right, center, justify)
+
+    public String stroke = null; // -fx-stroke: #000000;
+    public Integer strokeWidth = null; // -fx-stroke-width: 1px;
+    public String strokeType = null; // -fx-stroke-type: (inside, outside, center)
+    public String effect = null; // -fx-effect: dropshadow(gaussian, #000000, 10, 0, 0, 0);
+    
 
     // Constructors
 
@@ -114,6 +121,22 @@ public class StyleSheetParagraph {
         if (!(alignment == null) && !alignment.isEmpty()) {
             css += "-fx-text-alignment: " + alignment + ";";
         }
+
+        if (!(stroke == null) && !stroke.isEmpty()) {
+            css += "-fx-stroke: " + stroke + ";";
+        }
+
+        if (!(strokeWidth == null)) {
+            css += "-fx-stroke-width: " + strokeWidth + "px;";
+        }
+
+        if (!(strokeType == null) && !strokeType.isEmpty()) {
+            css += "-fx-stroke-type: " + strokeType + ";";
+        }
+
+        if (!(effect == null) && !effect.isEmpty()) {
+            css += "-fx-effect: " + effect + ";";
+        }
         
         return css;
     }
@@ -172,6 +195,18 @@ public class StyleSheetParagraph {
                     case "-fx-text-alignment":
                         setAlignment(cssItemValue);
                         break;
+                    case "-fx-stroke":
+                        setStroke(cssItemValue);
+                        break;
+                    case "-fx-stroke-width":
+                        setStrokeWidth(Integer.parseInt(cssItemValue.split(Pattern.quote("px"))[0]));
+                        break;
+                    case "-fx-stroke-type":
+                        setStrokeType(cssItemValue);
+                        break;
+                    case "-fx-effect":
+                        setEffect(cssItemValue);
+                        break;
                 }
             }
         }
@@ -195,6 +230,10 @@ public class StyleSheetParagraph {
         result.borderRadius = this.borderRadius;
         result.padding = this.padding;
         result.alignment = this.alignment;
+        result.stroke = this.stroke;
+        result.strokeWidth = this.strokeWidth;
+        result.strokeType = this.strokeType;
+        result.effect = this.effect;
 
         return result;
     }
@@ -244,7 +283,32 @@ public class StyleSheetParagraph {
     public String getPadding() { return padding; }
     public void setPadding(String padding) { this.padding = padding; }
     public String getAlignment() { return alignment; }
+    public AlignmentEnum getAlignmentEnum() {
+        if (alignment == null) return AlignmentEnum.LEFT;
+        
+        switch (alignment) {
+            case "left":
+                return AlignmentEnum.LEFT;
+            case "center":
+                return AlignmentEnum.CENTER;
+            case "right":
+                return AlignmentEnum.RIGHT;
+            case "justify":
+                return AlignmentEnum.JUSTIFY;
+            default:
+                return AlignmentEnum.LEFT;
+        }
+    }
     public void setAlignment(String alignment) { this.alignment = alignment; }
+    public void setAlignmentEnum(AlignmentEnum alignment) { this.alignment = alignment.name().toLowerCase(); }
+    public String getStroke() { return stroke; }
+    public void setStroke(String stroke) { this.stroke = stroke; }
+    public int getStrokeWidth() { return strokeWidth; }
+    public void setStrokeWidth(int strokeWidth) { this.strokeWidth = strokeWidth; }
+    public String getStrokeType() { return strokeType; }
+    public void setStrokeType(String strokeType) { this.strokeType = strokeType; }
+    public String getEffect() { return effect; }
+    public void setEffect(String effect) { this.effect = effect; }
 
     // Overrides methods "equals()" and "hashCode()"
     
@@ -270,12 +334,16 @@ public class StyleSheetParagraph {
                Objects.equals(this.borderStyle, other.borderStyle) &&
                this.borderRadius == other.borderRadius &&
                Objects.equals(this.padding, other.padding) &&
-               Objects.equals(this.alignment, other.alignment);
+               Objects.equals(this.alignment, other.alignment) &&
+               Objects.equals(this.stroke, other.stroke) &&
+               this.strokeWidth == other.strokeWidth &&
+               Objects.equals(this.strokeType, other.strokeType) &&
+               Objects.equals(this.effect, other.effect);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fontName, fontSize, fgColor, bgColor, bold, italic, underline, strike, bgRadius, borderColor, borderWidth, borderStyle, borderRadius, padding, alignment);
+        return Objects.hash(fontName, fontSize, fgColor, bgColor, bold, italic, underline, strike, bgRadius, borderColor, borderWidth, borderStyle, borderRadius, padding, alignment, stroke, strokeWidth, strokeType, effect);
     }
 
 }

@@ -3,54 +3,99 @@ package com.dsoftn.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.GenericStyledArea;
+import org.fxmisc.richtext.StyledTextArea;
+import org.fxmisc.richtext.TextExt;
 
 import com.dsoftn.models.StyleSheetChar;
+import com.dsoftn.models.StyleSheetParagraph;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.TextFlow;
 
 
-public class RTWidget extends InlineCssTextArea {
+public class RTWidget extends StyledTextArea<String, String> {
     // Variables
     private StyleSheetChar css = null;
+    private StyleSheetParagraph cssParagraph = new StyleSheetParagraph();
     private Integer maxLines = null;
     private Integer maxChars = null;
     private Integer maxCharsPerLine = null;
     private int minTextWidgetHeight = 24;
     public List<StyleSheetChar> cssStyles = new ArrayList<>();
-    private Runnable updateToolbar = null;
+    public List<StyleSheetParagraph> cssParagraphStyles = new ArrayList<>();
     private TextHandler textHandler = null;
 
     public boolean isOverwriteMode = false;
    
     // Constructors
     public RTWidget(StyleSheetChar cssStyleSheet, Integer maxLines, Integer maxChars, Integer maxCharsPerLine) {
-        super();
+        super(
+            "",  // initialText
+            (text, style) -> text.setStyle(style), // Apply style to characters
+            "",  // initialParagraphStyle
+            (paragraph, style) -> paragraph.setStyle(style), // Apply style to paragraphs
+            false
+        );
+
         this.css = cssStyleSheet;
         this.maxLines = maxLines;
         this.maxChars = maxChars;
         this.maxCharsPerLine = maxCharsPerLine;
+
+        this.cssParagraphStyles.add(cssParagraph.duplicate());
     }
     
     public RTWidget(StyleSheetChar cssStyleSheet) {
-        super();
+        super(
+            "",  // initialText
+            (text, style) -> text.setStyle(style), // Apply style to characters
+            "",  // initialParagraphStyle
+            (paragraph, style) -> paragraph.setStyle(style), // Apply style to paragraphs
+            false
+        );
+
         this.css = cssStyleSheet;
+
+        this.cssParagraphStyles.add(cssParagraph.duplicate());
     }
 
     public RTWidget() {
-        super();
+        super(
+            "",  // initialText
+            (text, style) -> text.setStyle(style), // Apply style to characters
+            "",  // initialParagraphStyle
+            (paragraph, style) -> paragraph.setStyle(style), // Apply style to paragraphs
+            false
+        );
+
         this.css = new StyleSheetChar();
+
+        this.cssParagraphStyles.add(cssParagraph.duplicate());
     }
 
     // Public methods
 
-    public void setUpdateToolbar(Runnable updateToolbar) {
-        this.updateToolbar = updateToolbar;
+    public void msgFromHandler(String messageSTRING) {
+        // Process information from handler
     }
 
+    public void msgFromHandler(StyleSheetChar styleSheet) {
+        this.css = styleSheet;
+    }
+
+    public void msgFromHandler(StyleSheetParagraph styleSheet, int paragraphIndex) {
+        this.cssParagraph = styleSheet;
+        this.setParagraphStyle(paragraphIndex, styleSheet.getCss());
+    }
+    
+    public void msgFromHandler(StyleSheetParagraph styleSheet) {
+        msgFromHandler(styleSheet, this.getCurrentParagraph());
+    }
+    
     public void setCss(StyleSheetChar css) {
         if (css == null) {
             this.css = new StyleSheetChar();
@@ -61,6 +106,14 @@ public class RTWidget extends InlineCssTextArea {
 
     public StyleSheetChar getCss() {
         return this.css;
+    }
+
+    public void setParagraphCss(StyleSheetParagraph css) {
+        this.cssParagraph = css;
+    }
+
+    public StyleSheetParagraph getParagraphCss() {
+        return this.cssParagraph;
     }
 
     public void setMinTextWidgetHeight(int minTextWidgetHeight) {
@@ -114,19 +167,26 @@ public class RTWidget extends InlineCssTextArea {
 
     // Private methods
 
-    private void sendCssToHandler(Integer caretPosition) {
+    private void msgForHandler(StyleSheetChar css) {
         if (!this.getSelectedText().isEmpty()) {
             return;
         }
 
-        textHandler.msgFromWidget(css);
+        textHandler.msgFromWidget(css.duplicate());
 
-        if (caretPosition != null) {
-            // get current paragraph
-            int paragraphIndex = this.getCurrentParagraph();
-            String paragraphStyle = getParagraphStyle(paragraphIndex);
+        // if (caretPosition != null) {
+        //     // get current paragraph
+        //     int paragraphIndex = this.getCurrentParagraph();
+        //     String paragraphStyle = getParagraphStyle(paragraphIndex);
 
-        }
+        // }
+    }
+
+    private void msgForHandler(StyleSheetParagraph cssParagraph) {
+        textHandler.msgFromWidget(cssParagraph.duplicate());
+    }
+
+    private void msgForHandler(String messageSTRING) {
     }
 
     private void handleKeyPressed_INSERT() {
@@ -175,7 +235,7 @@ public class RTWidget extends InlineCssTextArea {
             if (!this.css.equals(this.cssStyles.get(newPos.intValue() - 1))) {
                 this.css = this.cssStyles.get(newPos.intValue() - 1).duplicate();
                 this.setStyle(newPos.intValue() - 1, newPos.intValue(), this.css.getCss());
-                updateToolbar.run();
+                updateToolbar(newPos.intValue());
             }
         }
 
@@ -185,7 +245,7 @@ public class RTWidget extends InlineCssTextArea {
             if (this.cssStyles.size() > 0) {
                 if (!css.equals(this.cssStyles.get(0))) {
                     css = this.cssStyles.get(0).duplicate();
-                    updateToolbar.run();
+                    updateToolbar(newPos.intValue());
                 }
             }
         }
@@ -198,14 +258,14 @@ public class RTWidget extends InlineCssTextArea {
                     // Caret is at the end of the text
                     if (!css.equals(this.cssStyles.get(newPos.intValue() - 1))) {
                         css = this.cssStyles.get(newPos.intValue() - 1).duplicate();
-                        updateToolbar.run();
+                        updateToolbar(newPos.intValue());
                     }
                 }
                 else {
                     // Caret is in the middle of the text
                     if (!css.equals(this.cssStyles.get(newPos.intValue()))) {
                         css = this.cssStyles.get(newPos.intValue()).duplicate();
-                        updateToolbar.run();
+                        updateToolbar(newPos.intValue());
                     }
                 }
 
@@ -225,7 +285,7 @@ public class RTWidget extends InlineCssTextArea {
                         // Update global CSS with char under caret and update toolbar
                         if (!css.equals(this.cssStyles.get(newPos.intValue()))) {
                             css = this.cssStyles.get(newPos.intValue()).duplicate();
-                            updateToolbar.run();
+                            updateToolbar(newPos.intValue());
                         }
                     }
                 }
@@ -234,14 +294,34 @@ public class RTWidget extends InlineCssTextArea {
                 // Case when INSERT mode is on
                 if (!css.equals(this.cssStyles.get(newPos.intValue() - 1))) {
                     css = this.cssStyles.get(newPos.intValue() - 1).duplicate();
-                    updateToolbar.run();
+                    updateToolbar(newPos.intValue());
                 }
             }
 
         }
     }
 
+    private void updateToolbar(int caretPosition) {
+        msgForHandler(this.css);
 
+        cssParagraph = new StyleSheetParagraph();
+
+    // Get current paragraph index and its style
+    int paragraphIndex = this.getCurrentParagraph();
+    // Get the start position of the current paragraph
+    int paragraphStart = 0;
+    for (int i = 0; i < paragraphIndex; i++) {
+        paragraphStart += getParagraph(i).length() + 1; // +1 for newline
+    }
+    
+    // Get style at paragraph start position
+    String paragraphStyle = this.getStyleAtPosition(paragraphStart);
+
+    cssParagraph = new StyleSheetParagraph(paragraphStyle);
+    msgForHandler(cssParagraph);
+
+
+    }
 
 
 }

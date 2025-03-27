@@ -17,6 +17,10 @@ public class StyleSheetChar {
     private boolean underline = false; // -fx-underline: true;
     private boolean strike = false; // -fx-strikethrough: true;
 
+    private String stroke = "transparent"; // -fx-stroke: #000000;
+    private int strokeWidth = 0; // -fx-stroke-width: 1px;
+    private String strokeType = "outside"; // -fx-stroke-type: (inside, outside, center)
+
     // Constructors
 
     public StyleSheetChar() {}
@@ -69,6 +73,16 @@ public class StyleSheetChar {
             css += "-fx-strikethrough: false;";
         }
 
+        if (!stroke.isEmpty()) {
+            css += "-fx-stroke: " + stroke + ";";
+        }
+
+        css += "-fx-stroke-width: " + strokeWidth + "px;";
+
+        if (!strokeType.isEmpty()) {
+            css += "-fx-stroke-type: " + strokeType + ";";
+        }
+
         return css;
     }
 
@@ -103,6 +117,18 @@ public class StyleSheetChar {
 
         if (strike) {
             css += "-fx-strikethrough: true;";
+        }
+
+        if (!stroke.equals("transparent")) {
+            css += "-fx-stroke: " + stroke + ";";
+        }
+
+        if (strokeWidth != 0) {
+            css += "-fx-stroke-width: " + strokeWidth + "px;";
+        }
+
+        if (!strokeType.equals("outside")) {
+            css += "-fx-stroke-type: " + strokeType + ";";
         }
 
         return css;
@@ -141,6 +167,15 @@ public class StyleSheetChar {
                     case "-fx-strikethrough":
                         setStrikethrough(cssItemValue.equals("true"));
                         break;
+                    case "-fx-stroke":
+                        setStroke(cssItemValue);
+                        break;
+                    case "-fx-stroke-width":
+                        setStrokeWidth(Integer.parseInt(cssItemValue.split(Pattern.quote("px"))[0]));
+                        break;
+                    case "-fx-stroke-type":
+                        setStrokeType(cssItemValue);
+                        break;
                 }
             }
         }
@@ -157,6 +192,9 @@ public class StyleSheetChar {
         result.italic = this.italic;
         result.underline = this.underline;
         result.strike = this.strike;
+        result.stroke = this.stroke;
+        result.strokeWidth = this.strokeWidth;
+        result.strokeType = this.strokeType;
 
         return result;
     }
@@ -187,6 +225,12 @@ public class StyleSheetChar {
     public void setUnderline(boolean underline) { this.underline = underline; }
     public boolean isStrikethrough() { return strike; }
     public void setStrikethrough(boolean strike) { this.strike = strike; }
+    public String getStroke() { return stroke; }
+    public void setStroke(String stroke) { this.stroke = stroke; }
+    public int getStrokeWidth() { return strokeWidth; }
+    public void setStrokeWidth(int strokeWidth) { this.strokeWidth = strokeWidth; }
+    public String getStrokeType() { return strokeType; }
+    public void setStrokeType(String strokeType) { this.strokeType = strokeType; }
 
     // Overrides methods "equals()" and "hashCode()"
     
@@ -205,12 +249,15 @@ public class StyleSheetChar {
                this.bold == other.bold &&
                this.italic == other.italic &&
                this.underline == other.underline &&
-               this.strike == other.strike;
+               this.strike == other.strike &&
+               Objects.equals(this.stroke, other.stroke) &&
+               this.strokeWidth == other.strokeWidth &&
+               Objects.equals(this.strokeType, other.strokeType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fontName, fontSize, fgColor, bgColor, bold, italic, underline, strike);
+        return Objects.hash(fontName, fontSize, fgColor, bgColor, bold, italic, underline, strike, stroke, strokeWidth, strokeType);
     }
 
 }

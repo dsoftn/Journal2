@@ -414,5 +414,18 @@
     "creationDate": "2025.03.25 12:55:52",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "BlockNameFontName": {
+    "key": "BlockNameFontName",
+    "value": "Arial",
+    "defaultValue": "Arial",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.03.26 19:05:04",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

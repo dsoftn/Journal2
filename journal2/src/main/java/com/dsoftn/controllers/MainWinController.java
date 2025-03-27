@@ -142,7 +142,7 @@ public class MainWinController implements IBaseController {
 
         BlockDiary blockDiary = OBJECTS.BLOCKS_DIARY.getEntity(loadBlockDiaryID).duplicate();
 
-        BlockGeneralController blockController = ELEMENTS.getBlockGeneralController(blockDiary.getBaseBlock(), null);
+        BlockGeneralController blockController = ELEMENTS.getBlockGeneralController(blockDiary.getBaseBlock(), stage);
 
         blockController.addToLayout(vBoxWorkArea);
         scrollToElement(vBoxWorkArea.getChildren().size() - 1, vBoxWorkArea, scrPaneWorkArea);
