@@ -349,5 +349,83 @@
     "creationDate": "2025.03.25 00:08:55",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "ToolbarSectionVisible_CLIPBOARD": {
+    "key": "ToolbarSectionVisible_CLIPBOARD",
+    "value": "true",
+    "defaultValue": "true",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "",
+    "creationDate": "2025.03.25 12:55:01",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "ToolbarSectionVisible_INSERT": {
+    "key": "ToolbarSectionVisible_INSERT",
+    "value": "True",
+    "defaultValue": "True",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "",
+    "creationDate": "2025.03.25 12:55:15",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "ToolbarSectionVisible_FIND_REPLACE": {
+    "key": "ToolbarSectionVisible_FIND_REPLACE",
+    "value": "True",
+    "defaultValue": "True",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "",
+    "creationDate": "2025.03.25 12:55:25",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "ToolbarSectionVisible_BOLD_ITALIC_UNDERLINE_STRIKETHROUGH": {
+    "key": "ToolbarSectionVisible_BOLD_ITALIC_UNDERLINE_STRIKETHROUGH",
+    "value": "True",
+    "defaultValue": "True",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "",
+    "creationDate": "2025.03.25 12:55:39",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "ToolbarSectionVisible_ALIGNMENT": {
+    "key": "ToolbarSectionVisible_ALIGNMENT",
+    "value": "True",
+    "defaultValue": "True",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "",
+    "creationDate": "2025.03.25 12:55:52",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "BlockNameFontName": {
+    "key": "BlockNameFontName",
+    "value": "Arial",
+    "defaultValue": "Arial",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.03.26 19:05:04",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

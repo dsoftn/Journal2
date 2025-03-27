@@ -8,7 +8,8 @@ public enum ClipboardActionEnum {
     PASTE(4),
     REMOVE_ITEM(5),
     DELETE_ALL(6),
-    DELETE_MODEL(7);
+    DELETE_MODEL(7),
+    SYSTEM_CLIPBOARD_CHANGED(8);
 
     private final int value;
 

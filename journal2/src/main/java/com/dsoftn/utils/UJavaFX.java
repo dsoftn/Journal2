@@ -1,6 +1,7 @@
 package com.dsoftn.utils;
 
 import java.util.Map;
+
 import java.util.LinkedHashMap;
 
 import com.dsoftn.OBJECTS;
@@ -16,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -218,5 +220,34 @@ public class UJavaFX {
         }
         return result;
     }
+
+    public static boolean areImagesEqual(Image img1, Image img2) {
+    if (img1 == null || img2 == null) {
+        // If both are null, they are equal
+        return img1 == img2;
+    }
+    
+    // Check if dimensions are the same
+    if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight()) {
+        return false;
+    }
+
+    // Check each pixel
+    PixelReader pr1 = img1.getPixelReader();
+    PixelReader pr2 = img2.getPixelReader();
+
+    for (int y = 0; y < img1.getHeight(); y++) {
+        for (int x = 0; x < img1.getWidth(); x++) {
+            if (pr1.getArgb(x, y) != pr2.getArgb(x, y)) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+
+    }
+
+
 
 }

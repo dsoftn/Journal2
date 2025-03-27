@@ -1,27 +1,27 @@
 package com.dsoftn.models;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
-import javafx.scene.text.Font;
 
 import com.dsoftn.OBJECTS;
+import com.dsoftn.utils.UString;
 
-public class StyleSheet {
+public class StyleSheetChar {
     // Variables
-    private String fontName = OBJECTS.SETTINGS.getvSTRING("DefaultTextToolbarFontName");
-    private int fontSize = OBJECTS.SETTINGS.getvINTEGER("DefaultTextToolbarFontSize");
-    private String fgColor = "#ffff00";
-    private String bgColor = "transparent";
-    private boolean bold = false;
-    private boolean italic = false;
-    private boolean underline = false;
-    private boolean strike = false;
-
+    private String fontName = OBJECTS.SETTINGS.getvSTRING("DefaultTextToolbarFontName"); // -fx-font-family: 'Arial';
+    private int fontSize = OBJECTS.SETTINGS.getvINTEGER("DefaultTextToolbarFontSize"); // -fx-font-size: 12px;
+    private String fgColor = "#ffff00"; // -fx-fill: #ffff00;
+    private String bgColor = "transparent"; // -rtfx-background-color: transparent;
+    private boolean bold = false; // -fx-font-weight: bold;
+    private boolean italic = false; // -fx-font-style: italic;
+    private boolean underline = false; // -fx-underline: true;
+    private boolean strike = false; // -fx-strikethrough: true;
 
     // Constructors
 
-    public StyleSheet() {}
+    public StyleSheetChar() {}
 
-    public StyleSheet(String css) {
+    public StyleSheetChar(String css) {
         setCss(css);
     }
     
@@ -32,7 +32,7 @@ public class StyleSheet {
         String css = "";
 
         if (!fontName.isEmpty()) {
-            css += "-fx-font-family: " + fontName + ";";
+            css += "-fx-font-family: '" + fontName + "';";
         }
 
         css += "-fx-font-size: " + fontSize + "px;";
@@ -72,6 +72,42 @@ public class StyleSheet {
         return css;
     }
 
+    public String getCssMinimal() {
+        String css = "";
+
+        if (!fontName.isEmpty()) {
+            css += "-fx-font-family: '" + fontName + "';";
+        }
+
+        css += "-fx-font-size: " + fontSize + "px;";
+
+        if (!fgColor.equals("#ffff00")) {
+            css += "-fx-fill: " + fgColor + ";";
+        }
+
+        if (!bgColor.equals("transparent")) {
+            css += "-rtfx-background-color: " + bgColor + ";";
+        }
+
+        if (bold) {
+            css += "-fx-font-weight: bold;";
+        }
+
+        if (italic) {
+            css += "-fx-font-style: italic;";
+        }
+
+        if (underline) {
+            css += "-fx-underline: true;";
+        }
+
+        if (strike) {
+            css += "-fx-strikethrough: true;";
+        }
+
+        return css;
+    }
+
     public void setCss(String css) {
         // Parse css string
         String[] cssArray = css.split(Pattern.quote(";"));
@@ -82,7 +118,7 @@ public class StyleSheet {
                 String cssItemValue = cssItemArray[1].strip();
                 switch (cssItemName) {
                     case "-fx-font-family":
-                        setFontName(cssItemValue);
+                        setFontName(UString.stripCharacters(cssItemValue, "'"));
                         break;
                     case "-fx-font-size":
                         setFontSize(Integer.parseInt(cssItemValue.split(Pattern.quote("px"))[0]));
@@ -108,6 +144,21 @@ public class StyleSheet {
                 }
             }
         }
+    }
+
+    public StyleSheetChar duplicate() {
+        StyleSheetChar result = new StyleSheetChar();
+
+        result.fontName = this.fontName;
+        result.fontSize = this.fontSize;
+        result.fgColor = this.fgColor;
+        result.bgColor = this.bgColor;
+        result.bold = this.bold;
+        result.italic = this.italic;
+        result.underline = this.underline;
+        result.strike = this.strike;
+
+        return result;
     }
 
     // Properties getters and setters
@@ -137,6 +188,29 @@ public class StyleSheet {
     public boolean isStrikethrough() { return strike; }
     public void setStrikethrough(boolean strike) { this.strike = strike; }
 
+    // Overrides methods "equals()" and "hashCode()"
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
 
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+
+        StyleSheetChar other = (StyleSheetChar) obj;
+
+        return Objects.equals(this.fontName, other.fontName) &&
+               this.fontSize == other.fontSize &&
+               Objects.equals(this.fgColor, other.fgColor) &&
+               Objects.equals(this.bgColor, other.bgColor) &&
+               this.bold == other.bold &&
+               this.italic == other.italic &&
+               this.underline == other.underline &&
+               this.strike == other.strike;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fontName, fontSize, fgColor, bgColor, bold, italic, underline, strike);
+    }
 
 }

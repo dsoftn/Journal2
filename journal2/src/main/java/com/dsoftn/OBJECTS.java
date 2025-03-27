@@ -25,15 +25,15 @@ public class OBJECTS {
     
     public static final Settings SETTINGS = new Settings();
 
-    public static final GlobalTimer GLOBAL_TIMER = new GlobalTimer();
-
-    public static final Clip CLIP = new Clip();
-
     public static final EventHandler EVENT_HANDLER = new EventHandler();
 
-    public static SQLiteDB DATABASE;
+    public static SQLiteDB DATABASE; // will be created in GuiMain start method
 
     public static TextFilter TEXT_FILTER; // will be created in SplashScreen
+
+    public static GlobalTimer GLOBAL_TIMER; // will be created GuiMain start method
+
+    public static Clip CLIP; // will be created in GuiMain start method
 
     // Models
     

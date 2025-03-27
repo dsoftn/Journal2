@@ -1,23 +1,22 @@
 package com.dsoftn.controllers.elements;
 
-import java.util.function.Consumer;
-
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
-import com.dsoftn.models.StyleSheet;
+import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.TextHandler;
 import com.dsoftn.utils.ColorPopup;
+import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
@@ -25,11 +24,25 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class TextEditToolbarController implements IElementController {
+    public enum AlignmentEnum {
+        LEFT,
+        CENTER,
+        RIGHT,
+        JUSTIFY
+    }
+
+    public enum ToolbarSectionsEnum {
+        CLIPBOARD,
+        INSERT,
+        FIND_REPLACE,
+        BOLD_ITALIC_UNDERLINE_STRIKETHROUGH,
+        ALIGNMENT
+    }
+
     // Variables
     private Stage stage = null;
     private String myName = UJavaFX.getUniqueId();
@@ -40,108 +53,108 @@ public class TextEditToolbarController implements IElementController {
     private IBaseController parentController = null;
     private TextHandler textHandler = null;
     // Properties
-    private StyleSheet curStyleSheet = new StyleSheet();
+    private StyleSheetChar curStyleSheet = new StyleSheetChar();
     private boolean matchCase = false;
     private boolean wholeWords = false;
+    private AlignmentEnum alignment = AlignmentEnum.LEFT;
 
 
     // FXML variables
 
-    @FXML
-    private Button btnBackground;
-
-    @FXML
-    private Button btnBold;
-
-    @FXML
-    private Button btnCopy;
-
-    @FXML
-    private Button btnCut;
-
-    @FXML
-    private Button btnFind;
-
-    @FXML
-    private Button btnFindClose;
-
-    @FXML
-    private Button btnFindDown;
-
-    @FXML
-    private Button btnFindUp;
-
-    @FXML
-    private Button btnForeground;
-
-    @FXML
-    private Button btnInsertData;
-
-    @FXML
-    private Button btnInsertImage;
-
-    @FXML
-    private Button btnInsertSmiley;
-
-    @FXML
-    private Button btnItalic;
-
-    @FXML
-    private Button btnMatchCase;
-
-    @FXML
-    private Button btnPaste;
-
-    @FXML
-    private Button btnRedo;
-
-    @FXML
-    private Button btnReplace;
-
-    @FXML
-    private Button btnReplaceOne;
-
-    @FXML
-    private Button btnReplaceAll;
-
-    @FXML
-    private Button btnStrike;
-
-    @FXML
-    private Button btnUnderline;
-
-    @FXML
-    private Button btnUndo;
-
-    @FXML
-    private Button btnWholeWords;
-
-    @FXML
-    private ComboBox<String> cmbFont;
-
-    @FXML
-    private HBox hBoxFind;
-
-    @FXML
-    private HBox hBoxReplace;
-
+    // HBox with all commands
     @FXML
     private HBox hBoxTextEdit;
 
+    // Section Undo, Redo
     @FXML
-    private Label lblFindResult;
-
+    private Button btnUndo;
+    @FXML
+    private Button btnRedo;
+    // Section Cut, Copy, Paste
+    @FXML
+    private Separator sepClip;
+    @FXML
+    private Button btnCut;
+    @FXML
+    private Button btnCopy;
+    @FXML
+    private Button btnPaste;
+    // Section Insert Image, Smiley, Data
+    @FXML
+    private Separator sepInsert;
+    @FXML
+    private Button btnInsertImage;
+    @FXML
+    private Button btnInsertSmiley;
+    @FXML
+    private Button btnInsertData;
+    // Section Find, Replace
+    @FXML
+    private Separator sepFind;
+    @FXML
+    private Button btnFind;
+    @FXML
+    private Button btnReplace;
+    // Section Font Name, Font Size, Foreground, Background
+    @FXML
+    private ComboBox<String> cmbFont;
     @FXML
     private Spinner<Integer> spnFontSize;
-
     @FXML
-    private TextField txtFind;
-
+    private Button btnForeground;
     @FXML
-    private TextField txtReplace;
+    private Button btnBackground;
+    // Section Bold, Italic, Underline, Strikethrough
+    @FXML
+    private Separator sepBold;
+    @FXML
+    private Button btnBold;
+    @FXML
+    private Button btnItalic;
+    @FXML
+    private Button btnUnderline;
+    @FXML
+    private Button btnStrike;
+    // Section Alignment
+    @FXML
+    private Separator sepAlign;
+    @FXML
+    private Button btnAlignLeft;
+    @FXML
+    private Button btnAlignCenter;
+    @FXML
+    private Button btnAlignRight;
+    @FXML
+    private Button btnAlignJustify;
 
+    // Find / Replace
     @FXML
     private VBox vBoxFindReplace;
+        @FXML
+        private HBox hBoxFind;
+            @FXML
+            private TextField txtFind;
+            @FXML
+            private Button btnMatchCase;
+            @FXML
+            private Button btnWholeWords;
+            @FXML
+            private Label lblFindResult;
+            @FXML
+            private Button btnFindUp;
+            @FXML
+            private Button btnFindDown;
+            @FXML
+            private Button btnFindClose;
+        @FXML
+        private HBox hBoxReplace;
+            @FXML
+            private TextField txtReplace;
+            @FXML
+            private Button btnReplaceOne;
+            @FXML
+            private Button btnReplaceAll;
+
 
     // Interface IElementController methods
 
@@ -221,7 +234,7 @@ public class TextEditToolbarController implements IElementController {
         // TODO Auto-generated method stub
     }
 
-    public void messageReceived(StyleSheet styleSheet) {
+    public void messageReceived(StyleSheetChar styleSheet) {
         this.curStyleSheet = styleSheet;
         updateStylesheet(styleSheet);
     }
@@ -268,7 +281,7 @@ public class TextEditToolbarController implements IElementController {
         hBoxReplace.setManaged(false);
     }
 
-    public void updateStylesheet(StyleSheet styleSheet) {
+    public void updateStylesheet(StyleSheetChar styleSheet) {
         this.curStyleSheet = styleSheet;
         
         cmbFont.setValue(styleSheet.getFontName());
@@ -279,20 +292,127 @@ public class TextEditToolbarController implements IElementController {
         setButtonSelectedSmall(btnItalic, styleSheet.isItalic());
         setButtonSelectedSmall(btnUnderline, styleSheet.isUnderline());
         setButtonSelectedSmall(btnStrike, styleSheet.isStrikethrough());
+    }
 
+    public void setAlignment(AlignmentEnum alignment) {
+        this.alignment = alignment;
+        setButtonSelected(btnAlignLeft, alignment == AlignmentEnum.LEFT);
+        setButtonSelected(btnAlignCenter, alignment == AlignmentEnum.CENTER);
+        setButtonSelected(btnAlignRight, alignment == AlignmentEnum.RIGHT);
+        setButtonSelected(btnAlignJustify, alignment == AlignmentEnum.JUSTIFY);
+    }
 
+    public boolean canBeClosed() {
+        if (vBoxFindReplace.isVisible()) {
+            hideFindSection();
+            return false;
+        }
+        return true;
+    }
+
+    public void setToolbarSectionsVisibility() {
+        for (ToolbarSectionsEnum section : ToolbarSectionsEnum.values()) {
+            String settingKey = "ToolbarSectionVisible_" + section.toString();
+            setToolbarSectionVisible(section, OBJECTS.SETTINGS.getvBOOLEAN(settingKey));
+        }
     }
 
     // Private methods
 
-    private void messageSent(String messageSTRING) {
-        // Send message to TextHandler
-        textHandler.messageReceived(messageSTRING);
+    private void setToolbarSectionVisible(ToolbarSectionsEnum section, boolean visible) {
+        switch (section) {
+            case CLIPBOARD:
+                setToolbarSectionVisibleCLIPBOARD(visible);
+                break;
+            case INSERT:
+                setToolbarSectionVisibleINSERT(visible);
+                break;
+            case FIND_REPLACE:
+                setToolbarSectionVisibleFIND_REPLACE(visible);
+                break;
+            case BOLD_ITALIC_UNDERLINE_STRIKETHROUGH:
+                setToolbarSectionVisibleBOLD_ITALIC_UNDERLINE_STRIKETHROUGH(visible);
+                break;
+            case ALIGNMENT:
+                setToolbarSectionVisibleALIGNMENT(visible);
+                break;
+            default:
+                UError.error("TextEditToolbarController.setToolbarSectionVisible", "Unknown section: " + section.toString());
+                break;
+        }
     }
 
-    private void messageSent(StyleSheet styleSheet) {
+    private void setToolbarSectionVisibleCLIPBOARD(boolean visible) {
+        sepClip.setVisible(visible);
+        sepClip.setManaged(visible);
+        btnCut.setVisible(visible);
+        btnCut.setManaged(visible);
+        btnCopy.setVisible(visible);
+        btnCopy.setManaged(visible);
+        btnPaste.setVisible(visible);
+        btnPaste.setManaged(visible);
+    }
+
+    private void setToolbarSectionVisibleINSERT(boolean visible) {
+        sepInsert.setVisible(visible);
+        sepInsert.setManaged(visible);
+        btnInsertImage.setVisible(visible);
+        btnInsertImage.setManaged(visible);
+        btnInsertSmiley.setVisible(visible);
+        btnInsertSmiley.setManaged(visible);
+        btnInsertData.setVisible(visible);
+        btnInsertData.setManaged(visible);
+    }
+
+    private void setToolbarSectionVisibleFIND_REPLACE(boolean visible) {
+        sepFind.setVisible(visible);
+        sepFind.setManaged(visible);
+        btnFind.setVisible(visible);
+        btnFind.setManaged(visible);
+        btnReplace.setVisible(visible);
+        btnReplace.setManaged(visible);
+    }
+
+    private void setToolbarSectionVisibleBOLD_ITALIC_UNDERLINE_STRIKETHROUGH(boolean visible) {
+        sepBold.setVisible(visible);
+        sepBold.setManaged(visible);
+        btnBold.setVisible(visible);
+        btnBold.setManaged(visible);
+        btnItalic.setVisible(visible);
+        btnItalic.setManaged(visible);
+        btnUnderline.setVisible(visible);
+        btnUnderline.setManaged(visible);
+        btnStrike.setVisible(visible);
+        btnStrike.setManaged(visible);
+    }
+
+    private void setToolbarSectionVisibleALIGNMENT(boolean visible) {
+        sepAlign.setVisible(visible);
+        sepAlign.setManaged(visible);
+        btnAlignLeft.setVisible(visible);
+        btnAlignLeft.setManaged(visible);
+        btnAlignCenter.setVisible(visible);
+        btnAlignCenter.setManaged(visible);
+        btnAlignRight.setVisible(visible);
+        btnAlignRight.setManaged(visible);
+        btnAlignJustify.setVisible(visible);
+        btnAlignJustify.setManaged(visible);
+    }
+
+    private void messageSent(String messageSTRING) {
+        if (textHandler == null) {
+            return;
+        }
         // Send message to TextHandler
-        textHandler.messageReceived(styleSheet);
+        textHandler.msgFromToolbar(messageSTRING);
+    }
+
+    private void messageSent(StyleSheetChar styleSheet) {
+        if (textHandler == null) {
+            return;
+        }
+        // Send message to TextHandler
+        textHandler.msgFromToolbar(styleSheet);
     }
     
     private void setupWidgetsText() {
@@ -318,6 +438,11 @@ public class TextEditToolbarController implements IElementController {
         UJavaFX.setTooltip(btnFindClose, OBJECTS.SETTINGS.getl("text_Close"));
         UJavaFX.setTooltip(btnReplaceOne, OBJECTS.SETTINGS.getl("text_ReplaceNextItem"));
         UJavaFX.setTooltip(btnReplaceAll, OBJECTS.SETTINGS.getl("text_ReplaceAllItems"));
+        UJavaFX.setTooltip(btnForeground, OBJECTS.SETTINGS.getl("text_ForegroundColor"));
+        UJavaFX.setTooltip(btnAlignLeft, OBJECTS.SETTINGS.getl("text_AlignLeft"));
+        UJavaFX.setTooltip(btnAlignCenter, OBJECTS.SETTINGS.getl("text_AlignCenter"));
+        UJavaFX.setTooltip(btnAlignRight, OBJECTS.SETTINGS.getl("text_AlignRight"));
+        UJavaFX.setTooltip(btnAlignJustify, OBJECTS.SETTINGS.getl("text_AlignJustify"));
     }
 
     private void setupWidgetsAppearance() {
@@ -350,19 +475,24 @@ public class TextEditToolbarController implements IElementController {
                 }
             }
         });        
-        cmbFont.setItems(FXCollections.observableArrayList(Font.getFamilies()));
+        cmbFont.setItems(FXCollections.observableArrayList(Font.getFontNames()));
 
         // Link Spinner value to StyleSheet
         spnFontSize.valueProperty().addListener((obs, oldValue, newValue) -> {
             curStyleSheet.setFontSize(newValue);
             updateStylesheet(curStyleSheet);
+            messageSent(curStyleSheet);
+            messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
         });
 
         // Link ComboBox value to StyleSheet
         cmbFont.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 curStyleSheet.setFontName(newValue);
+                System.out.println("Font: " + newValue);
                 updateStylesheet(curStyleSheet);
+                messageSent(curStyleSheet);
+                messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
             }
         });
 
@@ -388,6 +518,15 @@ public class TextEditToolbarController implements IElementController {
         setImageToButtonSmall(btnFindClose, "/images/find_close.png");
         setImageToButton(btnReplaceOne, "/images/replace_one.png");
         setImageToButton(btnReplaceAll, "/images/replace_all.png");
+        setImageToButton(btnAlignLeft, "/images/align_left.png");
+        setImageToButton(btnAlignCenter, "/images/align_center.png");
+        setImageToButton(btnAlignRight, "/images/align_right.png");
+        setImageToButton(btnAlignJustify, "/images/align_justify.png");
+
+        setAlignment(this.alignment);
+        setToolbarSectionsVisibility();
+
+        // Show/Hide sections
     }
 
     private void setImageToButton(Button button, String imageResourcePath) {
@@ -485,11 +624,21 @@ public class TextEditToolbarController implements IElementController {
 
     @FXML
     public void onBtnFindAction() {
+        if (vBoxFindReplace.isVisible()) {
+            hideFindSection();
+            return;
+            }
         showFindSection();
     }
 
     @FXML
     public void onBtnReplaceAction() {
+        if (vBoxFindReplace.isVisible()) {
+            if (hBoxReplace.isVisible()) {
+                hideReplaceSection();
+                return;
+            }
+        }
         showReplaceSection();
     }
 
@@ -508,6 +657,28 @@ public class TextEditToolbarController implements IElementController {
     public void onBtnWholeWordsAction() {
         wholeWords = !wholeWords;
         setButtonSelected(btnWholeWords, wholeWords);
+    }
+
+    @FXML
+    public void onAlignLeftAction() {
+        setAlignment(AlignmentEnum.LEFT);
+    }
+
+    @FXML
+    public void onBtnAlignCenterAction() {
+        setAlignment(AlignmentEnum.CENTER);
+        messageSent(TextToolbarActionEnum.ALIGNMENT + "\ncenter");
+        messageSent(TextToolbarActionEnum.FOCUS_TO_TEXT + "\n1");
+    }
+
+    @FXML
+    public void onBtnAlignRightAction() {
+        setAlignment(AlignmentEnum.RIGHT);
+    }
+
+    @FXML
+    public void onBtnAlignJustifyAction() {
+        setAlignment(AlignmentEnum.JUSTIFY);
     }
 
 }

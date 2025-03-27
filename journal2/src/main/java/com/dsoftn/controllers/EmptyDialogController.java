@@ -21,6 +21,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Bounds;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -222,6 +224,7 @@ public class EmptyDialogController implements IBaseController {
 
     Stage stage = null;
     boolean framelessWindow = false; // true = window is frameless
+    boolean closeStageWithESC = true; // true = window can be closed with ESC key
     Map<String, Double> mousePos = null; // Used to resize window if window is frameless
     boolean resizeEnabled = false; // Used to enable window resizing when window is frameless
     double minSize = 50;
@@ -307,6 +310,16 @@ public class EmptyDialogController implements IBaseController {
         stage.getScene().addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
             onRootMouseMoved(event);
         });
+
+        // Check if ESC is pressed
+        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                if (closeStageWithESC && myContentController.canBeClosed()) {
+                    closeMe();
+                }
+            }
+        });
+
         
         if (myContentController != null) {
             myContentController.beforeShowing();
@@ -351,6 +364,7 @@ public class EmptyDialogController implements IBaseController {
                 lblTitle.setText(OBJECTS.SETTINGS.getl("text_SelectActors"));
                 mySettingsName = "EmptyDialog_" + windowStyle.toString();
                 setStageGeometry();
+                setCloseStageWithESC(true);
                 break;
             case BLOCK_NAME_ENTER:
                 setFramelessWindow(true);
@@ -361,9 +375,11 @@ public class EmptyDialogController implements IBaseController {
                 stage.setWidth(1300);
                 stage.setHeight(240);
                 setStageGeometry();
+                setCloseStageWithESC(true);
                 btnPin.setVisible(false);
                 btnPin.setManaged(false);
                 // stage.initModality(Modality.APPLICATION_MODAL);
+                setDialogPinned(true);
                 break;
             default:
                 setFramelessWindow(false);
@@ -408,6 +424,10 @@ public class EmptyDialogController implements IBaseController {
             stage.initStyle(StageStyle.DECORATED);
             ancRoot.getStyleClass().remove("empty-dialog-root");
         }
+    }
+
+    public void setCloseStageWithESC(boolean closeStageWithESC) {
+        this.closeStageWithESC = closeStageWithESC;
     }
 
     public void setResizeEnabled(boolean resizeEnabled) {

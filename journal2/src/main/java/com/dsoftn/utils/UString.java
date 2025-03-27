@@ -53,4 +53,29 @@ public class UString {
         return String.join(delimiter, list.stream().map(String::valueOf).toList());
     }
 
+    /**
+     * Removes specified characters from the beginning and end of a string
+     * @param text The text to process
+     * @param characters String containing characters to remove
+     * @return Processed string with specified characters removed from start and end
+     */
+    public static String stripCharacters(String text, String characters) {
+        if (text == null || text.isEmpty() || characters == null || characters.isEmpty()) {
+            return text;
+        }
+        
+        int start = 0;
+        int end = text.length() - 1;
+        
+        while (start <= end && characters.indexOf(text.charAt(start)) >= 0) {
+            start++;
+        }
+        
+        while (end >= start && characters.indexOf(text.charAt(end)) >= 0) {
+            end--;
+        }
+        
+        return text.substring(start, end + 1);
+    }
+
 }

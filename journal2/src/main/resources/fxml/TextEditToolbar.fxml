@@ -24,15 +24,15 @@
                      <children>
                         <Button fx:id="btnUndo" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnRedo" mnemonicParsing="false" styleClass="button-icon" />
-                        <Separator orientation="VERTICAL" />
+                        <Separator fx:id="sepClip" orientation="VERTICAL" />
                         <Button fx:id="btnCut" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnCopy" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnPaste" mnemonicParsing="false" styleClass="button-icon" />
-                        <Separator orientation="VERTICAL" />
+                        <Separator fx:id="sepInsert" orientation="VERTICAL" />
                         <Button fx:id="btnInsertImage" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnInsertSmiley" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnInsertData" mnemonicParsing="false" styleClass="button-icon" />
-                        <Separator orientation="VERTICAL" />
+                        <Separator fx:id="sepFind" orientation="VERTICAL" />
                         <Button fx:id="btnFind" mnemonicParsing="false" onAction="#onBtnFindAction" styleClass="button-icon" />
                         <Button fx:id="btnReplace" mnemonicParsing="false" onAction="#onBtnReplaceAction" styleClass="button-icon" />
                         <Separator orientation="VERTICAL" />
@@ -40,11 +40,16 @@
                         <Spinner fx:id="spnFontSize" editable="true" maxWidth="60.0" styleClass="spinner-default" />
                         <Button fx:id="btnForeground" mnemonicParsing="false" onAction="#onBtnForegroundAction" styleClass="button-text" text="Abc" />
                         <Button fx:id="btnBackground" mnemonicParsing="false" onAction="#onBtnBackgroundAction" style="-fx-border-color: gray;" styleClass="button-icon" />
-                        <Separator orientation="VERTICAL" />
+                        <Separator fx:id="sepBold" orientation="VERTICAL" />
                         <Button fx:id="btnBold" mnemonicParsing="false" onAction="#onBtnBoldAction" styleClass="button-icon-small" />
                         <Button fx:id="btnItalic" mnemonicParsing="false" onAction="#onBtnItalicAction" styleClass="button-icon-small" />
                         <Button fx:id="btnUnderline" mnemonicParsing="false" onAction="#onBtnUnderlineAction" styleClass="button-icon-small" />
                         <Button fx:id="btnStrike" mnemonicParsing="false" onAction="#onBtnStrikeAction" styleClass="button-icon-small" />
+                        <Separator fx:id="sepAlign" layoutX="690.0" layoutY="10.0" orientation="VERTICAL" />
+                        <Button fx:id="btnAlignLeft" layoutX="311.0" layoutY="11.0" mnemonicParsing="false" onAction="#onAlignLeftAction" styleClass="button-icon" />
+                        <Button fx:id="btnAlignCenter" layoutX="804.0" layoutY="11.0" mnemonicParsing="false" onAction="#onBtnAlignCenterAction" styleClass="button-icon" />
+                        <Button fx:id="btnAlignRight" layoutX="839.0" layoutY="11.0" mnemonicParsing="false" onAction="#onBtnAlignRightAction" styleClass="button-icon" />
+                        <Button fx:id="btnAlignJustify" layoutX="874.0" layoutY="11.0" mnemonicParsing="false" onAction="#onBtnAlignJustifyAction" styleClass="button-icon" />
                      </children>
                   </HBox>
                </content>

@@ -11,7 +11,9 @@ import javafx.scene.Parent;
 import com.dsoftn.controllers.MainWinController;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
+import com.dsoftn.services.Clip;
 import com.dsoftn.services.SQLiteDB;
+import com.dsoftn.services.timer.GlobalTimer;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UFile;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
@@ -113,6 +115,11 @@ public class GuiMain extends Application {
             Platform.exit();
             return;
         }
+
+        // Create GlobalTimer in OBJECTS
+        OBJECTS.GLOBAL_TIMER = new GlobalTimer();
+        // Create Clip in OBJECTS
+        OBJECTS.CLIP = new Clip();
 
         loginStage.close();
 

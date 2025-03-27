@@ -536,6 +536,7 @@ Button:
 
 .rich-text .caret {
     -fx-stroke: #ffff00;
+    -fx-min-height: 1em;
 }
 
 

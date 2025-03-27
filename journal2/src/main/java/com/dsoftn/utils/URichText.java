@@ -2,6 +2,10 @@ package com.dsoftn.utils;
 
 import java.util.regex.Pattern;
 
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
+import javax.swing.text.rtf.RTFEditorKit;
+
 import javafx.scene.paint.Color;
 
 public class URichText {
@@ -89,4 +93,20 @@ public class URichText {
         return String.format("#%02X%02X%02X%02X", r, g, b, a);
     }
 
+    public static String convertRtfToPlainText(String rtf) {
+        if (rtf == null) return null;
+        
+        RTFEditorKit rtfParser = new RTFEditorKit();
+        Document doc = new DefaultStyledDocument();
+        
+        try {
+            rtfParser.read(new java.io.StringReader(rtf), doc, 0);
+            return doc.getText(0, doc.getLength()).trim();
+        } catch (Exception e) {
+            UError.exception("UJavaFX.convertRtfToPlainText: Failed to convert RTF to plain text", e);
+            return null;
+        }
+    }
+
+    
 }

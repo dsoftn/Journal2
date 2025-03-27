@@ -4,11 +4,10 @@ import com.dsoftn.ELEMENTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.IElementController;
-import com.dsoftn.models.StyleSheet;
+import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.TextHandler;
 import com.dsoftn.utils.UJavaFX;
-import com.dsoftn.utils.URichText;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,12 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import org.fxmisc.richtext.InlineCssTextArea;
-import org.fxmisc.richtext.model.PlainTextChange;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.fxmisc.richtext.model.TwoDimensional;
 
 
 public class TextInputController implements IElementController {
@@ -38,14 +31,13 @@ public class TextInputController implements IElementController {
     private VBox vLayout = null;
     private String receiverID = null;
     private IBaseController parentController = null;
-    private StyleSheet css = new StyleSheet();
     private TextEditToolbarController toolbarController = null;
     private TextHandler textHandler = null;
 
     // FXML variables
     @FXML
     private HBox hBoxRichText; // Here goes rich text widget
-        private RTWidget rTxtRichText = new RTWidget(css);
+        private RTWidget rTxtRichText = new RTWidget(); // Rich text widget
 
     @FXML
     private HBox hBoxControls;
@@ -120,9 +112,21 @@ public class TextInputController implements IElementController {
     }
 
     @Override
+    public boolean canBeClosed() {
+        if (toolbarController != null) {
+            if (!toolbarController.canBeClosed()) {
+                return false;
+            }
+        }   
+        
+        return true;
+    }
+
+    @Override
     public void calculateData() {
         // Add Rich text
         hBoxRichText.getChildren().add(rTxtRichText);
+        HBox.setHgrow(rTxtRichText, Priority.ALWAYS);
 
         // Create toolbar
         toolbarController = ELEMENTS.getTextEditToolbarController(stage);
@@ -132,7 +136,7 @@ public class TextInputController implements IElementController {
         this.root.getChildren().add(0, toolbarController.getRoot());
 
         // Create TextHandler
-        textHandler = new TextHandler(rTxtRichText, toolbarController);
+        this.textHandler = new TextHandler(rTxtRichText, toolbarController);
 
         setupWidgetsText();
         setupWidgetsAppearance();
@@ -151,9 +155,11 @@ public class TextInputController implements IElementController {
     public void setBehavior(Behavior behavior) {
         switch (behavior) {
             case BLOCK_NAME:
+                StyleSheetChar css = new StyleSheetChar();
+                css.setFontName(OBJECTS.SETTINGS.getvSTRING("BlockNameFontName"));
                 css.setFontSize(OBJECTS.SETTINGS.getvINTEGER("BlockNameFontSize"));
+                rTxtRichText.setCss(css);
                 rTxtRichText.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockNameMinTextWidgetHeight"));
-                System.out.println(css.getCss());
                 break;
         }
     }

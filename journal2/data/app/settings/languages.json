@@ -1092,6 +1092,41 @@
         "languageCode": "en",
         "creationDate": "2025.03.23 17:38:10",
         "userData": ""
+      },
+      "text_ForegroundColor": {
+        "key": "text_ForegroundColor",
+        "value": "Foreground color",
+        "languageCode": "en",
+        "creationDate": "2025.03.25 12:28:12",
+        "userData": ""
+      },
+      "text_AlignLeft": {
+        "key": "text_AlignLeft",
+        "value": "Align left",
+        "languageCode": "en",
+        "creationDate": "2025.03.25 12:29:30",
+        "userData": ""
+      },
+      "text_AlignCenter": {
+        "key": "text_AlignCenter",
+        "value": "Align center",
+        "languageCode": "en",
+        "creationDate": "2025.03.25 12:29:52",
+        "userData": ""
+      },
+      "text_AlignRight": {
+        "key": "text_AlignRight",
+        "value": "Align right",
+        "languageCode": "en",
+        "creationDate": "2025.03.25 12:30:13",
+        "userData": ""
+      },
+      "text_AlignJustify": {
+        "key": "text_AlignJustify",
+        "value": "Align justify",
+        "languageCode": "en",
+        "creationDate": "2025.03.26 10:29:13",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -2185,6 +2220,41 @@
         "value": "Zameni sve stavke",
         "languageCode": "sr-lat",
         "creationDate": "2025.03.23 17:38:10",
+        "userData": ""
+      },
+      "text_ForegroundColor": {
+        "key": "text_ForegroundColor",
+        "value": "Boja slova",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.25 12:28:12",
+        "userData": ""
+      },
+      "text_AlignLeft": {
+        "key": "text_AlignLeft",
+        "value": "Poravnavanje levo",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.25 12:29:30",
+        "userData": ""
+      },
+      "text_AlignCenter": {
+        "key": "text_AlignCenter",
+        "value": "Poravnanje centar",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.25 12:29:52",
+        "userData": ""
+      },
+      "text_AlignRight": {
+        "key": "text_AlignRight",
+        "value": "Poravnanje desno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.25 12:30:13",
+        "userData": ""
+      },
+      "text_AlignJustify": {
+        "key": "text_AlignJustify",
+        "value": "Poravnanje ravnomerno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.03.26 10:29:13",
         "userData": ""
       }
     }
