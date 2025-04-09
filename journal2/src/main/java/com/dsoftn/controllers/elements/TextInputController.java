@@ -127,6 +127,7 @@ public class TextInputController implements IElementController {
         // Add Rich text
         hBoxRichText.getChildren().add(rTxtRichText);
         HBox.setHgrow(rTxtRichText, Priority.ALWAYS);
+        rTxtRichText.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
 
         // Create toolbar
         toolbarController = ELEMENTS.getTextEditToolbarController(stage);
@@ -158,7 +159,7 @@ public class TextInputController implements IElementController {
                 StyleSheetChar css = new StyleSheetChar();
                 css.setFontName(OBJECTS.SETTINGS.getvSTRING("BlockNameFontName"));
                 css.setFontSize(OBJECTS.SETTINGS.getvINTEGER("BlockNameFontSize"));
-                rTxtRichText.setCss(css);
+                rTxtRichText.setCssChar(css);
                 rTxtRichText.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockNameMinTextWidgetHeight"));
                 break;
         }

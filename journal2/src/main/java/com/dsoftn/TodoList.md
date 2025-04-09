@@ -35,7 +35,44 @@
   - Password (Password manager)
   - Custom (Custom block)
   
+## StyledTextArea CSS +
+.styled-text-area .text {
+    /* the color of the text's background color */
+    -rtfx-background-color: <paint>;
 
+    /* the color of the border around a section of text */
+    -rtfx-border-stroke-color: <paint>;
+
+    /* the width of the border around a section of text */
+    -rtfx-border-stroke-width: <size>;
+
+    /* the type of the border around a section of text */
+    -rtfx-border-stroke-type: [inside | outside | centered];
+
+    /* the border's dash lengths: allows dot/dash style borders */
+    -rtfx-border-stroke-dash-array: <size>[ <size>]+;
+
+    /* the color of the underline */
+    -rtfx-underline-color: <paint>;
+
+    /* the width of the underline */
+    -rtfx-underline-width: <size>;
+
+    /* the underline's dash lengths: allows dot/dash style lines */
+    -rtfx-underline-dash-array: <size>[ <size>]+;
+
+    /* the StrokeLineCap to use: [ square | butt | round ] 
+       defaults to "square" */
+    -rtfx-underline-cap: <stroke-line-cap>;
+
+    /* the radius used to create waved underline */
+    -rtfx-underline-wave-radius: <size>;
+
+    /* the offset between text and underline */
+    -rtfx-underline-offset: <size>;
+
+    /* the gap for double underlining, i.e: two parallel straight or wavy lines */
+    -rtfx-underline-double-gap: <size>;}
 
 
 

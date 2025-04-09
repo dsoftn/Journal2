@@ -21,7 +21,7 @@ public class TextHandler {
         this.txtWidget = txtWidget;
         this.txtWidget.setTextHandler(this);
         this.txtWidget.setupWidget();
-        msgForToolbar(txtWidget.getCss());
+        msgForToolbar(txtWidget.getCssChar());
         msgForToolbar(txtWidget.getParagraphCss());
     }
 

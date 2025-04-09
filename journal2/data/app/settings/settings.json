@@ -427,5 +427,31 @@
     "creationDate": "2025.03.26 19:05:04",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "PreserveParagraphStyle": {
+    "key": "PreserveParagraphStyle",
+    "value": "false",
+    "defaultValue": "false",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "When user press ENTER new parahraph will be created.\nIf this is True, new paragraph will have same setings as one before.",
+    "creationDate": "2025.03.28 19:08:45",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "BlockName_MinRichTextHeight": {
+    "key": "BlockName_MinRichTextHeight",
+    "value": "50",
+    "defaultValue": "50",
+    "min": "14",
+    "max": "150",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Min widget height when entering block name.",
+    "creationDate": "2025.04.09 21:36:20",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

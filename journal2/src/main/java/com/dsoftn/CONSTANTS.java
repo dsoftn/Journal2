@@ -26,5 +26,7 @@ public class CONSTANTS {
     public static final String DEFAULT_SETTINGS_LANGUAGE_CODE = "en";
     public static final String DATA_STRUCTURE_CORRUPTED_MESSAGE_STRING = "Solution: NONE";
     public static final int DIALOG_MARGIN = 5;
+    public static final String EMPTY_PARAGRAPH_STRING = "\u200B";
+    // public static final String EMPTY_PARAGRAPH_STRING = "8";
 
 }

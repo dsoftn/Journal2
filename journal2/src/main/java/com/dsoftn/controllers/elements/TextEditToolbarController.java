@@ -617,24 +617,28 @@ public class TextEditToolbarController implements IElementController {
     public void onBtnBoldAction() {
         curCharStyle.setBold(!curCharStyle.isBold());
         updateCharStyle(curCharStyle);
+        msgForHandler(curCharStyle);
     }
 
     @FXML
     public void onBtnItalicAction() {
         curCharStyle.setItalic(!curCharStyle.isItalic());
         updateCharStyle(curCharStyle);
+        msgForHandler(curCharStyle);
     }
 
     @FXML
     public void onBtnUnderlineAction() {
         curCharStyle.setUnderline(!curCharStyle.isUnderline());
         updateCharStyle(curCharStyle);
+        msgForHandler(curCharStyle);
     }
 
     @FXML
     public void onBtnStrikeAction() {
         curCharStyle.setStrikethrough(!curCharStyle.isStrikethrough());
         updateCharStyle(curCharStyle);
+        msgForHandler(curCharStyle);
     }
 
     @FXML
