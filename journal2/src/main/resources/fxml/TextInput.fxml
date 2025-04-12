@@ -14,7 +14,7 @@
       </HBox>
       <HBox fx:id="hBoxControls" alignment="CENTER_RIGHT">
          <children>
-            <Button fx:id="btnOk" mnemonicParsing="false" styleClass="button-default" text="Ok" />
+            <Button fx:id="btnOk" mnemonicParsing="false" onAction="#onBtnOkAction" styleClass="button-default" text="Ok" />
          </children>
       </HBox>
    </children>

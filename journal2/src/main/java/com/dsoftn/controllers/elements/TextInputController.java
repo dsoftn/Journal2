@@ -4,7 +4,10 @@ import com.dsoftn.ELEMENTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.IElementController;
+import com.dsoftn.controllers.elements.TextEditToolbarController.AlignmentEnum;
 import com.dsoftn.models.StyleSheetChar;
+import com.dsoftn.models.StyleSheetParagraph;
+import com.dsoftn.services.RTWText;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.TextHandler;
 import com.dsoftn.utils.UJavaFX;
@@ -127,7 +130,6 @@ public class TextInputController implements IElementController {
         // Add Rich text
         hBoxRichText.getChildren().add(rTxtRichText);
         HBox.setHgrow(rTxtRichText, Priority.ALWAYS);
-        rTxtRichText.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
 
         // Create toolbar
         toolbarController = ELEMENTS.getTextEditToolbarController(stage);
@@ -157,10 +159,15 @@ public class TextInputController implements IElementController {
         switch (behavior) {
             case BLOCK_NAME:
                 StyleSheetChar css = new StyleSheetChar();
-                css.setFontName(OBJECTS.SETTINGS.getvSTRING("BlockNameFontName"));
-                css.setFontSize(OBJECTS.SETTINGS.getvINTEGER("BlockNameFontSize"));
+                css.setCss(OBJECTS.SETTINGS.getvSTRING("CssBlockName"));
                 rTxtRichText.setCssChar(css);
+                rTxtRichText.setStyle(css.getCss());
+                StyleSheetParagraph cssParagraph = new StyleSheetParagraph();
+                cssParagraph.setAlignmentEnum(AlignmentEnum.CENTER);
+                // rTxtRichText.setParagraphCss(cssParagraph);
                 rTxtRichText.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockNameMinTextWidgetHeight"));
+                rTxtRichText.setMinHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
+                rTxtRichText.setPrefHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
                 break;
         }
     }
@@ -172,6 +179,14 @@ public class TextInputController implements IElementController {
     }
 
     private void setupWidgetsAppearance() {
+    }
+
+    // FXML methods
+    @FXML
+    private void onBtnOkAction() {
+        RTWText rtwText = rTxtRichText.getRTWTextObject();
+        String result = rtwText.getStyledText(rTxtRichText);
+        System.out.println(result);
     }
 
 

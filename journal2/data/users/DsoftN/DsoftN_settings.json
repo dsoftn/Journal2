@@ -430,13 +430,13 @@
   },
   "PreserveParagraphStyle": {
     "key": "PreserveParagraphStyle",
-    "value": "false",
-    "defaultValue": "false",
+    "value": "False",
+    "defaultValue": "False",
     "min": "Null",
     "max": "Null",
     "settingType": 8,
     "dataType": 128,
-    "description": "When user press ENTER new parahraph will be created.\nIf this is True, new paragraph will have same setings as one before.",
+    "description": "When user press ENTER new paragraph will be created.\nIf this is True, new paragraph will have same setings as one before.",
     "creationDate": "2025.03.28 19:08:45",
     "userData": "",
     "canBeSavedInFile": false
@@ -451,6 +451,19 @@
     "dataType": 8,
     "description": "Min widget height when entering block name.",
     "creationDate": "2025.04.09 21:36:20",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "CssBlockName": {
+    "key": "CssBlockName",
+    "value": "-fx-font-family: \u0027Arial\u0027;-fx-font-size: 30px;",
+    "defaultValue": "-fx-font-family: \u0027Arial\u0027;-fx-font-size: 30px;",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "Default text css for block name",
+    "creationDate": "2025.04.10 17:28:21",
     "userData": "",
     "canBeSavedInFile": false
   }

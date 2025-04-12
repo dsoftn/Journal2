@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.dsoftn.CONSTANTS;
+
 public class WordExtractor {
 
     public record WordItem(String word, int index) {}
@@ -16,13 +18,13 @@ public class WordExtractor {
 
     // Constructors
 
-    public WordExtractor() {
-        this.pattern = Pattern.compile("[^\\s~!@#$%^&*()_+=`{}|\\[\\]\\\\:\";'<>?,./-]+");
+    public WordExtractor(String text) {
+        this.pattern = Pattern.compile("[^\\s~!@#$%^&*()_+=`{}|\\[\\]\\\\:\";'<>?,./-" + CONSTANTS.EMPTY_PARAGRAPH_STRING + "]+");
+        this.text = text;
     }
 
-    public WordExtractor(String text) {
-        this.pattern = Pattern.compile("[^\\s~!@#$%^&*()_+=`{}|\\[\\]\\\\:\";'<>?,./-]+");
-        this.text = text;
+    public WordExtractor() {
+        this.pattern = Pattern.compile("[^\\s~!@#$%^&*()_+=`{}|\\[\\]\\\\:\";'<>?,./-" + CONSTANTS.EMPTY_PARAGRAPH_STRING + "]+");
     }
 
     // Getters and setters

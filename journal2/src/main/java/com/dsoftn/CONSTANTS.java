@@ -26,7 +26,9 @@ public class CONSTANTS {
     public static final String DEFAULT_SETTINGS_LANGUAGE_CODE = "en";
     public static final String DATA_STRUCTURE_CORRUPTED_MESSAGE_STRING = "Solution: NONE";
     public static final int DIALOG_MARGIN = 5;
-    public static final String EMPTY_PARAGRAPH_STRING = "\u200B";
-    // public static final String EMPTY_PARAGRAPH_STRING = "8";
+    public static final String EMPTY_PARAGRAPH_STRING = "\u200B"; // Zero-width space at beginning of each paragraph
+    public static final char EMPTY_PARAGRAPH_CHAR = '\u200B'; // Zero-width space at beginning of each paragraph
+    // public static final String EMPTY_PARAGRAPH_STRING = "\u00A0"; // Zero-width space at beginning of each paragraph
+    // public static final char EMPTY_PARAGRAPH_CHAR = '\u00A0'; // Zero-width space at beginning of each paragraph
 
 }
