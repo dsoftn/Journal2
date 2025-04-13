@@ -6,7 +6,7 @@ import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
-import com.dsoftn.services.TextHandler;
+import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.ColorPopup;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;

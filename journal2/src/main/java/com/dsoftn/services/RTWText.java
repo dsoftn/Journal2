@@ -18,8 +18,6 @@ public class RTWText {
     private Integer endIndex = null;
     private String resultString = null;
 
-    private String styledText = null;
-
 
     // Constructor
     public RTWText(String text, List<StyleSheetChar> cssChars, List<StyleSheetParagraph> cssParagraphs, Integer startIndex, Integer endIndex) {
@@ -116,10 +114,11 @@ public class RTWText {
     public String getPlainText() { return this.text.replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, ""); }
 
     public static String transformToPlainText(String textWithZeroWidthSpace) {
-        return textWithZeroWidthSpace.replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "");
+        return textWithZeroWidthSpace.replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "").replaceAll("\\R", "\n");
     }
 
     public static String transformToTextWithZeroWidthSpace(String plainText) {
+        plainText = plainText.replaceAll("\\R", "\n");
         String result = "";
 
         for (String line : plainText.split(Pattern.quote("\n"))) {
@@ -133,8 +132,41 @@ public class RTWText {
         return result;
     }
 
-    public static String getStyledTextHeader() {
-        return CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "RTW";
+    public static boolean isStyledText(String text) {
+        return text.startsWith(CONSTANTS.RTW_TEXT_HEADER);
+    }
+
+    public static RTWText copy(RTWidget rtwWidget) {
+        if (rtwWidget.getSelectedText().isEmpty()) {
+            return new RTWText();
+        }
+
+        RTWText rtwText = new RTWText();
+        rtwText.text = rtwWidget.getSelectedText();
+        rtwText.cssChars = rtwWidget.cssStyles.subList(rtwWidget.getSelection().getStart(), rtwWidget.getSelection().getEnd());
+        return rtwText;
+    }
+
+    public static void paste(RTWidget rtwWidget, String styledText) {
+        if (!isStyledText(styledText)) {
+            return;
+        }
+
+        RTWText rtwText = new RTWText(styledText);
+        if (rtwText.text.isEmpty()) {
+            return;
+        }
+
+        if (rtwText.text.startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
+            rtwText.text = rtwText.text.substring(1);
+            rtwText.cssChars.remove(0);
+        }
+        if (rtwText.text.endsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING) && !rtwText.text.contains("\n")) {
+            rtwText.text = rtwText.text.substring(0, rtwText.text.length() - 1);
+            rtwText.cssChars.remove(rtwText.cssChars.size() - 1);
+        }
+
+        rtwWidget.pastePlainText(null, rtwText.text, rtwText.cssChars);
     }
 
 
@@ -151,13 +183,9 @@ public class RTWText {
         boolean isText = false;
 
         for (String line : styledText.split(Pattern.quote("\n"))) {
-            if (line.equals(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "T")) {
+            if (line.equals(CONSTANTS.RTW_TEXT_CONTENT)) {
                 isText = true;
                 continue;
-            }
-            if (line.equals(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "-T")) {
-                isText = false;
-                break;
             }
             if (!isText) {
                 continue;
@@ -182,11 +210,11 @@ public class RTWText {
         Integer end = null;
 
         for (String line : styledText.split(Pattern.quote("\n"))) {
-            if (line.equals(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "C")) {
+            if (line.equals(CONSTANTS.RTW_TEXT_CHAR_STYLE_START)) {
                 isCharStyle = true;
                 continue;
             }
-            if (line.equals(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "-C")) {
+            if (line.equals(CONSTANTS.RTW_TEXT_CHAR_STYLE_END)) {
                 isCharStyle = false;
                 break;
             }
@@ -219,11 +247,11 @@ public class RTWText {
         Integer end = null;
 
         for (String line : styledText.split(Pattern.quote("\n"))) {
-            if (line.equals(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "P")) {
+            if (line.equals(CONSTANTS.RTW_TEXT_PARAGRAPH_STYLE_START)) {
                 isParagraphStyle = true;
                 continue;
             }
-            if (line.equals(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "-P")) {
+            if (line.equals(CONSTANTS.RTW_TEXT_PARAGRAPH_STYLE_END)) {
                 isParagraphStyle = false;
                 break;
             }
@@ -248,15 +276,15 @@ public class RTWText {
     }
 
     private String getResultHeader() {
-        return CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "RTW";
+        return CONSTANTS.RTW_TEXT_HEADER;
     }
 
     private String getResultCharStyle() {
-        String result = CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "C";
+        String result = CONSTANTS.RTW_TEXT_CHAR_STYLE_START;
 
         if (cssChars == null) {
             result += "\n";
-            result += CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "-C";
+            result += CONSTANTS.RTW_TEXT_CHAR_STYLE_END;
             return result;
         }
         result += "\n";
@@ -290,16 +318,16 @@ public class RTWText {
             curCss = cssChars.get(i);
         }
 
-        result += CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "-C";
+        result += CONSTANTS.RTW_TEXT_CHAR_STYLE_END;
         return result;
     }
 
     private String getResultParagraphStyle() {
-        String result = CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "P";
+        String result = CONSTANTS.RTW_TEXT_PARAGRAPH_STYLE_START;
 
         if (cssParagraphs == null) {
             result += "\n";
-            result += CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "-P";
+            result += CONSTANTS.RTW_TEXT_PARAGRAPH_STYLE_END;
             return result;
         }
         result += "\n";
@@ -333,13 +361,13 @@ public class RTWText {
             curCss = cssParagraphs.get(i);
         }
 
-        result += CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "-P";
+        result += CONSTANTS.RTW_TEXT_PARAGRAPH_STYLE_END;
         return result;
 
     }
 
     private String getResultText() {
-        return CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(3) + "T" + "\n" + this.text;
+        return CONSTANTS.RTW_TEXT_CONTENT + "\n" + this.text;
     }
 
 

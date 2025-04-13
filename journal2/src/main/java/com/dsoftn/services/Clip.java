@@ -44,7 +44,7 @@ public class Clip {
 
     public String getClipText() {
         if (sysClip.hasString()) {
-            return sysClip.getString();
+            return sysClip.getString().replaceAll("\\R", "\n");
         }
         return null;
     }
@@ -121,6 +121,12 @@ public class Clip {
             return sysClip.getUrl();
         }
         return null;
+    }
+
+    // Check if clipboard is empty
+
+    public boolean hasText() {
+        return sysClip.hasString();
     }
 
     // Clear system clipboard

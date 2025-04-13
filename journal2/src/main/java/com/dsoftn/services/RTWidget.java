@@ -22,8 +22,10 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
+import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UString;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
@@ -114,17 +116,55 @@ public class RTWidget extends StyledTextArea<String, String> {
     }
 
     public void msgFromHandler(StyleSheetChar styleSheet) {
+        // If has selection
+        if (!this.getSelectedText().isEmpty()) {
+            int start = this.getSelection().getStart();
+            if (start > 0 && this.getText().charAt(start - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+                start--;
+            }
+            int end = this.getSelection().getEnd();
+            this.cssChar = styleSheet;
+            this.cssCharPrev = styleSheet;
+            for (int i = start; i < end; i++) {
+                this.cssStyles.set(i, styleSheet.duplicate());
+            }
+            this.setStyle(start, end, styleSheet.getCss());
+            fixHeight();
+            return;
+        }
+
         this.cssChar = styleSheet;
+        this.cssCharPrev = styleSheet;
+        fixHeight();
     }
 
-    public void msgFromHandler(StyleSheetParagraph styleSheet, int paragraphIndex) {
+    public void msgFromHandler(StyleSheetParagraph styleSheet, Integer paragraphIndex) {
+        // If has selection
+        if (!this.getSelectedText().isEmpty()) {
+            int start = getParIndex(this.getSelection().getStart());
+            int end = getParIndex(this.getSelection().getEnd() - 1);
+            this.cssParagraph = styleSheet;
+            this.cssParagraphPrev = styleSheet;
+            for (int i = start; i <= end; i++) {
+                this.cssParagraphStyles.set(i, styleSheet.duplicate());
+                this.setParagraphStyle(i, styleSheet.getCss());
+            }
+            fixHeight();
+            return;
+        }
+
+        if (paragraphIndex == null) {
+            paragraphIndex = this.getCurrentParagraph();
+        }
         this.cssParagraph = styleSheet;
+        this.cssParagraphPrev = styleSheet;
         this.cssParagraphStyles.set(paragraphIndex, styleSheet.duplicate());
         this.setParagraphStyle(paragraphIndex, styleSheet.getCss());
+        fixHeight();
     }
     
     public void msgFromHandler(StyleSheetParagraph styleSheet) {
-        msgFromHandler(styleSheet, this.getCurrentParagraph());
+        msgFromHandler(styleSheet, null);
     }
     
     public void setCssChar(StyleSheetChar css) {
@@ -231,7 +271,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             text = "";
         }
 
-        if (text.startsWith(RTWText.getStyledTextHeader())) {
+        if (RTWText.isStyledText(text)) {
             RTWText rtwText = new RTWText(text);
             rtwText.setDataToRTWidget(this);
         } else {
@@ -263,16 +303,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.multiPlainChanges()
         .successionEnds(Duration.ofMillis(50))
         .subscribe(change -> {
-            Platform.runLater(() -> {
-                Double height = this.totalHeightEstimateProperty().getValue();
-                if (height != null) {
-                    height = height + 2;
-                    if (height < minTextWidgetHeight) {
-                        height = (double) minTextWidgetHeight;
-                    }
-                    this.setPrefHeight(height);
-                }
-            });
+            fixHeight();
         });
 
         // Mouse pressed
@@ -376,7 +407,35 @@ public class RTWidget extends StyledTextArea<String, String> {
             // END + CTRL
             else if (event.getCode() == KeyCode.END && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 handleKeyPressed_END_CTRL(event);
-            } else {
+            }
+            // CTRL + C
+            else if (event.getCode() == KeyCode.C && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                event.consume();
+                copySelectedText();
+            }
+            // INSERT + CTRL
+            else if (event.getCode() == KeyCode.INSERT && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                event.consume();
+                copySelectedText();
+            }
+            // CTRL + V
+            else if (event.getCode() == KeyCode.V && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                event.consume();
+                pasteText();
+            }
+            // INSERT + SHIFT
+            else if (event.getCode() == KeyCode.INSERT && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
+                event.consume();
+                pasteText();
+            }
+            // CTRL + A
+            else if (event.getCode() == KeyCode.A && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                event.consume();
+                this.selectAll();
+            }
+            
+            
+            else {
                 System.out.println("Unknown key pressed: " + event.getCode());
                 event.consume();
             }
@@ -403,6 +462,44 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.requestFocus();
     }
 
+    public void copySelectedText() {
+        if (this.getSelectedText().isEmpty()) {
+            return;
+        }
+
+        busy = true;
+
+        RTWText rtwCopiedText = RTWText.copy(this);
+        OBJECTS.CLIP.setClipText(rtwCopiedText.getStyledText());
+
+        Platform.runLater(() -> {
+            this.busy = false;
+        });
+    }
+
+    public void pasteText() {
+        if (!OBJECTS.CLIP.hasText()) {
+            return;
+        }
+
+        busy = true;
+
+        deleteSelectedText();
+
+        Platform.runLater(() -> {
+            if (RTWText.isStyledText(OBJECTS.CLIP.getClipText())) {
+                RTWText.paste(this, OBJECTS.CLIP.getClipText());
+            } else {
+                pastePlainText(null, OBJECTS.CLIP.getClipText());
+            }
+
+            Platform.runLater(() -> {
+                this.busy = false;
+            });
+        });
+    }
+
+
     // Private methods
 
     private void HELPER_info(String msg) {
@@ -420,9 +517,22 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         for (int i = this.getParagraphs().size() - 1; i >= 0; i--) {
             if (this.getParagraph(i).getText().isEmpty() || !this.getParagraph(i).getText().startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
-                this.cssStyles.add(i, getPredictedCssChar(i));
+                int positionToInsert = getPosGlobal(i, 0);
+                this.cssStyles.add(positionToInsert, getPredictedCssChar(positionToInsert));
                 if (curCaretPosition >= getPosGlobal(i, 0)) { curCaretPosition++; }
-                this.insertText(i, 0, CONSTANTS.EMPTY_PARAGRAPH_STRING);
+                this.insertText(positionToInsert, CONSTANTS.EMPTY_PARAGRAPH_STRING);
+                this.setStyle(positionToInsert, positionToInsert + 1, this.cssStyles.get(positionToInsert).getCss());
+            }
+            boolean hasChanges = true;
+            while (hasChanges) {
+                hasChanges = false;
+                if (this.getParagraph(i).getText().startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(2))) {
+                    int positionToRemove = getPosGlobal(i, 0);
+                    this.cssStyles.remove(positionToRemove);
+                    if (curCaretPosition >= getPosGlobal(i, 0)) { curCaretPosition--; }
+                    this.deleteText(positionToRemove, positionToRemove + 1);
+                    hasChanges = true;
+                }
             }
         }
         
@@ -475,6 +585,24 @@ public class RTWidget extends StyledTextArea<String, String> {
         if (this.cssStyles.size() > globalPosition) {
             this.setStyle(globalPosition, globalPosition + 1, this.cssStyles.get(globalPosition).getCss());
         }
+    }
+
+    // Height
+    private void fixHeight() {
+        Platform.runLater(() -> {
+            PauseTransition pause = new PauseTransition(javafx.util.Duration.millis(50));
+            pause.setOnFinished(e -> {
+                Double height = this.totalHeightEstimateProperty().getValue();
+                if (height != null) {
+                    height = height + 2;
+                    if (height < minTextWidgetHeight) {
+                        height = (double) minTextWidgetHeight;
+                    }
+                    this.setPrefHeight(height);
+                }
+            });
+            pause.play();
+        });
     }
 
     private StyleSheetChar getPredictedCssChar(Integer globalPosition) {
@@ -536,8 +664,77 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     }
 
+    private boolean deleteSelectedText() {
+        if (this.getSelectedText().isEmpty()) {
+            return false;
+        }
+        int start = this.getSelection().getStart();
+        int end = this.getSelection().getEnd();
+        
+        this.cssStyles.subList(start, end).clear();
+        this.cssParagraphStyles.subList(getParIndex(start), getParIndex(end)).clear();
+        
+        this.deleteText(start, end);
+        this.moveTo(start);
+        fixSafeCharInAllParagraphs();
+        return true;
+    }
+
+    public void pastePlainText(Integer globalPosition, String text, List<StyleSheetChar> cssList) {
+        if (globalPosition == null) {
+            globalPosition = this.getCaretPosition();
+        }
+        text = RTWText.transformToPlainText(text);
+
+        StyleSheetChar cssC = getPredictedCssChar(globalPosition);
+        StyleSheetParagraph cssP = this.cssParagraphStyles.get(getParIndex(globalPosition)).duplicate();
+
+        for (int i = 0; i < text.length(); i++) {
+            if (cssList != null && cssList.size() > i) {
+                cssC = cssList.get(i).duplicate();
+            }
+            this.cssStyles.add(globalPosition + i, cssC.duplicate());
+        }
+
+        for (int i = getParIndex(globalPosition) + 1; i < getParIndex(globalPosition ) + 1 + UString.Count(text, "\n"); i++) {
+            if (OBJECTS.SETTINGS.getvBOOLEAN("PreserveParagraphStyle")) {
+                this.cssParagraphStyles.add(i, cssP.duplicate());
+            } else {
+                this.cssParagraphStyles.add(i, new StyleSheetParagraph());
+            }
+        }
+        
+        this.insertText(globalPosition, text);
+
+        for (int i = 0; i < text.length(); i++) {
+            if (cssList != null && cssList.size() > i) {
+                cssC = cssList.get(i).duplicate();
+            }
+            this.setStyle(globalPosition + i, globalPosition + i + 1, cssC.getCss());
+        }
+
+        for (int i = getParIndex(globalPosition) + 1; i < getParIndex(globalPosition ) + 1 + UString.Count(text, "\n"); i++) {
+            if (OBJECTS.SETTINGS.getvBOOLEAN("PreserveParagraphStyle")) {
+                this.setParagraphStyle(i, cssP.getCss());
+            } else {
+                this.setParagraphStyle(i, new StyleSheetParagraph().getCss());
+            }
+        }
+
+        fixSafeCharInAllParagraphs();
+    }
+
+    private void pastePlainText(Integer globalPosition, String text) {
+        pastePlainText(globalPosition, text, null);
+    }
+
     private void handleMousePressed(MouseEvent event) {
-        // Nothing to implement yet
+        busy = true;
+
+        Platform.runLater(() -> {
+            fixCaretPosition(this.getCaretPosition());
+            this.busy = false;
+        });
     }
 
     private void handleKeyPressed_INSERT() {
@@ -559,6 +756,8 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.busy = true;
 
         event.consume();
+
+        deleteSelectedText();
 
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
@@ -636,6 +835,16 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_DELETE(KeyEvent event) {
         this.busy = true;
+
+        if (!this.getSelectedText().isEmpty()) {
+            event.consume();
+            deleteSelectedText();
+            Platform.runLater(() -> {
+                this.busy = false;
+            });
+            return;
+        }
+
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
         
@@ -714,6 +923,16 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_BACKSPACE(KeyEvent event) {
         this.busy = true;
+
+        if (!this.getSelectedText().isEmpty()) {
+            event.consume();
+            deleteSelectedText();
+            Platform.runLater(() -> {
+                this.busy = false;
+            });
+            return;
+        }
+
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
         
@@ -1218,6 +1437,9 @@ public class RTWidget extends StyledTextArea<String, String> {
             { return; }
 
         this.busy = true;
+
+        deleteSelectedText();
+
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
 
@@ -1296,7 +1518,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         }
 
         this.busy = true;
-        System.out.println("caret position changed");
+        System.out.println("caret position changed. old: " + oldPos + "  new: " + newPos);
 
         demarkCharOVERWRITE(oldPos);
         markCharOVERWRITE(newPos);

@@ -9,7 +9,7 @@ import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWText;
 import com.dsoftn.services.RTWidget;
-import com.dsoftn.services.TextHandler;
+import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UJavaFX;
 
 import javafx.fxml.FXML;
