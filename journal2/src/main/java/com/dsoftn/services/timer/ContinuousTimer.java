@@ -44,6 +44,15 @@ public class ContinuousTimer implements ITimer {
     }
     
     @Override
+    public void resetInterval() {
+        endTimeMS = OBJECTS.GLOBAL_TIMER.getCurrentTimeMS() + intervalMS;
+    }
+
+    public void resetInterval(long forDurationMS) {
+        endTimeMS = OBJECTS.GLOBAL_TIMER.getCurrentTimeMS() + forDurationMS;
+    }
+
+    @Override
     public void nowMS(long ms) {
         if (ms >= endTimeMS && active) {
             action.run();

@@ -466,5 +466,18 @@
     "creationDate": "2025.04.10 17:28:21",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "IntervalBetweenTextChangesMS": {
+    "key": "IntervalBetweenTextChangesMS",
+    "value": "1000",
+    "defaultValue": "1000",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Time passed between text changes. Used for Undo/Redo.",
+    "creationDate": "2025.04.18 10:57:31",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

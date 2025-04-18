@@ -233,7 +233,17 @@ public class TextEditToolbarController implements IElementController {
     // Public methods
 
     public void msgFromHandler(String messageSTRING) {
-        // TODO Auto-generated method stub
+        // Process message from handler
+        if (messageSTRING.equals("UNDO:" + true)) {
+            btnUndo.setDisable(false);
+        } else if (messageSTRING.equals("UNDO:" + false)) {
+            btnUndo.setDisable(true);
+        } else if (messageSTRING.equals("REDO:" + true)) {
+            btnRedo.setDisable(false);
+        } else if (messageSTRING.equals("REDO:" + false)) {
+            btnRedo.setDisable(true);
+        }
+
     }
 
     public void msgFromHandler(StyleSheetChar styleSheet) {
@@ -704,6 +714,16 @@ public class TextEditToolbarController implements IElementController {
         setAlignment(AlignmentEnum.JUSTIFY);
         curParagraphStyle.setAlignmentEnum(AlignmentEnum.JUSTIFY);
         msgForHandler(curParagraphStyle);
+    }
+
+    @FXML
+    public void onBtnUndoAction() {
+        msgForHandler(TextToolbarActionEnum.UNDO.name());
+    }
+
+    @FXML
+    public void onBtnRedoAction() {
+        msgForHandler(TextToolbarActionEnum.REDO.name());
     }
 
 }

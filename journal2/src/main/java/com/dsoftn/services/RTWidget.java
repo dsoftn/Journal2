@@ -23,10 +23,13 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.TextHandler;
+import com.dsoftn.services.timer.ContinuousTimer;
 import com.dsoftn.utils.UString;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -56,10 +59,12 @@ public class RTWidget extends StyledTextArea<String, String> {
     public List<StyleSheetParagraph> cssParagraphStyles = new ArrayList<>();
     private TextHandler textHandler = null;
     private boolean ignoreTextChange = false;
-    private boolean ignoreCaretPositionChange = false;
-    private boolean ignoreTextChangePERMANENT = false;
+    public boolean ignoreCaretPositionChange = false;
+    public boolean ignoreTextChangePERMANENT = false;
     private boolean ignoreCaretPositionChangePERMANENT = false;
-    private boolean busy = false;
+    public boolean busy = false;
+    boolean stateChanged = true; // Used with Undo/Redo
+    ContinuousTimer timer = new ContinuousTimer(OBJECTS.SETTINGS.getvINTEGER("IntervalBetweenTextChangesMS"));
 
     public boolean isOverwriteMode = false;
    
@@ -116,6 +121,7 @@ public class RTWidget extends StyledTextArea<String, String> {
     }
 
     public void msgFromHandler(StyleSheetChar styleSheet) {
+        this.timer.resetInterval();
         // If has selection
         if (!this.getSelectedText().isEmpty()) {
             int start = this.getSelection().getStart();
@@ -139,6 +145,7 @@ public class RTWidget extends StyledTextArea<String, String> {
     }
 
     public void msgFromHandler(StyleSheetParagraph styleSheet, Integer paragraphIndex) {
+        this.timer.resetInterval();
         // If has selection
         if (!this.getSelectedText().isEmpty()) {
             int start = getParIndex(this.getSelection().getStart());
@@ -264,9 +271,34 @@ public class RTWidget extends StyledTextArea<String, String> {
     }
 
     /**
+     * Sets RTWText object in widget
+     */
+    public void setRTWTextObject(RTWText rtwText) {
+        busy = true;
+        ignoreTextChangePERMANENT = true;
+        ignoreCaretPositionChangePERMANENT = true;
+
+        rtwText.setDataToRTWidget(this);
+
+        this.requestFollowCaret();
+        this.requestFocus();
+        this.moveTo(0, 1);
+
+        Platform.runLater(() -> {
+            ignoreTextChangePERMANENT = false;
+            ignoreCaretPositionChangePERMANENT = false;
+            this.busy = false;
+        });
+    }
+
+    /**
      * Sets styled text, if plain text is passed then it will be set as plain text
      */
     public void setTextStyled(String text) {
+        busy = true;
+        ignoreTextChangePERMANENT = true;
+        ignoreCaretPositionChangePERMANENT = true;
+
         if (text == null) {
             text = "";
         }
@@ -277,6 +309,17 @@ public class RTWidget extends StyledTextArea<String, String> {
         } else {
             this.setTextPlain(text);
         }
+
+        this.moveTo(0, 1);
+
+        Platform.runLater(() -> {
+            ignoreTextChangePERMANENT = false;
+            ignoreCaretPositionChangePERMANENT = false;
+            this.requestFollowCaret();
+            this.requestFocus();
+
+            this.busy = false;
+        });
     }
 
     public void setupWidget() {
@@ -314,6 +357,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         
         // Key pressed
         this.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            this.timer.resetInterval();
             if (this.busy) {
                 System.out.println("Busy: KEY PRESSED");
                 event.consume();
@@ -449,6 +493,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         // Key typed
         this.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            this.timer.resetInterval();
             if (this.busy) {
                 System.out.println("Busy: KEY TYPED");
                 event.consume();
@@ -459,6 +504,8 @@ public class RTWidget extends StyledTextArea<String, String> {
         });
         
         
+        this.timer.play(() -> takeSnapshot());
+
         this.requestFocus();
     }
 
@@ -502,6 +549,20 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     // Private methods
 
+    /**
+     * Sends request to Handler to take snapshot that can be used in Undo/Redo
+     */
+    private void takeSnapshot() {
+        if (this.busy) {
+            return;
+        }
+        this.busy = true;
+        textHandler.msgFromWidget("TAKE_SNAPSHOT");
+        Platform.runLater(() -> {
+            this.busy = false;
+        });
+    }
+
     private void HELPER_info(String msg) {
         System.out.println("--- " + msg + " ---");
         System.out.println("Text LENGTH: " + this.getText().length() + "  cssChar LENGTH: " + this.cssStyles.size() + "  cssParagraph LENGTH: " + this.cssParagraphStyles.size());
@@ -542,6 +603,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             fixCaretPosition(moveToPos);
             Platform.runLater(() -> {
                 cssChar = getPredictedCssChar(moveToPos);
+                cssParagraph = this.cssParagraphStyles.get(this.getParIndex(moveToPos)).duplicate();
                 ignoreCaretPositionChangePERMANENT = false;
                 ignoreTextChangePERMANENT = false;
                 sendToHandlerCharAndParagraphCurrentStyle();
@@ -1512,6 +1574,7 @@ public class RTWidget extends StyledTextArea<String, String> {
     }
 
     private void handleCaretPositionChange(Object obs, Integer oldPos, Integer newPos) {
+        // System.out.println("caret position changed. old: " + oldPos + "  new: " + newPos);
         if (this.ignoreCaretPositionChange || this.ignoreCaretPositionChangePERMANENT) {
             this.ignoreCaretPositionChange = false;
             return;

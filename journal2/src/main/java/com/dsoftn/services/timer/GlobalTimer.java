@@ -39,6 +39,10 @@ public class GlobalTimer {
         }
     }
 
+    public long getCurrentTimeMS() {
+        return System.currentTimeMillis();
+    }
+
     // Private methods
     private void onTick() {
         Iterator<WeakReference<ITimer>> iterator = timers.iterator();

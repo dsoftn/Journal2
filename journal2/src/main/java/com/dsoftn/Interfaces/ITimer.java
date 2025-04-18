@@ -12,4 +12,6 @@ public interface ITimer {
 
     public boolean isActive();
 
+    public void resetInterval();
+
 }

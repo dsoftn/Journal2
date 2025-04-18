@@ -7,6 +7,8 @@ import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.UError;
 
+import javafx.application.Platform;
+
 
 public class TextHandler {
     public record Msg(String message) {}
@@ -14,6 +16,7 @@ public class TextHandler {
     // Variables
     private RTWidget txtWidget = null;
     private TextEditToolbarController toolbarController = null;
+    private UndoHandler undoHandler = new UndoHandler();
 
     // Constructor
     public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController) {
@@ -24,35 +27,63 @@ public class TextHandler {
         this.txtWidget.setupWidget();
         msgForToolbar(txtWidget.getCssChar());
         msgForToolbar(txtWidget.getParagraphCss());
+        msgForToolbar("UNDO:" + undoHandler.canUndo());
+        msgForToolbar("REDO:" + undoHandler.canRedo());
     }
 
     // Public methods
     public void msgFromToolbar(String messageSTRING) {
-        String[] messageParts = messageSTRING.split("\n");
-        // Check if message messageSTRING length is even
-        if (messageParts.length % 2 != 0) {
-            UError.error("TextHandler.messageReceived: Message messageSTRING length is odd.", "Message messageSTRING length is odd.");
-            return;
+        // String[] messageParts = messageSTRING.split("\n");
+        // // Check if message messageSTRING length is even
+        // if (messageParts.length % 2 != 0) {
+        //     UError.error("TextHandler.messageReceived: Message messageSTRING length is odd.", "Message messageSTRING length is odd.");
+        //     return;
+        // }
+
+        // for (int i = 0; i < messageParts.length; i = i + 2) {
+        //     if (i + 1 >= messageParts.length) {
+        //         break;
+        //     }
+
+        //     // Process information from toolbar
+
+        //     if (messageParts[i].equals(TextToolbarActionEnum.FOCUS_TO_TEXT.name())) {
+        //         txtWidget.requestFocus();
+        //     }
+        //     else if (messageParts[i].equals(TextToolbarActionEnum.UNDO.name())) {
+        //         undoHandler.undo(txtWidget);
+        //     }
+        //     else if (messageParts[i].equals(TextToolbarActionEnum.REDO.name())) {
+        //         undoHandler.redo(txtWidget);
+        //     }
+        // }
+
+        if (messageSTRING.equals(TextToolbarActionEnum.FOCUS_TO_TEXT.name())) {
+            txtWidget.requestFocus();
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.UNDO.name())) {
+            txtWidget.busy = true;
+            txtWidget.ignoreCaretPositionChange = true;
+            txtWidget.ignoreTextChangePERMANENT = true;
+            undoHandler.undo(txtWidget);
+            Platform.runLater(() -> {
+                txtWidget.ignoreCaretPositionChange = false;
+                txtWidget.ignoreTextChangePERMANENT = false;
+                txtWidget.busy = false;
+            });
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.REDO.name())) {
+            txtWidget.busy = true;
+            txtWidget.ignoreCaretPositionChange = true;
+            txtWidget.ignoreTextChangePERMANENT = true;
+            undoHandler.redo(txtWidget);
+            Platform.runLater(() -> {
+                txtWidget.ignoreCaretPositionChange = false;
+                txtWidget.ignoreTextChangePERMANENT = false;
+                txtWidget.busy = false;
+            });
         }
 
-        for (int i = 0; i < messageParts.length; i = i + 2) {
-            if (i + 1 >= messageParts.length) {
-                break;
-            }
-
-            // Process information from toolbar
-
-            if (messageParts[i].equals(TextToolbarActionEnum.FOCUS_TO_TEXT.name())) {
-                txtWidget.requestFocus();
-            }
-            else if (messageParts[i].equals(TextToolbarActionEnum.UNDO.name())) {
-                // TODO Implement undo
-            }
-            else if (messageParts[i].equals(TextToolbarActionEnum.REDO.name())) {
-                // TODO Implement redo
-            }
-
-        }
     }
 
     public void msgFromToolbar(StyleSheetChar styleSheet) {
@@ -69,6 +100,11 @@ public class TextHandler {
 
     public void msgFromWidget(String messageSTRING) {
         // Process information from widget
+        if (messageSTRING.equals("TAKE_SNAPSHOT")) {
+            undoHandler.addSnapshot(txtWidget);
+            msgForToolbar("UNDO:" + undoHandler.canUndo());
+            msgForToolbar("REDO:" + undoHandler.canRedo());
+        }
     }
 
     public void msgFromWidget(StyleSheetChar styleSheet) {

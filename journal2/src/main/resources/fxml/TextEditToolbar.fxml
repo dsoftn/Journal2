@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
+<VBox xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
    <children>
       <HBox fx:id="hBoxTextEdit" minWidth="500.0" spacing="5.0">
          <children>
@@ -22,8 +22,8 @@
                <content>
                   <HBox alignment="CENTER" minWidth="50.0" spacing="5.0">
                      <children>
-                        <Button fx:id="btnUndo" mnemonicParsing="false" styleClass="button-icon" />
-                        <Button fx:id="btnRedo" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnUndo" mnemonicParsing="false" onAction="#onBtnUndoAction" styleClass="button-icon" />
+                        <Button fx:id="btnRedo" mnemonicParsing="false" onAction="#onBtnRedoAction" styleClass="button-icon" />
                         <Separator fx:id="sepClip" orientation="VERTICAL" />
                         <Button fx:id="btnCut" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnCopy" mnemonicParsing="false" styleClass="button-icon" />

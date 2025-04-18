@@ -1,117 +1,110 @@
 package com.dsoftn.services;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
+import com.dsoftn.utils.UError;
 
 
 public class RTWText {
     // Variables
-    private String text = null;
-    private List<StyleSheetChar> cssChars = null;
-    private List<StyleSheetParagraph> cssParagraphs = null;
-    private Integer startIndex = null;
-    private Integer endIndex = null;
     private String resultString = null;
 
 
     // Constructor
     public RTWText(String text, List<StyleSheetChar> cssChars, List<StyleSheetParagraph> cssParagraphs, Integer startIndex, Integer endIndex) {
         if (text == null) {
-            this.text = "";
-        } else {
-            this.text = text;
+            text = "";
         }
 
-        this.cssParagraphs = cssParagraphs;
-
         if (startIndex == null) {
-            this.startIndex = 0;
-        } else {
-            this.startIndex = startIndex;
+            startIndex = 0;
         }
 
         if (endIndex == null) {
-            this.endIndex = this.text.length();
-        } else {
-            this.endIndex = endIndex;
+            endIndex = text.length();
         }
 
-        if (this.startIndex == 0 && this.endIndex == this.text.length()) {
-            this.cssChars = cssChars;
-        } else {
-            this.text = this.text.substring(this.startIndex, this.endIndex);
-            this.cssChars = cssChars.subList(this.startIndex, this.endIndex);
+        if (startIndex != 0 || endIndex != text.length()) {
+            text = text.substring(startIndex, endIndex);
+            cssChars = cssChars.subList(startIndex, endIndex);
+            cssParagraphs = null;
         }
-        getStyledText();
+
+        resultString = getResultHeader() + "\n"
+        + getResultCharStyle(cssChars) + "\n"
+        + getResultParagraphStyle(cssParagraphs) + "\n"
+        + getResultText(text);
     }
 
     public RTWText(String text, List<StyleSheetChar> cssChars, List<StyleSheetParagraph> cssParagraphs) {
         this(text, cssChars, cssParagraphs, null, null);
     }
 
+    public RTWText(RTWidget rtWidget) {
+        this(rtWidget.getText(), rtWidget.cssStyles, rtWidget.cssParagraphStyles);
+    }
+
     public RTWText(String styledText) {
-        createCharAndParLists(styledText);
+        resultString = styledText;
     }
 
     public RTWText() {}
 
     // Public methods
-    public String getDataFromRTWidget(RTWidget rtWidget) {
-        this.text = rtWidget.getText();
-        this.cssChars = rtWidget.cssStyles;
-        this.cssParagraphs = rtWidget.cssParagraphStyles;
-        this.startIndex = 0;
-        this.endIndex = this.text.length();
-        return getStyledText();
-    }
-
-    public String getStyledText() {
-        if (resultString == null) {
-            resultString = getResultHeader() + "\n"
-                + getResultCharStyle() + "\n"
-                + getResultParagraphStyle() + "\n"
-                + getResultText();
-        }
+    public String loadDataFromRTWidget(RTWidget rtWidget) {
+        resultString = getResultHeader() + "\n"
+        + getResultCharStyle(rtWidget.cssStyles) + "\n"
+        + getResultParagraphStyle(rtWidget.cssParagraphStyles) + "\n"
+        + getResultText(rtWidget.getText());
 
         return resultString;
     }
 
+    public String getStyledText() {
+        return resultString;
+    }
+
     public String getStyledText(RTWidget rtWidget) {
-        getDataFromRTWidget(rtWidget);
-        return getStyledText();
+        return loadDataFromRTWidget(rtWidget);
     }
 
     public void loadStyledText(String styledText) {
-        createCharAndParLists(styledText);
+        if (!isStyledText(styledText)) {
+            UError.error("RTWText.loadStyledText: Styled text is not valid", "Styled text is not valid");
+            return;
+        }
+
+        resultString = styledText;
     }
 
     public void setDataToRTWidget(RTWidget rtWidget) {
-        rtWidget.cssStyles = this.cssChars;
-        rtWidget.cssParagraphStyles = this.cssParagraphs;
+        if (resultString == null) {
+            UError.error("RTWText.setDataToRTWidget: Styled text is not loaded", "Styled text is not loaded");
+            return;
+        }
+
+        rtWidget.cssStyles.clear();
+        rtWidget.cssParagraphStyles.clear();
         rtWidget.clear();
-        rtWidget.insertText(0, this.text);
-        for (int i = 0; i < this.cssChars.size(); i++) {
-            rtWidget.setStyle(i, i + 1, this.cssChars.get(i).getCss());
+
+        rtWidget.cssStyles = extractCssChars(resultString);
+        rtWidget.cssParagraphStyles = extractCssParagraphs(resultString);
+        rtWidget.insertText(0, extractText(resultString));
+        for (int i = 0; i < rtWidget.cssStyles.size(); i++) {
+            rtWidget.setStyle(i, i + 1, rtWidget.cssStyles.get(i).getCss());
         }
-        for (int i = 0; i < this.cssParagraphs.size(); i++) {
-            rtWidget.setParagraphStyle(i, this.cssParagraphs.get(i).getCss());
+        for (int i = 0; i < rtWidget.cssParagraphStyles.size(); i++) {
+            rtWidget.setParagraphStyle(i, rtWidget.cssParagraphStyles.get(i).getCss());
         }
-        rtWidget.moveTo(0, 1);
-        rtWidget.requestFollowCaret();
     }
 
-    public List<StyleSheetChar> geCharStyles() { return this.cssChars; }
-
-    public List<StyleSheetParagraph> getParagraphStyles() { return this.cssParagraphs; }
-
-    public String getTextWithZeroWidthSpace() { return this.text; }
-
-    public String getPlainText() { return this.text.replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, ""); }
+    public String getPlainText() { return extractText(resultString).replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, ""); }
 
     public static String transformToPlainText(String textWithZeroWidthSpace) {
         return textWithZeroWidthSpace.replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "").replaceAll("\\R", "\n");
@@ -140,43 +133,42 @@ public class RTWText {
         if (rtwWidget.getSelectedText().isEmpty()) {
             return new RTWText();
         }
+        
+        String selText = rtwWidget.getSelectedText();
+        List<StyleSheetChar> selCss = rtwWidget.cssStyles.subList(rtwWidget.getSelection().getStart(), rtwWidget.getSelection().getEnd());
 
-        RTWText rtwText = new RTWText();
-        rtwText.text = rtwWidget.getSelectedText();
-        rtwText.cssChars = rtwWidget.cssStyles.subList(rtwWidget.getSelection().getStart(), rtwWidget.getSelection().getEnd());
+        RTWText rtwText = new RTWText(selText, selCss, null);
+
         return rtwText;
     }
 
-    public static void paste(RTWidget rtwWidget, String styledText) {
-        if (!isStyledText(styledText)) {
+    public static void paste(RTWidget rtwWidget, RTWText rtwText) {
+        if (RTWText.transformToPlainText(rtwText.getStyledText()).isEmpty()) {
             return;
         }
 
-        RTWText rtwText = new RTWText(styledText);
-        if (rtwText.text.isEmpty()) {
-            return;
+        String pText = rtwText.extractText(rtwText.resultString);
+        List<StyleSheetChar> pCharCss = rtwText.extractCssChars(rtwText.resultString);
+        
+        if (pText.startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
+            pText = pText.substring(1);
+            pCharCss.remove(0);
+        }
+        if (!pText.isEmpty()) {
+            if (pText.endsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING) && !pText.contains("\n")) {
+                pText = pText.substring(0, pText.length() - 1);
+                pCharCss.remove(pCharCss.size() - 1);
+            }
         }
 
-        if (rtwText.text.startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
-            rtwText.text = rtwText.text.substring(1);
-            rtwText.cssChars.remove(0);
-        }
-        if (rtwText.text.endsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING) && !rtwText.text.contains("\n")) {
-            rtwText.text = rtwText.text.substring(0, rtwText.text.length() - 1);
-            rtwText.cssChars.remove(rtwText.cssChars.size() - 1);
-        }
-
-        rtwWidget.pastePlainText(null, rtwText.text, rtwText.cssChars);
+        rtwWidget.pastePlainText(null, pText, pCharCss);
     }
 
+    public static void paste(RTWidget rtwWidget, String styledText) {
+        paste(rtwWidget, new RTWText(styledText));
+    }
 
     // Private methods
-    private void createCharAndParLists(String styledText) {
-        this.text = extractText(styledText);
-        this.cssChars = extractCssChars(styledText);
-        this.cssParagraphs = extractCssParagraphs(styledText);
-    }
-
     private String extractText(String styledText) {
         String result = "";
 
@@ -198,11 +190,15 @@ public class RTWText {
             result = result.substring(0, result.length() - 1);
         }
 
-        return result;
+        return result.replaceAll("\\R", "\n");
     }
 
     private List<StyleSheetChar> extractCssChars(String styledText) {
         List<StyleSheetChar> css = new ArrayList<>();
+
+        if (styledText == null) {
+            return css;
+        }
 
         boolean isCharStyle = false;
 
@@ -218,7 +214,7 @@ public class RTWText {
                 isCharStyle = false;
                 break;
             }
-            if (!isCharStyle || line.strip().isEmpty()) {
+            if (!isCharStyle) {
                 continue;
             }
 
@@ -241,6 +237,10 @@ public class RTWText {
     private List<StyleSheetParagraph> extractCssParagraphs(String styledText) {
         List<StyleSheetParagraph> css = new ArrayList<>();
 
+        if (styledText == null) {
+            return css;
+        }
+
         boolean isParagraphStyle = false;
 
         Integer start = null;
@@ -255,7 +255,7 @@ public class RTWText {
                 isParagraphStyle = false;
                 break;
             }
-            if (!isParagraphStyle || line.strip().isEmpty()) {
+            if (!isParagraphStyle) {
                 continue;
             }
 
@@ -279,7 +279,7 @@ public class RTWText {
         return CONSTANTS.RTW_TEXT_HEADER;
     }
 
-    private String getResultCharStyle() {
+    private String getResultCharStyle(List<StyleSheetChar> cssChars) {
         String result = CONSTANTS.RTW_TEXT_CHAR_STYLE_START;
 
         if (cssChars == null) {
@@ -322,7 +322,7 @@ public class RTWText {
         return result;
     }
 
-    private String getResultParagraphStyle() {
+    private String getResultParagraphStyle(List<StyleSheetParagraph> cssParagraphs) {
         String result = CONSTANTS.RTW_TEXT_PARAGRAPH_STYLE_START;
 
         if (cssParagraphs == null) {
@@ -366,10 +366,22 @@ public class RTWText {
 
     }
 
-    private String getResultText() {
-        return CONSTANTS.RTW_TEXT_CONTENT + "\n" + this.text;
+    private String getResultText(String text) {
+        return CONSTANTS.RTW_TEXT_CONTENT + "\n" + text;
     }
 
+    // Implement equals() and hashCode() methods
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        RTWText rtwText = (RTWText) obj;
+        return Objects.equals(resultString, rtwText.resultString);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(resultString);
+    }
 
 }

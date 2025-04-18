@@ -185,8 +185,11 @@ public class TextInputController implements IElementController {
     @FXML
     private void onBtnOkAction() {
         RTWText rtwText = rTxtRichText.getRTWTextObject();
-        String result = rtwText.getStyledText(rTxtRichText);
-        System.out.println(result);
+        rTxtRichText.setRTWTextObject(rtwText);
+        System.out.println("RTWText object set.");
+        // RTWText rtwText = rTxtRichText.getRTWTextObject();
+        // String result = rtwText.getStyledText(rTxtRichText);
+        // System.out.println(result);
     }
 
 
