@@ -120,7 +120,13 @@ public class TextInputController implements IElementController {
             if (!toolbarController.canBeClosed()) {
                 return false;
             }
-        }   
+        }
+
+        if (rTxtRichText != null) {
+            if (!rTxtRichText.canBeClosed()) {
+                return false;
+            }
+        }
         
         return true;
     }
@@ -158,6 +164,7 @@ public class TextInputController implements IElementController {
     public void setBehavior(Behavior behavior) {
         switch (behavior) {
             case BLOCK_NAME:
+                rTxtRichText.setBehavior(Behavior.BLOCK_NAME);
                 StyleSheetChar css = new StyleSheetChar();
                 css.setCss(OBJECTS.SETTINGS.getvSTRING("CssBlockName"));
                 rTxtRichText.setCssChar(css);

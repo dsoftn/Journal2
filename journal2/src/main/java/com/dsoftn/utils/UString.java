@@ -78,4 +78,26 @@ public class UString {
         return text.substring(start, end + 1);
     }
 
+    /**
+     * Find the index of a character in a string
+     * @param text The text to search
+     * @param searchString The character to find
+     * @param indexNumber The number of times to find the character
+     * @return The index of the character if found, null if not found
+     */
+    public static Integer findIndexOfChar(String text, String searchString, int indexNumber) {
+        int counter = 0;
+        int fromIndex = 0;
+        while (counter <= indexNumber) {
+            counter++;
+            int found = text.indexOf(searchString, fromIndex);
+            if (found == -1) {
+                return null;
+            }
+            fromIndex = found + 1;
+        }
+        return fromIndex;
+    }
+
+
 }

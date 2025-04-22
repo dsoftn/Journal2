@@ -19,12 +19,12 @@ public class WordExtractor {
     // Constructors
 
     public WordExtractor(String text) {
-        this.pattern = Pattern.compile("[^\\s~!@#$%^&*()_+=`{}|\\[\\]\\\\:\";'<>?,./-" + CONSTANTS.EMPTY_PARAGRAPH_STRING + "]+");
+        this.pattern = Pattern.compile("[^\\s~!@#$%^ &*()_+=`{}|\\[\\]\\\\:\";'<>?,./-" + CONSTANTS.EMPTY_PARAGRAPH_STRING + "]+");
         this.text = text;
     }
 
     public WordExtractor() {
-        this.pattern = Pattern.compile("[^\\s~!@#$%^&*()_+=`{}|\\[\\]\\\\:\";'<>?,./-" + CONSTANTS.EMPTY_PARAGRAPH_STRING + "]+");
+        this.pattern = Pattern.compile("[^\\s~!@#$%^ &*()_+=`{}|\\[\\]\\\\:\";'<>?,./-|" + CONSTANTS.EMPTY_PARAGRAPH_STRING + "]+");
     }
 
     // Getters and setters
@@ -34,7 +34,7 @@ public class WordExtractor {
 
     // Public Methods
 
-    public List<WordItem> getWords(String text) {
+    public List<WordItem> getWordItems(String text) {
         Matcher matcher = pattern.matcher(text);
 
         List<WordItem> words = new ArrayList<>();
@@ -46,9 +46,23 @@ public class WordExtractor {
         return words;
     }
 
-    public List<WordItem> getWords() { return getWords(this.text); }
+    public List<WordItem> getWordItems() { return getWordItems(this.text); }
 
-    public int countWords(String text) { return getWords().size(); }
+    public List<String> getWords(String text) {
+        Matcher matcher = pattern.matcher(text);
+
+        List<String> words = new ArrayList<>();
+        
+        while (matcher.find()) {
+            words.add(matcher.group());
+        }
+
+        return words;
+    }
+
+    public List<String> getWords() { return getWords(this.text); }
+
+    public int countWords(String text) { return getWordItems().size(); }
 
     public int countWords() { return countWords(this.text); }
 

@@ -6,6 +6,7 @@ import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UJavaFX;
 
 import javafx.application.Platform;
 
@@ -14,6 +15,7 @@ public class TextHandler {
     public record Msg(String message) {}
 
     // Variables
+    private String myName = UJavaFX.getUniqueId();
     private RTWidget txtWidget = null;
     private TextEditToolbarController toolbarController = null;
     private UndoHandler undoHandler = new UndoHandler();
@@ -33,31 +35,6 @@ public class TextHandler {
 
     // Public methods
     public void msgFromToolbar(String messageSTRING) {
-        // String[] messageParts = messageSTRING.split("\n");
-        // // Check if message messageSTRING length is even
-        // if (messageParts.length % 2 != 0) {
-        //     UError.error("TextHandler.messageReceived: Message messageSTRING length is odd.", "Message messageSTRING length is odd.");
-        //     return;
-        // }
-
-        // for (int i = 0; i < messageParts.length; i = i + 2) {
-        //     if (i + 1 >= messageParts.length) {
-        //         break;
-        //     }
-
-        //     // Process information from toolbar
-
-        //     if (messageParts[i].equals(TextToolbarActionEnum.FOCUS_TO_TEXT.name())) {
-        //         txtWidget.requestFocus();
-        //     }
-        //     else if (messageParts[i].equals(TextToolbarActionEnum.UNDO.name())) {
-        //         undoHandler.undo(txtWidget);
-        //     }
-        //     else if (messageParts[i].equals(TextToolbarActionEnum.REDO.name())) {
-        //         undoHandler.redo(txtWidget);
-        //     }
-        // }
-
         if (messageSTRING.equals(TextToolbarActionEnum.FOCUS_TO_TEXT.name())) {
             txtWidget.requestFocus();
         }
@@ -109,6 +86,7 @@ public class TextHandler {
 
     public void msgFromWidget(StyleSheetChar styleSheet) {
         // Forward message to toolbar
+        txtWidget.ac.updateStyleSheet(styleSheet);
         msgForToolbar(styleSheet);
     }
 

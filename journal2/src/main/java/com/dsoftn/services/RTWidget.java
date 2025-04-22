@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Queue;
 
 import org.fxmisc.flowless.VirtualFlow;
 import org.fxmisc.richtext.CharacterHit;
@@ -20,10 +21,13 @@ import org.reactfx.util.Either;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
+import com.dsoftn.controllers.elements.TextInputController;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
+import com.dsoftn.services.text_handler.ACHandler;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.services.timer.ContinuousTimer;
+import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UString;
 
 import javafx.animation.PauseTransition;
@@ -47,7 +51,7 @@ import java.util.function.BiConsumer;
 
 public class RTWidget extends StyledTextArea<String, String> {
     // Variables
-    private StyleSheetChar cssChar = null; // Current char style
+    public StyleSheetChar cssChar = null; // Current char style
     private StyleSheetChar cssCharPrev = null; // Previous char style that has been sent to handler
     private StyleSheetParagraph cssParagraph = new StyleSheetParagraph(); // Current paragraph style
     private StyleSheetParagraph cssParagraphPrev = null; // Previous paragraph style that has been sent to handler
@@ -63,8 +67,10 @@ public class RTWidget extends StyledTextArea<String, String> {
     public boolean ignoreTextChangePERMANENT = false;
     private boolean ignoreCaretPositionChangePERMANENT = false;
     public boolean busy = false;
-    boolean stateChanged = true; // Used with Undo/Redo
-    ContinuousTimer timer = new ContinuousTimer(OBJECTS.SETTINGS.getvINTEGER("IntervalBetweenTextChangesMS"));
+    public boolean stateChanged = true; // Used with Undo/Redo
+    private ContinuousTimer timer = new ContinuousTimer(OBJECTS.SETTINGS.getvINTEGER("IntervalBetweenTextChangesMS"));
+    public TextInputController.Behavior behavior = null;
+    public ACHandler ac = null;
 
     public boolean isOverwriteMode = false;
    
@@ -116,6 +122,19 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     // Public methods
 
+    public boolean canBeClosed() {
+        if (ac.hasCurrentAC()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void setBehavior(TextInputController.Behavior behavior) {
+        this.behavior = behavior;
+        ac = new ACHandler(this);
+    }
+
     public void msgFromHandler(String messageSTRING) {
         // Process information from handler
     }
@@ -125,7 +144,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         // If has selection
         if (!this.getSelectedText().isEmpty()) {
             int start = this.getSelection().getStart();
-            if (start > 0 && this.getText().charAt(start - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+            if (start > 0 && this.getTextNoAC().charAt(start - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
                 start--;
             }
             int end = this.getSelection().getEnd();
@@ -136,6 +155,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             }
             this.setStyle(start, end, styleSheet.getCss());
             fixHeight();
+            this.stateChanged = true;
             return;
         }
 
@@ -157,6 +177,7 @@ public class RTWidget extends StyledTextArea<String, String> {
                 this.setParagraphStyle(i, styleSheet.getCss());
             }
             fixHeight();
+            this.stateChanged = true;
             return;
         }
 
@@ -167,6 +188,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.cssParagraphPrev = styleSheet;
         this.cssParagraphStyles.set(paragraphIndex, styleSheet.duplicate());
         this.setParagraphStyle(paragraphIndex, styleSheet.getCss());
+        this.stateChanged = true;
         fixHeight();
     }
     
@@ -215,13 +237,43 @@ public class RTWidget extends StyledTextArea<String, String> {
      * Returns text without any formatting and without zero width space characters
      */
     public String getTextPlain() {
-        return this.getText().replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "");
+        return this.getTextNoAC().replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "");
+    }
+
+    public String getTextNoAC() {
+        if (!ac.hasCurrentAC()) {
+            return this.getText();
+        }
+
+        String text = this.getText().substring(0, ac.getCurrentWidgetPosition());
+        if (ac.getCurrentWidgetPosition() < cssStyles.size()) {
+            if (this.getText().length() > cssStyles.size()) {
+                text += this.getText().substring(ac.getCurrentWidgetPosition() + ac.getCurrentAC().length());
+            }
+        }
+
+        return text;
+    }
+
+    public String getParagraphTextNoAC(int paragraphIndex) {
+        if (!ac.hasCurrentAC()) {
+            return this.getParagraph(paragraphIndex).getText();
+        }
+
+        String text = this.getParagraph(paragraphIndex).getText().substring(0, ac.getCurrentWidgetPosition());
+        if (ac.getCurrentWidgetPosition() < cssStyles.size()) {
+            text += this.getParagraph(paragraphIndex).getText().substring(ac.getCurrentWidgetPosition());
+        }
+
+
+        return text;
     }
 
     /**
      * Sets plain text, if styled text is passed then it will set it as plain text
      */
     public void setTextPlain(String text) {
+        ac.removeCurrentAC();
         text = RTWText.transformToTextWithZeroWidthSpace(text);
 
         busy = true;
@@ -234,11 +286,11 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.cssStyles.clear();
         this.cssParagraphStyles.clear();
         
-        for (int i = 0; i < this.getText().length(); i++) {
+        for (int i = 0; i < this.getTextNoAC().length(); i++) {
             this.cssStyles.add(this.cssChar.duplicate());
         }
 
-        this.setStyle(0, this.getText().length(), this.cssChar.getCss());
+        this.setStyle(0, this.getTextNoAC().length(), this.cssChar.getCss());
 
         for (int i = 0; i < this.getParagraphs().size(); i++) {
             this.cssParagraphStyles.add(this.cssParagraph.duplicate());
@@ -252,6 +304,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             this.cssChar = getPredictedCssChar(this.getPosGlobal(0, 1));
             sendToHandlerCharAndParagraphCurrentStyle();
             markCharOVERWRITE(this.getCaretPosition());
+            this.stateChanged = true;
             this.busy = false;
         });
     }
@@ -260,7 +313,7 @@ public class RTWidget extends StyledTextArea<String, String> {
      * Returns RTWText object, if indexes are not specified then it will return entire text
      */
     public RTWText getRTWTextObject(Integer startIndex, Integer endIndex) {
-        return new RTWText(this.getText(), this.cssStyles, this.cssParagraphStyles, startIndex, endIndex);
+        return new RTWText(this.getTextNoAC(), this.cssStyles, this.cssParagraphStyles, startIndex, endIndex);
     }
 
     /**
@@ -277,6 +330,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         busy = true;
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
+        ac.removeCurrentAC();
 
         rtwText.setDataToRTWidget(this);
 
@@ -287,6 +341,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         Platform.runLater(() -> {
             ignoreTextChangePERMANENT = false;
             ignoreCaretPositionChangePERMANENT = false;
+            this.stateChanged = true;
             this.busy = false;
         });
     }
@@ -298,6 +353,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         busy = true;
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
+        ac.removeCurrentAC();
 
         if (text == null) {
             text = "";
@@ -317,7 +373,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             ignoreCaretPositionChangePERMANENT = false;
             this.requestFollowCaret();
             this.requestFocus();
-
+            this.stateChanged = true;
             this.busy = false;
         });
     }
@@ -388,6 +444,10 @@ public class RTWidget extends StyledTextArea<String, String> {
             else if (event.getCode() == KeyCode.UP && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
                 handleKeyPressed_UP_SHIFT(event);
             }
+            // ARROW UP + CTRL
+            else if (event.getCode() == KeyCode.UP && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                handleKeyPressed_UP_CTRL(event);
+            }
             // ARROW DOWN
             else if (event.getCode() == KeyCode.DOWN && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 handleKeyPressed_DOWN(event);
@@ -395,6 +455,10 @@ public class RTWidget extends StyledTextArea<String, String> {
             // ARROW DOWN + SHIFT
             else if (event.getCode() == KeyCode.DOWN && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
                 handleKeyPressed_DOWN_SHIFT(event);
+            }
+            // ARROW DOWN + CTRL
+            else if (event.getCode() == KeyCode.DOWN && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                handleKeyPressed_DOWN_CTRL(event);
             }
             // ARROW LEFT
             else if (event.getCode() == KeyCode.LEFT && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
@@ -411,6 +475,10 @@ public class RTWidget extends StyledTextArea<String, String> {
             // ARROW RIGHT + SHIFT
             else if (event.getCode() == KeyCode.RIGHT && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
                 handleKeyPressed_RIGHT_SHIFT(event);
+            }
+            // ARROW RIGHT + CTRL
+            else if (event.getCode() == KeyCode.RIGHT && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                handleKeyPressed_RIGHT_CTRL(event);
             }
             // PAGE UP
             else if (event.getCode() == KeyCode.PAGE_UP && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
@@ -472,35 +540,58 @@ public class RTWidget extends StyledTextArea<String, String> {
                 event.consume();
                 pasteText();
             }
+            // TAB
+            else if (event.getCode() == KeyCode.TAB && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                handleKeyPressed_TAB(event);
+            }
+            // ESC
+            else if (event.getCode() == KeyCode.ESCAPE && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                handleKeyPressed_ESC(event);
+            }
             // CTRL + A
             else if (event.getCode() == KeyCode.A && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                event.consume();
-                this.selectAll();
+                handleKeyPressed_CTRL_A(event);
             }
             
             
             else {
+                this.busy = true;
                 System.out.println("Unknown key pressed: " + event.getCode());
                 event.consume();
+                this.busy = false;
             }
 
 
-            Platform.runLater(() -> {
-                HELPER_info("KEY PRESSED - AFTER");
-            });
+            // Platform.runLater(() -> {
+            //     HELPER_info("KEY PRESSED - AFTER");
+            // });
 
         });
 
         // Key typed
         this.addEventFilter(KeyEvent.KEY_TYPED, event -> {
-            this.timer.resetInterval();
             if (this.busy) {
                 System.out.println("Busy: KEY TYPED");
                 event.consume();
                 return;
             }
+            this.busy = true;
+            this.timer.resetInterval();
 
-            handleKeyTyped_CHARACTER(event);
+            
+            try {
+                handleKeyTyped_CHARACTER(event);
+            } catch (Exception e) {
+                UError.exception("handleKeyTyped_CHARACTER", e);
+            }
+
+            Platform.runLater(() -> {
+                while (getTextNoAC().length() > cssStyles.size()) {
+                    this.deletePreviousChar();
+                }
+                this.busy = false;
+            });
+
         });
         
         
@@ -530,6 +621,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         }
 
         busy = true;
+        ac.removeCurrentAC();
 
         deleteSelectedText();
 
@@ -541,6 +633,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             }
 
             Platform.runLater(() -> {
+                this.stateChanged = true;
                 this.busy = false;
             });
         });
@@ -548,6 +641,14 @@ public class RTWidget extends StyledTextArea<String, String> {
 
 
     // Private methods
+
+    private void handleAC() {
+        if (ac.getCurrentAC() == null) {
+            return;
+        }
+
+        // TODO make logic
+    }
 
     /**
      * Sends request to Handler to take snapshot that can be used in Undo/Redo
@@ -565,7 +666,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void HELPER_info(String msg) {
         System.out.println("--- " + msg + " ---");
-        System.out.println("Text LENGTH: " + this.getText().length() + "  cssChar LENGTH: " + this.cssStyles.size() + "  cssParagraph LENGTH: " + this.cssParagraphStyles.size());
+        System.out.println("Text LENGTH: " + this.getTextNoAC().length() + "  cssChar LENGTH: " + this.cssStyles.size() + "  cssParagraph LENGTH: " + this.cssParagraphStyles.size());
         System.out.println("Caret POSITION: " + this.getCaretPosition() + "  Paragraph: " + this.getCurrentParagraph() + "  Column: " + this.getCaretColumn());
         System.out.println("Selected LENGTH: " + this.getSelectedText().length() + "  Selected: From: " + this.getSelection().getStart() + " to " + this.getSelection().getEnd() + "  Selected TEXT: " + this.getSelectedText().replace("\n", "_"));
         System.out.println("-".repeat(msg.length() + 8));
@@ -577,7 +678,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         int curCaretPosition = this.getCaretPosition();
 
         for (int i = this.getParagraphs().size() - 1; i >= 0; i--) {
-            if (this.getParagraph(i).getText().isEmpty() || !this.getParagraph(i).getText().startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
+            if (getParagraphTextNoAC(i).isEmpty() || !getParagraphTextNoAC(i).startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
                 int positionToInsert = getPosGlobal(i, 0);
                 this.cssStyles.add(positionToInsert, getPredictedCssChar(positionToInsert));
                 if (curCaretPosition >= getPosGlobal(i, 0)) { curCaretPosition++; }
@@ -587,7 +688,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             boolean hasChanges = true;
             while (hasChanges) {
                 hasChanges = false;
-                if (this.getParagraph(i).getText().startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(2))) {
+                if (getParagraphTextNoAC(i).startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(2))) {
                     int positionToRemove = getPosGlobal(i, 0);
                     this.cssStyles.remove(positionToRemove);
                     if (curCaretPosition >= getPosGlobal(i, 0)) { curCaretPosition--; }
@@ -622,7 +723,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         return this.offsetToPosition(globalPosition, TwoDimensional.Bias.Forward).getMinor();
     }
     private void fixCaretPosition(int globalPosition) {
-        if (this.getText().length() > globalPosition && this.getText().charAt(globalPosition) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        if (this.getTextNoAC().length() > globalPosition && this.getTextNoAC().charAt(globalPosition) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
             this.moveTo(globalPosition + 1);
         }
     }
@@ -679,7 +780,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         }
 
         // Position is at end of the text
-        if (globalPosition == this.getText().length()) {
+        if (globalPosition == this.getTextNoAC().length()) {
             if (this.cssStyles.size() > 0) {
                 return this.cssStyles.get(this.cssStyles.size() - 1).duplicate();
             }
@@ -784,6 +885,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         }
 
         fixSafeCharInAllParagraphs();
+        this.stateChanged = true;
     }
 
     private void pastePlainText(Integer globalPosition, String text) {
@@ -792,6 +894,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleMousePressed(MouseEvent event) {
         busy = true;
+        ac.removeCurrentAC();
 
         Platform.runLater(() -> {
             fixCaretPosition(this.getCaretPosition());
@@ -816,6 +919,7 @@ public class RTWidget extends StyledTextArea<String, String> {
     private void handleKeyPressed_ENTER(KeyEvent event) {
         // Add new paragraph
         this.busy = true;
+        ac.removeCurrentAC();
 
         event.consume();
 
@@ -827,7 +931,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         int caretPos = this.getCaretPosition();
         int curPar = this.getCurrentParagraph();
         int parCol = this.getCaretColumn();
-        String parText = this.getParagraph(curPar).getText();
+        String parText = getParagraphTextNoAC(curPar);
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
@@ -853,6 +957,7 @@ public class RTWidget extends StyledTextArea<String, String> {
                 // fix will release permanent ignore
                 Platform.runLater(() -> {
                     markCharOVERWRITE(this.getCaretPosition());
+                    this.stateChanged = true;
                     this.busy = false;
                 });
             });
@@ -872,6 +977,7 @@ public class RTWidget extends StyledTextArea<String, String> {
                 // fix will release permanent ignore
                 Platform.runLater(() -> {
                     markCharOVERWRITE(this.getCaretPosition());
+                    this.stateChanged = true;
                     this.busy = false;
                 });
             });
@@ -889,6 +995,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             // fix will release permanent ignore
             Platform.runLater(() -> {
                 markCharOVERWRITE(this.getCaretPosition());
+                this.stateChanged = true;
                 this.busy = false;
             });
         });
@@ -897,11 +1004,14 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_DELETE(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
 
         if (!this.getSelectedText().isEmpty()) {
             event.consume();
             deleteSelectedText();
             Platform.runLater(() -> {
+                ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
+                this.stateChanged = true;
                 this.busy = false;
             });
             return;
@@ -914,13 +1024,14 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         int caretPos = this.getCaretPosition();
         int curPar = this.getCurrentParagraph();
-        int parTextLen = this.getParagraph(curPar).getText().length();
+        int parTextLen = getParagraphTextNoAC(curPar).length();
 
         demarkCharOVERWRITE(caretPos);
 
         // If caret is at the end of the text then do nothing
         if (this.getCaretPosition() == this.cssStyles.size()) {
             Platform.runLater(() -> {
+                ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
                 ignoreTextChangePERMANENT = false;
                 ignoreCaretPositionChangePERMANENT = false;
                 this.busy = false;
@@ -929,7 +1040,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         }
         
         // Check if deleted char is "\n"
-        if (this.getText().charAt(caretPos) == '\n') {
+        if (this.getTextNoAC().charAt(caretPos) == '\n') {
             // If paragraph is empty then remove it
             if (parTextLen == 1) {
                 this.cssParagraphStyles.remove(curPar);
@@ -938,12 +1049,14 @@ public class RTWidget extends StyledTextArea<String, String> {
                 this.deleteText(caretPos - 1, caretPos + 1);
 
                 Platform.runLater(() -> {
+                    ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
                     ignoreTextChangePERMANENT = false;
                     ignoreCaretPositionChangePERMANENT = false;
                     fixCaretPosition(caretPos);
                     this.cssChar = getPredictedCssChar(caretPos - 1);
                     sendToHandlerCharAndParagraphCurrentStyle();
                     markCharOVERWRITE(this.getCaretPosition());
+                    this.stateChanged = true;
                     this.busy = false;
                 });
                 return;
@@ -956,12 +1069,14 @@ public class RTWidget extends StyledTextArea<String, String> {
                 this.deleteText(caretPos, caretPos + 2);
 
                 Platform.runLater(() -> {
+                    ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
                     ignoreTextChangePERMANENT = false;
                     ignoreCaretPositionChangePERMANENT = false;
                     fixCaretPosition(caretPos);
                     this.cssChar = getPredictedCssChar(caretPos);
                     sendToHandlerCharAndParagraphCurrentStyle();
                     markCharOVERWRITE(this.getCaretPosition());
+                    this.stateChanged = true;
                     this.busy = false;
                 });
                 return;
@@ -974,22 +1089,27 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.deleteText(caretPos, caretPos + 1);
 
         Platform.runLater(() -> {
+            ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
             ignoreTextChangePERMANENT = false;
             ignoreCaretPositionChangePERMANENT = false;
             this.cssChar = getPredictedCssChar(caretPos);
             sendToHandlerCharAndParagraphCurrentStyle();
             markCharOVERWRITE(this.getCaretPosition());
+            this.stateChanged = true;
             this.busy = false;
         });
     }
 
     private void handleKeyPressed_BACKSPACE(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
 
         if (!this.getSelectedText().isEmpty()) {
             event.consume();
             deleteSelectedText();
             Platform.runLater(() -> {
+                ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
+                this.stateChanged = true;
                 this.busy = false;
             });
             return;
@@ -1007,12 +1127,13 @@ public class RTWidget extends StyledTextArea<String, String> {
         demarkCharOVERWRITE(caretPos);
 
         if (curPar > 0) {
-            prevParTextLen = this.getParagraph(curPar - 1).getText().length();
+            prevParTextLen = getParagraphTextNoAC(curPar - 1).length();
         }
 
         // If caret is at the beginning of the text then do nothing
         if (caretPos == 0 || caretPos == 1) {
             Platform.runLater(() -> {
+                ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
                 ignoreTextChangePERMANENT = false;
                 ignoreCaretPositionChangePERMANENT = false;
                 markCharOVERWRITE(this.getCaretPosition());
@@ -1022,7 +1143,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         }
         
         // Check if deleted char is zero width space
-        if (this.getText().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        if (this.getTextNoAC().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
             // If previous paragraph is empty then remove it
             if (prevParTextLen == 1) {
                 this.cssParagraphStyles.remove(curPar - 1);
@@ -1032,12 +1153,14 @@ public class RTWidget extends StyledTextArea<String, String> {
                 this.moveTo(caretPos - 2);
 
                 Platform.runLater(() -> {
+                    ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
                     ignoreTextChangePERMANENT = false;
                     ignoreCaretPositionChangePERMANENT = false;
                     fixCaretPosition(this.getCaretPosition());
                     this.cssChar = getPredictedCssChar(this.getCaretPosition());
                     sendToHandlerCharAndParagraphCurrentStyle();
                     markCharOVERWRITE(this.getCaretPosition());
+                    this.stateChanged = true;
                     this.busy = false;
                 });
                 return;
@@ -1051,12 +1174,14 @@ public class RTWidget extends StyledTextArea<String, String> {
                 this.moveTo(caretPos - 2);
 
                 Platform.runLater(() -> {
+                    ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
                     ignoreTextChangePERMANENT = false;
                     ignoreCaretPositionChangePERMANENT = false;
                     fixCaretPosition(this.getCaretPosition());
                     this.cssChar = getPredictedCssChar(this.getCaretPosition());
                     sendToHandlerCharAndParagraphCurrentStyle();
                     markCharOVERWRITE(this.getCaretPosition());
+                    this.stateChanged = true;
                     this.busy = false;
                 });
                 return;
@@ -1070,18 +1195,21 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.moveTo(caretPos - 1);
 
         Platform.runLater(() -> {
+            ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
             ignoreTextChangePERMANENT = false;
             ignoreCaretPositionChangePERMANENT = false;
             fixCaretPosition(this.getCaretPosition());
             this.cssChar = getPredictedCssChar(this.getCaretPosition());
             sendToHandlerCharAndParagraphCurrentStyle();
             markCharOVERWRITE(this.getCaretPosition());
+            this.stateChanged = true;
             this.busy = false;
         });
     }
 
     private void handleKeyPressed_UP(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
@@ -1094,6 +1222,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_UP_SHIFT(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
 
         int anchorPos = this.getAnchor();
         demarkCharOVERWRITE(this.getCaretPosition());
@@ -1105,8 +1234,26 @@ public class RTWidget extends StyledTextArea<String, String> {
         });
     }
 
+    private void handleKeyPressed_UP_CTRL(KeyEvent event) {
+        this.busy = true;
+        ignoreTextChangePERMANENT = true;
+        ignoreCaretPositionChangePERMANENT = true;
+
+        event.consume();
+
+        ac.prevAC();
+
+        Platform.runLater(() -> {
+            ignoreTextChangePERMANENT = false;
+            ignoreCaretPositionChangePERMANENT = false;
+            markCharOVERWRITE(this.getCaretPosition());
+            this.busy = false;
+        });
+    }
+
     private void handleKeyPressed_DOWN(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
@@ -1119,6 +1266,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_DOWN_SHIFT(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
 
         int anchorPos = this.getAnchor();
         demarkCharOVERWRITE(this.getCaretPosition());
@@ -1126,6 +1274,23 @@ public class RTWidget extends StyledTextArea<String, String> {
         Platform.runLater(() -> {
             fixCaretPosition(this.getCaretPosition());
             this.selectRange(anchorPos, this.getCaretPosition());
+            this.busy = false;
+        });
+    }
+
+    private void handleKeyPressed_DOWN_CTRL(KeyEvent event) {
+        this.busy = true;
+        ignoreTextChangePERMANENT = true;
+        ignoreCaretPositionChangePERMANENT = true;
+
+        event.consume();
+
+        ac.nextAC();
+
+        Platform.runLater(() -> {
+            ignoreTextChangePERMANENT = false;
+            ignoreCaretPositionChangePERMANENT = false;
+            markCharOVERWRITE(this.getCaretPosition());
             this.busy = false;
         });
     }
@@ -1141,9 +1306,11 @@ public class RTWidget extends StyledTextArea<String, String> {
             return;
         }
 
+        ac.removeCurrentAC();
+
         demarkCharOVERWRITE(caretPos);
         
-        if (this.getText().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        if (this.getTextNoAC().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
             this.moveTo(caretPos - 2);
         } else {
             this.moveTo(caretPos - 1);
@@ -1157,6 +1324,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_LEFT_SHIFT(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
         
         int caretPos = this.getCaretPosition();
@@ -1169,7 +1337,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         demarkCharOVERWRITE(caretPos);
         
-        if (this.getText().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        if (this.getTextNoAC().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
             this.moveTo(caretPos - 2);
         } else {
             this.moveTo(caretPos - 1);
@@ -1191,9 +1359,10 @@ public class RTWidget extends StyledTextArea<String, String> {
             this.busy = false;
             return;
         }
+        ac.removeCurrentAC();
 
         demarkCharOVERWRITE(caretPos);
-        if (this.getText().charAt(caretPos) == '\n') {
+        if (this.getTextNoAC().charAt(caretPos) == '\n') {
             this.moveTo(caretPos + 2);
         } else {
             this.moveTo(caretPos + 1);
@@ -1208,6 +1377,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_RIGHT_SHIFT(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
         
         int caretPos = this.getCaretPosition();
@@ -1219,7 +1389,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         }
 
         demarkCharOVERWRITE(caretPos);
-        if (this.getText().charAt(caretPos) == '\n') {
+        if (this.getTextNoAC().charAt(caretPos) == '\n') {
             this.moveTo(caretPos + 2);
         } else {
             this.moveTo(caretPos + 1);
@@ -1227,6 +1397,60 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         Platform.runLater(() -> {
             this.selectRange(anchorPos, this.getCaretPosition());
+            this.busy = false;
+        });
+    }
+
+    private void handleKeyPressed_RIGHT_CTRL(KeyEvent event) {
+        if (!ac.hasCurrentAC()) return;
+
+        this.busy = true;
+        event.consume();
+
+        String acString = ac.getCurrentACClean();
+        ac.removeCurrentAC();
+
+        String strToAdd = null;
+
+        if (acString.indexOf(" ", 1) > 0) {
+            strToAdd = acString.substring(0, acString.indexOf(" ", 1) + 1);
+        } else {
+            strToAdd = acString;
+        }
+
+        pastePlainText(null, strToAdd);
+        Platform.runLater(() -> {
+            ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
+            stateChanged = true;
+            this.busy = false;
+        });
+    }
+
+    private void handleKeyPressed_TAB(KeyEvent event) {
+        if (!ac.hasCurrentAC()) return;
+
+        this.busy = true;
+        event.consume();
+
+        String acString = ac.getCurrentACClean();
+        ac.removeCurrentAC();
+
+        pastePlainText(null, acString);
+        Platform.runLater(() -> {
+            ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
+            stateChanged = true;
+            this.busy = false;
+        });
+    }
+
+    private void handleKeyPressed_ESC(KeyEvent event) {
+        if (!ac.hasCurrentAC()) return;
+
+        this.busy = true;
+        event.consume();
+        ac.removeCurrentAC();
+
+        Platform.runLater(() -> {
             this.busy = false;
         });
     }
@@ -1239,16 +1463,17 @@ public class RTWidget extends StyledTextArea<String, String> {
             this.busy = false;
             return;
         }
+        ac.removeCurrentAC();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
         boolean start = false;
 
         for (int i = this.getCurrentParagraph() - 1; i >= 0; i--) {
-            if (this.getParagraph(i).getText().length() == 1) {
+            if (getParagraphTextNoAC(i).length() == 1) {
                 start = true;
             }
-            if (start && this.getParagraph(i).getText().length() > 1) {
+            if (start && getParagraphTextNoAC(i).length() > 1) {
                 ignoreCaretPositionChange = true;
                 this.moveTo(i, 1);
                 this.cssChar = getPredictedCssChar(this.getPosGlobal(i, 1));
@@ -1278,6 +1503,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_PgUP_SHIFT(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
 
         if (this.getCurrentParagraph() == 0) {
@@ -1292,10 +1518,10 @@ public class RTWidget extends StyledTextArea<String, String> {
         boolean start = false;
 
         for (int i = this.getCurrentParagraph() - 1; i >= 0; i--) {
-            if (this.getParagraph(i).getText().length() == 1) {
+            if (getParagraphTextNoAC(i).length() == 1) {
                 start = true;
             }
-            if (start && this.getParagraph(i).getText().length() > 1) {
+            if (start && getParagraphTextNoAC(i).length() > 1) {
                 this.moveTo(i, 1);
                 int curPar = i;
                 Platform.runLater(() -> {
@@ -1323,15 +1549,17 @@ public class RTWidget extends StyledTextArea<String, String> {
             return;
         }
 
+        ac.removeCurrentAC();
+
         demarkCharOVERWRITE(this.getCaretPosition());
 
         boolean start = false;
 
         for (int i = this.getCurrentParagraph() + 1; i < this.getParagraphs().size(); i++) {
-            if (this.getParagraph(i).getText().length() == 1) {
+            if (getParagraphTextNoAC(i).length() == 1) {
                 start = true;
             }
-            if (start && this.getParagraph(i).getText().length() > 1) {
+            if (start && getParagraphTextNoAC(i).length() > 1) {
                 ignoreCaretPositionChange = true;
                 this.moveTo(i, 1);
                 this.cssChar = getPredictedCssChar(this.getPosGlobal(i, 1));
@@ -1360,6 +1588,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_PgDOWN_SHIFT(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
 
         if (this.getCurrentParagraph() == this.getParagraphs().size() - 1) {
@@ -1374,10 +1603,10 @@ public class RTWidget extends StyledTextArea<String, String> {
         boolean start = false;
 
         for (int i = this.getCurrentParagraph() + 1; i < this.getParagraphs().size(); i++) {
-            if (this.getParagraph(i).getText().length() == 1) {
+            if (getParagraphTextNoAC(i).length() == 1) {
                 start = true;
             }
-            if (start && this.getParagraph(i).getText().length() > 1) {
+            if (start && getParagraphTextNoAC(i).length() > 1) {
                 this.moveTo(i, 1);
                 int curPar = i;
 
@@ -1399,6 +1628,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_HOME(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
@@ -1415,6 +1645,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_HOME_SHIFT(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
@@ -1431,6 +1662,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_HOME_CTRL(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
@@ -1445,13 +1677,14 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_END(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
         int curPar = this.getCurrentParagraph();
 
-        this.moveTo(curPar, this.getParagraph(curPar).getText().length());
+        this.moveTo(curPar, getParagraphTextNoAC(curPar).length());
         
         Platform.runLater(() -> {
             markCharOVERWRITE(this.getCaretPosition());
@@ -1461,6 +1694,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_END_SHIFT(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
@@ -1468,7 +1702,7 @@ public class RTWidget extends StyledTextArea<String, String> {
         int curPar = this.getCurrentParagraph();
         int anchorPos = this.getAnchor();
 
-        this.selectRange(anchorPos, this.getPosGlobal(curPar, this.getParagraph(curPar).getText().length()));
+        this.selectRange(anchorPos, this.getPosGlobal(curPar, getParagraphTextNoAC(curPar).length()));
         
         Platform.runLater(() -> {
             this.busy = false;
@@ -1477,11 +1711,27 @@ public class RTWidget extends StyledTextArea<String, String> {
 
     private void handleKeyPressed_END_CTRL(KeyEvent event) {
         this.busy = true;
+        ac.removeCurrentAC();
         event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
-        this.moveTo(this.getParagraphs().size() - 1, this.getParagraph(this.getParagraphs().size() - 1).getText().length());
+        this.moveTo(this.getParagraphs().size() - 1, getParagraphTextNoAC(this.getParagraphs().size() - 1).length());
+        
+        Platform.runLater(() -> {
+            markCharOVERWRITE(this.getCaretPosition());
+            this.busy = false;
+        });
+    }
+
+    private void handleKeyPressed_CTRL_A(KeyEvent event) {
+        this.busy = true;
+        ac.removeCurrentAC();
+        event.consume();
+
+        demarkCharOVERWRITE(this.getCaretPosition());
+
+        this.selectRange(1, this.getTextNoAC().length());
         
         Platform.runLater(() -> {
             markCharOVERWRITE(this.getCaretPosition());
@@ -1495,21 +1745,35 @@ public class RTWidget extends StyledTextArea<String, String> {
             event.getCharacter().equals("\t") ||
             event.getCharacter().equals("\r") ||
             event.isControlDown() ||
-            event.isAltDown())
-            { return; }
+            event.isAltDown()) {
 
-        this.busy = true;
+                event.consume();
+                // this.busy = false;
+                return;
+        }
 
-        deleteSelectedText();
+        ac.removeCurrentAC();
 
+        if (this.getSelectedText().length() > 0) {
+            int start = this.getSelection().getStart();
+            int end = this.getSelection().getEnd();
+            
+            this.cssStyles.subList(start, end).clear();
+            this.cssParagraphStyles.subList(getParIndex(start), getParIndex(end)).clear();
+            
+            this.deleteText(start, end);
+            this.moveTo(start);
+        }
+
+        event.consume();
+        
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
 
-        event.consume();
         String charTyped = event.getCharacter();
 
         int curPos = this.getCaretPosition();
-        if (curPos <= this.cssStyles.size() && curPos > 0 && !this.cssStyles.get(curPos - 1).equals(this.cssChar) && this.getText().charAt(curPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        if (curPos <= this.cssStyles.size() && curPos > 0 && !this.cssStyles.get(curPos - 1).equals(this.cssChar) && this.getTextNoAC().charAt(curPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
             this.cssStyles.set(curPos - 1, this.cssChar.duplicate());
             this.setStyle(curPos - 1, curPos, this.cssChar.getCss());
         }
@@ -1522,26 +1786,30 @@ public class RTWidget extends StyledTextArea<String, String> {
             this.cssStyles.add(curPos, cssChar.duplicate());
             this.setStyle(curPos, curPos + 1, cssChar.getCss());
             Platform.runLater(() -> {
+                ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
                 ignoreTextChangePERMANENT = false;
                 ignoreCaretPositionChangePERMANENT = false;
                 markCharOVERWRITE(this.getCaretPosition());
                 sendToHandlerCharAndParagraphCurrentStyle();
-                this.busy = false;
+                this.stateChanged = true;
+                // this.busy = false;
             });
             return;
         }
 
         // Caret is at end of the paragraph
-        if (curPos < this.getText().length() && this.getText().charAt(curPos) == '\n') {
+        if (curPos < this.getTextNoAC().length() && this.getTextNoAC().charAt(curPos) == '\n') {
             this.insertText(curPos, charTyped);
             this.cssStyles.add(curPos, cssChar.duplicate());
             this.setStyle(curPos, curPos + 1, cssChar.getCss());
             Platform.runLater(() -> {
+                ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
                 ignoreTextChangePERMANENT = false;
                 ignoreCaretPositionChangePERMANENT = false;
                 markCharOVERWRITE(this.getCaretPosition());
                 sendToHandlerCharAndParagraphCurrentStyle();
-                this.busy = false;
+                this.stateChanged = true;
+                // this.busy = false;
             });
             return;
         }
@@ -1555,12 +1823,14 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.cssStyles.add(curPos, cssChar.duplicate());
         this.setStyle(curPos, curPos + 1, cssChar.getCss());
         Platform.runLater(() -> {
+            ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
             ignoreTextChangePERMANENT = false;
             ignoreCaretPositionChangePERMANENT = false;
             markCharOVERWRITE(this.getCaretPosition());
             this.cssChar = getPredictedCssChar(this.getCaretPosition());
             sendToHandlerCharAndParagraphCurrentStyle();
-            this.busy = false;
+            this.stateChanged = true;
+            // this.busy = false;
         });
     }
 

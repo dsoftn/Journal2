@@ -47,7 +47,7 @@ public class RTWText {
     }
 
     public RTWText(RTWidget rtWidget) {
-        this(rtWidget.getText(), rtWidget.cssStyles, rtWidget.cssParagraphStyles);
+        this(rtWidget.getTextNoAC(), rtWidget.cssStyles, rtWidget.cssParagraphStyles);
     }
 
     public RTWText(String styledText) {
@@ -61,7 +61,7 @@ public class RTWText {
         resultString = getResultHeader() + "\n"
         + getResultCharStyle(rtWidget.cssStyles) + "\n"
         + getResultParagraphStyle(rtWidget.cssParagraphStyles) + "\n"
-        + getResultText(rtWidget.getText());
+        + getResultText(rtWidget.getTextNoAC());
 
         return resultString;
     }

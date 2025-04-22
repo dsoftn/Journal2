@@ -23,10 +23,15 @@ public class UndoHandler {
 
     // Public methods
     public void addSnapshot(RTWidget rtwWidget) {
+        if (!rtwWidget.stateChanged) {
+            return;
+        }
+
         RTWText rtwText = new RTWText(rtwWidget);
 
         if (undoSnapshots.size() > 0) {
             if (rtwText.getStyledText().equals(undoSnapshots.get(undoSnapshots.size() - 1).styledText)) {
+                rtwWidget.stateChanged = false;
                 return;
             }
         }
@@ -40,6 +45,7 @@ public class UndoHandler {
 
         undoSnapshots.add(snapshot);
         redoSnapshots.clear();
+        rtwWidget.stateChanged = false;
     }
 
     public void undo(RTWidget rtwWidget) {
@@ -65,6 +71,7 @@ public class UndoHandler {
             rtwWidget.selectRange(snapshotToRestore.selectionStart, snapshotToRestore.selectionEnd);
         }
         rtwWidget.moveTo(snapshotToRestore.caretPosition);
+        rtwWidget.requestFocus();
     }
 
     public void redo(RTWidget rtwWidget) {
@@ -84,6 +91,7 @@ public class UndoHandler {
             rtwWidget.selectRange(snapshotToRestore.selectionStart, snapshotToRestore.selectionEnd);
         }
         rtwWidget.moveTo(snapshotToRestore.caretPosition);
+        rtwWidget.requestFocus();
     }
 
     public boolean canUndo() {
