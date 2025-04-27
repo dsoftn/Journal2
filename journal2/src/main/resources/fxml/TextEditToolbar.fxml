@@ -25,9 +25,9 @@
                         <Button fx:id="btnUndo" mnemonicParsing="false" onAction="#onBtnUndoAction" styleClass="button-icon" />
                         <Button fx:id="btnRedo" mnemonicParsing="false" onAction="#onBtnRedoAction" styleClass="button-icon" />
                         <Separator fx:id="sepClip" orientation="VERTICAL" />
-                        <Button fx:id="btnCut" mnemonicParsing="false" styleClass="button-icon" />
-                        <Button fx:id="btnCopy" mnemonicParsing="false" styleClass="button-icon" />
-                        <Button fx:id="btnPaste" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnCut" mnemonicParsing="false" onAction="#onBtnCutAction" styleClass="button-icon" />
+                        <Button fx:id="btnCopy" mnemonicParsing="false" onAction="#onBtnCopyAction" styleClass="button-icon" />
+                        <Button fx:id="btnPaste" mnemonicParsing="false" onAction="#onBtnPasteAction" styleClass="button-icon" />
                         <Separator fx:id="sepInsert" orientation="VERTICAL" />
                         <Button fx:id="btnInsertImage" mnemonicParsing="false" styleClass="button-icon" />
                         <Button fx:id="btnInsertSmiley" mnemonicParsing="false" styleClass="button-icon" />

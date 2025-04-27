@@ -1,11 +1,14 @@
 package com.dsoftn.utils;
 
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Popup;
@@ -13,13 +16,17 @@ import javafx.stage.Window;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
-
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
+
+import com.dsoftn.OBJECTS;
 
 public class ColorPopup {
 
     private final Consumer<String> onColorSelectedCallback;
     private final Popup popup;
+    TextField txtInfo = new TextField();
 
     public ColorPopup(Consumer<String> onColorSelectedCallback) {
         this.onColorSelectedCallback = onColorSelectedCallback;
@@ -40,7 +47,9 @@ public class ColorPopup {
             }
         }
         
-        VBox content = createContent();
+        VBox content = createColorPickerContent(onColorSelectedCallback);
+        popup.getScene().getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
+        content.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
         popup.getScene().setRoot(content);
         popup.show(ownerWindow, x, y);
     }
@@ -49,52 +58,124 @@ public class ColorPopup {
         startMe(ownerWindow, null, null);
     }
 
-    private VBox createContent() {
-        // Predefinisane boje
-        Color[] colors = {
-                Color.RED, Color.GREEN, Color.BLUE,
-                Color.YELLOW, Color.ORANGE, Color.PURPLE
-        };
+    public VBox createColorPickerContent(Consumer<String> onColorSelectedCallback) {
+        Map<String, Color> baseColors = new LinkedHashMap<>();
+        baseColors.put("Red", Color.RED);
+        baseColors.put("Green", Color.GREEN);
+        baseColors.put("Blue", Color.BLUE);
+        baseColors.put("Yellow", Color.YELLOW);
+        baseColors.put("Orange", Color.ORANGE);
+        baseColors.put("Purple", Color.PURPLE);
+        baseColors.put("Brown", Color.BROWN);
+        baseColors.put("Black", Color.BLACK);
 
-        GridPane grid = new GridPane();
-        grid.setHgap(5);
-        grid.setVgap(5);
-        grid.setPadding(new Insets(10));
+        VBox rows = new VBox(5);
+        rows.setPadding(new Insets(10));
 
-        for (int i = 0; i < colors.length; i++) {
-            Color color = colors[i];
-            Region colorBox = new Region();
-            colorBox.setPrefSize(30, 30);
-            colorBox.setStyle("-fx-background-color: " + URichText.colorToHexString(color) + "; -fx-border-color: black;");
+        for (Color baseColor : baseColors.values()) {
+            HBox row = new HBox(5);
+            row.setAlignment(Pos.CENTER_LEFT);
 
-            colorBox.setOnMouseClicked(e -> {
-                onColorSelectedCallback.accept(URichText.colorToHexString(color)); // Poziv callback metode
-                popup.hide();
-            });
+            for (int i = 0; i < 7; i++) {
+                double factor = i * 0.12;
+                Color shade = baseColor.interpolate(Color.WHITE, factor);
 
-            grid.add(colorBox, i % 3, i / 3);
+                Region colorBox = new Region();
+                colorBox.setPrefSize(24, 24);
+                colorBox.setStyle("-fx-background-color: " + URichText.colorToHexString(shade) + "; -fx-border-color: black; -fx-border-radius: 3; -fx-background-radius: 3;");
+
+                colorBox.setOnMouseEntered(e -> {
+                    colorBox.setScaleX(1.3);
+                    colorBox.setScaleY(1.3);
+                    txtInfo.setText(URichText.colorToHexString(shade));
+                });
+                colorBox.setOnMouseExited(e -> {
+                    colorBox.setScaleX(1.0);
+                    colorBox.setScaleY(1.0);
+                });
+
+                colorBox.setOnMouseClicked(e -> {
+                    if (e.getButton() == MouseButton.SECONDARY) {
+                        ContextMenu contextMenu = new ContextMenu();
+
+                        MenuItem copy = new MenuItem(OBJECTS.SETTINGS.getl("text_Copy"));
+                        Image imgCopy = new Image(getClass().getResourceAsStream("/images/copy.png"));
+                        ImageView imgCopyView = new ImageView(imgCopy);
+                        imgCopyView.setPreserveRatio(true);
+                        imgCopyView.setFitHeight(20);
+                        copy.setGraphic(imgCopyView);
+                        copy.setOnAction(event -> {
+                            OBJECTS.CLIP.setClipText(URichText.colorToHexString(shade));
+                        });
+
+                        contextMenu.getItems().add(copy);
+                        contextMenu.show(colorBox, e.getScreenX(), e.getScreenY());
+                        return;
+                    }
+                    onColorSelectedCallback.accept(URichText.colorToHexString(shade));
+                    popup.hide();
+                });
+
+                row.getChildren().add(colorBox);
+            }
+
+            rows.getChildren().add(row);
         }
 
-        // Custom boja sa ColorPicker-om
-        Button customBtn = new Button("Custom...");
-        customBtn.setMaxWidth(Double.MAX_VALUE);
-        customBtn.setOnAction(e -> {
-            ColorPicker colorPicker = new ColorPicker();
-            colorPicker.setOnAction(event -> {
-                onColorSelectedCallback.accept(URichText.colorToHexString(colorPicker.getValue()));
-                popup.hide();
-            });
+        // Title label
+        Label lblTitle = new Label(OBJECTS.SETTINGS.getl("text_PickAColor"));
+        lblTitle.setStyle("-fx-text-fill: #00a6fb;-fx-font-size: 18px;");
+        lblTitle.setAlignment(Pos.CENTER);
 
-            VBox customBox = new VBox(10, colorPicker);
-            customBox.setPadding(new Insets(10));
-            popup.getScene().setRoot(customBox);
+        // Info
+        HBox infoBox = new HBox(5);
+
+        Region infoColor = new Region();
+
+        HBox.setHgrow(infoColor, Priority.ALWAYS);
+        infoColor.setStyle("-fx-background-color: transparent; -fx-border-color: gray; -fx-border-radius: 5; -fx-background-radius: 5;");
+        infoColor.setOnMouseClicked(e -> {
+            onColorSelectedCallback.accept(txtInfo.getText());
+            popup.hide();
         });
+        
+        txtInfo.setMaxWidth(130);
+        txtInfo.getStyleClass().add("text-field-default");
+        txtInfo.setStyle("-fx-font-size: 18px;-fx-alignment: center;");
+        txtInfo.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                infoColor.setStyle("-fx-background-color: transparent;");
+            } else {
+                infoColor.setStyle("-fx-background-color: " + newValue + ";");
+            }
+        });
+        txtInfo.setOnContextMenuRequested(e -> {
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem paste = new MenuItem(OBJECTS.SETTINGS.getl("text_Paste"));
+            Image imgPaste = new Image(getClass().getResourceAsStream("/images/paste.png"));
+            ImageView imgPasteView = new ImageView(imgPaste);
+            imgPasteView.setPreserveRatio(true);
+            imgPasteView.setFitHeight(20);
+            paste.setGraphic(imgPasteView);
+            paste.setOnAction(event -> {
+                txtInfo.setText(OBJECTS.CLIP.getClipText());
+            });
+            contextMenu.getItems().add(paste);
+            contextMenu.show(txtInfo, e.getScreenX(), e.getScreenY());
+        });
+        
+        infoBox.getChildren().add(txtInfo);
+        infoBox.getChildren().add(infoColor);
 
-        VBox vbox = new VBox(10, grid, customBtn);
+
+
+        VBox vbox = new VBox(10, lblTitle, rows, infoBox);
         vbox.setPadding(new Insets(10));
-        vbox.setStyle("-fx-background-color: white; -fx-border-color: black;");
+        vbox.setStyle("-fx-background-color: black; -fx-border-color: gray;");
         vbox.setAlignment(Pos.CENTER);
+
         return vbox;
     }
+
 
 }

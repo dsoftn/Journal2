@@ -26,8 +26,12 @@ public class CONSTANTS {
     public static final String DEFAULT_SETTINGS_LANGUAGE_CODE = "en";
     public static final String DATA_STRUCTURE_CORRUPTED_MESSAGE_STRING = "Solution: NONE";
     public static final int DIALOG_MARGIN = 5;
+
     public static final String EMPTY_PARAGRAPH_STRING = "\u200B"; // Zero-width space at beginning of each paragraph
     public static final char EMPTY_PARAGRAPH_CHAR = '\u200B'; // Zero-width space at beginning of each paragraph
+    // public static final String EMPTY_PARAGRAPH_STRING = "~"; // Zero-width space at beginning of each paragraph
+    // public static final char EMPTY_PARAGRAPH_CHAR = '~'; // Zero-width space at beginning of each paragraph
+
     public static final String RTW_TEXT_HEADER = EMPTY_PARAGRAPH_STRING.repeat(3) + "RTW"; // RTW = Rich Text Widget header
     public static final String RTW_TEXT_CHAR_STYLE_START = EMPTY_PARAGRAPH_STRING.repeat(3) + "C"; // RTW = Rich Text Widget characters stylesheets - section start
     public static final String RTW_TEXT_CHAR_STYLE_END = EMPTY_PARAGRAPH_STRING.repeat(3) + "-C"; // RTW = Rich Text Widget characters stylesheets - section end

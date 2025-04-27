@@ -1,5 +1,6 @@
 package com.dsoftn.services.text_handler;
 
+import com.dsoftn.CONSTANTS;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.models.StyleSheetChar;
@@ -19,9 +20,11 @@ public class TextHandler {
     private RTWidget txtWidget = null;
     private TextEditToolbarController toolbarController = null;
     private UndoHandler undoHandler = new UndoHandler();
+    private FindReplace findReplace = new FindReplace();
 
     // Constructor
     public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController) {
+        findReplace.setRTWidget(txtWidget);
         this.toolbarController = toolbarController;
         toolbarController.setTextHandler(this);
         this.txtWidget = txtWidget;
@@ -48,6 +51,7 @@ public class TextHandler {
                 txtWidget.ignoreTextChangePERMANENT = false;
                 txtWidget.busy = false;
             });
+            txtWidget.requestFocus();
         }
         else if (messageSTRING.equals(TextToolbarActionEnum.REDO.name())) {
             txtWidget.busy = true;
@@ -59,6 +63,25 @@ public class TextHandler {
                 txtWidget.ignoreTextChangePERMANENT = false;
                 txtWidget.busy = false;
             });
+            txtWidget.requestFocus();
+        }
+        else if (messageSTRING.equals("CUT")) {
+            msgForWidget("CUT");
+            txtWidget.requestFocus();
+        }
+        else if (messageSTRING.equals("COPY")) {
+            msgForWidget("COPY");
+            txtWidget.requestFocus();
+        }
+        else if (messageSTRING.equals("PASTE")) {
+            msgForWidget("PASTE");
+            txtWidget.requestFocus();
+        }
+        else if (messageSTRING.startsWith("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
+            findReplace.find(messageSTRING);
+        }
+        else if (messageSTRING.equals("FIND CLOSED")) {
+            findReplace.removeAllMarks();
         }
 
     }
@@ -81,6 +104,24 @@ public class TextHandler {
             undoHandler.addSnapshot(txtWidget);
             msgForToolbar("UNDO:" + undoHandler.canUndo());
             msgForToolbar("REDO:" + undoHandler.canRedo());
+        }
+        else if (messageSTRING.equals("SELECTED: False")) {
+            msgForToolbar("SELECTED: False");
+        }
+        else if (messageSTRING.equals("SELECTED: True")) {
+            msgForToolbar("SELECTED: True");
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.UNDO.name())) {
+            msgFromToolbar(messageSTRING);
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.REDO.name())) {
+            msgFromToolbar(messageSTRING);
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.FIND_SHOW.name())) {
+            msgForToolbar(TextToolbarActionEnum.FIND_SHOW.name());
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.REPLACE_SHOW.name())) {
+            msgForToolbar(TextToolbarActionEnum.REPLACE_SHOW.name());
         }
     }
 
@@ -116,6 +157,7 @@ public class TextHandler {
     // Messages for Widget
     private void msgForWidget(String messageSTRING) {
         // Send message to widget
+        txtWidget.msgFromHandler(messageSTRING);
     }
     private void msgForWidget(StyleSheetChar styleSheet) {
         // Send message to widget

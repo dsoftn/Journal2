@@ -1,9 +1,12 @@
 package com.dsoftn.controllers.elements;
 
+import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
+import com.dsoftn.events.ClipboardChangedEvent;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.TextHandler;
@@ -12,6 +15,7 @@ import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
 import javafx.collections.FXCollections;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -28,7 +32,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class TextEditToolbarController implements IElementController {
+public class TextEditToolbarController implements IElementController, ICustomEventListener {
     public enum AlignmentEnum {
         LEFT,
         CENTER,
@@ -158,6 +162,15 @@ public class TextEditToolbarController implements IElementController {
             private Button btnReplaceAll;
 
 
+    // Interface ICustomEventListener
+
+    @Override
+    public void onCustomEvent(Event event) {
+        if (event instanceof ClipboardChangedEvent) {
+            btnPaste.setDisable(OBJECTS.CLIP.getClipText() == null);
+        }
+    }
+
     // Interface IElementController methods
 
     @Override
@@ -224,6 +237,7 @@ public class TextEditToolbarController implements IElementController {
         setupWidgetsText();
         setupWidgetsAppearance();
         updateCharStyle(curCharStyle);
+        OBJECTS.EVENT_HANDLER.register(this, ClipboardChangedEvent.CLIPBOARD_CHANGED_EVENT);
     }
 
     @Override
@@ -242,6 +256,16 @@ public class TextEditToolbarController implements IElementController {
             btnRedo.setDisable(false);
         } else if (messageSTRING.equals("REDO:" + false)) {
             btnRedo.setDisable(true);
+        } else if (messageSTRING.equals("SELECTED: False")) {
+            btnCut.setDisable(true);
+            btnCopy.setDisable(true);
+        } else if (messageSTRING.equals("SELECTED: True")) {
+            btnCut.setDisable(false);
+            btnCopy.setDisable(false);
+        } else if (messageSTRING.equals(TextToolbarActionEnum.FIND_SHOW.name())) {
+            showFindSection();
+        } else if (messageSTRING.equals(TextToolbarActionEnum.REPLACE_SHOW.name())) {
+            showReplaceSection();
         }
 
     }
@@ -269,6 +293,8 @@ public class TextEditToolbarController implements IElementController {
         hBoxFind.setManaged(true);
         hBoxReplace.setVisible(false);
         hBoxReplace.setManaged(false);
+        txtFind.requestFocus();
+        msgForHandler("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + txtFind.getText());
     }
 
     public void hideFindSection() {
@@ -278,6 +304,8 @@ public class TextEditToolbarController implements IElementController {
         hBoxFind.setManaged(false);
         hBoxReplace.setVisible(false);
         hBoxReplace.setManaged(false);
+        msgForHandler("FIND CLOSED");
+        msgForHandler(TextToolbarActionEnum.FOCUS_TO_TEXT.name());
     }
 
     public void showReplaceSection() {
@@ -287,6 +315,7 @@ public class TextEditToolbarController implements IElementController {
         hBoxFind.setManaged(true);
         hBoxReplace.setVisible(true);
         hBoxReplace.setManaged(true);
+        txtReplace.requestFocus();
     }
 
     public void hideReplaceSection() {
@@ -296,6 +325,7 @@ public class TextEditToolbarController implements IElementController {
         hBoxFind.setManaged(true);
         hBoxReplace.setVisible(false);
         hBoxReplace.setManaged(false);
+        txtFind.requestFocus();
     }
 
     public void updateCharStyle(StyleSheetChar styleSheet) {
@@ -480,6 +510,9 @@ public class TextEditToolbarController implements IElementController {
 
         btnUndo.setDisable(true);
         btnRedo.setDisable(true);
+        btnCut.setDisable(true);
+        btnCopy.setDisable(true);
+        btnPaste.setDisable(OBJECTS.CLIP.getClipText() == null);
 
 
         // Initialize font size spinner
@@ -522,6 +555,21 @@ public class TextEditToolbarController implements IElementController {
                 msgForHandler(curCharStyle);
             }
         });
+
+        // Find text field listener
+        txtFind.textProperty().addListener((obs, oldValue, newValue) -> {
+            msgForHandler("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + newValue);
+        });
+        
+
+
+        // txtFind.textProperty().addListener((obs, oldValue, newValue) -> {
+        //     if (newValue != null && !newValue.isEmpty()) {
+        //         msgForHandler("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + newValue);
+        //     } else {
+        //         msgForHandler("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + newValue);
+        //     }
+        // });
 
         setImageToButton(btnUndo, "/images/undo.png");
         setImageToButton(btnRedo, "/images/redo.png");
@@ -600,27 +648,40 @@ public class TextEditToolbarController implements IElementController {
     // FXML methods
 
     @FXML
+    public void onBtnCutAction() {
+        msgForHandler("CUT");
+    }
+
+    @FXML
+    public void onBtnCopyAction() {
+        msgForHandler("COPY");
+    }
+
+    @FXML
+    public void onBtnPasteAction() {
+        msgForHandler("PASTE");
+    }
+
+    @FXML
     public void onBtnForegroundAction() {
-        ColorPopup colorPopup = new ColorPopup(color -> {
-            curCharStyle.setFgColor(color);
-            updateCharStyle(curCharStyle);
+        UJavaFX.getColorPickerPopUp(root.getScene().getWindow(), this::onFGColorSelectedCallback);
+    }
 
-            msgForHandler(curCharStyle);
-        });
-
-        colorPopup.startMe(root.getScene().getWindow());
+    private void onFGColorSelectedCallback(String color) {
+        curCharStyle.setFgColor(color);
+        updateCharStyle(curCharStyle);
+        msgForHandler(curCharStyle);
     }
 
     @FXML
     public void onBtnBackgroundAction() {
-        ColorPopup colorPopup = new ColorPopup(color -> {
-            curCharStyle.setBgColor(color);
-            updateCharStyle(curCharStyle);
+        UJavaFX.getColorPickerPopUp(root.getScene().getWindow(), this::onBGColorSelectedCallback);
+    }
 
-            msgForHandler(curCharStyle);
-        });
-
-        colorPopup.startMe(root.getScene().getWindow());
+    private void onBGColorSelectedCallback(String color) {
+        curCharStyle.setBgColor(color);
+        updateCharStyle(curCharStyle);
+        msgForHandler(curCharStyle);
     }
 
     @FXML

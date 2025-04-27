@@ -1127,6 +1127,13 @@
         "languageCode": "en",
         "creationDate": "2025.03.26 10:29:13",
         "userData": ""
+      },
+      "text_PickAColor": {
+        "key": "text_PickAColor",
+        "value": "Pick a color",
+        "languageCode": "en",
+        "creationDate": "2025.04.24 13:22:47",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -2255,6 +2262,13 @@
         "value": "Poravnanje ravnomerno",
         "languageCode": "sr-lat",
         "creationDate": "2025.03.26 10:29:13",
+        "userData": ""
+      },
+      "text_PickAColor": {
+        "key": "text_PickAColor",
+        "value": "Odaberi boju",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.04.24 13:22:47",
         "userData": ""
       }
     }

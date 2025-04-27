@@ -34,6 +34,7 @@
 .button-icon:disabled {
     -fx-background-color: #353535;
     -fx-text-fill: #636465;
+    -fx-opacity: 0.4;
     -fx-cursor: default;
 }
 
@@ -120,6 +121,7 @@
 .button-icon-small:disabled {
     -fx-background-color: #353535;
     -fx-text-fill: #636465;
+    -fx-opacity: 0.4;
     -fx-cursor: default;
 }
 

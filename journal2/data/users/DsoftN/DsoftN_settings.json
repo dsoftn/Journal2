@@ -531,5 +531,18 @@
     "creationDate": "2025.04.22 09:57:14",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "AutoCompleteDelay": {
+    "key": "AutoCompleteDelay",
+    "value": "200",
+    "defaultValue": "200",
+    "min": "100",
+    "max": "20000",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Delay to show autocomplete",
+    "creationDate": "2025.04.23 13:00:21",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

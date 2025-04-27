@@ -9,6 +9,7 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.URichText;
 
 
 public class RTWText {
@@ -289,34 +290,7 @@ public class RTWText {
         }
         result += "\n";
 
-        StyleSheetChar curCss = null;
-        if (cssChars.size() > 0) {
-            curCss = cssChars.get(0);
-        }
-        int start = 0;
-
-        for (int i = 0; i < cssChars.size(); i++) {
-            if (i == cssChars.size() - 1) {
-                if (!curCss.equals(cssChars.get(i))) {
-                    result += start + "," + i + "\n";
-                    result += curCss.getCss() + "\n";
-                    start = i;
-                    curCss = cssChars.get(i);
-                }
-                result += start + "," + (i + 1) + "\n";
-                result += curCss.getCss() + "\n";
-                break;
-            }
-
-            if (curCss.equals(cssChars.get(i))) {
-                continue;
-            }
-
-            result += start + "," + i + "\n";
-            result += curCss.getCss() + "\n";
-            start = i;
-            curCss = cssChars.get(i);
-        }
+        result += URichText.getSpanCssStyles(cssChars);
 
         result += CONSTANTS.RTW_TEXT_CHAR_STYLE_END;
         return result;

@@ -539,7 +539,10 @@ Button:
     -fx-min-height: 1em;
 }
 
-
+/* Color picker */
+.color-picker-title-label {
+    -fx-text-fill: #00a6fb;-fx-font-size: 18px;
+}
 
 
 

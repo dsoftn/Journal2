@@ -176,7 +176,7 @@ public class Clip {
             lastClipText = getClipText();
             return "text";
         }
-        else if (!UJavaFX.areImagesEqual(lastClipImage, getClipImage())) {
+        else if (!UJavaFX.isImagesContentEqual(lastClipImage, getClipImage())) {
             lastClipImage = getClipImage();
             return "image";
         }

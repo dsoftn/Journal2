@@ -1,7 +1,7 @@
 package com.dsoftn.utils;
 
 import java.util.Map;
-
+import java.util.function.Consumer;
 import java.util.LinkedHashMap;
 
 import com.dsoftn.OBJECTS;
@@ -22,6 +22,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class UJavaFX {
 
@@ -221,7 +222,7 @@ public class UJavaFX {
         return result;
     }
 
-    public static boolean areImagesEqual(Image img1, Image img2) {
+    public static boolean isImagesContentEqual(Image img1, Image img2) {
     if (img1 == null || img2 == null) {
         // If both are null, they are equal
         return img1 == img2;
@@ -248,6 +249,17 @@ public class UJavaFX {
 
     }
 
+    /**
+     * Displays a color picker popup
+     * @param ownerWindow - The window that will own the popup
+     * @param onColorSelectedCallback - The callback that will be called when a color is selected
+     */
+    public static void getColorPickerPopUp(Window ownerWindow, Consumer<String> onColorSelectedCallback) {
+        ColorPopup colorPopup = new ColorPopup(color -> {
+            onColorSelectedCallback.accept(color);
+        });
 
+        colorPopup.startMe(ownerWindow);
+    }
 
 }

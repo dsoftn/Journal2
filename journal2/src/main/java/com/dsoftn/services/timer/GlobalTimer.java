@@ -28,7 +28,10 @@ public class GlobalTimer {
     // Public methods
     public void registerTimer(ITimer timer) {
         timer.startMS(System.currentTimeMillis());
-        timers.add(new WeakReference<>(timer));
+        WeakReference<ITimer> newTimerToAdd = new WeakReference<>(timer);
+        if (!timers.contains(newTimerToAdd)) {
+            timers.add(new WeakReference<>(timer));
+        }
     }
 
     public void unregisterTimer(ITimer timer) {
