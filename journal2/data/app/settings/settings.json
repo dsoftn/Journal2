@@ -518,5 +518,31 @@
     "creationDate": "2025.04.23 13:00:21",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "CssFindMarked": {
+    "key": "CssFindMarked",
+    "value": "-rtfx-background-color:#847324;",
+    "defaultValue": "-rtfx-background-color:#847324;",
+    "min": "none",
+    "max": "none",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "Css for all found items in text",
+    "creationDate": "2025.04.30 00:14:00",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "CssFindSelected": {
+    "key": "CssFindSelected",
+    "value": "-rtfx-background-color:#8cad27;",
+    "defaultValue": "-rtfx-background-color:#8cad27;",
+    "min": "none",
+    "max": "none",
+    "settingType": 8,
+    "dataType": 4,
+    "description": "Css for all found items in text",
+    "creationDate": "2025.04.30 00:14:56",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

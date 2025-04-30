@@ -20,11 +20,11 @@ public class TextHandler {
     private RTWidget txtWidget = null;
     private TextEditToolbarController toolbarController = null;
     private UndoHandler undoHandler = new UndoHandler();
-    private FindReplace findReplace = new FindReplace();
+    private Marker marker = null;
 
     // Constructor
     public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController) {
-        findReplace.setRTWidget(txtWidget);
+        marker = new Marker(txtWidget, this);
         this.toolbarController = toolbarController;
         toolbarController.setTextHandler(this);
         this.txtWidget = txtWidget;
@@ -45,6 +45,7 @@ public class TextHandler {
             txtWidget.busy = true;
             txtWidget.ignoreCaretPositionChange = true;
             txtWidget.ignoreTextChangePERMANENT = true;
+            msgForToolbar(TextToolbarActionEnum.FIND_CLOSE.name());
             undoHandler.undo(txtWidget);
             Platform.runLater(() -> {
                 txtWidget.ignoreCaretPositionChange = false;
@@ -57,6 +58,7 @@ public class TextHandler {
             txtWidget.busy = true;
             txtWidget.ignoreCaretPositionChange = true;
             txtWidget.ignoreTextChangePERMANENT = true;
+            msgForToolbar(TextToolbarActionEnum.FIND_CLOSE.name());
             undoHandler.redo(txtWidget);
             Platform.runLater(() -> {
                 txtWidget.ignoreCaretPositionChange = false;
@@ -77,11 +79,23 @@ public class TextHandler {
             msgForWidget("PASTE");
             txtWidget.requestFocus();
         }
-        else if (messageSTRING.startsWith("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
-            findReplace.find(messageSTRING);
+        else if (messageSTRING.startsWith("FIND/REPLACE ACTION:FIND CLOSED")) {
+            marker.unMarkFindReplace();
         }
-        else if (messageSTRING.equals("FIND CLOSED")) {
-            findReplace.removeAllMarks();
+        else if (messageSTRING.startsWith("FIND/REPLACE ACTION:" + TextToolbarActionEnum.REPLACE_ONE.name())) {
+            marker.findReplaceONE(messageSTRING);
+        }
+        else if (messageSTRING.startsWith("FIND/REPLACE ACTION:" + TextToolbarActionEnum.REPLACE_ALL.name())) {
+            marker.findReplaceALL(messageSTRING);
+        }
+        else if (messageSTRING.startsWith("FIND/REPLACE ACTION:" + TextToolbarActionEnum.FIND_ALL.name())) {
+            marker.mark(messageSTRING);
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.FIND_UP.name())) {
+            marker.findReplaceUP();
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.FIND_DOWN.name())) {
+            marker.findReplaceDOWN();
         }
 
     }
@@ -117,11 +131,14 @@ public class TextHandler {
         else if (messageSTRING.equals(TextToolbarActionEnum.REDO.name())) {
             msgFromToolbar(messageSTRING);
         }
-        else if (messageSTRING.equals(TextToolbarActionEnum.FIND_SHOW.name())) {
-            msgForToolbar(TextToolbarActionEnum.FIND_SHOW.name());
+        else if (messageSTRING.startsWith(TextToolbarActionEnum.FIND_SHOW.name())) {
+            msgForToolbar(messageSTRING);
         }
-        else if (messageSTRING.equals(TextToolbarActionEnum.REPLACE_SHOW.name())) {
-            msgForToolbar(TextToolbarActionEnum.REPLACE_SHOW.name());
+        else if (messageSTRING.startsWith(TextToolbarActionEnum.REPLACE_SHOW.name())) {
+            msgForToolbar(messageSTRING);
+        }
+        else if (messageSTRING.equals(TextToolbarActionEnum.FIND_CLOSE.name())) {
+            msgForToolbar(TextToolbarActionEnum.FIND_CLOSE.name());
         }
     }
 
@@ -140,7 +157,7 @@ public class TextHandler {
     // Private methods
 
     // Messages for toolbar
-    private void msgForToolbar(String messageSTRING) {
+    public void msgForToolbar(String messageSTRING) {
         // Send message to toolbar
         toolbarController.msgFromHandler(messageSTRING);
     }

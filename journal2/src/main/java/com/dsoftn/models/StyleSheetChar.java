@@ -9,17 +9,19 @@ import com.dsoftn.utils.UString;
 public class StyleSheetChar {
     // Variables
     private String fontName = OBJECTS.SETTINGS.getvSTRING("DefaultTextToolbarFontName"); // -fx-font-family: 'Arial';
-    private int fontSize = OBJECTS.SETTINGS.getvINTEGER("DefaultTextToolbarFontSize"); // -fx-font-size: 12px;
+    private Integer fontSize = OBJECTS.SETTINGS.getvINTEGER("DefaultTextToolbarFontSize"); // -fx-font-size: 12px;
     private String fgColor = "#ffff00"; // -fx-fill: #ffff00;
     private String bgColor = "transparent"; // -rtfx-background-color: transparent;
-    private boolean bold = false; // -fx-font-weight: bold;
-    private boolean italic = false; // -fx-font-style: italic;
-    private boolean underline = false; // -fx-underline: true;
-    private boolean strike = false; // -fx-strikethrough: true;
+    private Boolean bold = false; // -fx-font-weight: bold;
+    private Boolean italic = false; // -fx-font-style: italic;
+    private Boolean underline = false; // -fx-underline: true;
+    private Boolean strike = false; // -fx-strikethrough: true;
 
     private String stroke = "transparent"; // -fx-stroke: #000000;
-    private int strokeWidth = 0; // -fx-stroke-width: 1px;
+    private Integer strokeWidth = 0; // -fx-stroke-width: 1px;
     private String strokeType = "outside"; // -fx-stroke-type: (inside, outside, center)
+
+    private String styleBeforeMerge = "";
 
     // Constructors
 
@@ -28,6 +30,22 @@ public class StyleSheetChar {
     public StyleSheetChar(String css) {
         setCss(css);
     }
+
+    public StyleSheetChar(boolean nullValues) {
+        if (nullValues) {
+            fontName = null;
+            fontSize = null;
+            fgColor = null;
+            bgColor = null;
+            bold = null;
+            italic = null;
+            underline = null;
+            strike = null;
+            stroke = null;
+            strokeWidth = null;
+            strokeType = null;
+        }
+    }
     
 
     // Public methods
@@ -35,51 +53,63 @@ public class StyleSheetChar {
     public String getCss() {
         String css = "";
 
-        if (!fontName.isEmpty()) {
+        if (fontName != null && !fontName.isEmpty()) {
             css += "-fx-font-family: '" + fontName + "';";
         }
 
-        css += "-fx-font-size: " + fontSize + "px;";
+        if (fontSize != null) {
+            css += "-fx-font-size: " + fontSize + "px;";
+        }
 
-        if (!fgColor.isEmpty()) {
+        if (fgColor != null && !fgColor.isEmpty()) {
             css += "-fx-fill: " + fgColor + ";";
         }
 
-        if (!bgColor.isEmpty()) {
+        if (bgColor != null && !bgColor.isEmpty()) {
             css += "-rtfx-background-color: " + bgColor + ";";
         }
 
-        if (bold) {
-            css += "-fx-font-weight: bold;";
-        } else {
-            css += "-fx-font-weight: normal;";
+        if (bold != null) {
+            if (bold) {
+                css += "-fx-font-weight: bold;";
+            } else {
+                css += "-fx-font-weight: normal;";
+            }
         }
 
-        if (italic) {
-            css += "-fx-font-style: italic;";
-        } else {
-            css += "-fx-font-style: normal;";
+        if (italic != null) {
+            if (italic) {
+                css += "-fx-font-style: italic;";
+            } else {
+                css += "-fx-font-style: normal;";
+            }
         }
 
-        if (underline) {
-            css += "-fx-underline: true;";
-        } else {
-            css += "-fx-underline: false;";
+        if (underline != null) {
+            if (underline) {
+                css += "-fx-underline: true;";
+            } else {
+                css += "-fx-underline: false;";
+            }
         }
 
-        if (strike) {
-            css += "-fx-strikethrough: true;";
-        } else {
-            css += "-fx-strikethrough: false;";
+        if (strike != null) {
+            if (strike) {
+                css += "-fx-strikethrough: true;";
+            } else {
+                css += "-fx-strikethrough: false;";
+            }
         }
 
-        if (!stroke.isEmpty()) {
+        if (stroke != null && !stroke.isEmpty()) {
             css += "-fx-stroke: " + stroke + ";";
         }
 
-        css += "-fx-stroke-width: " + strokeWidth + "px;";
+        if (strokeWidth != null) {
+            css += "-fx-stroke-width: " + strokeWidth + "px;";
+        }
 
-        if (!strokeType.isEmpty()) {
+        if (strokeType != null && !strokeType.isEmpty()) {
             css += "-fx-stroke-type: " + strokeType + ";";
         }
 
@@ -89,45 +119,47 @@ public class StyleSheetChar {
     public String getCssMinimal() {
         String css = "";
 
-        if (!fontName.isEmpty()) {
+        if (fontName != null && !fontName.isEmpty()) {
             css += "-fx-font-family: '" + fontName + "';";
         }
 
-        css += "-fx-font-size: " + fontSize + "px;";
+        if (fontSize != null) {
+            css += "-fx-font-size: " + fontSize + "px;";
+        }
 
-        if (!fgColor.equals("#ffff00")) {
+        if (fgColor != null && !fgColor.equals("#ffff00")) {
             css += "-fx-fill: " + fgColor + ";";
         }
 
-        if (!bgColor.equals("transparent")) {
+        if (bgColor != null && !bgColor.equals("transparent")) {
             css += "-rtfx-background-color: " + bgColor + ";";
         }
 
-        if (bold) {
+        if (bold != null && bold) {
             css += "-fx-font-weight: bold;";
         }
 
-        if (italic) {
+        if (italic != null && italic) {
             css += "-fx-font-style: italic;";
         }
 
-        if (underline) {
+        if (underline != null && underline) {
             css += "-fx-underline: true;";
         }
 
-        if (strike) {
+        if (strike != null && strike) {
             css += "-fx-strikethrough: true;";
         }
 
-        if (!stroke.equals("transparent")) {
+        if (stroke != null && !stroke.equals("transparent")) {
             css += "-fx-stroke: " + stroke + ";";
         }
 
-        if (strokeWidth != 0) {
+        if (strokeWidth != null && strokeWidth != 0) {
             css += "-fx-stroke-width: " + strokeWidth + "px;";
         }
 
-        if (!strokeType.equals("outside")) {
+        if (strokeType != null && !strokeType.equals("outside")) {
             css += "-fx-stroke-type: " + strokeType + ";";
         }
 
@@ -195,16 +227,48 @@ public class StyleSheetChar {
         result.stroke = this.stroke;
         result.strokeWidth = this.strokeWidth;
         result.strokeType = this.strokeType;
+        result.styleBeforeMerge = this.styleBeforeMerge;
 
         return result;
+    }
+
+    /**
+     * Merge two style sheets, old style will be saved in styleBeforeMerge
+     * @param styleToMergeWith - StyleSheetChar to merge with
+     */
+    public void merge(StyleSheetChar styleToMergeWith) {
+        styleBeforeMerge = getCss();
+        this.setCss(styleToMergeWith.getCss());
+    }
+
+    /**
+     * Merge two style sheets, old style will be saved in styleBeforeMerge
+     * @param cssStyle - Css string to merge with
+     */
+    public void merge(String cssStyle) {
+        styleBeforeMerge = getCss();
+        this.setCss(cssStyle);
+    }
+
+    /**
+     * Merge two style sheets, old style will be lost
+     * @param styleToMergeWith - StyleSheetChar to merge with
+     */
+    public void mergeNoSave(StyleSheetChar styleToMergeWith) {
+        this.setCss(styleToMergeWith.getCss());
     }
 
     // Properties getters and setters
 
     public String getFontName() { return fontName; }
     public void setFontName(String fontName) { this.fontName = fontName; }
-    public int getFontSize() { return fontSize; }
-    public void setFontSize(int fontSize) {
+    public Integer getFontSize() { return fontSize; }
+    public void setFontSize(Integer fontSize) {
+        if (fontSize == null) {
+            this.fontSize = null;
+            return;
+        }
+
         if (fontSize < OBJECTS.SETTINGS.getvINTEGER("MinTextToolbarFontSize")) {
             fontSize = OBJECTS.SETTINGS.getvINTEGER("MinTextToolbarFontSize");
         }
@@ -217,20 +281,22 @@ public class StyleSheetChar {
     public void setFgColor(String fgColor) { this.fgColor = fgColor; }
     public String getBgColor() { return bgColor; }
     public void setBgColor(String bgColor) { this.bgColor = bgColor; }
-    public boolean isBold() { return bold; }
-    public void setBold(boolean bold) { this.bold = bold; }
-    public boolean isItalic() { return italic; }
-    public void setItalic(boolean italic) { this.italic = italic; }
-    public boolean isUnderline() { return underline; }
-    public void setUnderline(boolean underline) { this.underline = underline; }
-    public boolean isStrikethrough() { return strike; }
-    public void setStrikethrough(boolean strike) { this.strike = strike; }
+    public Boolean isBold() { return bold; }
+    public void setBold(Boolean bold) { this.bold = bold; }
+    public Boolean isItalic() { return italic; }
+    public void setItalic(Boolean italic) { this.italic = italic; }
+    public Boolean isUnderline() { return underline; }
+    public void setUnderline(Boolean underline) { this.underline = underline; }
+    public Boolean isStrikethrough() { return strike; }
+    public void setStrikethrough(Boolean strike) { this.strike = strike; }
     public String getStroke() { return stroke; }
     public void setStroke(String stroke) { this.stroke = stroke; }
-    public int getStrokeWidth() { return strokeWidth; }
-    public void setStrokeWidth(int strokeWidth) { this.strokeWidth = strokeWidth; }
+    public Integer getStrokeWidth() { return strokeWidth; }
+    public void setStrokeWidth(Integer strokeWidth) { this.strokeWidth = strokeWidth; }
     public String getStrokeType() { return strokeType; }
     public void setStrokeType(String strokeType) { this.strokeType = strokeType; }
+    public String getStyleBeforeMerge() { return styleBeforeMerge; }
+    public void setStyleBeforeMerge(String userdata) { this.styleBeforeMerge = userdata; }
 
     // Overrides methods "equals()" and "hashCode()"
     

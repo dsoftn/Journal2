@@ -9,12 +9,13 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
+<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
    <children>
       <HBox fx:id="hBoxTextEdit" minWidth="500.0" spacing="5.0">
          <children>
@@ -73,9 +74,14 @@
                            </HBox.margin>
                         </HBox>
                         <Label fx:id="lblFindResult" minWidth="45.0" styleClass="label-default" text="1 of 1" />
+                        <ImageView fx:id="imgFindWorking" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets left="7.0" right="8.0" />
+                           </HBox.margin>
+                        </ImageView>
                         <Region prefWidth="10.0" />
-                        <Button fx:id="btnFindUp" mnemonicParsing="false" styleClass="button-icon" />
-                        <Button fx:id="btnFindDown" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnFindUp" mnemonicParsing="false" onAction="#onBtnFindUp" styleClass="button-icon" />
+                        <Button fx:id="btnFindDown" mnemonicParsing="false" onAction="#onBtnFindDown" styleClass="button-icon" />
                         <Region prefWidth="10.0" />
                         <Button fx:id="btnFindClose" mnemonicParsing="false" onAction="#onBtnFindCloseAction" styleClass="button-icon-small" />
                      </children>
@@ -97,8 +103,8 @@
                            </HBox.margin>
                         </HBox>
                         <Region prefWidth="10.0" />
-                        <Button fx:id="btnReplaceOne" mnemonicParsing="false" styleClass="button-icon" />
-                        <Button fx:id="btnReplaceAll" mnemonicParsing="false" styleClass="button-icon" />
+                        <Button fx:id="btnReplaceOne" mnemonicParsing="false" onAction="#onBtnReplaceOne" styleClass="button-icon" />
+                        <Button fx:id="btnReplaceAll" mnemonicParsing="false" onAction="#onBtnReplaceAll" styleClass="button-icon" />
                      </children>
                   </HBox>
                </children>

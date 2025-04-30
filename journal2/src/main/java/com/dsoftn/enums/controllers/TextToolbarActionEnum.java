@@ -28,7 +28,9 @@ public enum TextToolbarActionEnum {
     FOCUS_TO_TEXT(25),
     ALIGNMENT(26),
     FIND_SHOW(27),
-    REPLACE_SHOW(28);
+    REPLACE_SHOW(28),
+    FIND_CLOSE(29),
+    FIND_ALL(30);
 
     private final int value;
 

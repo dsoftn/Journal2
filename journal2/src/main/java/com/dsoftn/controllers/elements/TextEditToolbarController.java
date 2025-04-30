@@ -1,5 +1,7 @@
 package com.dsoftn.controllers.elements;
 
+import java.util.regex.Pattern;
+
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
@@ -14,6 +16,7 @@ import com.dsoftn.utils.ColorPopup;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -27,6 +30,7 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -147,6 +151,8 @@ public class TextEditToolbarController implements IElementController, ICustomEve
             @FXML
             private Label lblFindResult;
             @FXML
+            private ImageView imgFindWorking;
+            @FXML
             private Button btnFindUp;
             @FXML
             private Button btnFindDown;
@@ -262,10 +268,27 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         } else if (messageSTRING.equals("SELECTED: True")) {
             btnCut.setDisable(false);
             btnCopy.setDisable(false);
-        } else if (messageSTRING.equals(TextToolbarActionEnum.FIND_SHOW.name())) {
+        } else if (messageSTRING.startsWith(TextToolbarActionEnum.FIND_SHOW.name())) {
+            if (messageSTRING.split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING), -1).length > 1) {
+                txtFind.setText(messageSTRING.split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING), -1)[1]);
+            }
             showFindSection();
-        } else if (messageSTRING.equals(TextToolbarActionEnum.REPLACE_SHOW.name())) {
+        } else if (messageSTRING.startsWith(TextToolbarActionEnum.REPLACE_SHOW.name())) {
+            if (messageSTRING.split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING), -1).length > 1) {
+                txtFind.setText(messageSTRING.split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING), -1)[1]);
+            }
             showReplaceSection();
+        } else if (messageSTRING.equals(TextToolbarActionEnum.FIND_CLOSE.name())) {
+            hideFindSection();
+        } else if (messageSTRING.startsWith("ACTION:READY")) {
+            setFindWorking(false);
+            String[] lines = messageSTRING.split("\\R", -1);
+            lblFindResult.setText(OBJECTS.SETTINGS.getl("FindResult").replace("#1", lines[2]).replace("#2", lines[1]));
+        } else if (messageSTRING.startsWith("ACTION:UPDATE LABEL")) {
+            String[] lines = messageSTRING.split("\\R", -1);
+            lblFindResult.setText(OBJECTS.SETTINGS.getl("FindResult").replace("#1", lines[2]).replace("#2", lines[1]));
+        } else if (messageSTRING.startsWith("ACTION:WORKING")) {
+            setFindWorking(true);
         }
 
     }
@@ -287,6 +310,8 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     public void setTextHandler(TextHandler textHandler) { this.textHandler = textHandler; }
 
     public void showFindSection() {
+        boolean sendMsgToHandler = !hBoxFind.isVisible();
+
         vBoxFindReplace.setVisible(true);
         vBoxFindReplace.setManaged(true);
         hBoxFind.setVisible(true);
@@ -294,7 +319,10 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         hBoxReplace.setVisible(false);
         hBoxReplace.setManaged(false);
         txtFind.requestFocus();
-        msgForHandler("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + txtFind.getText());
+        
+        if (sendMsgToHandler) {
+            msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_ALL.name(), null));
+        }
     }
 
     public void hideFindSection() {
@@ -304,11 +332,13 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         hBoxFind.setManaged(false);
         hBoxReplace.setVisible(false);
         hBoxReplace.setManaged(false);
-        msgForHandler("FIND CLOSED");
+        msgForHandler(findReplaceActionForHandler("FIND CLOSED", null));
         msgForHandler(TextToolbarActionEnum.FOCUS_TO_TEXT.name());
     }
 
     public void showReplaceSection() {
+        boolean sendMsgToHandler = !hBoxFind.isVisible();
+
         vBoxFindReplace.setVisible(true);
         vBoxFindReplace.setManaged(true);
         hBoxFind.setVisible(true);
@@ -316,6 +346,10 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         hBoxReplace.setVisible(true);
         hBoxReplace.setManaged(true);
         txtReplace.requestFocus();
+
+        if (sendMsgToHandler) {
+            msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_ALL.name(), null));
+        }
     }
 
     public void hideReplaceSection() {
@@ -370,6 +404,34 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     }
 
     // Private methods
+
+    private String findReplaceActionForHandler(String action, String findText) {
+        /*
+            STRUCTURE:
+                FIND/REPLACE ACTION:action
+                findText
+                replaceText
+                matchCase
+                wholeWords
+         */
+
+        String result = "";
+
+        result += "FIND/REPLACE ACTION:" + action + "\n";
+
+        if (findText != null) {
+            result += findText + "\n";
+        } else {
+            result += txtFind.getText() + "\n";
+        }
+
+        result += txtReplace.getText() + "\n";
+
+        result += matchCase + "\n";
+        result += wholeWords;
+
+        return result;
+    }
 
     private void setToolbarSectionVisible(ToolbarSectionsEnum section, boolean visible) {
         switch (section) {
@@ -476,6 +538,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     }
     
     private void setupWidgetsText() {
+        lblFindResult.setText(OBJECTS.SETTINGS.getl("FindResult").replace("#1", "?").replace("#2", "?"));
         UJavaFX.setTooltip(btnUndo, OBJECTS.SETTINGS.getl("text_Undo"));
         UJavaFX.setTooltip(btnRedo, OBJECTS.SETTINGS.getl("text_Redo"));
         UJavaFX.setTooltip(btnCut, OBJECTS.SETTINGS.getl("text_Cut"));
@@ -505,7 +568,23 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         UJavaFX.setTooltip(btnAlignJustify, OBJECTS.SETTINGS.getl("text_AlignJustify"));
     }
 
+    private void setFindWorking(boolean working) {
+        if (working) {
+            lblFindResult.setVisible(false);
+            lblFindResult.setManaged(false);
+            imgFindWorking.setVisible(true);
+            imgFindWorking.setManaged(true);
+        } else {
+            lblFindResult.setVisible(true);
+            lblFindResult.setManaged(true);
+            imgFindWorking.setVisible(false);
+            imgFindWorking.setManaged(false);
+        }
+    }
+
     private void setupWidgetsAppearance() {
+        setFindWorking(false);   
+        imgFindWorking.setImage(new Image(getClass().getResourceAsStream("/gifs/loading.gif")));
         hideFindSection();
 
         btnUndo.setDisable(true);
@@ -558,18 +637,25 @@ public class TextEditToolbarController implements IElementController, ICustomEve
 
         // Find text field listener
         txtFind.textProperty().addListener((obs, oldValue, newValue) -> {
-            msgForHandler("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + newValue);
+            msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_ALL.name(), newValue));
         });
-        
 
+        // TAB switches between Find and Replace sections
+        txtFind.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.TAB) {
+                if (!hBoxReplace.isVisible()) {
+                    showReplaceSection();
+                } else {
+                    txtReplace.requestFocus();
+                }
+            }
+        });
+        txtReplace.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.TAB) {
+                txtFind.requestFocus();
+            }
+        });
 
-        // txtFind.textProperty().addListener((obs, oldValue, newValue) -> {
-        //     if (newValue != null && !newValue.isEmpty()) {
-        //         msgForHandler("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + newValue);
-        //     } else {
-        //         msgForHandler("FIND:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + newValue);
-        //     }
-        // });
 
         setImageToButton(btnUndo, "/images/undo.png");
         setImageToButton(btnRedo, "/images/redo.png");
@@ -741,12 +827,14 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     public void onBtnMatchCaseAction() {
         matchCase = !matchCase;
         setButtonSelected(btnMatchCase, matchCase);
+        msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_MATCH_CASE.name(), null));
     }
 
     @FXML
     public void onBtnWholeWordsAction() {
         wholeWords = !wholeWords;
         setButtonSelected(btnWholeWords, wholeWords);
+        msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_WHOLE_WORDS.name(), null));
     }
 
     @FXML
@@ -785,6 +873,26 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     @FXML
     public void onBtnRedoAction() {
         msgForHandler(TextToolbarActionEnum.REDO.name());
+    }
+
+    @FXML
+    public void onBtnFindUp() {
+        msgForHandler(TextToolbarActionEnum.FIND_UP.name());
+    }
+
+    @FXML
+    public void onBtnFindDown() {
+        msgForHandler(TextToolbarActionEnum.FIND_DOWN.name());
+    }
+
+    @FXML
+    public void onBtnReplaceOne() {
+        msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.REPLACE_ONE.name(), null));
+    }
+
+    @FXML
+    public void onBtnReplaceAll() {
+        msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.REPLACE_ALL.name(), null));
     }
 
 }

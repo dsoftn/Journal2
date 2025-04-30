@@ -2,6 +2,7 @@ package com.dsoftn.utils;
 
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.LinkedHashMap;
 
 import com.dsoftn.OBJECTS;
@@ -68,6 +69,45 @@ public class UJavaFX {
         new Thread(task).start();
 
     }
+
+    public static Task<Boolean> taskStartWithResult(Supplier<Boolean> supplierToExecute, String eventID) {
+        Task<Boolean> task = new Task<>() {
+            @Override
+            protected Boolean call() {
+                return supplierToExecute.get();
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                boolean result = task.getValue();
+                OBJECTS.EVENT_HANDLER.fireEvent(
+                    new TaskStateEvent(
+                        eventID,
+                        result ? TaskStateEnum.COMPLETED : TaskStateEnum.CANCELED,
+                        ""
+                    )
+                );
+            });
+        });
+
+        task.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                OBJECTS.EVENT_HANDLER.fireEvent(
+                    new TaskStateEvent(
+                        eventID,
+                        TaskStateEnum.FAILED,
+                        "Task.setOnFailed exception: " + e
+                    )
+                );
+            });
+        });
+
+        new Thread(task).start();
+
+        return task;
+    }
+
 
     public static void setTooltip(Node node, String text, String title, Image image, Integer imageMaxWidth, Integer imageMaxHeight) {
         if (imageMaxHeight == null && imageMaxWidth == null) {

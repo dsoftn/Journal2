@@ -6,7 +6,9 @@ public enum TaskStateEnum {
     STARTED(2),
     EXECUTING(3),
     COMPLETED(4),
-    FAILED(5);
+    FAILED(5),
+    CANCELED(6)
+    ;
 
     private final int value;
 

@@ -1134,6 +1134,13 @@
         "languageCode": "en",
         "creationDate": "2025.04.24 13:22:47",
         "userData": ""
+      },
+      "FindResult": {
+        "key": "FindResult",
+        "value": "#1 of #2",
+        "languageCode": "en",
+        "creationDate": "2025.04.30 16:26:29",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -2269,6 +2276,13 @@
         "value": "Odaberi boju",
         "languageCode": "sr-lat",
         "creationDate": "2025.04.24 13:22:47",
+        "userData": ""
+      },
+      "FindResult": {
+        "key": "FindResult",
+        "value": "#1 od #2",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.04.30 16:26:29",
         "userData": ""
       }
     }

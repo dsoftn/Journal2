@@ -300,6 +300,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         busy = true;
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
+        actionBeforeChanges();
 
         this.clear();
         this.insertText(0, text);
@@ -352,6 +353,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
         ac.removeCurrentAC();
+        actionBeforeChanges();
 
         rtwText.setDataToRTWidget(this);
 
@@ -375,6 +377,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
         ac.removeCurrentAC();
+        actionBeforeChanges();
 
         if (text == null) {
             text = "";
@@ -440,12 +443,17 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             handleMousePressed(event);
         });
 
-        
+        // On focus lost remove AutoComplete
+        this.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                ac.removeCurrentAC();
+            }
+        });
+
         // Key pressed
         this.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             this.timer.resetInterval();
             if (this.busy) {
-                System.out.println("Busy: KEY PRESSED");
                 event.consume();
                 return;
             }
@@ -585,12 +593,34 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             // CTRL + F
             else if (event.getCode() == KeyCode.F && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 event.consume();
-                msgForHandler(TextToolbarActionEnum.FIND_SHOW.name());
+                if (this.getSelectedText().isEmpty()) {
+                    msgForHandler(TextToolbarActionEnum.FIND_SHOW.name());
+                } else {
+                    if (this.getSelectedText().contains("\n")) {
+                        this.deselect();
+                        msgForHandler(TextToolbarActionEnum.FIND_SHOW.name());
+                    } else {
+                        String selectedText = this.getSelectedText();
+                        this.deselect();
+                        msgForHandler(TextToolbarActionEnum.FIND_SHOW.name() + CONSTANTS.EMPTY_PARAGRAPH_STRING + selectedText);
+                    }
+                }
             }
             // CTRL + H
             else if (event.getCode() == KeyCode.H && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 event.consume();
-                msgForHandler(TextToolbarActionEnum.REPLACE_SHOW.name());
+                if (this.getSelectedText().isEmpty()) {
+                    msgForHandler(TextToolbarActionEnum.REPLACE_SHOW.name());
+                } else {
+                    if (this.getSelectedText().contains("\n")) {
+                        this.deselect();
+                        msgForHandler(TextToolbarActionEnum.REPLACE_SHOW.name());
+                    } else {
+                        String selectedText = this.getSelectedText();
+                        this.deselect();
+                        msgForHandler(TextToolbarActionEnum.REPLACE_SHOW.name() + CONSTANTS.EMPTY_PARAGRAPH_STRING + selectedText);
+                    }
+                }
             }
             // CTRL + Z
             else if (event.getCode() == KeyCode.Z && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
@@ -606,7 +636,6 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             
             else {
                 this.busy = true;
-                System.out.println("Unknown key pressed: " + event.getCode());
                 event.consume();
                 this.busy = false;
             }
@@ -623,7 +652,6 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             if (event.getCharacter().equals("")) return;
             
             if (this.busy) {
-                System.out.println("Busy: KEY TYPED");
                 event.consume();
                 return;
             }
@@ -674,6 +702,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
         busy = true;
         ac.removeCurrentAC();
+        actionBeforeChanges();
 
         deleteSelectedText();
 
@@ -693,6 +722,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
 
     // Private methods
+
+    private void actionBeforeChanges() {
+        msgForHandler(TextToolbarActionEnum.FIND_CLOSE.name());
+    }
 
     private void handleAC() {
         if (ac.getCurrentAC() == null) {
@@ -996,6 +1029,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         // Add new paragraph
         this.busy = true;
         ac.removeCurrentAC();
+        actionBeforeChanges();
 
         event.consume();
 
@@ -1081,6 +1115,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private void handleKeyPressed_DELETE(KeyEvent event) {
         this.busy = true;
         ac.removeCurrentAC();
+        actionBeforeChanges();
 
         if (!this.getSelectedText().isEmpty()) {
             if (event != null) event.consume();
@@ -1179,6 +1214,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private void handleKeyPressed_BACKSPACE(KeyEvent event) {
         this.busy = true;
         ac.removeCurrentAC();
+        actionBeforeChanges();
 
         if (!this.getSelectedText().isEmpty()) {
             event.consume();
@@ -1482,6 +1518,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
         this.busy = true;
         event.consume();
+        actionBeforeChanges();
 
         String acString = ac.getCurrentACClean();
         ac.removeCurrentAC();
@@ -1507,6 +1544,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         if (!ac.hasCurrentAC()) return;
 
         this.busy = true;
+        actionBeforeChanges();
 
         String acString = ac.getCurrentACClean();
         ac.removeCurrentAC();
@@ -1829,6 +1867,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         }
 
         ac.removeCurrentAC();
+        actionBeforeChanges();
 
         if (this.getSelectedText().length() > 0) {
             int start = this.getSelection().getStart();
@@ -1920,14 +1959,12 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     private void handleCaretPositionChange(Object obs, Integer oldPos, Integer newPos) {
-        // System.out.println("caret position changed. old: " + oldPos + "  new: " + newPos);
         if (this.ignoreCaretPositionChange || this.ignoreCaretPositionChangePERMANENT) {
             this.ignoreCaretPositionChange = false;
             return;
         }
 
         this.busy = true;
-        System.out.println("caret position changed. old: " + oldPos + "  new: " + newPos);
 
         demarkCharOVERWRITE(oldPos);
         markCharOVERWRITE(newPos);
