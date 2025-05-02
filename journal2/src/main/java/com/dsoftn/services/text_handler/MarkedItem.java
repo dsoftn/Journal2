@@ -5,7 +5,16 @@ import com.dsoftn.models.StyleSheetChar;
 
 public class MarkedItem {
     public enum MarkedType {
-        FIND_REPLACE
+        FIND_REPLACE,
+        INTEGER,
+        DOUBLE,
+        DATE,
+        TIME,
+        WEB_LINK,
+        EMAIL,
+        SERBIAN_MOBILE_NUMBER,
+        SERBIAN_LANDLINE_NUMBER,
+        INTERNATIONAL_PHONE_NUMBER
         ;
     }
 

@@ -7,7 +7,6 @@ import java.util.List;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.enums.models.TaskStateEnum;
-import com.dsoftn.events.ClipboardChangedEvent;
 import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
@@ -33,12 +32,16 @@ public class Marker implements ICustomEventListener {
 
     private FindReplace findReplace = null;
     private String messageSTRING = null;
+    private NumberDateTimeMarking numberDateTimeMarking = null;
+    private WebMark webMark = null;
 
     //  Constructor
     public Marker(RTWidget rtWidget, TextHandler textHandler) {
         this.rtWidget = rtWidget;
         this.textHandler = textHandler;
         findReplace = new FindReplace(rtWidget, textHandler);
+        numberDateTimeMarking = new NumberDateTimeMarking(rtWidget);
+        webMark = new WebMark(rtWidget);
 
         OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
 
@@ -174,13 +177,23 @@ public class Marker implements ICustomEventListener {
     private boolean taskMark() {
         // This is Task, marking should be done in specific order
 
-
         List<StyleSheetChar> cssChars = copyCssList(this.lastCssList);
-
-        
-        // Find / Replace
         if (cssChars == null) { return false; }
-        if (findReplace.calculate(messageSTRING, cssChars, currentTask) == null) {
+
+        // Numbers, dates, times
+        List<MarkedItem> markedNumbersDatesTimes = NumberDateTimeMarking.getNumbersDatesTimes(rtWidget.getText(),  currentTask);
+        if (markedNumbersDatesTimes == null) { return false; }
+        List<StyleSheetChar> cssCharsNDT = numberDateTimeMarking.calculate(cssChars, markedNumbersDatesTimes, currentTask);
+        if (cssCharsNDT == null) { return false; }
+        cssCharsNDT = copyCssList(cssCharsNDT);
+        
+        // Web links, e-mail
+        List<StyleSheetChar> cssCharsWeb = webMark.calculate(cssCharsNDT, currentTask);
+        if (cssCharsWeb == null) { return false; }
+        cssCharsWeb = copyCssList(cssCharsWeb);
+
+        // Find / Replace
+        if (findReplace.calculate(messageSTRING, cssCharsWeb, currentTask) == null) {
             return false;
         }
 
@@ -190,6 +203,8 @@ public class Marker implements ICustomEventListener {
     private void markText() {
         // This is not Task, marking should be done in specific order
 
+        numberDateTimeMarking.mark();
+        webMark.mark();
         findReplace.mark();
     }
 

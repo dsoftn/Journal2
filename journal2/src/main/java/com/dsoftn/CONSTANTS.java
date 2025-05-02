@@ -20,6 +20,10 @@ public class CONSTANTS {
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy.");
     public static final DateTimeFormatter DATE_TIME_FORMATTER_FOR_JSON = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
     public static final DateTimeFormatter DATE_FORMATTER_FOR_JSON = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+    
+    public static final DateTimeFormatter DATE_FORMATTER_UNIVERSAL = DateTimeFormatter.ofPattern("d.M.yyyy.");
+    public static final DateTimeFormatter TIME_FORMATTER_UNIVERSAL = DateTimeFormatter.ofPattern("H:m:s");
+    
     public static final int INVALID_ID = -1;
     public static final int INVALID_SIZE = -1;
     public static final String INVALID_DATETIME_STRING = "?";

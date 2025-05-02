@@ -1141,6 +1141,13 @@
         "languageCode": "en",
         "creationDate": "2025.04.30 16:26:29",
         "userData": ""
+      },
+      "text_Transparent": {
+        "key": "text_Transparent",
+        "value": "Transparent",
+        "languageCode": "en",
+        "creationDate": "2025.05.01 11:39:36",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -2283,6 +2290,13 @@
         "value": "#1 od #2",
         "languageCode": "sr-lat",
         "creationDate": "2025.04.30 16:26:29",
+        "userData": ""
+      },
+      "text_Transparent": {
+        "key": "text_Transparent",
+        "value": "Proziran",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.01 11:39:36",
         "userData": ""
       }
     }

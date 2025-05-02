@@ -2,6 +2,7 @@ package com.dsoftn.utils;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -127,6 +128,14 @@ public class ColorPopup {
         lblTitle.setStyle("-fx-text-fill: #00a6fb;-fx-font-size: 18px;");
         lblTitle.setAlignment(Pos.CENTER);
 
+        // Transparent color
+        Button btnTransparent = new Button(OBJECTS.SETTINGS.getl("text_Transparent"));
+        btnTransparent.setOnAction(e -> {
+            onColorSelectedCallback.accept("transparent");
+            popup.hide();
+        });
+        btnTransparent.getStyleClass().add("button-default");
+
         // Info
         HBox infoBox = new HBox(5);
 
@@ -169,7 +178,7 @@ public class ColorPopup {
 
 
 
-        VBox vbox = new VBox(10, lblTitle, rows, infoBox);
+        VBox vbox = new VBox(10, lblTitle, btnTransparent, rows, infoBox);
         vbox.setPadding(new Insets(10));
         vbox.setStyle("-fx-background-color: black; -fx-border-color: gray;");
         vbox.setAlignment(Pos.CENTER);

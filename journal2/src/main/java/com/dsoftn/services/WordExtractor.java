@@ -18,6 +18,16 @@ public class WordExtractor {
 
     // Constructors
 
+    public WordExtractor(String text, String pattern) {
+        this.pattern = Pattern.compile(pattern);
+        this.text = text;
+    }
+
+    public WordExtractor(String text, Pattern pattern) {
+        this.pattern = pattern;
+        this.text = text;
+    }
+    
     public WordExtractor(String text) {
         this.pattern = Pattern.compile("[^\\s~!@#$%^ &*()_+=`{}|\\[\\]\\\\:\";'<>?,./-" + CONSTANTS.EMPTY_PARAGRAPH_STRING + "]+");
         this.text = text;

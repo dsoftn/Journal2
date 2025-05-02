@@ -2,9 +2,6 @@ package com.dsoftn.services.text_handler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import javax.swing.text.Style;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
@@ -26,7 +23,6 @@ public class FindReplace {
     private boolean isMatchCase = false;
     private boolean isWholeWords = false;
     private String findText = null;
-    private String replaceText = null;
     private String messageSTRING = null;
 
     // Constructor
@@ -134,6 +130,13 @@ public class FindReplace {
         }
 
         rtwWidget.replaceText(foundItems.get(selectedItemIndex).start, foundItems.get(selectedItemIndex).end, withString);
+        
+        if (cssChars.get(foundItems.get(selectedItemIndex).start).getStyleBeforeMerge().isEmpty()) {
+            rtwWidget.setStyle(foundItems.get(selectedItemIndex).start, foundItems.get(selectedItemIndex).end, cssChars.get(foundItems.get(selectedItemIndex).start).getCss());
+        } else {
+            rtwWidget.setStyle(foundItems.get(selectedItemIndex).start, foundItems.get(selectedItemIndex).end, cssChars.get(foundItems.get(selectedItemIndex).start).getStyleBeforeMerge());
+        }
+
         StyleSheetChar css = rtwWidget.getCssChar();
 
         int start = foundItems.get(selectedItemIndex).start;
@@ -232,7 +235,6 @@ public class FindReplace {
         String[] lines = messageSTRING.split("\\R", -1);
 
         findText = lines[1];
-        replaceText = lines[2];
         isMatchCase = Boolean.parseBoolean(lines[3]);
         isWholeWords = Boolean.parseBoolean(lines[4]);
     }

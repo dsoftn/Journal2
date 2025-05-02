@@ -12,11 +12,9 @@ import com.dsoftn.events.ClipboardChangedEvent;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.TextHandler;
-import com.dsoftn.utils.ColorPopup;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -55,7 +53,6 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     // Variables
     private Stage stage = null;
     private String myName = UJavaFX.getUniqueId();
-    private String mySettingsName = "TextEditToolbar";
     private VBox root = null;
     private VBox vLayout = null;
     private String receiverID = null;

@@ -1,6 +1,7 @@
 package com.dsoftn.utils;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -43,6 +44,9 @@ public class UDate {
         return result;
     }
 
+    /**
+     * Returns period string like "Before 1 month and 2 days"
+     */
     public static String getPeriodString(LocalDate dateFrom, LocalDate dateTo) {
         Period period = Period.between(dateFrom, dateTo);
 
@@ -140,6 +144,36 @@ public class UDate {
         return result;
     }
 
+    /**
+     * Checks if string is valid date, if date does not end with "." it will be still considered valid
+     */
+    public static boolean isStringValidDate(String date) {
+        try {
+            if (!date.endsWith(".")) {
+                date += ".";
+            }
+            LocalDate.parse(date, CONSTANTS.DATE_FORMATTER_UNIVERSAL);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
+    /**
+     * Checks if string is valid time. Allows time with or without seconds
+     * @param time
+     * @return
+     */
+    public static boolean isStringValidTime(String time) {
+        try {
+            if (UString.Count(time, ":") == 1) {
+                time += ":00";
+            }
+            LocalTime.parse(time, CONSTANTS.TIME_FORMATTER_UNIVERSAL);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 }

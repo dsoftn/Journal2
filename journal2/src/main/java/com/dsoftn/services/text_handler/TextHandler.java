@@ -1,13 +1,10 @@
 package com.dsoftn.services.text_handler;
 
-import com.dsoftn.CONSTANTS;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
-import com.dsoftn.utils.UError;
-import com.dsoftn.utils.UJavaFX;
 
 import javafx.application.Platform;
 
@@ -16,7 +13,6 @@ public class TextHandler {
     public record Msg(String message) {}
 
     // Variables
-    private String myName = UJavaFX.getUniqueId();
     private RTWidget txtWidget = null;
     private TextEditToolbarController toolbarController = null;
     private UndoHandler undoHandler = new UndoHandler();

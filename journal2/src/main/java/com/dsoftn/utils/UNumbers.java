@@ -1,5 +1,7 @@
 package com.dsoftn.utils;
 
+import java.util.regex.Pattern;
+
 public class UNumbers {
     public static boolean isStringNumber(String str) {
         try {
@@ -13,6 +15,54 @@ public class UNumbers {
     public static boolean isStringInteger(String str) {
         try {
             Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isStringIntegerRemoveComa(String str) {
+        try {
+            String[] split = str.split(Pattern.quote(","));
+            for (int i = 1; i < split.length; i++) {
+                if (split[i].length() != 3) {
+                    return false;
+                }
+            }
+            str = str.replace(",", "");
+
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isStringDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isStringDoubleRemoveComa(String str) {
+        try {
+            String[] splitDot = str.split(Pattern.quote("."));
+            if (splitDot.length != 2) {
+                return false;
+            }
+
+            String[] split = splitDot[0].split(Pattern.quote(","));
+            for (int i = 1; i < split.length; i++) {
+                if (split[i].length() != 3) {
+                    return false;
+                }
+            }
+            str = str.replace(",", "");
+
+            Double.parseDouble(str);
             return true;
         } catch (NumberFormatException e) {
             return false;

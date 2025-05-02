@@ -227,7 +227,7 @@ public class StyleSheetChar {
         result.stroke = this.stroke;
         result.strokeWidth = this.strokeWidth;
         result.strokeType = this.strokeType;
-        result.styleBeforeMerge = this.styleBeforeMerge;
+        // result.styleBeforeMerge = this.styleBeforeMerge;
 
         return result;
     }

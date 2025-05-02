@@ -77,30 +77,27 @@ public class ACHandler implements ICustomEventListener {
             TaskStateEvent taskStateEvent = (TaskStateEvent) event;
             if (taskStateEvent.getID().split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING))[0].equals(this.myName)) {
                 if (taskStateEvent.getState() == TaskStateEnum.COMPLETED) {
-                    // Platform.runLater(() -> {
-                        String validText = taskStateEvent.getID().split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING), -1)[1];
-                        if (getCurrentAC() == null || rtWidget.getCaretPosition() != positionInWidgetTMP || !rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()).equals(paragraphTextTMP)) { //  || !rtWidget.getTextPlain().equals(validText)
-                            clearAC();
-                            waitingAC = false;
-                            calculating = false;
-                            return;
-                        }
-                        
-                        rtWidget.busy = true;
-                        rtWidget.ignoreTextChangePERMANENT = true;
-                        rtWidget.ignoreCaretPositionChange = true;
-                        rtWidget.insertText(positionInWidgetTMP, getCurrentAC());
-                        ACisShown = true;
-                        ACStyle.setFontName(rtWidget.cssChar.getFontName());
-                        ACStyle.setFontSize(rtWidget.cssChar.getFontSize());
-                        rtWidget.setStyle(positionInWidgetTMP, positionInWidgetTMP + getCurrentAC().length(), ACStyle.getCss());
-                        rtWidget.moveTo(positionInWidgetTMP);
-                        Platform.runLater(() -> {
-                            rtWidget.ignoreTextChangePERMANENT = false;
-                            rtWidget.ignoreCaretPositionChange = false;
-                            rtWidget.busy = false;
-                        });
-                    // });
+                    if (getCurrentAC() == null || rtWidget.getCaretPosition() != positionInWidgetTMP || rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()) == null || !rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()).equals(paragraphTextTMP)) {
+                        clearAC();
+                        waitingAC = false;
+                        calculating = false;
+                        return;
+                    }
+                    
+                    rtWidget.busy = true;
+                    rtWidget.ignoreTextChangePERMANENT = true;
+                    rtWidget.ignoreCaretPositionChange = true;
+                    rtWidget.insertText(positionInWidgetTMP, getCurrentAC());
+                    ACisShown = true;
+                    ACStyle.setFontName(rtWidget.cssChar.getFontName());
+                    ACStyle.setFontSize(rtWidget.cssChar.getFontSize());
+                    rtWidget.setStyle(positionInWidgetTMP, positionInWidgetTMP + getCurrentAC().length(), ACStyle.getCss());
+                    rtWidget.moveTo(positionInWidgetTMP);
+                    Platform.runLater(() -> {
+                        rtWidget.ignoreTextChangePERMANENT = false;
+                        rtWidget.ignoreCaretPositionChange = false;
+                        rtWidget.busy = false;
+                    });
                 }
             }
         }
