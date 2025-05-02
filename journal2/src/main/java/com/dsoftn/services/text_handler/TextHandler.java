@@ -77,6 +77,7 @@ public class TextHandler {
         }
         else if (messageSTRING.startsWith("FIND/REPLACE ACTION:FIND CLOSED")) {
             marker.unMarkFindReplace();
+            marker.mark();
         }
         else if (messageSTRING.startsWith("FIND/REPLACE ACTION:" + TextToolbarActionEnum.REPLACE_ONE.name())) {
             marker.findReplaceONE(messageSTRING);

@@ -715,6 +715,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
             Platform.runLater(() -> {
                 this.stateChanged = true;
+                fixHeight();
                 this.busy = false;
             });
         });
@@ -1323,12 +1324,19 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         this.busy = true;
         ac.removeCurrentAC();
 
+        int caretPos = this.getCaretPosition();
+
         demarkCharOVERWRITE(this.getCaretPosition());
 
         Platform.runLater(() -> {
             fixCaretPosition(this.getCaretPosition());
             markCharOVERWRITE(this.getCaretPosition());
             this.busy = false;
+            if (caretPos == this.getCaretPosition()) {
+                if (this.getCurrentParagraph() > 0) {
+                    this.moveTo(this.getCurrentParagraph() - 1, 1);
+                }
+            }
         });
     }
 

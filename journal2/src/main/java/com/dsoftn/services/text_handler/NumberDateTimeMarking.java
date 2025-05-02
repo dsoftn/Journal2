@@ -71,7 +71,7 @@ public class NumberDateTimeMarking {
     }
 
     public void mark() {
-        if (cssChars == null) return;
+        if (cssChars == null || cssChars.size() != rtWidget.getText().length()) return;
 
         int index = 0;
         for (StyleSheetChar item : cssChars) {
@@ -83,18 +83,45 @@ public class NumberDateTimeMarking {
     // Private methods
     private boolean addSerbianMobileNumbers(String text, List<MarkedItem> markedItems, Task<Boolean> taskHandler) {
         Pattern serbianMobilePattern = Pattern.compile(
-            "(?:\\+381|00381|\\(?(0))?\\s*\\(?6[0-6]\\)?[\\s/\\-.]*\\d{1,3}[\\s/\\-.]*\\d{2,3}[\\s/\\-.]*\\d{2,3}"
+            "(?:\\+381|00381|\\(0?6[0-6]\\)|0?6[0-6])(?:[\\s/\\-.]*\\d{1,3}){1,4}"
         );
-                        
+                                
         WordExtractor wordExtractor = new WordExtractor(text, serbianMobilePattern);;
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
         StyleSheetChar serbianMobileCss = new StyleSheetChar(true);
         serbianMobileCss.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedSerbianMobileNumbers"));
 
+        boolean hasItem = false;
         for (WordExtractor.WordItem word : words) {
             if (taskHandler.isCancelled()) {
                 return false;
+            }
+
+            if (word.word().length() < 10) {
+                continue;
+            }
+
+            boolean hasSeparator = false;
+            for (String sep : List.of(" ", "-", "/", ".")) {
+                if (word.word().indexOf(sep) > 0 && word.word().indexOf(sep) < word.word().length() - 1) {
+                    hasSeparator = true;
+                    break;
+                }
+            }
+            if (!hasSeparator) {
+                continue;
+            }
+
+            for (MarkedItem item : markedItems) {
+                if (word.index() >= item.start && word.index() < item.end && item.markedType == MarkedItem.MarkedType.DATE) {
+                    hasItem = true;
+                    break;
+                }
+            }
+            if (hasItem) {
+                hasItem = false;
+                continue;
             }
 
             markedItems.add(new MarkedItem(word.index(), word.index() + word.word().length(), CONSTANTS.INVALID_ID, serbianMobileCss, MarkedItem.MarkedType.SERBIAN_MOBILE_NUMBER));
@@ -105,9 +132,9 @@ public class NumberDateTimeMarking {
 
     private boolean addSerbianLandlineNumbers(String text, List<MarkedItem> markedItems, Task<Boolean> taskHandler) {
         Pattern serbianLandlinePattern = Pattern.compile(
-            "(?:\\+381|00381|\\(?(0))?\\s*\\(?[1-3][0-9]\\)?[\\s/\\-.]+\\d{1,4}(?:[\\s/\\-.]?\\d{1,3}){1,3}"
+            "(?:\\+381|00381|\\(0?[1-3][0-9]\\)|0?[1-3][0-9])(?:[\\s/\\-.]*\\d{1,4}){1,4}"
         );
-                                
+        
         WordExtractor wordExtractor = new WordExtractor(text, serbianLandlinePattern);;
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
@@ -120,8 +147,23 @@ public class NumberDateTimeMarking {
                 return false;
             }
 
+            if (word.word().length() < 10) {
+                continue;
+            }
+
+            boolean hasSeparator = false;
+            for (String sep : List.of(" ", "-", "/", ".")) {
+                if (word.word().indexOf(sep) > 0 && word.word().indexOf(sep) < word.word().length() - 1) {
+                    hasSeparator = true;
+                    break;
+                }
+            }
+            if (!hasSeparator) {
+                continue;
+            }
+
             for (MarkedItem item : markedItems) {
-                if (word.index() >= item.start && word.index() < item.end && item.markedType == MarkedItem.MarkedType.SERBIAN_MOBILE_NUMBER) {
+                if (word.index() >= item.start && word.index() < item.end && (item.markedType == MarkedItem.MarkedType.SERBIAN_MOBILE_NUMBER || item.markedType == MarkedItem.MarkedType.DATE)) {
                     hasItem = true;
                     break;
                 }
@@ -139,7 +181,7 @@ public class NumberDateTimeMarking {
 
     private boolean addInternationalPhoneNumbers(String text, List<MarkedItem> markedItems, Task<Boolean> taskHandler) {
         Pattern internationalPhonePattern = Pattern.compile(
-            "(?:\\+|00)\\d{1,3}[\\s/\\-.]*\\(?\\d{1,4}\\)?(?:[\\s/\\-.]?\\d{1,4}){1,6}"
+            "(?:\\+|00)\\d{1,3}[\\s/\\-.]*\\(?\\d{1,4}\\)?(?:[\\s/\\-.]*\\d{1,4}){1,6}"
         );
                                         
         WordExtractor wordExtractor = new WordExtractor(text, internationalPhonePattern);;
@@ -154,12 +196,27 @@ public class NumberDateTimeMarking {
                 return false;
             }
 
+            if (word.word().length() < 10) {
+                continue;
+            }
+
+            boolean hasSeparator = false;
+            for (String sep : List.of(" ", "-", "/", ".")) {
+                if (word.word().indexOf(sep) > 0 && word.word().indexOf(sep) < word.word().length() - 1) {
+                    hasSeparator = true;
+                    break;
+                }
+            }
+            if (!hasSeparator) {
+                continue;
+            }
+
             if (word.word().startsWith("+381") || word.word().startsWith("00381")) {
                 continue;
             }
 
             for (MarkedItem item : markedItems) {
-                if (word.index() >= item.start && word.index() < item.end && (item.markedType == MarkedItem.MarkedType.SERBIAN_MOBILE_NUMBER || item.markedType == MarkedItem.MarkedType.SERBIAN_LANDLINE_NUMBER)) {
+                if (word.index() >= item.start && word.index() < item.end && (item.markedType == MarkedItem.MarkedType.SERBIAN_MOBILE_NUMBER || item.markedType == MarkedItem.MarkedType.SERBIAN_LANDLINE_NUMBER || item.markedType == MarkedItem.MarkedType.DATE)) {
                     hasItem = true;
                     break;
                 }
@@ -238,8 +295,9 @@ public class NumberDateTimeMarking {
                 continue;
             }
             // Check is item time
-            if (UDate.isStringValidTime(item)) {
-                result.add(new MarkedItem(start, start + item.length(), CONSTANTS.INVALID_ID, cssTime, MarkedItem.MarkedType.TIME));
+            String timeFixed = UString.stripCharacters(item, ".");
+            if (UDate.isStringValidTime(timeFixed)) {
+                result.add(new MarkedItem(start, start + timeFixed.length(), CONSTANTS.INVALID_ID, cssTime, MarkedItem.MarkedType.TIME));
                 item = "";
                 continue;
             }

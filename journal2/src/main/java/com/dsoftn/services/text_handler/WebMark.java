@@ -44,7 +44,7 @@ public class WebMark {
     }
 
     public void mark() {
-        if (cssChars == null) return;
+        if (cssChars == null || cssChars.size() != rtWidget.getText().length()) return;
 
         int index = 0;
         for (StyleSheetChar item : cssChars) {

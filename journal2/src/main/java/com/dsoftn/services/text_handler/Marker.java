@@ -29,7 +29,7 @@ public class Marker implements ICustomEventListener {
     private PauseTransition pause = new PauseTransition(Duration.millis(300));
     private Task<Boolean> currentTask = null;
     private boolean ignoreTextChangePERMANENT = false;
-
+    
     private FindReplace findReplace = null;
     private String messageSTRING = null;
     private NumberDateTimeMarking numberDateTimeMarking = null;
@@ -44,6 +44,14 @@ public class Marker implements ICustomEventListener {
         webMark = new WebMark(rtWidget);
 
         OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
+
+        pause.setOnFinished(event -> {
+            if (rtWidget.ac.hasCurrentAC() || rtWidget.busy) {
+                pause.playFromStart();
+                return;
+            }
+            mark();
+        });
 
         rtWidget.textProperty().addListener((obs, oldText, newText) -> {
             if (!ignoreTextChangePERMANENT) {
@@ -61,7 +69,7 @@ public class Marker implements ICustomEventListener {
 
             if (taskEvent.getState() == TaskStateEnum.CANCELED) {
                 currentTask = null;
-                mark();
+                // mark();
             }
             else if (taskEvent.getState() == TaskStateEnum.COMPLETED) {
                 currentTask = null;
@@ -93,20 +101,15 @@ public class Marker implements ICustomEventListener {
 
     //  Public methods
     public void onTextChange() {
-        pause.stop();
+        if (pause.getStatus() == PauseTransition.Status.RUNNING) {
+            pause.stop();
+        }
             
         if (currentTask != null) {
             currentTask.cancel();
             currentTask = null;
         }
         
-        pause.setOnFinished(event -> {
-            if (rtWidget.ac.hasCurrentAC() || rtWidget.busy) {
-                pause.playFromStart();
-                return;
-            }
-            mark();
-        });
         Platform.runLater(() -> {
             lastTextState = rtWidget.getText();
             lastCssList = copyCssList(rtWidget.cssStyles);
@@ -203,9 +206,18 @@ public class Marker implements ICustomEventListener {
     private void markText() {
         // This is not Task, marking should be done in specific order
 
-        numberDateTimeMarking.mark();
-        webMark.mark();
-        findReplace.mark();
+        try {
+            numberDateTimeMarking.mark();
+            webMark.mark();
+            findReplace.mark();
+        } catch (Exception ex) {
+            UError.error("Marker.markText: " + ex.getMessage(), "Error");
+            if (currentTask != null) {
+                currentTask.cancel();
+                currentTask = null;
+            }
+            mark();
+        }
     }
 
     private List<StyleSheetChar> copyCssList(List<StyleSheetChar> cssList) {
