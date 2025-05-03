@@ -33,11 +33,14 @@ public class Clip {
     private String lastClipRtf = getClipRtf();
     private String lastClipUrl = getClipUrl();
     ContinuousTimer timer = new ContinuousTimer(200);
+    private String styledText = null;
+    private boolean ignoreClipboardChanges = false;
 
     // Constructor
 
     public Clip() {
         timer.play(this::onClipboardChanged);
+        styledText = getClipText();
     }
 
     // GET from system clipboard
@@ -139,10 +142,19 @@ public class Clip {
     // System clipboard listener
 
     private void onClipboardChanged() {
+        if (ignoreClipboardChanges) {
+            ignoreClipboardChanges = false;
+            return;
+        }
+
         String changed = whatChangedInSystemClipboard();
 
         if (changed == null) {
             return;
+        }
+
+        if (changed.equals("text")) {
+            styledText = getClipText();
         }
 
         ClipboardChangedEvent event = new ClipboardChangedEvent(ClipboardActionEnum.SYSTEM_CLIPBOARD_CHANGED, null, changed);
@@ -201,6 +213,18 @@ public class Clip {
         }
     }
 
+    // Styled text
+    public void setStyledText(String styledText) {
+        this.styledText = styledText;
+        timer.stop();
+        ignoreClipboardChanges = true;
+        setClipText(RTWText.transformToPlainText(styledText));
+        timer.play(null);
+    }
+
+    public String getStyledText() {
+        return styledText;
+    }
 
     // Set new IDs
 

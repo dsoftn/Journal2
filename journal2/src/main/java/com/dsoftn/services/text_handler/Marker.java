@@ -69,29 +69,30 @@ public class Marker implements ICustomEventListener {
 
             if (taskEvent.getState() == TaskStateEnum.CANCELED) {
                 currentTask = null;
-                // mark();
+                mark(messageSTRING);
             }
             else if (taskEvent.getState() == TaskStateEnum.COMPLETED) {
                 currentTask = null;
-                Platform.runLater(() -> {
-                    if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
-                        rtWidget.busy = true;
-                        rtWidget.ignoreTextChangePERMANENT = true;
-                        rtWidget.ignoreCaretPositionChange = true;
-                        markText();
-                        rtWidget.ignoreTextChangePERMANENT = false;
-                        rtWidget.ignoreCaretPositionChange = false;
-                        rtWidget.busy = false;
-                    } else {
-                        lastTextState = rtWidget.getText();
-                        lastCssList = copyCssList(rtWidget.cssStyles);
-                        mark();
-                    }
-                });
+                // Platform.runLater(() -> {
+                //     if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
+                //         rtWidget.busy = true;
+                //         rtWidget.ignoreTextChangePERMANENT = true;
+                //         rtWidget.ignoreCaretPositionChange = true;
+                //         markText();
+                //         rtWidget.ignoreTextChangePERMANENT = false;
+                //         rtWidget.ignoreCaretPositionChange = false;
+                //         rtWidget.busy = false;
+                //     } else {
+                //         lastTextState = rtWidget.getText();
+                //         lastCssList = copyCssList(rtWidget.cssStyles);
+                //         mark();
+                //     }
+                // });
             }
             else if (taskEvent.getState() == TaskStateEnum.FAILED) {
                 currentTask = null;
                 UError.error("Marker.onCustomEvent: Task failed", "Task failed");
+                mark(messageSTRING);
             }
         }
 
@@ -200,23 +201,39 @@ public class Marker implements ICustomEventListener {
             return false;
         }
 
+        Platform.runLater(() -> {
+            markText();
+        });
+
         return true;
     }
 
-    private void markText() {
+    private boolean markText() {
         // This is not Task, marking should be done in specific order
 
         try {
-            numberDateTimeMarking.mark();
-            webMark.mark();
-            findReplace.mark();
+            if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
+                numberDateTimeMarking.mark();
+            } else { return false; }
+            
+            if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
+                webMark.mark();
+            } else { return false; }
+            
+            if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
+                findReplace.mark();
+            } else { return false; }
+
+            return true;
+
         } catch (Exception ex) {
             UError.error("Marker.markText: " + ex.getMessage(), "Error");
             if (currentTask != null) {
                 currentTask.cancel();
                 currentTask = null;
             }
-            mark();
+            // mark();
+            return false;
         }
     }
 

@@ -1,7 +1,11 @@
 package com.dsoftn.services.text_handler;
 
+import com.dsoftn.DIALOGS;
+import com.dsoftn.OBJECTS;
+import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
+import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
@@ -17,15 +21,21 @@ public class TextHandler {
     private TextEditToolbarController toolbarController = null;
     private UndoHandler undoHandler = new UndoHandler();
     private Marker marker = null;
+    private String receiverID = null;
 
     // Constructor
     public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController) {
         marker = new Marker(txtWidget, this);
+
         this.toolbarController = toolbarController;
-        toolbarController.setTextHandler(this);
+        if (toolbarController != null) {
+            toolbarController.setTextHandler(this);
+        }
+
         this.txtWidget = txtWidget;
         this.txtWidget.setTextHandler(this);
         this.txtWidget.setupWidget();
+
         msgForToolbar(txtWidget.getCssChar());
         msgForToolbar(txtWidget.getParagraphCss());
         msgForToolbar("UNDO:" + undoHandler.canUndo());
@@ -33,6 +43,8 @@ public class TextHandler {
     }
 
     // Public methods
+    public void setReceiverID(String receiverID) { this.receiverID = receiverID; }
+
     public void msgFromToolbar(String messageSTRING) {
         if (messageSTRING.equals(TextToolbarActionEnum.FOCUS_TO_TEXT.name())) {
             txtWidget.requestFocus();
@@ -137,6 +149,35 @@ public class TextHandler {
         else if (messageSTRING.equals(TextToolbarActionEnum.FIND_CLOSE.name())) {
             msgForToolbar(TextToolbarActionEnum.FIND_CLOSE.name());
         }
+        else if (messageSTRING.equals("PARAGRAPHS_LIMIT_EXCEEDED")) {
+            MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(null);
+            msgBoxController.setTitleText(OBJECTS.SETTINGS.getl("text_LimitExceeded"));
+            msgBoxController.setHeaderText(OBJECTS.SETTINGS.getl("text_ParagraphsLimitExceeded"));
+            msgBoxController.setHeaderIcon(MsgBoxController.MsgBoxIcon.LIMIT);
+            msgBoxController.setContentText(OBJECTS.SETTINGS.getl("ParagraphsLimitExceededContent"));
+            msgBoxController.setContentIcon(MsgBoxController.MsgBoxIcon.PARAGRAPH);
+            msgBoxController.setButtons(MsgBoxController.MsgBoxButton.OK);
+            msgBoxController.setDefaultButton(MsgBoxController.MsgBoxButton.OK);
+            msgBoxController.startMe();
+        }
+        else if (messageSTRING.equals("SAVE: Ctrl+S")) {
+            if (receiverID == null) return;
+            // Save text
+            TaskStateEvent event = new TaskStateEvent(receiverID, txtWidget.getRTWTextObject(), "SAVE: Ctrl+S");
+            OBJECTS.EVENT_HANDLER.fireEvent(event);
+        }
+        else if (messageSTRING.equals("SAVE: Ctrl+Shift+S")) {
+            if (receiverID == null) return;
+            // Save text as draft
+            TaskStateEvent event = new TaskStateEvent(receiverID, txtWidget.getRTWTextObject(), "SAVE: Ctrl+Shift+S");
+            OBJECTS.EVENT_HANDLER.fireEvent(event);
+        }
+        else if (messageSTRING.equals("SAVE: Alt+ENTER")) {
+            if (receiverID == null) return;
+            // Save text as draft
+            TaskStateEvent event = new TaskStateEvent(receiverID, txtWidget.getRTWTextObject(), "SAVE: Alt+ENTER");
+            OBJECTS.EVENT_HANDLER.fireEvent(event);
+        }
     }
 
     public void msgFromWidget(StyleSheetChar styleSheet) {
@@ -156,15 +197,19 @@ public class TextHandler {
     // Messages for toolbar
     public void msgForToolbar(String messageSTRING) {
         // Send message to toolbar
+        if (toolbarController == null) return;
         toolbarController.msgFromHandler(messageSTRING);
     }
+    
     private void msgForToolbar(StyleSheetChar styleSheet) {
         // Send message to toolbar
+        if (toolbarController == null) return;
         toolbarController.msgFromHandler(styleSheet);
     }
 
     private void msgForToolbar(StyleSheetParagraph styleSheet) {
         // Send message to toolbar
+        if (toolbarController == null) return;
         toolbarController.msgFromHandler(styleSheet);
     }
 
@@ -173,6 +218,7 @@ public class TextHandler {
         // Send message to widget
         txtWidget.msgFromHandler(messageSTRING);
     }
+    
     private void msgForWidget(StyleSheetChar styleSheet) {
         // Send message to widget
         txtWidget.msgFromHandler(styleSheet);

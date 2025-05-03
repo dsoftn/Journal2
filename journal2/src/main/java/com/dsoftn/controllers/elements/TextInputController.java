@@ -3,15 +3,19 @@ package com.dsoftn.controllers.elements;
 import com.dsoftn.ELEMENTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.controllers.elements.TextEditToolbarController.AlignmentEnum;
+import com.dsoftn.enums.models.TaskStateEnum;
+import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
-import com.dsoftn.services.RTWText;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.text_handler.TextHandler;
+import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -20,13 +24,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
-public class TextInputController implements IElementController {
+public class TextInputController implements IElementController, ICustomEventListener {
 
     public enum Behavior {
         BLOCK_NAME;
     }
     
     // Variables
+    private Behavior behavior = null;
     private Stage stage = null;
     private String myName = UJavaFX.getUniqueId();
     private String mySettingsName = "TextInput";
@@ -46,6 +51,43 @@ public class TextInputController implements IElementController {
     private HBox hBoxControls;
         @FXML
         private Button btnOk;
+
+
+    // Interface ICustomEventListener methods
+    @Override
+    public void onCustomEvent(Event event) {
+        if (event instanceof TaskStateEvent) {
+            TaskStateEvent taskEvent = (TaskStateEvent) event;
+            if (!taskEvent.getID().equals(this.myName)) { return; }
+
+            if (taskEvent.getState() == TaskStateEnum.COMPLETED) {
+                if (taskEvent.getMessage().equals("SAVE: Ctrl+S")) {
+                    // Save text
+                    if (behavior == Behavior.BLOCK_NAME) {
+                        saveAndClose(taskEvent);
+                    }
+                }
+                else if (taskEvent.getMessage().equals("SAVE: Ctrl+Shift+S")) {
+                    // Save text as draft
+                    if (behavior == Behavior.BLOCK_NAME) {
+                        saveAndClose(taskEvent);
+                    }
+                }
+                else if (taskEvent.getMessage().equals("SAVE: Alt+ENTER")) {
+                    // Save text as draft
+                    if (behavior == Behavior.BLOCK_NAME) {
+                        saveAndClose(taskEvent);
+                    }
+                }
+                else if (taskEvent.getMessage().equals("SET TEXT")) {
+                    if (taskEvent.getRTWText().getPlainText().isEmpty()) {
+                        return;
+                    }
+                    rTxtRichText.setRTWTextObject(taskEvent.getRTWText());
+                }
+            }
+        }
+    }
 
 
     // Interface IElementController methods
@@ -133,6 +175,9 @@ public class TextInputController implements IElementController {
 
     @Override
     public void calculateData() {
+        // Register for event
+        OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
+
         // Add Rich text
         hBoxRichText.getChildren().add(rTxtRichText);
         HBox.setHgrow(rTxtRichText, Priority.ALWAYS);
@@ -146,6 +191,7 @@ public class TextInputController implements IElementController {
 
         // Create TextHandler
         this.textHandler = new TextHandler(rTxtRichText, toolbarController);
+        this.textHandler.setReceiverID(myName);
 
         setupWidgetsText();
         setupWidgetsAppearance();
@@ -164,6 +210,7 @@ public class TextInputController implements IElementController {
     public void setBehavior(Behavior behavior) {
         switch (behavior) {
             case BLOCK_NAME:
+                this.behavior = behavior;
                 rTxtRichText.setBehavior(Behavior.BLOCK_NAME);
                 StyleSheetChar css = new StyleSheetChar();
                 css.setCss(OBJECTS.SETTINGS.getvSTRING("CssBlockName"));
@@ -175,6 +222,7 @@ public class TextInputController implements IElementController {
                 rTxtRichText.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockNameMinTextWidgetHeight"));
                 rTxtRichText.setMinHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
                 rTxtRichText.setPrefHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
+                rTxtRichText.setMaxNumberOfParagraphs(2);
                 break;
         }
     }
@@ -191,14 +239,19 @@ public class TextInputController implements IElementController {
     // FXML methods
     @FXML
     private void onBtnOkAction() {
-        RTWText rtwText = rTxtRichText.getRTWTextObject();
-        rTxtRichText.setRTWTextObject(rtwText);
-        System.out.println("RTWText object set.");
-        // RTWText rtwText = rTxtRichText.getRTWTextObject();
-        // String result = rtwText.getStyledText(rTxtRichText);
-        // System.out.println(result);
+        if (behavior == Behavior.BLOCK_NAME) {
+            saveAndClose(new TaskStateEvent(myName, rTxtRichText.getRTWTextObject(), "SAVE: OK_BUTTON"));
+        }
     }
 
+    private void saveAndClose(TaskStateEvent taskEvent) {
+        OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(receiverID, taskEvent.getRTWText(), taskEvent.getMessage()));
+        if (parentController != null) {
+            parentController.closeMe();
+        } else {
+            UError.error("TextInputController.onBtnOkAction: Parent controller is null", "Unable to close dialog.");
+        }
+    }
 
 
 }

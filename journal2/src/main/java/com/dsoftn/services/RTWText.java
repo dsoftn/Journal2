@@ -10,6 +10,7 @@ import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.URichText;
+import com.dsoftn.utils.UString;
 
 
 public class RTWText {
@@ -51,8 +52,17 @@ public class RTWText {
         this(rtWidget.getTextNoAC(), rtWidget.cssStyles, rtWidget.cssParagraphStyles);
     }
 
-    public RTWText(String styledText) {
-        resultString = styledText;
+    public RTWText(String styledOrPlainText) {
+        if (styledOrPlainText == null) {
+            styledOrPlainText = "";
+        }
+
+        if (RTWText.isStyledText(styledOrPlainText)) {
+            resultString = styledOrPlainText;
+            return;
+        } else {
+            resultString =RTWText.transformToStyledText(styledOrPlainText);
+        }
     }
 
     public RTWText() {}
@@ -107,8 +117,32 @@ public class RTWText {
 
     public String getPlainText() { return extractText(resultString).replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, ""); }
 
-    public static String transformToPlainText(String textWithZeroWidthSpace) {
-        return textWithZeroWidthSpace.replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "").replaceAll("\\R", "\n");
+    public static String transformToPlainText(String text) {
+        if (RTWText.isStyledText(text)) {
+            String result = "";
+
+            boolean isText = false;
+    
+            for (String line : text.split(Pattern.quote("\n"))) {
+                if (line.equals(CONSTANTS.RTW_TEXT_CONTENT)) {
+                    isText = true;
+                    continue;
+                }
+                if (!isText) {
+                    continue;
+                }
+    
+                result += line + "\n";
+            }
+    
+            if (result.endsWith("\n")) {
+                result = result.substring(0, result.length() - 1);
+            }
+    
+            text = result;
+        }
+        
+        return text.replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "").replaceAll("\\R", "\n");
     }
 
     public static String transformToTextWithZeroWidthSpace(String plainText) {
@@ -342,6 +376,63 @@ public class RTWText {
 
     private String getResultText(String text) {
         return CONSTANTS.RTW_TEXT_CONTENT + "\n" + text;
+    }
+
+    // Static methods
+
+    public static String transformToStyledText(String plainText) {
+        if (plainText == null) {
+            plainText = "";
+        }
+
+        if (RTWText.isStyledText(plainText)) {
+            return plainText;
+        }
+
+        plainText = plainText.replaceAll("\\R", "\n");
+        plainText = RTWText.transformToTextWithZeroWidthSpace(plainText);
+
+        String result = "";
+
+        result += CONSTANTS.RTW_TEXT_HEADER + "\n";
+        result += CONSTANTS.RTW_TEXT_CHAR_STYLE_START + "\n";
+        result += "0," + plainText.length() + "\n";
+        result += new StyleSheetChar().getCss() + "\n";
+        result += CONSTANTS.RTW_TEXT_CHAR_STYLE_END + "\n";
+        result += CONSTANTS.RTW_TEXT_PARAGRAPH_STYLE_START + "\n";
+        result += "0," + UString.Count(plainText, "\n") + 1 + "\n";
+        result += new StyleSheetParagraph().getCss() + "\n";
+        result += CONSTANTS.RTW_TEXT_PARAGRAPH_STYLE_END + "\n";
+        result += CONSTANTS.RTW_TEXT_CONTENT + "\n";
+        result += plainText;
+
+        return result;
+    }
+    
+    /**
+     * Plain or styled text
+     */
+    public static int countParagraphs(String text) {
+        if (!RTWText.isStyledText(text)) {
+            return UString.Count(text, "\n") + 1;
+        }
+
+        int counter = 0;
+        boolean isText = false;
+
+        for (String line : text.split(Pattern.quote("\n"))) {
+            if (line.equals(CONSTANTS.RTW_TEXT_CONTENT)) {
+                isText = true;
+                continue;
+            }
+            if (!isText) {
+                continue;
+            }
+
+            counter++;
+        }
+
+        return counter;
     }
 
     // Implement equals() and hashCode() methods

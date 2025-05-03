@@ -1148,6 +1148,27 @@
         "languageCode": "en",
         "creationDate": "2025.05.01 11:39:36",
         "userData": ""
+      },
+      "text_LimitExceeded": {
+        "key": "text_LimitExceeded",
+        "value": "Limit Exceeded",
+        "languageCode": "en",
+        "creationDate": "2025.05.03 12:03:06",
+        "userData": ""
+      },
+      "text_ParagraphsLimitExceeded": {
+        "key": "text_ParagraphsLimitExceeded",
+        "value": "Maximum paragraphs number exceeded",
+        "languageCode": "en",
+        "creationDate": "2025.05.03 12:04:03",
+        "userData": ""
+      },
+      "ParagraphsLimitExceededContent": {
+        "key": "ParagraphsLimitExceededContent",
+        "value": "The action cannot be completed because it will exceed the maximum number of paragraphs allowed.",
+        "languageCode": "en",
+        "creationDate": "2025.05.03 12:05:16",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -2297,6 +2318,27 @@
         "value": "Proziran",
         "languageCode": "sr-lat",
         "creationDate": "2025.05.01 11:39:36",
+        "userData": ""
+      },
+      "text_LimitExceeded": {
+        "key": "text_LimitExceeded",
+        "value": "Prekoračen limit",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.03 12:03:06",
+        "userData": ""
+      },
+      "text_ParagraphsLimitExceeded": {
+        "key": "text_ParagraphsLimitExceeded",
+        "value": "Prekoračen je maksimalni broj paragrafa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.03 12:04:03",
+        "userData": ""
+      },
+      "ParagraphsLimitExceededContent": {
+        "key": "ParagraphsLimitExceededContent",
+        "value": "Akcija se ne može završiti jer će preći maksimalni broj dozvoljenih paragrafa..",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.03 12:05:16",
         "userData": ""
       }
     }

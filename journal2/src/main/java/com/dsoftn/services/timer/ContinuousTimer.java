@@ -26,11 +26,14 @@ public class ContinuousTimer implements ITimer {
 
     @Override
     public void play(Runnable action) {
-        this.action = action;
+        if (action != null) {
+            this.action = action;
+        }
+
         active = true;
         OBJECTS.GLOBAL_TIMER.registerTimer(this);
     }
-    
+
     @Override
     public void stop() {
         active = false;

@@ -98,7 +98,7 @@ public class NumberDateTimeMarking {
                 return false;
             }
 
-            if (word.word().length() < 10) {
+            if (word.word().length() < 10 || !(word.word().startsWith("0") || word.word().startsWith("+")) || word.word().startsWith("000")) {
                 continue;
             }
 
@@ -147,7 +147,7 @@ public class NumberDateTimeMarking {
                 return false;
             }
 
-            if (word.word().length() < 10) {
+            if (word.word().length() < 10 || !(word.word().startsWith("0") || word.word().startsWith("+")) || word.word().startsWith("000")) {
                 continue;
             }
 
@@ -196,7 +196,7 @@ public class NumberDateTimeMarking {
                 return false;
             }
 
-            if (word.word().length() < 10) {
+            if (word.word().length() < 10 || !(word.word().startsWith("0") || word.word().startsWith("+")) || word.word().startsWith("000")) {
                 continue;
             }
 
@@ -256,6 +256,15 @@ public class NumberDateTimeMarking {
         for (int i = 0; i < text.length(); i++) {
             if (taskHandler.isCancelled()) {
                 return null;
+            }
+
+            if (text.charAt(i) == '-' && i < text.length() -1 && numbers.indexOf(text.charAt(i + 1)) != -1) {
+                item += text.charAt(i);
+                if (!foundItem) {
+                    start = i;
+                    foundItem = true;
+                }
+                continue;
             }
 
             if (numbers.indexOf(text.charAt(i)) != -1) {

@@ -44,11 +44,7 @@
             <Button fx:id="btnCategory" mnemonicParsing="false" styleClass="button-default" text="Category" />
          </children>
       </HBox>
-      <HBox fx:id="hBoxName" alignment="TOP_CENTER">
-         <children>
-            <Label fx:id="lblName" styleClass="label-block-name" textAlignment="CENTER" wrapText="true" />
-         </children>
-      </HBox>
+      <HBox fx:id="hBoxName" alignment="TOP_CENTER" />
       <HBox fx:id="hBoxContent" />
       <HBox fx:id="hBoxAttachments">
          <children>

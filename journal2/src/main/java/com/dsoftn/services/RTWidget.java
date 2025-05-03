@@ -1,24 +1,12 @@
 package com.dsoftn.services;
 
-import java.lang.reflect.Field;
 import java.time.Duration;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.Queue;
 
-import org.fxmisc.flowless.VirtualFlow;
-import org.fxmisc.richtext.CharacterHit;
-import org.fxmisc.richtext.GenericStyledArea;
-import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.Caret.CaretVisibility;
 import org.fxmisc.richtext.StyledTextArea;
-import org.fxmisc.richtext.TextExt;
-import org.fxmisc.richtext.model.StyledSegment;
 import org.fxmisc.richtext.model.TwoDimensional;
-import org.reactfx.util.Either;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
@@ -29,27 +17,14 @@ import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.ACHandler;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.services.timer.ContinuousTimer;
-import com.dsoftn.services.timer.SingleShotTimer;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UString;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.text.HitInfo;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
-import okhttp3.internal.Util;
-
-import java.util.function.BiConsumer;
 
 
 public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextArea
@@ -58,9 +33,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private StyleSheetChar cssCharPrev = null; // Previous char style that has been sent to handler
     private StyleSheetParagraph cssParagraph = new StyleSheetParagraph(); // Current paragraph style
     private StyleSheetParagraph cssParagraphPrev = null; // Previous paragraph style that has been sent to handler
-    private Integer maxNumberOfParagraphs = null;
-    private Integer maxTotalChars = null;
-    private Integer maxCharsPerParagraph = null;
+    private Integer maxNumberOfParagraphs = Integer.MAX_VALUE;
+    private boolean readOnly = false;
     private int minTextWidgetHeight = 24;
     public List<StyleSheetChar> cssStyles = new ArrayList<>();
     public List<StyleSheetParagraph> cssParagraphStyles = new ArrayList<>();
@@ -79,7 +53,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     public boolean isOverwriteMode = false;
    
     // Constructors
-    public RTWidget(StyleSheetChar cssStyleSheet, Integer maxNumberOfParagraphs, Integer maxTotalChars, Integer maxCharsPerParagraph) {
+    public RTWidget(StyleSheetChar cssStyleSheet, Integer maxNumberOfParagraphs) {
         super(
             "",  // initialText
             (text, style) -> text.setStyle(style), // Apply style to characters
@@ -89,9 +63,14 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         );
     
         this.cssChar = cssStyleSheet;
-        this.maxNumberOfParagraphs = maxNumberOfParagraphs;
-        this.maxTotalChars = maxTotalChars;
-        this.maxCharsPerParagraph = maxCharsPerParagraph;
+        
+        if (maxNumberOfParagraphs == null) {
+            maxNumberOfParagraphs = Integer.MAX_VALUE;
+        } else if (maxNumberOfParagraphs < 1) {
+            maxNumberOfParagraphs = 1;
+        } else {
+            this.maxNumberOfParagraphs = maxNumberOfParagraphs;
+        }
 
         this.cssParagraphStyles.add(cssParagraph.duplicate());
     }
@@ -125,6 +104,26 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     // Public methods
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        if (readOnly) {
+            this.setShowCaret(CaretVisibility.OFF);
+        } else {
+            this.setShowCaret(CaretVisibility.ON);
+        }
+        
+    }
+
+    public void setMaxNumberOfParagraphs(Integer maxNumberOfParagraphs) {
+        if (maxNumberOfParagraphs == null) {
+            maxNumberOfParagraphs = Integer.MAX_VALUE;
+        } else if (maxNumberOfParagraphs < 1) {
+            maxNumberOfParagraphs = 1;
+        }
+
+        this.maxNumberOfParagraphs = maxNumberOfParagraphs;
+    }
 
     public boolean canBeClosed() {
         if (ac.hasCurrentAC()) {
@@ -438,6 +437,11 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             fixHeight();
         });
 
+        // Update widget height when width is changed
+        this.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            fixHeight();
+        });
+
         // Mouse pressed
         this.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             handleMousePressed(event);
@@ -455,6 +459,22 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             this.timer.resetInterval();
             if (this.busy) {
                 event.consume();
+                return;
+            }
+
+            // Allow only copy text if read only mode
+            if (this.readOnly) {
+                if (event.getCode() == KeyCode.C && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                    event.consume();
+                    copySelectedText();
+                }
+                else if (event.getCode() == KeyCode.INSERT && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                    event.consume();
+                    copySelectedText();
+                }
+                else {
+                    event.consume();
+                }
                 return;
             }
 
@@ -632,6 +652,22 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                 event.consume();
                 msgForHandler(TextToolbarActionEnum.REDO.name());
             }
+            // CTRL + S
+            else if (event.getCode() == KeyCode.S && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                event.consume();
+                msgForHandler("SAVE: Ctrl+S");
+            }
+            // CTRL + SHIFT + S
+            else if (event.getCode() == KeyCode.S && event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
+                event.consume();
+                msgForHandler("SAVE: Ctrl+Shift+S");
+            }
+            // ALT + ENTER
+            else if (event.getCode() == KeyCode.ENTER && !event.isControlDown() && !event.isShiftDown() && event.isAltDown()) {
+                event.consume();
+                msgForHandler("SAVE: Alt+ENTER");
+            }
+
             
             
             else {
@@ -649,6 +685,11 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
         // Key typed
         this.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            if (this.readOnly) {
+                event.consume();
+                return;
+            }
+
             if (event.getCharacter().equals("")) return;
             
             if (this.busy) {
@@ -688,7 +729,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         busy = true;
 
         RTWText rtwCopiedText = RTWText.copy(this);
-        OBJECTS.CLIP.setClipText(rtwCopiedText.getStyledText());
+        OBJECTS.CLIP.setStyledText(rtwCopiedText.getStyledText());
 
         Platform.runLater(() -> {
             this.busy = false;
@@ -701,16 +742,25 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         }
 
         busy = true;
+
+        int pasteParagraphsCount = RTWText.countParagraphs(OBJECTS.CLIP.getStyledText()) - 1;
+        int selectedTextParagraphsCount = RTWText.countParagraphs(this.getSelectedText()) - 1;
+        if ((this.getParagraphs().size() - selectedTextParagraphsCount) + pasteParagraphsCount > this.maxNumberOfParagraphs) {
+            msgForHandler("PARAGRAPHS_LIMIT_EXCEEDED");
+            this.busy = false;
+            return;
+        }
+
         ac.removeCurrentAC();
         actionBeforeChanges();
 
         deleteSelectedText();
 
         Platform.runLater(() -> {
-            if (RTWText.isStyledText(OBJECTS.CLIP.getClipText())) {
-                RTWText.paste(this, OBJECTS.CLIP.getClipText());
+            if (RTWText.isStyledText(OBJECTS.CLIP.getStyledText())) {
+                RTWText.paste(this, OBJECTS.CLIP.getStyledText());
             } else {
-                pastePlainText(null, OBJECTS.CLIP.getClipText());
+                pastePlainText(null, OBJECTS.CLIP.getStyledText());
             }
 
             Platform.runLater(() -> {
@@ -1029,10 +1079,17 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private void handleKeyPressed_ENTER(KeyEvent event) {
         // Add new paragraph
         this.busy = true;
+        event.consume();
+
+        int selectedTextParagraphsCount = RTWText.countParagraphs(this.getSelectedText()) - 1;
+        if (this.getParagraphs().size() - selectedTextParagraphsCount >= this.maxNumberOfParagraphs) {
+            msgForHandler("PARAGRAPHS_LIMIT_EXCEEDED");
+            this.busy = false;
+            return;
+        }
+
         ac.removeCurrentAC();
         actionBeforeChanges();
-
-        event.consume();
 
         deleteSelectedText();
 

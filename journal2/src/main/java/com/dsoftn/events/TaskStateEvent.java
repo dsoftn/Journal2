@@ -2,6 +2,7 @@ package com.dsoftn.events;
 
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
+import com.dsoftn.services.RTWText;
 
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -18,6 +19,7 @@ public class TaskStateEvent extends Event {
     private final Integer currentRecord;
     private final Integer totalRecords;
     private final String message;
+    private final RTWText rtwText;
 
     // Constructors
 
@@ -35,6 +37,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = null;
         this.message = null;
         this.id = null;
+        this.rtwText = null;
     }
 
     /**
@@ -49,6 +52,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = null;
         this.message = message;
         this.id = null;
+        this.rtwText = null;
     }
 
     /**
@@ -63,6 +67,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = null;
         this.message = null;
         this.id = null;
+        this.rtwText = null;
     }
 
     /**
@@ -77,6 +82,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = null;
         this.message = message;
         this.id = null;
+        this.rtwText = null;
     }
 
     /**
@@ -99,6 +105,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = totalRecords;
         this.message = null;
         this.id = null;
+        this.rtwText = null;
     }
 
     /**
@@ -121,6 +128,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = totalRecords;
         this.message = message;
         this.id = null;
+        this.rtwText = null;
     }
 
     // FOR OTHER TASKS
@@ -138,6 +146,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = null;
         this.message = null;
         this.id = id;
+        this.rtwText = null;
     }
 
     /**
@@ -153,6 +162,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = null;
         this.message = message;
         this.id = id;
+        this.rtwText = null;
     }
 
     /**
@@ -168,6 +178,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = null;
         this.message = null;
         this.id = id;
+        this.rtwText = null;
     }
 
     /**
@@ -183,6 +194,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = null;
         this.message = message;
         this.id = id;
+        this.rtwText = null;
     }
 
     /**
@@ -206,6 +218,7 @@ public class TaskStateEvent extends Event {
         this.totalRecords = totalRecords;
         this.message = null;
         this.id = id;
+        this.rtwText = null;
     }
 
     /**
@@ -229,6 +242,21 @@ public class TaskStateEvent extends Event {
         this.totalRecords = totalRecords;
         this.message = message;
         this.id = id;
+        this.rtwText = null;
+    }
+
+    // FOR TEXT HANDLER
+
+    public TaskStateEvent(String id, RTWText rtwText, String message) {
+        super(TASK_STATE_EVENT);
+        this.model = ModelEnum.NONE;
+        this.state = TaskStateEnum.COMPLETED;
+        this.progressPercent = null;
+        this.currentRecord = null;
+        this.totalRecords = null;
+        this.message = message;
+        this.id = id;
+        this.rtwText = rtwText;
     }
 
 
@@ -254,4 +282,7 @@ public class TaskStateEvent extends Event {
     public String getMessage() { return this.message; }
 
     public String getID() { return this.id; }
+
+    public RTWText getRTWText() { return this.rtwText; }
+
 }

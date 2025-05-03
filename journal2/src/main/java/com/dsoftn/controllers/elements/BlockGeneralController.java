@@ -14,10 +14,15 @@ import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.controllers.EmptyDialogController.WindowBehavior;
 import com.dsoftn.enums.models.BlockTypeEnum;
 import com.dsoftn.enums.models.ModelEnum;
+import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.MessageEvent;
+import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.Actor;
 import com.dsoftn.models.Block;
+import com.dsoftn.services.RTWText;
+import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.SelectionData;
+import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UDate;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
@@ -43,6 +48,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -73,6 +79,9 @@ public class BlockGeneralController implements IBaseController, IElementControll
     private boolean showOptions = true;
     private boolean showReadOnly = true;
     private boolean readOnly = false;
+
+    private RTWidget rtwBlockName = new RTWidget(); // Rich text widget for block name
+    private TextHandler textHandlerBlockName = null;
 
     // FXML variables
 
@@ -113,8 +122,6 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     @FXML
     private HBox hBoxName;
-        @FXML
-        private Label lblName; // Block name in center
 
     @FXML
     private HBox hBoxContent; // Here goes block content
@@ -198,6 +205,23 @@ public class BlockGeneralController implements IBaseController, IElementControll
             MessageEvent messageEvent = (MessageEvent) event;
             eventMessage(messageEvent);
         }
+        else if (event instanceof TaskStateEvent) {
+            TaskStateEvent taskEvent = (TaskStateEvent) event;
+            if (!taskEvent.getID().startsWith(this.myName)) { return; }
+
+            if (taskEvent.getID().endsWith("BLOCK_NAME")) {
+                // Change Block name
+                if (taskEvent.getState() == TaskStateEnum.COMPLETED) {
+                    if (taskEvent.getMessage().startsWith("SAVE:")) {
+                        // Save block name
+                        block.setName(taskEvent.getRTWText().getPlainText());
+                        block.setNameStyle(taskEvent.getRTWText().getStyledText());
+                        setBtnName(block);
+                    }
+                }
+            }
+        }
+
     }
 
     private void eventMessage(MessageEvent messageEvent) {
@@ -296,10 +320,12 @@ public class BlockGeneralController implements IBaseController, IElementControll
     @Override
     public void calculateData() {
         setupWidgetsText();
+        setupWidgetsAppearance();
 
         OBJECTS.EVENT_HANDLER.register(
             this,
-            MessageEvent.RESULT_EVENT
+            MessageEvent.RESULT_EVENT,
+            TaskStateEvent.TASK_STATE_EVENT
         );
     }
 
@@ -439,6 +465,16 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
 
 
+    }
+
+    private void setupWidgetsAppearance() {
+        // Block name
+        HBox.setHgrow(rtwBlockName, Priority.ALWAYS);
+        rtwBlockName.setBehavior(TextInputController.Behavior.BLOCK_NAME);
+        textHandlerBlockName = new TextHandler(rtwBlockName, null);
+        rtwBlockName.setRTWTextObject(new RTWText(block.getNameStyle()));
+        rtwBlockName.setReadOnly(true);
+        hBoxName.getChildren().add(rtwBlockName);
     }
 
     private void adjustWidgets(Block block) {
@@ -592,11 +628,18 @@ public class BlockGeneralController implements IBaseController, IElementControll
     private void setBtnName(Block block) {
         if (block.getName() == null || block.getName().isEmpty()) {
             btnName.setText(OBJECTS.SETTINGS.getl("text_SetName"));
+            hBoxName.setVisible(false);
+            hBoxName.setManaged(false);
             return;
         }
 
         btnName.setText(OBJECTS.SETTINGS.getl("text_ChangeName"));
+        hBoxName.setVisible(true);
+        hBoxName.setManaged(true);
+        rtwBlockName.setTextStyled(block.getNameStyle());
     }
+
+
 
 
     private void animateAddingToLayout() {
@@ -810,9 +853,11 @@ public class BlockGeneralController implements IBaseController, IElementControll
         TextInputController textInputController = ELEMENTS.getTextInputController(stage, TextInputController.Behavior.BLOCK_NAME, myName);
 
         textInputController.setParentController(emptyDialogController);
-        textInputController.setReceiverID(myName);
+        textInputController.setReceiverID(myName + "BLOCK_NAME");
         emptyDialogController.setContent(textInputController.getRoot());
         emptyDialogController.setContentController(textInputController);
+
+        OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(textInputController.getMyName(), new RTWText(block.getNameStyle()), "SET TEXT"));
 
         emptyDialogController.startMe();
     }
