@@ -8,6 +8,7 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 
@@ -84,6 +85,23 @@ public class FindReplace {
             
             index++;
         }
+    }
+
+    public boolean changeStyle(StyleSheetChar styleSheet) {
+        if (foundItems == null || cssChars == null || cssChars.size() != rtwWidget.getText().length()) return false;
+
+        for (MarkedItem item : foundItems) {
+            for (int i = item.start; i < item.end; i++) {
+                rtwWidget.cssStyles.set(i, styleSheet);
+                rtwWidget.setStyle(i, i + 1, styleSheet.getCss());
+            }
+        }
+        
+        Platform.runLater(() -> {
+            rtwWidget.fixHeight();
+        });
+
+        return true;
     }
 
     public boolean selectUP() {

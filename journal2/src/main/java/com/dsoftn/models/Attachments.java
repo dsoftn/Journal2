@@ -279,7 +279,7 @@ public class Attachments implements IModelRepository<Attachment>, ICustomEventLi
     // Public methods
 
     public boolean prepare(Attachment attachment) {
-        // TODO prepare attachment in Attachemnst or Cashe
+        // TODO prepare attachment in Attachmenst or Cashe
         return true;
     }
 

@@ -222,7 +222,7 @@ public class TextInputController implements IElementController, ICustomEventList
                 rTxtRichText.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockNameMinTextWidgetHeight"));
                 rTxtRichText.setMinHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
                 rTxtRichText.setPrefHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
-                rTxtRichText.setMaxNumberOfParagraphs(2);
+                // rTxtRichText.setMaxNumberOfParagraphs(2);
                 break;
         }
     }

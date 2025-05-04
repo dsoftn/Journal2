@@ -307,7 +307,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     public void setTextHandler(TextHandler textHandler) { this.textHandler = textHandler; }
 
     public void showFindSection() {
-        boolean sendMsgToHandler = !hBoxFind.isVisible();
+        boolean sendMsgToHandler = hBoxFind.isVisible();
 
         vBoxFindReplace.setVisible(true);
         vBoxFindReplace.setManaged(true);
@@ -317,7 +317,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         hBoxReplace.setManaged(false);
         txtFind.requestFocus();
         
-        if (sendMsgToHandler) {
+        if (sendMsgToHandler && !txtFind.getText().isEmpty()) {
             msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_ALL.name(), null));
         }
     }
@@ -334,7 +334,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     }
 
     public void showReplaceSection() {
-        boolean sendMsgToHandler = !hBoxFind.isVisible();
+        boolean sendMsgToHandler = hBoxFind.isVisible();
 
         vBoxFindReplace.setVisible(true);
         vBoxFindReplace.setManaged(true);
@@ -344,7 +344,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         hBoxReplace.setManaged(true);
         txtReplace.requestFocus();
 
-        if (sendMsgToHandler) {
+        if (sendMsgToHandler && !txtFind.getText().isEmpty()) {
             msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_ALL.name(), null));
         }
     }

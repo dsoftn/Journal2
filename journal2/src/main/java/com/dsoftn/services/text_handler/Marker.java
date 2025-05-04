@@ -73,21 +73,6 @@ public class Marker implements ICustomEventListener {
             }
             else if (taskEvent.getState() == TaskStateEnum.COMPLETED) {
                 currentTask = null;
-                // Platform.runLater(() -> {
-                //     if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
-                //         rtWidget.busy = true;
-                //         rtWidget.ignoreTextChangePERMANENT = true;
-                //         rtWidget.ignoreCaretPositionChange = true;
-                //         markText();
-                //         rtWidget.ignoreTextChangePERMANENT = false;
-                //         rtWidget.ignoreCaretPositionChange = false;
-                //         rtWidget.busy = false;
-                //     } else {
-                //         lastTextState = rtWidget.getText();
-                //         lastCssList = copyCssList(rtWidget.cssStyles);
-                //         mark();
-                //     }
-                // });
             }
             else if (taskEvent.getState() == TaskStateEnum.FAILED) {
                 currentTask = null;
@@ -98,9 +83,35 @@ public class Marker implements ICustomEventListener {
 
     }
 
-
-
     //  Public methods
+    public void allowMarkingIntegers(boolean allow) {
+        numberDateTimeMarking.allowMarkingIntegers = allow;
+    }
+
+    public void allowMarkingDoubles(boolean allow) {
+        numberDateTimeMarking.allowMarkingDoubles = allow;
+    }
+
+    public void allowMarkingDates(boolean allow) {
+        numberDateTimeMarking.allowMarkingDates = allow;
+    }
+
+    public void allowMarkingTimes(boolean allow) {
+        numberDateTimeMarking.allowMarkingTimes = allow;
+    }
+
+    public void allowMarkingSerbianMobileNumbers(boolean allow) {
+        numberDateTimeMarking.allowMarkingSerbianMobileNumbers = allow;
+    }
+
+    public void allowMarkingSerbianLandlineNumbers(boolean allow) {
+        numberDateTimeMarking.allowMarkingSerbianLandlineNumbers = allow;
+    }
+
+    public void allowMarkingInternationalPhoneNumbers(boolean allow) {
+        numberDateTimeMarking.allowMarkingInternationalPhoneNumbers = allow;
+    }
+
     public void onTextChange() {
         if (pause.getStatus() == PauseTransition.Status.RUNNING) {
             pause.stop();
@@ -139,6 +150,10 @@ public class Marker implements ICustomEventListener {
         mark(null);
     }
 
+    public void markRepeat() {
+        mark(messageSTRING);
+    }
+
     public void unMarkFindReplace() {
         findReplace.calculate(null, null, null);
     }
@@ -175,6 +190,10 @@ public class Marker implements ICustomEventListener {
             lastTextState = rtWidget.getText();
             ignoreTextChangePERMANENT = false;
         });
+    }
+
+    public boolean findReplaceChangeStyle(StyleSheetChar styleSheet) {
+        return findReplace.changeStyle(styleSheet);
     }
 
     //  Private methods

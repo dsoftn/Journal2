@@ -115,6 +115,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         
     }
 
+    public boolean isReadOnly() {
+        return this.readOnly;
+    }
+
     public void setMaxNumberOfParagraphs(Integer maxNumberOfParagraphs) {
         if (maxNumberOfParagraphs == null) {
             maxNumberOfParagraphs = Integer.MAX_VALUE;
@@ -277,14 +281,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             return this.getParagraph(paragraphIndex).getText();
         }
 
-        if (ac.getCurrentWidgetPosition() > this.getParagraph(paragraphIndex).getText().length()) {
-            return null;
-        }
         String text = this.getParagraph(paragraphIndex).getText().substring(0, ac.getCurrentWidgetPosition());
         if (ac.getCurrentWidgetPosition() < cssStyles.size()) {
             text += this.getParagraph(paragraphIndex).getText().substring(ac.getCurrentWidgetPosition());
         }
-
 
         return text;
     }
@@ -461,6 +461,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                 event.consume();
                 return;
             }
+
+            msgForHandler("CONTEXT_MENU:HIDE");
 
             // Allow only copy text if read only mode
             if (this.readOnly) {
@@ -667,6 +669,11 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                 event.consume();
                 msgForHandler("SAVE: Alt+ENTER");
             }
+            // CTRL + SPACE
+            else if (event.getCode() == KeyCode.SPACE && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                event.consume();
+                msgForHandler("CONTEXT_MENU:SHOW");
+            }
 
             
             
@@ -675,12 +682,6 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                 event.consume();
                 this.busy = false;
             }
-
-
-            // Platform.runLater(() -> {
-            //     HELPER_info("KEY PRESSED - AFTER");
-            // });
-
         });
 
         // Key typed
@@ -689,6 +690,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                 event.consume();
                 return;
             }
+
+            msgForHandler("CONTEXT_MENU:HIDE");
 
             if (event.getCharacter().equals("")) return;
             
@@ -771,19 +774,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         });
     }
 
-
     // Private methods
 
     private void actionBeforeChanges() {
         msgForHandler(TextToolbarActionEnum.FIND_CLOSE.name());
-    }
-
-    private void handleAC() {
-        if (ac.getCurrentAC() == null) {
-            return;
-        }
-
-        // TODO make logic
     }
 
     /**
@@ -821,14 +815,6 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             });
         });
         pauseAC.play();
-    }
-
-    private void HELPER_info(String msg) {
-        System.out.println("--- " + msg + " ---");
-        System.out.println("Text LENGTH: " + this.getTextNoAC().length() + "  cssChar LENGTH: " + this.cssStyles.size() + "  cssParagraph LENGTH: " + this.cssParagraphStyles.size());
-        System.out.println("Caret POSITION: " + this.getCaretPosition() + "  Paragraph: " + this.getCurrentParagraph() + "  Column: " + this.getCaretColumn());
-        System.out.println("Selected LENGTH: " + this.getSelectedText().length() + "  Selected: From: " + this.getSelection().getStart() + " to " + this.getSelection().getEnd() + "  Selected TEXT: " + this.getSelectedText().replace("\n", "_"));
-        System.out.println("-".repeat(msg.length() + 8));
     }
 
     private void fixSafeCharInAllParagraphs() {
@@ -878,7 +864,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private int getParIndex(int globalPosition) {
         return this.offsetToPosition(globalPosition, TwoDimensional.Bias.Forward).getMajor();
     }
-    private int getParCol(int globalPosition) {
+    private int getColIndex(int globalPosition) {
         return this.offsetToPosition(globalPosition, TwoDimensional.Bias.Forward).getMinor();
     }
     private void fixCaretPosition(int globalPosition) {
@@ -910,7 +896,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     // Height
-    private void fixHeight() {
+    public void fixHeight() {
         Platform.runLater(() -> {
             PauseTransition pause = new PauseTransition(javafx.util.Duration.millis(50));
             pause.setOnFinished(e -> {
@@ -1055,6 +1041,9 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private void handleMousePressed(MouseEvent event) {
         busy = true;
         ac.removeCurrentAC();
+        if (event.isPrimaryButtonDown()) {
+            msgForHandler("CONTEXT_MENU:HIDE");
+        }
 
         Platform.runLater(() -> {
             fixCaretPosition(this.getCaretPosition());

@@ -21,6 +21,14 @@ public class NumberDateTimeMarking {
     private List<StyleSheetChar> cssChars = new ArrayList<>();
     private List<MarkedItem> markedItems = new ArrayList<>();
 
+    public boolean allowMarkingIntegers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingIntegers");
+    public boolean allowMarkingDoubles = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDoubles");
+    public boolean allowMarkingDates = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDates");
+    public boolean allowMarkingTimes = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingTimes");
+    public boolean allowMarkingSerbianMobileNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingSerbianMobileNumbers");
+    public boolean allowMarkingSerbianLandlineNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingSerbianLandlineNumbers");
+    public boolean allowMarkingInternationalPhoneNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingInternationalPhoneNumbers");
+
     // Constructor
     public NumberDateTimeMarking(RTWidget rtWidget) {
         this.rtWidget = rtWidget;
@@ -36,32 +44,32 @@ public class NumberDateTimeMarking {
                 return null;
             }
 
-            if (item.markedType == MarkedItem.MarkedType.INTEGER && OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingIntegers")) {
+            if (item.markedType == MarkedItem.MarkedType.INTEGER && allowMarkingIntegers) {
                 markedItems.add(item);
             }
-            if (item.markedType == MarkedItem.MarkedType.DOUBLE && OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDoubles")) {
+            if (item.markedType == MarkedItem.MarkedType.DOUBLE && allowMarkingDoubles) {
                 markedItems.add(item);
             }
-            if (item.markedType == MarkedItem.MarkedType.DATE && OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDates")) {
+            if (item.markedType == MarkedItem.MarkedType.DATE && allowMarkingDates) {
                 markedItems.add(item);
             }
-            if (item.markedType == MarkedItem.MarkedType.TIME && OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingTimes")) {
+            if (item.markedType == MarkedItem.MarkedType.TIME && allowMarkingTimes) {
                 markedItems.add(item);
             }
         }
 
         // Serbian mobile numbers
-        if (OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingSerbianMobileNumbers")) {
+        if (allowMarkingSerbianMobileNumbers) {
             if (!addSerbianMobileNumbers(rtWidget.getText(), markedItems, taskHandler)) { return null; }
         }
 
         // Serbian landline numbers
-        if (OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingSerbianLandlineNumbers")) {
+        if (allowMarkingSerbianLandlineNumbers) {
             if (!addSerbianLandlineNumbers(rtWidget.getText(), markedItems, taskHandler)) { return null; }
         }
 
         // International phone numbers
-        if (OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingInternationalPhoneNumbers")) {
+        if (allowMarkingInternationalPhoneNumbers) {
             if (!addInternationalPhoneNumbers(rtWidget.getText(), markedItems, taskHandler)) { return null; }
         }
 

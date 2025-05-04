@@ -25,6 +25,7 @@ import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UString;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 
 
@@ -36,15 +37,14 @@ public class ACHandler implements ICustomEventListener {
     List<String> recommendedACList = new ArrayList<>();
     Integer currentRecommendedIndex = null;
     private Integer positionInWidget = null;
-    boolean canShowAC = false;
+    private boolean canShowAC = false;
     StyleSheetChar ACStyle = new StyleSheetChar();
     boolean ignoreTextChange = false;
-    private boolean calculating = false;
     private int positionInWidgetTMP = -1;
     private String paragraphTextTMP = null;
-    private boolean waitingAC = false;
     private String myName = UJavaFX.getUniqueId();
     private boolean ACisShown = false;
+    private Task<Boolean> task = null;
 
     // Constructor
     public ACHandler(RTWidget rtWidget) {
@@ -56,18 +56,6 @@ public class ACHandler implements ICustomEventListener {
         }
 
         OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
-
-        // rtWidget.textProperty().addListener((obs, oldText, newText) -> {
-        //     if (ignoreTextChange) {
-        //         ignoreTextChange = false;
-        //         return;
-        //     }
-
-        //     Platform.runLater(() -> {
-        //         // if (rtWidget.busy) return;
-        //         showACWhenTextChanged(rtWidget.getCaretPosition(), rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()));
-        //     });
-        // });
     }
 
     // Implementation of ICustomEventListener
@@ -77,10 +65,24 @@ public class ACHandler implements ICustomEventListener {
             TaskStateEvent taskStateEvent = (TaskStateEvent) event;
             if (taskStateEvent.getID().split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING))[0].equals(this.myName)) {
                 if (taskStateEvent.getState() == TaskStateEnum.COMPLETED) {
-                    if (getCurrentAC() == null || rtWidget.getCaretPosition() != positionInWidgetTMP || rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()) == null || !rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()).equals(paragraphTextTMP)) {
+                    if (hasCurrentAC()) {
+                        UError.error("ACHandler.onCustomEvent: AC is already shown", "AC is already shown");
+                    }
+                    if (hasCurrentAC() || rtWidget.getCaretPosition() != positionInWidgetTMP || !rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()).equals(paragraphTextTMP)) {
                         clearAC();
-                        waitingAC = false;
-                        calculating = false;
+                        if (task != null) {
+                            task.cancel();
+                            task = null;
+                        }
+                        return;
+                    }
+
+                    if (recommendedACList == null || recommendedACList.size() == 0) {
+                        clearAC();
+                        if (task != null) {
+                            task.cancel();
+                            task = null;
+                        }
                         return;
                     }
                     
@@ -99,12 +101,22 @@ public class ACHandler implements ICustomEventListener {
                         rtWidget.busy = false;
                     });
                 }
+                else if (taskStateEvent.getState() == TaskStateEnum.FAILED) {
+                    ACisShown = false;
+                }
+                else if (taskStateEvent.getState() == TaskStateEnum.CANCELED) {
+                    ACisShown = false;
+                }
             }
         }
     }
 
 
     // Public methods
+    public void enableAutoComplete(boolean enable) {
+        this.canShowAC = enable;
+    }
+
     public String getCurrentAC() {
         if (currentRecommendedIndex == null) return null;
         String counter  = CONSTANTS.EMPTY_PARAGRAPH_STRING + " [" + (currentRecommendedIndex + 1) + "/" + recommendedACList.size() + "]";
@@ -117,7 +129,8 @@ public class ACHandler implements ICustomEventListener {
     }
 
     public boolean hasCurrentAC() {
-        return currentRecommendedIndex != null;
+        return ACisShown;
+        // return currentRecommendedIndex != null;
     }
 
     /**
@@ -130,12 +143,12 @@ public class ACHandler implements ICustomEventListener {
     }
 
     public void removeCurrentAC() {
-        if (!hasCurrentAC() || !ACisShown) return;
+        if (!hasCurrentAC()) return;
 
+        ACisShown = false;
         rtWidget.deleteText(positionInWidgetTMP, positionInWidgetTMP + getCurrentAC().length());
         recommendedACList.clear();
         currentRecommendedIndex = null;
-        ACisShown = false;
     }
 
     public void updateStyleSheet(StyleSheetChar styleSheetChar) {
@@ -173,26 +186,18 @@ public class ACHandler implements ICustomEventListener {
         rtWidget.moveTo(positionInWidget);
     }
 
-    public void showACWhenTextChanged(int positionInWidget, String paragraphText) {
-        // if (!canShowAC) {return;}
-
-        // this.positionInWidgetTMP = positionInWidget;
-        // this.paragraphTextTMP = paragraphText;
-        
-        // if (calculating) {
-        //     waitingAC = true;
-        //     calculating = false;
-        //     return;
-        // } else {
-        //     waitingAC = false;
-        //     calculating = true;
-        // }
-
-        // UJavaFX.taskStart(this::showACTask, myName);
-    }
-
     public void showAC(int positionInWidget, String paragraphText) {
         if (!canShowAC || paragraphText == null) {return;}
+
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+
+        if (hasCurrentAC()) {
+            removeCurrentAC();
+        }
+
         clearAC();
 
         int paragraphPosition = rtWidget.offsetToPosition(positionInWidget, TwoDimensional.Bias.Forward).getMinor();
@@ -203,58 +208,14 @@ public class ACHandler implements ICustomEventListener {
         this.positionInWidgetTMP = positionInWidget;
         this.paragraphTextTMP = paragraphText;
         
-        if (calculating) {
-            waitingAC = true;
-            calculating = false;
-            return;
-        } else {
-            waitingAC = false;
-            calculating = true;
-        }
-
-        UJavaFX.taskStart(this::showACTask, myName + CONSTANTS.EMPTY_PARAGRAPH_STRING + rtWidget.getTextPlain());
+        task = UJavaFX.taskStartWithResult(this::showACTask, myName + CONSTANTS.EMPTY_PARAGRAPH_STRING + rtWidget.getTextPlain());
     }
         
-    public void showACTask() {
+    public boolean showACTask() {
         int positionInWidgetNOW = positionInWidgetTMP;
         String paragraphText = paragraphTextTMP;
 
-        removeCurrentAC();
-
-        boolean success = findAC(positionInWidgetNOW, paragraphText);
-        if (!hasCurrentAC()) return;
-        if (!success) {
-            if (waitingAC) {
-                waitingAC = false;
-                calculating = true;
-                clearAC();
-                showACTask();
-            } else {
-                calculating = false;
-                clearAC();
-                return;
-            }
-        }
-
-        calculating = false;
-        ignoreTextChange = true;
-
-        
-        // rtWidget.insertText(positionInWidgetNOW, getCurrentAC());
-        // ACStyle.setFontName(rtWidget.cssChar.getFontName());
-        // ACStyle.setFontSize(rtWidget.cssChar.getFontSize());
-        // rtWidget.setStyle(positionInWidgetNOW, positionInWidgetNOW + getCurrentAC().length(), ACStyle.getCss());
-        // rtWidget.moveTo(positionInWidgetNOW);
-
-
-        // Platform.runLater(() -> {
-        //     rtWidget.insertText(positionInWidgetNOW, getCurrentAC());
-        //     ACStyle.setFontName(rtWidget.cssChar.getFontName());
-        //     ACStyle.setFontSize(rtWidget.cssChar.getFontSize());
-        //     rtWidget.setStyle(positionInWidgetNOW, positionInWidgetNOW + getCurrentAC().length(), ACStyle.getCss());
-        //     rtWidget.moveTo(positionInWidgetNOW);
-        // });
-
+        return findAC(positionInWidgetNOW, paragraphText);
     }
 
     // Private methods
@@ -262,7 +223,7 @@ public class ACHandler implements ICustomEventListener {
         List<String> data = getAllACData();
         if (data == null) {
             clearAC();
-            return false;
+            return true;
         }
 
         List<String> filteredData = new ArrayList<>();
@@ -289,6 +250,8 @@ public class ACHandler implements ICustomEventListener {
             clearAC();
         }
 
+        if (task.isCancelled()) return false;
+
         return true;
     }
 
@@ -306,8 +269,6 @@ public class ACHandler implements ICustomEventListener {
         }
 
         for (int i = 0; i < data.size(); i++) {
-            if (!this.calculating) return null;
-
             data.set(i, data.get(i).replace("\n", ""));
             data.set(i, "0|20250421" + CONSTANTS.EMPTY_PARAGRAPH_STRING + data.get(i));
         }
@@ -324,7 +285,7 @@ public class ACHandler implements ICustomEventListener {
         
         int counter = 0;
         for (String record : data) {
-            if (!this.calculating) return null;
+            if (task.isCancelled()) return null;
 
             String recCleaned = record.split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING), -1)[1];
             if (recCleaned.startsWith(parText)) {
@@ -392,7 +353,7 @@ public class ACHandler implements ICustomEventListener {
         }
 
         for (int i = 0; i < data.size(); i++) {
-            if (!this.calculating) return null;
+            if (task.isCancelled()) return null;
 
             String recCleaned = data.get(i).split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING), -1)[1];
 
