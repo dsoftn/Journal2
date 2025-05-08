@@ -1,5 +1,13 @@
 package com.dsoftn.controllers.elements;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.dsoftn.CONSTANTS;
 import com.dsoftn.ELEMENTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
@@ -12,8 +20,11 @@ import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.text_handler.TextHandler;
+import com.dsoftn.services.text_handler.TextHandler.Behavior;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
+import com.dsoftn.utils.html.UHDocument;
+import com.dsoftn.utils.html.UHTag;
 
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -25,11 +36,6 @@ import javafx.stage.Stage;
 
 
 public class TextInputController implements IElementController, ICustomEventListener {
-
-    public enum Behavior {
-        BLOCK_NAME;
-    }
-    
     // Variables
     private Behavior behavior = null;
     private Stage stage = null;
@@ -192,6 +198,16 @@ public class TextInputController implements IElementController, ICustomEventList
         // Create TextHandler
         this.textHandler = new TextHandler(rTxtRichText, toolbarController);
         this.textHandler.setReceiverID(myName);
+        // this.textHandler.enableAutoComplete(false);
+        // this.textHandler.enableMarkingIntegers(false);
+        // this.textHandler.enableMarkingDoubles(false);
+        // this.textHandler.enableMarkingDates(false);
+        // this.textHandler.enableMarkingTimes(false);
+        // this.textHandler.enableMarkingSerbianMobileNumbers(false);
+        // this.textHandler.enableMarkingSerbianLandlineNumbers(false);
+        // this.textHandler.enableMarkingInternationalPhoneNumbers(false);
+        test();
+
 
         setupWidgetsText();
         setupWidgetsAppearance();
@@ -199,6 +215,45 @@ public class TextInputController implements IElementController, ICustomEventList
 
     @Override
     public void closeMe() {
+    }
+
+    private void test() {
+        // Load file (CONSTANTS.FOLDER_DATA_APP_SETTINGS + "/_000000.txt")
+        String content = "";
+        try (Stream<String> stream = Files.lines(Paths.get(CONSTANTS.FOLDER_DATA_APP_SETTINGS + "/_000000.txt"))) {
+            content = stream.collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            UError.exception("TextInputController.test: Failed to read file", e);
+        }
+
+        UHDocument doc = new UHDocument(content);
+
+        List<UHTag> roots = doc.getTags();
+
+        List<UHTag> bodies = roots.get(1).findTags("a");
+        System.out.println("Attributes: " + bodies.get(0).getAttributesMap());
+        System.out.println(bodies.get(0).getTagCode());
+
+        UHTag parent = bodies.get(0).getParent();
+        System.out.println("Attributes: " + parent.getAttributesMap());
+        System.out.println(parent.getTagCode());
+        
+        UHTag parent1 = parent.getParent();
+        System.out.println("Attributes: " + parent1.getAttributesMap());
+        System.out.println(parent1.getTagCode());
+
+        UHTag parent2 = parent1.getParent();
+        System.out.println("Attributes: " + parent2.getAttributesMap());
+        System.out.println(parent2.getTagCode());
+
+        UHTag parent3 = parent2.getParent();
+        System.out.println("Attributes: " + parent3.getAttributesMap());
+        System.out.println(parent3.getTagCode());
+
+        UHTag parent4 = parent3.getParent();
+        System.out.println(parent4);
+
+
     }
 
     // Public methods

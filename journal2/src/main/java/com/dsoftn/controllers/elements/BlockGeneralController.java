@@ -470,7 +470,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
     private void setupWidgetsAppearance() {
         // Block name
         HBox.setHgrow(rtwBlockName, Priority.ALWAYS);
-        rtwBlockName.setBehavior(TextInputController.Behavior.BLOCK_NAME);
+        rtwBlockName.setBehavior(TextHandler.Behavior.BLOCK_NAME);
         textHandlerBlockName = new TextHandler(rtwBlockName, null);
         rtwBlockName.setRTWTextObject(new RTWText(block.getNameStyle()));
         rtwBlockName.setReadOnly(true);
@@ -850,7 +850,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
         }
 
         EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.BLOCK_NAME_ENTER);
-        TextInputController textInputController = ELEMENTS.getTextInputController(stage, TextInputController.Behavior.BLOCK_NAME, myName);
+        TextInputController textInputController = ELEMENTS.getTextInputController(stage, TextHandler.Behavior.BLOCK_NAME, myName);
 
         textInputController.setParentController(emptyDialogController);
         textInputController.setReceiverID(myName + "BLOCK_NAME");

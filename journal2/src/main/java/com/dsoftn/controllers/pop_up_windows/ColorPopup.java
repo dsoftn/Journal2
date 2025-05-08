@@ -1,7 +1,8 @@
-package com.dsoftn.utils;
+package com.dsoftn.controllers.pop_up_windows;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -17,18 +18,25 @@ import javafx.stage.Window;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import com.dsoftn.OBJECTS;
+import com.dsoftn.services.MoveResizeWindow;
+import com.dsoftn.utils.URichText;
 
 public class ColorPopup {
-
+    // Variables
     private final Consumer<String> onColorSelectedCallback;
     private final Popup popup;
     TextField txtInfo = new TextField();
+    private MoveResizeWindow moveResizeWindow = null;
+    private List<Node> dragNodes = new ArrayList<>();
 
+    // Constructor
     public ColorPopup(Consumer<String> onColorSelectedCallback) {
         this.onColorSelectedCallback = onColorSelectedCallback;
         this.popup = new Popup();
@@ -37,6 +45,7 @@ public class ColorPopup {
         popup.setHideOnEscape(true);
     }
 
+    // Methods
     public void startMe(Window ownerWindow, Double x, Double y) {
         if (x == null || y == null) {
             Point mousePos = MouseInfo.getPointerInfo().getLocation();
@@ -48,10 +57,16 @@ public class ColorPopup {
             }
         }
         
-        VBox content = createColorPickerContent(onColorSelectedCallback);
+        AnchorPane root = createColorPickerContent(onColorSelectedCallback);
+
         popup.getScene().getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
-        content.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
-        popup.getScene().setRoot(content);
+        root.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm());
+        popup.getScene().setRoot(root);
+        
+        // Enable dragging
+        moveResizeWindow = new MoveResizeWindow(popup, dragNodes);
+        moveResizeWindow.enableWindowResize(false);
+        
         popup.show(ownerWindow, x, y);
     }
 
@@ -59,7 +74,7 @@ public class ColorPopup {
         startMe(ownerWindow, null, null);
     }
 
-    public VBox createColorPickerContent(Consumer<String> onColorSelectedCallback) {
+    public AnchorPane createColorPickerContent(Consumer<String> onColorSelectedCallback) {
         Map<String, Color> baseColors = new LinkedHashMap<>();
         baseColors.put("Red", Color.RED);
         baseColors.put("Green", Color.GREEN);
@@ -88,7 +103,7 @@ public class ColorPopup {
                 colorBox.setOnMouseEntered(e -> {
                     colorBox.setScaleX(1.3);
                     colorBox.setScaleY(1.3);
-                    txtInfo.setText(URichText.colorToHexString(shade));
+                    // txtInfo.setText(URichText.colorToHexString(shade));
                 });
                 colorBox.setOnMouseExited(e -> {
                     colorBox.setScaleX(1.0);
@@ -158,6 +173,8 @@ public class ColorPopup {
                 infoColor.setStyle("-fx-background-color: " + newValue + ";");
             }
         });
+        txtInfo.setText("#FFFFFF");
+
         txtInfo.setOnContextMenuRequested(e -> {
             ContextMenu contextMenu = new ContextMenu();
             MenuItem paste = new MenuItem(OBJECTS.SETTINGS.getl("text_Paste"));
@@ -179,11 +196,22 @@ public class ColorPopup {
 
 
         VBox vbox = new VBox(10, lblTitle, btnTransparent, rows, infoBox);
+        dragNodes.add(lblTitle);
+
         vbox.setPadding(new Insets(10));
-        vbox.setStyle("-fx-background-color: black; -fx-border-color: gray;");
         vbox.setAlignment(Pos.CENTER);
 
-        return vbox;
+        AnchorPane root = new AnchorPane();
+        AnchorPane.setTopAnchor(vbox, 5.0);
+        AnchorPane.setBottomAnchor(vbox, 5.0);
+        AnchorPane.setLeftAnchor(vbox, 5.0);
+        AnchorPane.setRightAnchor(vbox, 5.0);
+        
+        root.getChildren().add(vbox);
+
+        root.setStyle("-fx-background-color: black; -fx-border-color: gray;");
+
+        return root;
     }
 
 

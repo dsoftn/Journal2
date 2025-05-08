@@ -2,6 +2,7 @@ package com.dsoftn;
 
 import com.dsoftn.models.Block;
 import com.dsoftn.services.SelectionData;
+import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.controllers.elements.BlockGeneralController;
 import com.dsoftn.controllers.elements.SelectionController;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
@@ -51,7 +52,7 @@ public class ELEMENTS {
         }
     }
 
-    public static TextInputController getTextInputController(Stage parentStage, TextInputController.Behavior behavior, String receiverID) {
+    public static TextInputController getTextInputController(Stage parentStage, TextHandler.Behavior behavior, String receiverID) {
         FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/TextInput.fxml"));
 
         try {

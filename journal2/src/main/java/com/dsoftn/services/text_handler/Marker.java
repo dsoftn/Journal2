@@ -139,7 +139,6 @@ public class Marker implements ICustomEventListener {
         textHandler.msgForToolbar("ACTION:WORKING");
 
         this.messageSTRING = messageSTRING;
-        lastCssList = copyCssList(rtWidget.cssStyles);
 
         findReplace.unMark();
 
@@ -199,6 +198,7 @@ public class Marker implements ICustomEventListener {
     //  Private methods
     private boolean taskMark() {
         // This is Task, marking should be done in specific order
+        lastCssList = copyCssList(rtWidget.cssStyles);
 
         List<StyleSheetChar> cssChars = copyCssList(this.lastCssList);
         if (cssChars == null) { return false; }

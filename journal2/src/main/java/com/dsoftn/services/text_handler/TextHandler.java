@@ -22,10 +22,47 @@ import javafx.scene.input.ContextMenuEvent;
 
 
 public class TextHandler {
-    public record Msg(String message) {}
+    public enum Behavior {
+        BLOCK_NAME(1);
 
+        // Variables
+        private final int value;
+
+        // Constructor
+        Behavior(int value) {
+            this.value = value;
+        }
+
+        // Methods
+        public int getValue() {
+            return value;
+        }
+
+        public int getInteger() {
+            return value;
+        }
+
+        public static Behavior fromInteger(int value) {
+            for (Behavior type : values()) {
+                if (type.getValue() == value) {
+                    return type;
+                }
+            }
+            return null;
+        }
+
+        public static Behavior fromName(String name) {
+            for (Behavior type : values()) {
+                if (type.name().equals(name)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
+    
     // Variables
-    private RTWidget txtWidget = null;
+    private RTWidget rtWidget = null;
     private TextEditToolbarController toolbarController = null;
     private UndoHandler undoHandler = new UndoHandler();
     private Marker marker = null;
@@ -42,9 +79,9 @@ public class TextHandler {
             toolbarController.setTextHandler(this);
         }
 
-        this.txtWidget = txtWidget;
-        this.txtWidget.setTextHandler(this);
-        this.txtWidget.setupWidget();
+        this.rtWidget = txtWidget;
+        this.rtWidget.setTextHandler(this);
+        this.rtWidget.setupWidget();
 
         msgForToolbar(txtWidget.getCssChar());
         msgForToolbar(txtWidget.getParagraphCss());
@@ -61,7 +98,7 @@ public class TextHandler {
 
     // Public methods
     public void enableAutoComplete(boolean enable) {
-        txtWidget.ac.enableAutoComplete(enable);
+        rtWidget.ac.enableAutoComplete(enable);
     }
 
     public void enableMarkingIntegers(boolean enable) {
@@ -96,45 +133,45 @@ public class TextHandler {
 
     public void msgFromToolbar(String messageSTRING) {
         if (messageSTRING.equals(TextToolbarActionEnum.FOCUS_TO_TEXT.name())) {
-            txtWidget.requestFocus();
+            rtWidget.requestFocus();
         }
         else if (messageSTRING.equals(TextToolbarActionEnum.UNDO.name())) {
-            txtWidget.busy = true;
-            txtWidget.ignoreCaretPositionChange = true;
-            txtWidget.ignoreTextChangePERMANENT = true;
+            rtWidget.busy = true;
+            rtWidget.ignoreCaretPositionChange = true;
+            rtWidget.ignoreTextChangePERMANENT = true;
             msgForToolbar(TextToolbarActionEnum.FIND_CLOSE.name());
-            undoHandler.undo(txtWidget);
+            undoHandler.undo(rtWidget);
             Platform.runLater(() -> {
-                txtWidget.ignoreCaretPositionChange = false;
-                txtWidget.ignoreTextChangePERMANENT = false;
-                txtWidget.busy = false;
+                rtWidget.ignoreCaretPositionChange = false;
+                rtWidget.ignoreTextChangePERMANENT = false;
+                rtWidget.busy = false;
             });
-            txtWidget.requestFocus();
+            rtWidget.requestFocus();
         }
         else if (messageSTRING.equals(TextToolbarActionEnum.REDO.name())) {
-            txtWidget.busy = true;
-            txtWidget.ignoreCaretPositionChange = true;
-            txtWidget.ignoreTextChangePERMANENT = true;
+            rtWidget.busy = true;
+            rtWidget.ignoreCaretPositionChange = true;
+            rtWidget.ignoreTextChangePERMANENT = true;
             msgForToolbar(TextToolbarActionEnum.FIND_CLOSE.name());
-            undoHandler.redo(txtWidget);
+            undoHandler.redo(rtWidget);
             Platform.runLater(() -> {
-                txtWidget.ignoreCaretPositionChange = false;
-                txtWidget.ignoreTextChangePERMANENT = false;
-                txtWidget.busy = false;
+                rtWidget.ignoreCaretPositionChange = false;
+                rtWidget.ignoreTextChangePERMANENT = false;
+                rtWidget.busy = false;
             });
-            txtWidget.requestFocus();
+            rtWidget.requestFocus();
         }
         else if (messageSTRING.equals("CUT")) {
             msgForWidget("CUT");
-            txtWidget.requestFocus();
+            rtWidget.requestFocus();
         }
         else if (messageSTRING.equals("COPY")) {
             msgForWidget("COPY");
-            txtWidget.requestFocus();
+            rtWidget.requestFocus();
         }
         else if (messageSTRING.equals("PASTE")) {
             msgForWidget("PASTE");
-            txtWidget.requestFocus();
+            rtWidget.requestFocus();
         }
         else if (messageSTRING.startsWith("FIND/REPLACE ACTION:FIND CLOSED")) {
             marker.unMarkFindReplace();
@@ -168,7 +205,7 @@ public class TextHandler {
         // Forward message to widget
         if (!marker.findReplaceChangeStyle(styleSheet)) {
             msgForWidget(styleSheet);
-            txtWidget.requestFocus();
+            rtWidget.requestFocus();
         }
         marker.markRepeat();
     }
@@ -176,14 +213,14 @@ public class TextHandler {
     public void msgFromToolbar(StyleSheetParagraph styleSheet) {
         // Forward message to widget
         msgForWidget(styleSheet);
-        txtWidget.requestFocus();
+        rtWidget.requestFocus();
         marker.markRepeat();
     }
 
     public void msgFromWidget(String messageSTRING) {
         // Process information from widget
         if (messageSTRING.equals("TAKE_SNAPSHOT")) {
-            undoHandler.addSnapshot(txtWidget);
+            undoHandler.addSnapshot(rtWidget);
             msgForToolbar("UNDO:" + undoHandler.canUndo());
             msgForToolbar("REDO:" + undoHandler.canRedo());
         }
@@ -222,19 +259,19 @@ public class TextHandler {
         else if (messageSTRING.equals("SAVE: Ctrl+S")) {
             if (receiverID == null) return;
             // Save text
-            TaskStateEvent event = new TaskStateEvent(receiverID, txtWidget.getRTWTextObject(), "SAVE: Ctrl+S");
+            TaskStateEvent event = new TaskStateEvent(receiverID, rtWidget.getRTWTextObject(), "SAVE: Ctrl+S");
             OBJECTS.EVENT_HANDLER.fireEvent(event);
         }
         else if (messageSTRING.equals("SAVE: Ctrl+Shift+S")) {
             if (receiverID == null) return;
             // Save text as draft
-            TaskStateEvent event = new TaskStateEvent(receiverID, txtWidget.getRTWTextObject(), "SAVE: Ctrl+Shift+S");
+            TaskStateEvent event = new TaskStateEvent(receiverID, rtWidget.getRTWTextObject(), "SAVE: Ctrl+Shift+S");
             OBJECTS.EVENT_HANDLER.fireEvent(event);
         }
         else if (messageSTRING.equals("SAVE: Alt+ENTER")) {
             if (receiverID == null) return;
             // Save text as draft
-            TaskStateEvent event = new TaskStateEvent(receiverID, txtWidget.getRTWTextObject(), "SAVE: Alt+ENTER");
+            TaskStateEvent event = new TaskStateEvent(receiverID, rtWidget.getRTWTextObject(), "SAVE: Alt+ENTER");
             OBJECTS.EVENT_HANDLER.fireEvent(event);
         }
         else if (messageSTRING.equals("CONTEXT_MENU:SHOW")) {
@@ -247,7 +284,7 @@ public class TextHandler {
 
     public void msgFromWidget(StyleSheetChar styleSheet) {
         // Forward message to toolbar
-        txtWidget.ac.updateStyleSheet(styleSheet);
+        rtWidget.ac.updateStyleSheet(styleSheet);
         msgForToolbar(styleSheet);
     }
 
@@ -281,17 +318,17 @@ public class TextHandler {
     // Messages for Widget
     private void msgForWidget(String messageSTRING) {
         // Send message to widget
-        txtWidget.msgFromHandler(messageSTRING);
+        rtWidget.msgFromHandler(messageSTRING);
     }
     
     private void msgForWidget(StyleSheetChar styleSheet) {
         // Send message to widget
-        txtWidget.msgFromHandler(styleSheet);
+        rtWidget.msgFromHandler(styleSheet);
     }
 
     private void msgForWidget(StyleSheetParagraph styleSheet) {
         // Send message to widget
-        txtWidget.msgFromHandler(styleSheet);
+        rtWidget.msgFromHandler(styleSheet);
     }
 
     // RTWidget context menu
@@ -303,19 +340,19 @@ public class TextHandler {
 
     private void showRTWidgetContextMenu(ContextMenuEvent contextMenuEvent) {
         // Cut
-        if (txtWidget.getSelectedText().isEmpty() || txtWidget.isReadOnly()) {
+        if (rtWidget.getSelectedText().isEmpty() || rtWidget.isReadOnly()) {
             contextRTWidgetMenuItems.get("CUT").setDisable(true);
         } else {
             contextRTWidgetMenuItems.get("CUT").setDisable(false);
         }
         // Copy
-        if (txtWidget.getSelectedText().isEmpty()) {
+        if (rtWidget.getSelectedText().isEmpty()) {
             contextRTWidgetMenuItems.get("COPY").setDisable(true);
         } else {
             contextRTWidgetMenuItems.get("COPY").setDisable(false);
         }
         // Paste
-        if (OBJECTS.CLIP.getStyledText().isEmpty() || txtWidget.isReadOnly()) {
+        if (OBJECTS.CLIP.getStyledText().isEmpty() || rtWidget.isReadOnly()) {
             contextRTWidgetMenuItems.get("PASTE").setDisable(true);
         } else {
             contextRTWidgetMenuItems.get("PASTE").setDisable(false);
@@ -323,15 +360,15 @@ public class TextHandler {
 
 
         if (contextMenuEvent == null) {
-            txtWidget.getCaretBounds().ifPresent(bounds -> {
+            rtWidget.getCaretBounds().ifPresent(bounds -> {
                 double screenX = bounds.getMinX();
                 double screenY = bounds.getMaxY();
                 Platform.runLater(() -> {
-                    contextRTWidgetMenu.show(txtWidget, screenX, screenY);
+                    contextRTWidgetMenu.show(rtWidget, screenX, screenY);
                 });
             });
         } else {
-            contextRTWidgetMenu.show(txtWidget, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+            contextRTWidgetMenu.show(rtWidget, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
         }
     }
 

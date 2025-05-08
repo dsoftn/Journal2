@@ -454,19 +454,6 @@
     "userData": "",
     "canBeSavedInFile": false
   },
-  "ShowAutoCompleteBLOCK_NAME": {
-    "key": "ShowAutoCompleteBLOCK_NAME",
-    "value": "True",
-    "defaultValue": "True",
-    "min": "Null",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 128,
-    "description": "",
-    "creationDate": "2025.04.20 11:21:55",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
   "cssAutoCompleteStyle": {
     "key": "cssAutoCompleteStyle",
     "value": "-fx-fill: #404040;",
@@ -776,6 +763,19 @@
     "dataType": 4,
     "description": "Css for all found items in text",
     "creationDate": "2025.05.02 10:50:46",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "AllowAutoComplete": {
+    "key": "AllowAutoComplete",
+    "value": "True",
+    "defaultValue": "True",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "",
+    "creationDate": "2025.05.07 22:25:39",
     "userData": "",
     "canBeSavedInFile": false
   }

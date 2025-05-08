@@ -47,7 +47,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     public boolean stateChanged = true; // Used with Undo/Redo
     private ContinuousTimer timer = new ContinuousTimer(OBJECTS.SETTINGS.getvINTEGER("IntervalBetweenTextChangesMS"));
     private PauseTransition pauseAC = null;
-    public TextInputController.Behavior behavior = null;
+    public TextHandler.Behavior behavior = null;
     public ACHandler ac = null;
 
     public boolean isOverwriteMode = false;
@@ -137,7 +137,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         return true;
     }
 
-    public void setBehavior(TextInputController.Behavior behavior) {
+    public void setBehavior(TextHandler.Behavior behavior) {
         this.behavior = behavior;
         ac = new ACHandler(this);
     }
@@ -281,7 +281,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             return this.getParagraph(paragraphIndex).getText();
         }
 
-        String text = this.getParagraph(paragraphIndex).getText().substring(0, ac.getCurrentWidgetPosition());
+        // String text = this.getParagraph(paragraphIndex).getText().substring(0, ac.getCurrentWidgetPosition());
+        String text = this.getParagraph(paragraphIndex).getText().substring(0, offsetToPosition(ac.getCurrentWidgetPosition(), TwoDimensional.Bias.Forward).getMinor());
         if (ac.getCurrentWidgetPosition() < cssStyles.size()) {
             text += this.getParagraph(paragraphIndex).getText().substring(ac.getCurrentWidgetPosition());
         }
@@ -702,6 +703,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             this.busy = true;
             this.timer.resetInterval();
 
+            long startTime = System.nanoTime();
             
             try {
                 handleKeyTyped_CHARACTER(event);
@@ -714,6 +716,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                     this.deletePreviousChar();
                 }
                 this.busy = false;
+                long endTime = System.nanoTime();
+                long durationInNano = endTime - startTime;
+                double durationInMillis = durationInNano / 1_000_000.0;
+                System.out.println("handleKeyTyped_CHARACTER: " + durationInMillis + " ms");
             });
 
         });
@@ -721,7 +727,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         
         this.timer.play(() -> takeSnapshot());
 
-        this.requestFocus();
+        // this.requestFocus();
     }
 
     public void copySelectedText() {
@@ -795,19 +801,12 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     private void showAC() {
-        // Platform.runLater(() -> {
-        //     ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
-        // });
-        
-
-
-        
         if (pauseAC != null) {
             pauseAC.playFromStart();
             return;
         }
         
-        pauseAC = new PauseTransition(javafx.util.Duration.millis(OBJECTS.SETTINGS.getvINTEGER("AutoCompleteDelay")));
+        pauseAC = new PauseTransition(javafx.util.Duration.millis(ac.autoCompleteDelay));
         pauseAC.setOnFinished(e -> {
             pauseAC = null;
             Platform.runLater(() -> {

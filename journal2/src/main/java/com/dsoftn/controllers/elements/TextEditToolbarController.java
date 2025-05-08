@@ -613,8 +613,8 @@ public class TextEditToolbarController implements IElementController, ICustomEve
                     setFont(new Font(fontName, 14));
                 }
             }
-        });        
-        cmbFont.setItems(FXCollections.observableArrayList(Font.getFontNames()));
+        });
+        cmbFont.setItems(FXCollections.observableArrayList(UJavaFX.getBasicFonts(null)));
 
         // Link Spinner value to StyleSheet
         spnFontSize.valueProperty().addListener((obs, oldValue, newValue) -> {
@@ -747,7 +747,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
 
     @FXML
     public void onBtnForegroundAction() {
-        UJavaFX.getColorPickerPopUp(root.getScene().getWindow(), this::onFGColorSelectedCallback);
+        UJavaFX.showColorPickerPopUp(root.getScene().getWindow(), this::onFGColorSelectedCallback);
     }
 
     private void onFGColorSelectedCallback(String color) {
@@ -758,7 +758,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
 
     @FXML
     public void onBtnBackgroundAction() {
-        UJavaFX.getColorPickerPopUp(root.getScene().getWindow(), this::onBGColorSelectedCallback);
+        UJavaFX.showColorPickerPopUp(root.getScene().getWindow(), this::onBGColorSelectedCallback);
     }
 
     private void onBGColorSelectedCallback(String color) {

@@ -33,12 +33,9 @@ public class ACHandler implements ICustomEventListener {
     // Variables
     private final int BLANKS_TO_FIND = 2;
     RTWidget rtWidget = null;
-    TextInputController.Behavior behavior = null;
     List<String> recommendedACList = new ArrayList<>();
     Integer currentRecommendedIndex = null;
     private Integer positionInWidget = null;
-    private boolean canShowAC = false;
-    StyleSheetChar ACStyle = new StyleSheetChar();
     boolean ignoreTextChange = false;
     private int positionInWidgetTMP = -1;
     private String paragraphTextTMP = null;
@@ -46,14 +43,20 @@ public class ACHandler implements ICustomEventListener {
     private boolean ACisShown = false;
     private Task<Boolean> task = null;
 
+    public boolean canShowAC = false;
+    public StyleSheetChar ACStyle = new StyleSheetChar();
+    public int maxAutoCompleteRecommendations = 0;
+    public int maxAutoCompleteRecommendedWords = 0;
+    public int autoCompleteDelay = 0;
+
     // Constructor
     public ACHandler(RTWidget rtWidget) {
         this.rtWidget = rtWidget;
-        this.behavior = rtWidget.behavior;
         ACStyle.setCss(OBJECTS.SETTINGS.getvSTRING("cssAutoCompleteStyle"));
-        if (OBJECTS.SETTINGS.isUserSettingExists("ShowAutoComplete" + this.behavior.name())) {
-            canShowAC = OBJECTS.SETTINGS.getvBOOLEAN("ShowAutoComplete" + this.behavior.name());
-        }
+        canShowAC = OBJECTS.SETTINGS.getvBOOLEAN("AllowAutoComplete");
+        maxAutoCompleteRecommendations = OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendations");
+        maxAutoCompleteRecommendedWords = OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendedWords");
+        autoCompleteDelay = OBJECTS.SETTINGS.getvINTEGER("AutoCompleteDelay");
 
         OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
     }
@@ -292,7 +295,7 @@ public class ACHandler implements ICustomEventListener {
                 if (recCleaned.length() > parText.length()) {
                     String dataToAdd = recCleaned.substring(parText.length());
 
-                    Integer index = UString.findIndexOfChar(dataToAdd, " ", OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendedWords"));
+                    Integer index = UString.findIndexOfChar(dataToAdd, " ", maxAutoCompleteRecommendedWords);
 
                     if (index != null) {
                         dataToAdd = dataToAdd.substring(0, index);
@@ -310,7 +313,7 @@ public class ACHandler implements ICustomEventListener {
                     counter++;
                 }
             }
-            if (counter == OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendations")) break;
+            if (counter == maxAutoCompleteRecommendations) break;
         }
         
         return filteredData;
@@ -367,7 +370,7 @@ public class ACHandler implements ICustomEventListener {
 
                 if (endList.isEmpty()) {
                     String dataToAdd = recCleaned.substring(startIdx + startString.length());
-                    Integer index = UString.findIndexOfChar(dataToAdd, " ", OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendedWords"));
+                    Integer index = UString.findIndexOfChar(dataToAdd, " ", maxAutoCompleteRecommendedWords);
                     if (index != null) {
                         dataToAdd = dataToAdd.substring(0, index);
                     }
@@ -386,7 +389,7 @@ public class ACHandler implements ICustomEventListener {
                     if (endIdx < 0) { continue; }
 
                     String dataToAdd = recCleaned.substring(startIdx + startString.length(), endIdx);
-                    Integer index = UString.findIndexOfChar(dataToAdd, " ", OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendedWords"));
+                    Integer index = UString.findIndexOfChar(dataToAdd, " ", maxAutoCompleteRecommendedWords);
                     if (index != null) {
                         dataToAdd = dataToAdd.substring(0, index);
                     }
@@ -410,7 +413,7 @@ public class ACHandler implements ICustomEventListener {
 
             filteredData.add(recCleaned);
             counter++;
-            if ((counter) == OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendations")) {
+            if ((counter) == maxAutoCompleteRecommendations) {
                 break;
             }
         }

@@ -804,5 +804,18 @@
     "creationDate": "2025.05.02 10:50:46",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "AllowAutoComplete": {
+    "key": "AllowAutoComplete",
+    "value": "True",
+    "defaultValue": "True",
+    "min": "Null",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 128,
+    "description": "",
+    "creationDate": "2025.05.07 22:25:39",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

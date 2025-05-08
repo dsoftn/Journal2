@@ -3,9 +3,12 @@ package com.dsoftn.utils;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.dsoftn.OBJECTS;
+import com.dsoftn.controllers.pop_up_windows.ColorPopup;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
 
@@ -13,6 +16,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.text.Font;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -107,7 +111,6 @@ public class UJavaFX {
 
         return task;
     }
-
 
     public static void setTooltip(Node node, String text, String title, Image image, Integer imageMaxWidth, Integer imageMaxHeight) {
         if (imageMaxHeight == null && imageMaxWidth == null) {
@@ -294,12 +297,53 @@ public class UJavaFX {
      * @param ownerWindow - The window that will own the popup
      * @param onColorSelectedCallback - The callback that will be called when a color is selected
      */
-    public static void getColorPickerPopUp(Window ownerWindow, Consumer<String> onColorSelectedCallback) {
+    public static void showColorPickerPopUp(Window ownerWindow, Consumer<String> onColorSelectedCallback) {
         ColorPopup colorPopup = new ColorPopup(color -> {
             onColorSelectedCallback.accept(color);
         });
 
         colorPopup.startMe(ownerWindow);
     }
+
+    /**
+     * Returns list of basic fonts from all available fonts, no italic, bold, condensed, extended, light, medium, semi, thin, extra, etc.
+     * @param allFonts - List of fonts, if null then it will use all available fonts from system
+     * @return List of basic fonts
+     */
+    public static List<String> getBasicFonts(List<String> allFonts) {
+        if (allFonts == null) {
+            allFonts = Font.getFontNames();
+        }
+
+        List<String> fonts = new ArrayList<>();
+
+        for (String fontName : allFonts) {
+            String fontBaseName = fontName.split(" ")[0];
+
+            boolean found = false;
+            for (String font : fonts) {
+                if (font.startsWith(fontBaseName)) {
+                    found = true;
+                    
+                    if (fontName.toLowerCase().contains("regular")) {
+                        fonts.set(fonts.indexOf(font), fontName);
+                        break;
+                    }
+
+                    if (fontName.length() < font.length() && !fontName.toLowerCase().contains("regular")) {
+                        fonts.set(fonts.indexOf(font), fontName);
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                fonts.add(fontName);
+            }
+        }
+
+        return fonts;
+    }
+
+
 
 }
