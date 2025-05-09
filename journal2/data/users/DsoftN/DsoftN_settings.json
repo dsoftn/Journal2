@@ -817,5 +817,31 @@
     "creationDate": "2025.05.07 22:25:39",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "BlockName_MinRTWidgetHeight": {
+    "key": "BlockName_MinRTWidgetHeight",
+    "value": "40",
+    "defaultValue": "40",
+    "min": "0",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.05.08 16:53:40",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "BlockName_MaxNumberOfParagraphs": {
+    "key": "BlockName_MaxNumberOfParagraphs",
+    "value": "5",
+    "defaultValue": "5",
+    "min": "1",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.05.08 16:56:17",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

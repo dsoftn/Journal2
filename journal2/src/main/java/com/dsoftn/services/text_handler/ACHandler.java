@@ -15,7 +15,7 @@ import org.fxmisc.richtext.model.TwoDimensional;
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.ICustomEventListener;
-import com.dsoftn.controllers.elements.TextInputController;
+import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
@@ -42,6 +42,7 @@ public class ACHandler implements ICustomEventListener {
     private String myName = UJavaFX.getUniqueId();
     private boolean ACisShown = false;
     private Task<Boolean> task = null;
+    public TextHandler textHandler = null;
 
     public boolean canShowAC = false;
     public StyleSheetChar ACStyle = new StyleSheetChar();
@@ -77,6 +78,9 @@ public class ACHandler implements ICustomEventListener {
                             task.cancel();
                             task = null;
                         }
+                        if (textHandler != null) {
+                            textHandler.msgForToolbar(TextToolbarActionEnum.AC_WORKING.name() + ":" + false);
+                        }
                         return;
                     }
 
@@ -85,6 +89,9 @@ public class ACHandler implements ICustomEventListener {
                         if (task != null) {
                             task.cancel();
                             task = null;
+                        }
+                        if (textHandler != null) {
+                            textHandler.msgForToolbar(TextToolbarActionEnum.AC_WORKING.name() + ":" + false);
                         }
                         return;
                     }
@@ -102,14 +109,25 @@ public class ACHandler implements ICustomEventListener {
                         rtWidget.ignoreTextChangePERMANENT = false;
                         rtWidget.ignoreCaretPositionChange = false;
                         rtWidget.busy = false;
+
+                        if (textHandler != null) {
+                            textHandler.msgForToolbar(TextToolbarActionEnum.AC_WORKING.name() + ":" + false);
+                        }
                     });
                 }
                 else if (taskStateEvent.getState() == TaskStateEnum.FAILED) {
                     ACisShown = false;
+                    if (textHandler != null) {
+                        textHandler.msgForToolbar(TextToolbarActionEnum.AC_WORKING.name() + ":" + false);
+                    }
                 }
                 else if (taskStateEvent.getState() == TaskStateEnum.CANCELED) {
                     ACisShown = false;
+                    if (textHandler != null) {
+                        textHandler.msgForToolbar(TextToolbarActionEnum.AC_WORKING.name() + ":" + false);
+                    }
                 }
+
             }
         }
     }
@@ -192,6 +210,10 @@ public class ACHandler implements ICustomEventListener {
     public void showAC(int positionInWidget, String paragraphText) {
         if (!canShowAC || paragraphText == null) {return;}
 
+        if (textHandler != null) {
+            textHandler.msgForToolbar(TextToolbarActionEnum.AC_WORKING.name() + ":" + true);
+        }
+
         if (task != null) {
             task.cancel();
             task = null;
@@ -205,7 +227,12 @@ public class ACHandler implements ICustomEventListener {
 
         int paragraphPosition = rtWidget.offsetToPosition(positionInWidget, TwoDimensional.Bias.Forward).getMinor();
         if (paragraphPosition > 0 && paragraphPosition < paragraphText.length() - 1) {
-            if (paragraphText.charAt(paragraphPosition - 1) != ' ' && paragraphText.charAt(paragraphPosition) != ' ' && paragraphText.charAt(paragraphPosition + 1) != ' ') {return;}
+            if (paragraphText.charAt(paragraphPosition - 1) != ' ' && paragraphText.charAt(paragraphPosition) != ' ' && paragraphText.charAt(paragraphPosition + 1) != ' ') {
+                if (textHandler != null) {
+                    textHandler.msgForToolbar(TextToolbarActionEnum.AC_WORKING.name() + ":" + false);
+                }
+                return;
+            }
         }
 
         this.positionInWidgetTMP = positionInWidget;
@@ -315,6 +342,14 @@ public class ACHandler implements ICustomEventListener {
             }
             if (counter == maxAutoCompleteRecommendations) break;
         }
+
+        String commonPrefix = UString.findCommonPrefix(filteredData);
+        if (!commonPrefix.isEmpty()) {
+            filteredData.add(0, commonPrefix);
+            if (filteredData.size() > maxAutoCompleteRecommendations) {
+                filteredData.remove(filteredData.size() - 1);
+            }
+        }
         
         return filteredData;
     }
@@ -415,6 +450,14 @@ public class ACHandler implements ICustomEventListener {
             counter++;
             if ((counter) == maxAutoCompleteRecommendations) {
                 break;
+            }
+        }
+
+        String commonPrefix = UString.findCommonPrefix(filteredData);
+        if (!commonPrefix.isEmpty()) {
+            filteredData.add(0, commonPrefix);
+            if (filteredData.size() > maxAutoCompleteRecommendations) {
+                filteredData.remove(filteredData.size() - 1);
             }
         }
         

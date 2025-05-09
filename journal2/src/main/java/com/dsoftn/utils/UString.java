@@ -99,5 +99,31 @@ public class UString {
         return fromIndex;
     }
 
+    /**
+     * Find the common prefix of a list of strings
+     * @param strings List of strings
+     * @return Common prefix of the list of strings or empty string if there is no common prefix
+     */
+    public static String findCommonPrefix(List<String> strings) {
+        if (strings == null || strings.isEmpty()) return "";
+        if (strings.size() == 1) return strings.get(0);
+    
+        String prefix = strings.get(0);
+        for (int i = 1; i < strings.size(); i++) {
+            prefix = commonPrefix(prefix, strings.get(i));
+            if (prefix.isEmpty()) break;
+        }
+    
+        return !prefix.strip().isEmpty() ? prefix.strip() : "";
+    }
+    
+    private static String commonPrefix(String s1, String s2) {
+        int minLen = Math.min(s1.length(), s2.length());
+        int i = 0;
+        while (i < minLen && s1.charAt(i) == s2.charAt(i)) {
+            i++;
+        }
+        return s1.substring(0, i);
+    }
 
 }

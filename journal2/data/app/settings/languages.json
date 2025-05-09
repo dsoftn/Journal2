@@ -1169,6 +1169,20 @@
         "languageCode": "en",
         "creationDate": "2025.05.03 12:05:16",
         "userData": ""
+      },
+      "tt_ToolbarAC": {
+        "key": "tt_ToolbarAC",
+        "value": "Finding AutoComplete data in progress ...",
+        "languageCode": "en",
+        "creationDate": "2025.05.08 21:07:26",
+        "userData": ""
+      },
+      "tt_ToolbarHL": {
+        "key": "tt_ToolbarHL",
+        "value": "Highlighting expressions in the text is in progress ...",
+        "languageCode": "en",
+        "creationDate": "2025.05.08 21:08:56",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -2339,6 +2353,20 @@
         "value": "Akcija se ne može završiti jer će preći maksimalni broj dozvoljenih paragrafa..",
         "languageCode": "sr-lat",
         "creationDate": "2025.05.03 12:05:16",
+        "userData": ""
+      },
+      "tt_ToolbarAC": {
+        "key": "tt_ToolbarAC",
+        "value": "Pronalaženje AutoComplete podataka u toku...",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.08 21:07:26",
+        "userData": ""
+      },
+      "tt_ToolbarHL": {
+        "key": "tt_ToolbarHL",
+        "value": "Markiranje izraza u tekstu je u toku...",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.08 21:08:56",
         "userData": ""
       }
     }

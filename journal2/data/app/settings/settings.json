@@ -311,19 +311,6 @@
     "userData": "",
     "canBeSavedInFile": false
   },
-  "BlockNameMinTextWidgetHeight": {
-    "key": "BlockNameMinTextWidgetHeight",
-    "value": "40",
-    "defaultValue": "40",
-    "min": "Null",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 8,
-    "description": "",
-    "creationDate": "2025.03.24 19:17:43",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
   "GlobalTimerTickIntervalMS": {
     "key": "GlobalTimerTickIntervalMS",
     "value": "50",
@@ -412,19 +399,6 @@
     "dataType": 128,
     "description": "When user press ENTER new paragraph will be created.\nIf this is True, new paragraph will have same setings as one before.",
     "creationDate": "2025.03.28 19:08:45",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
-  "BlockName_MinRichTextHeight": {
-    "key": "BlockName_MinRichTextHeight",
-    "value": "50",
-    "defaultValue": "50",
-    "min": "14",
-    "max": "150",
-    "settingType": 8,
-    "dataType": 8,
-    "description": "Min widget height when entering block name.",
-    "creationDate": "2025.04.09 21:36:20",
     "userData": "",
     "canBeSavedInFile": false
   },
@@ -776,6 +750,32 @@
     "dataType": 128,
     "description": "",
     "creationDate": "2025.05.07 22:25:39",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "BlockName_MinRTWidgetHeight": {
+    "key": "BlockName_MinRTWidgetHeight",
+    "value": "40",
+    "defaultValue": "40",
+    "min": "0",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.05.08 16:53:40",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "BlockName_MaxNumberOfParagraphs": {
+    "key": "BlockName_MaxNumberOfParagraphs",
+    "value": "5",
+    "defaultValue": "5",
+    "min": "1",
+    "max": "Null",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.05.08 16:56:17",
     "userData": "",
     "canBeSavedInFile": false
   }

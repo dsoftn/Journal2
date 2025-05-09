@@ -47,7 +47,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     public boolean stateChanged = true; // Used with Undo/Redo
     private ContinuousTimer timer = new ContinuousTimer(OBJECTS.SETTINGS.getvINTEGER("IntervalBetweenTextChangesMS"));
     private PauseTransition pauseAC = null;
-    public TextHandler.Behavior behavior = null;
+    // public TextHandler.Behavior behavior = null;
     public ACHandler ac = null;
 
     public boolean isOverwriteMode = false;
@@ -109,8 +109,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         this.readOnly = readOnly;
         if (readOnly) {
             this.setShowCaret(CaretVisibility.OFF);
+            timer.stop();
         } else {
             this.setShowCaret(CaretVisibility.ON);
+            timer.play(() -> takeSnapshot());
         }
         
     }
@@ -137,10 +139,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         return true;
     }
 
-    public void setBehavior(TextHandler.Behavior behavior) {
-        this.behavior = behavior;
-        ac = new ACHandler(this);
-    }
+    // public void setBehavior(TextHandler.Behavior behavior) {
+    //     this.behavior = behavior;
+    //     ac = new ACHandler(this);
+    // }
 
     public void msgFromHandler(String messageSTRING) {
         // Process information from handler
@@ -231,13 +233,15 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         return this.cssChar;
     }
 
-    public void setParagraphCss(StyleSheetParagraph css) {
-        if (css == null) {
+    public void setParagraphCss(StyleSheetParagraph cssParagraph) {
+        if (cssParagraph == null) {
             this.cssParagraph = new StyleSheetParagraph();
         } else {
-            this.cssParagraph = css.duplicate();
+            this.cssParagraph = cssParagraph.duplicate();
         }
         
+        this.setParagraphStyle(this.getCurrentParagraph(), cssParagraph.getCss());
+        this.cssParagraphStyles.set(this.getCurrentParagraph(), cssParagraph.duplicate());
         sendToHandlerCharAndParagraphCurrentStyle();
     }
 
@@ -465,40 +469,29 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
             msgForHandler("CONTEXT_MENU:HIDE");
 
-            // Allow only copy text if read only mode
-            if (this.readOnly) {
-                if (event.getCode() == KeyCode.C && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                    event.consume();
-                    copySelectedText();
-                }
-                else if (event.getCode() == KeyCode.INSERT && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                    event.consume();
-                    copySelectedText();
-                }
-                else {
-                    event.consume();
-                }
-                return;
-            }
-
             // INSERT
             if (event.getCode() == KeyCode.INSERT && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_INSERT();
             }
             // ENTER
             else if (event.getCode() == KeyCode.ENTER && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_ENTER(event);
             }
             // DELETE
             else if (event.getCode() == KeyCode.DELETE && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_DELETE(event);
             }
             // BACKSPACE
             else if (event.getCode() == KeyCode.BACK_SPACE && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_BACKSPACE(event);
             }
             // ARROW UP
             else if (event.getCode() == KeyCode.UP && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_UP(event);
             }
             // ARROW UP + SHIFT
@@ -507,10 +500,12 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // ARROW UP + CTRL
             else if (event.getCode() == KeyCode.UP && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_UP_CTRL(event);
             }
             // ARROW DOWN
             else if (event.getCode() == KeyCode.DOWN && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_DOWN(event);
             }
             // ARROW DOWN + SHIFT
@@ -519,10 +514,12 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // ARROW DOWN + CTRL
             else if (event.getCode() == KeyCode.DOWN && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_DOWN_CTRL(event);
             }
             // ARROW LEFT
             else if (event.getCode() == KeyCode.LEFT && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_LEFT(event);
             }
             // ARROW LEFT + SHIFT
@@ -531,6 +528,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // ARROW RIGHT
             else if (event.getCode() == KeyCode.RIGHT && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_RIGHT(event);
             }
             // ARROW RIGHT + SHIFT
@@ -539,10 +537,12 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // ARROW RIGHT + CTRL
             else if (event.getCode() == KeyCode.RIGHT && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_RIGHT_CTRL(event);
             }
             // PAGE UP
             else if (event.getCode() == KeyCode.PAGE_UP && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_PgUP(event);
             }
             // PAGE UP + SHIFT
@@ -551,6 +551,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // PAGE DOWN
             else if (event.getCode() == KeyCode.PAGE_DOWN && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_PgDOWN(event);
             }
             // PAGE DOWN + SHIFT
@@ -559,6 +560,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // HOME
             else if (event.getCode() == KeyCode.HOME && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_HOME(event);
             }
             // HOME + SHIFT
@@ -567,10 +569,12 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // HOME + CTRL
             else if (event.getCode() == KeyCode.HOME && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_HOME_CTRL(event);
             }
             // END
             else if (event.getCode() == KeyCode.END && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_END(event);
             }
             // END + SHIFT
@@ -579,6 +583,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // END + CTRL
             else if (event.getCode() == KeyCode.END && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_END_CTRL(event);
             }
             // CTRL + C
@@ -593,20 +598,24 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // CTRL + V
             else if (event.getCode() == KeyCode.V && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 pasteText();
             }
             // INSERT + SHIFT
             else if (event.getCode() == KeyCode.INSERT && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 pasteText();
             }
             // TAB
             else if (event.getCode() == KeyCode.TAB && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_TAB(event);
             }
             // ESC
             else if (event.getCode() == KeyCode.ESCAPE && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 handleKeyPressed_ESC(event);
             }
             // CTRL + A
@@ -615,6 +624,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // CTRL + F
             else if (event.getCode() == KeyCode.F && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 if (this.getSelectedText().isEmpty()) {
                     msgForHandler(TextToolbarActionEnum.FIND_SHOW.name());
@@ -631,6 +641,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // CTRL + H
             else if (event.getCode() == KeyCode.H && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 if (this.getSelectedText().isEmpty()) {
                     msgForHandler(TextToolbarActionEnum.REPLACE_SHOW.name());
@@ -647,31 +658,37 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             }
             // CTRL + Z
             else if (event.getCode() == KeyCode.Z && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 msgForHandler(TextToolbarActionEnum.UNDO.name());
             }
             // CTRL + Y
             else if (event.getCode() == KeyCode.Y && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 msgForHandler(TextToolbarActionEnum.REDO.name());
             }
             // CTRL + S
             else if (event.getCode() == KeyCode.S && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 msgForHandler("SAVE: Ctrl+S");
             }
             // CTRL + SHIFT + S
             else if (event.getCode() == KeyCode.S && event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 msgForHandler("SAVE: Ctrl+Shift+S");
             }
             // ALT + ENTER
             else if (event.getCode() == KeyCode.ENTER && !event.isControlDown() && !event.isShiftDown() && event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 msgForHandler("SAVE: Alt+ENTER");
             }
             // CTRL + SPACE
             else if (event.getCode() == KeyCode.SPACE && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
+                if (this.readOnly) { event.consume(); return; }
                 event.consume();
                 msgForHandler("CONTEXT_MENU:SHOW");
             }
@@ -679,6 +696,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             
             
             else {
+                if (this.readOnly) { event.consume(); return; }
                 this.busy = true;
                 event.consume();
                 this.busy = false;
@@ -703,8 +721,6 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             this.busy = true;
             this.timer.resetInterval();
 
-            long startTime = System.nanoTime();
-            
             try {
                 handleKeyTyped_CHARACTER(event);
             } catch (Exception e) {
@@ -716,16 +732,17 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                     this.deletePreviousChar();
                 }
                 this.busy = false;
-                long endTime = System.nanoTime();
-                long durationInNano = endTime - startTime;
-                double durationInMillis = durationInNano / 1_000_000.0;
-                System.out.println("handleKeyTyped_CHARACTER: " + durationInMillis + " ms");
             });
 
         });
         
         
-        this.timer.play(() -> takeSnapshot());
+        if (!this.readOnly) {
+            this.timer.play(() -> takeSnapshot());
+            this.timer.resetInterval();
+        } else {
+            this.timer.stop();
+        }
 
         // this.requestFocus();
     }

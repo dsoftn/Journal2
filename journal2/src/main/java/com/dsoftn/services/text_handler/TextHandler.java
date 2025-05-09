@@ -7,6 +7,7 @@ import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
+import com.dsoftn.controllers.elements.TextEditToolbarController.AlignmentEnum;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
@@ -19,11 +20,14 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 
 public class TextHandler {
     public enum Behavior {
-        BLOCK_NAME(1);
+        BLOCK_NAME_ENTER(1),
+        BLOCK_NAME_SHOW(2);
 
         // Variables
         private final int value;
@@ -67,11 +71,12 @@ public class TextHandler {
     private UndoHandler undoHandler = new UndoHandler();
     private Marker marker = null;
     private String receiverID = null;
-    ContextMenu contextRTWidgetMenu = new ContextMenu();
-    Map<String, MenuItem> contextRTWidgetMenuItems = new LinkedHashMap<>();
+    private ContextMenu contextRTWidgetMenu = new ContextMenu();
+    private Map<String, MenuItem> contextRTWidgetMenuItems = new LinkedHashMap<>();
+    private Behavior behavior = null;
 
     // Constructor
-    public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController) {
+    public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController, Behavior behavior) {
         marker = new Marker(txtWidget, this);
 
         this.toolbarController = toolbarController;
@@ -80,20 +85,9 @@ public class TextHandler {
         }
 
         this.rtWidget = txtWidget;
-        this.rtWidget.setTextHandler(this);
-        this.rtWidget.setupWidget();
-
-        msgForToolbar(txtWidget.getCssChar());
-        msgForToolbar(txtWidget.getParagraphCss());
-        msgForToolbar("UNDO:" + undoHandler.canUndo());
-        msgForToolbar("REDO:" + undoHandler.canRedo());
-
-        // RTWidget context menu
-        createRTWidgetContextMenu();
-        txtWidget.setOnContextMenuRequested(event -> {
-            hideRTWidgetContextMenu();
-            showRTWidgetContextMenu(event);
-        });
+        this.behavior = behavior;
+        
+        setBehavior(this.behavior);
     }
 
     // Public methods
@@ -427,6 +421,48 @@ public class TextHandler {
     }
 
 
+    private void setBehavior(Behavior behavior) {
+        this.rtWidget.ac = new ACHandler(rtWidget);
+        rtWidget.ac.textHandler = this;
+        createRTWidgetContextMenu();
+
+        switch (behavior) {
+            case BLOCK_NAME_ENTER:
+                // rtWidget.setBehavior(Behavior.BLOCK_NAME_ENTER);
+                HBox.setHgrow(rtWidget, Priority.ALWAYS);
+                StyleSheetChar css = new StyleSheetChar();
+                css.setCss(OBJECTS.SETTINGS.getvSTRING("CssBlockName"));
+                rtWidget.setCssChar(css);
+                rtWidget.setStyle(css.getCss());
+                StyleSheetParagraph cssParagraph = new StyleSheetParagraph();
+                cssParagraph.setAlignmentEnum(AlignmentEnum.CENTER);
+                rtWidget.setParagraphCss(cssParagraph);
+                rtWidget.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRTWidgetHeight"));
+                rtWidget.setMaxNumberOfParagraphs(OBJECTS.SETTINGS.getvINTEGER("BlockName_MaxNumberOfParagraphs"));
+                break;
+            case BLOCK_NAME_SHOW:
+                // rtWidget.setBehavior(Behavior.BLOCK_NAME_SHOW);
+                HBox.setHgrow(rtWidget, Priority.ALWAYS);
+                rtWidget.setReadOnly(true);
+                break;
+            default:
+                break;
+        }
+
+        this.rtWidget.setTextHandler(this);
+        this.rtWidget.setupWidget();
+
+        msgForToolbar(this.rtWidget.getCssChar());
+        msgForToolbar(this.rtWidget.getParagraphCss());
+        msgForToolbar("UNDO:" + undoHandler.canUndo());
+        msgForToolbar("REDO:" + undoHandler.canRedo());
+
+        // RTWidget context menu
+        this.rtWidget.setOnContextMenuRequested(event -> {
+            hideRTWidgetContextMenu();
+            showRTWidgetContextMenu(event);
+        });
+    }
 
 
 }

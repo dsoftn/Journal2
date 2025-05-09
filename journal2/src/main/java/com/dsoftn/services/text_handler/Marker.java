@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.ICustomEventListener;
+import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
@@ -72,6 +73,7 @@ public class Marker implements ICustomEventListener {
                 mark(messageSTRING);
             }
             else if (taskEvent.getState() == TaskStateEnum.COMPLETED) {
+                textHandler.msgForToolbar(TextToolbarActionEnum.HL_WORKING.name() + ":" + false);
                 currentTask = null;
             }
             else if (taskEvent.getState() == TaskStateEnum.FAILED) {
@@ -133,10 +135,11 @@ public class Marker implements ICustomEventListener {
         if (currentTask != null) {
             currentTask.cancel();
             currentTask = null;
-            return;
+            // return;
         }
 
         textHandler.msgForToolbar("ACTION:WORKING");
+        textHandler.msgForToolbar(TextToolbarActionEnum.HL_WORKING.name() + ":" + true);
 
         this.messageSTRING = messageSTRING;
 

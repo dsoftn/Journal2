@@ -30,7 +30,9 @@ public enum TextToolbarActionEnum {
     FIND_SHOW(27),
     REPLACE_SHOW(28),
     FIND_CLOSE(29),
-    FIND_ALL(30);
+    FIND_ALL(30),
+    AC_WORKING(31),
+    HL_WORKING(32);
 
     private final int value;
 

@@ -58,6 +58,10 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     private String receiverID = null;
     private IBaseController parentController = null;
     private TextHandler textHandler = null;
+
+    private String inactiveLabelStyle = "-fx-text-fill: #808080; -fx-background-color: transparent;";
+    private String activeLabelStyle = "-fx-text-fill: #0000ff; -fx-background-color: #ffff00;";
+
     // Properties
     private StyleSheetChar curCharStyle = new StyleSheetChar();
     private StyleSheetParagraph curParagraphStyle = new StyleSheetParagraph();
@@ -133,6 +137,15 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     private Button btnAlignRight;
     @FXML
     private Button btnAlignJustify;
+    // Section Working
+    @FXML
+    HBox hBoxWorking;
+        @FXML
+        private ImageView imgAcHlWorking;
+        @FXML
+        private Label lblAc;
+        @FXML
+        private Label lblHl;
 
     // Find / Replace
     @FXML
@@ -286,6 +299,26 @@ public class TextEditToolbarController implements IElementController, ICustomEve
             lblFindResult.setText(OBJECTS.SETTINGS.getl("FindResult").replace("#1", lines[2]).replace("#2", lines[1]));
         } else if (messageSTRING.startsWith("ACTION:WORKING")) {
             setFindWorking(true);
+        } else if (messageSTRING.equals(TextToolbarActionEnum.AC_WORKING.name() + ":" + true)) {
+            imgAcHlWorking.setVisible(true);
+            lblAc.setStyle(activeLabelStyle);
+            lblAc.setId("1");
+        } else if (messageSTRING.equals(TextToolbarActionEnum.AC_WORKING.name() + ":" + false)) {
+            if (lblHl.getId().equals("0")) {
+                imgAcHlWorking.setVisible(false);
+            }
+            lblAc.setStyle(inactiveLabelStyle);
+            lblAc.setId("0");
+        } else if (messageSTRING.equals(TextToolbarActionEnum.HL_WORKING.name() + ":" + true)) {
+            imgAcHlWorking.setVisible(true);
+            lblHl.setStyle(activeLabelStyle);
+            lblHl.setId("1");
+        } else if (messageSTRING.equals(TextToolbarActionEnum.HL_WORKING.name() + ":" + false)) {
+            if (lblAc.getId().equals("0")) {
+                imgAcHlWorking.setVisible(false);
+            }
+            lblHl.setStyle(inactiveLabelStyle);
+            lblHl.setId("0");
         }
 
     }
@@ -308,6 +341,8 @@ public class TextEditToolbarController implements IElementController, ICustomEve
 
     public void showFindSection() {
         boolean sendMsgToHandler = hBoxFind.isVisible();
+        hBoxWorking.setVisible(false);
+        hBoxWorking.setManaged(false);
 
         vBoxFindReplace.setVisible(true);
         vBoxFindReplace.setManaged(true);
@@ -331,10 +366,16 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         hBoxReplace.setManaged(false);
         msgForHandler(findReplaceActionForHandler("FIND CLOSED", null));
         msgForHandler(TextToolbarActionEnum.FOCUS_TO_TEXT.name());
+
+        hBoxWorking.setVisible(true);
+        hBoxWorking.setManaged(true);
     }
 
     public void showReplaceSection() {
         boolean sendMsgToHandler = hBoxFind.isVisible();
+
+        hBoxWorking.setVisible(false);
+        hBoxWorking.setManaged(false);
 
         vBoxFindReplace.setVisible(true);
         vBoxFindReplace.setManaged(true);
@@ -350,6 +391,9 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     }
 
     public void hideReplaceSection() {
+        hBoxWorking.setVisible(false);
+        hBoxWorking.setManaged(false);
+
         vBoxFindReplace.setVisible(true);
         vBoxFindReplace.setManaged(true);
         hBoxFind.setVisible(true);
@@ -563,6 +607,8 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         UJavaFX.setTooltip(btnAlignCenter, OBJECTS.SETTINGS.getl("text_AlignCenter"));
         UJavaFX.setTooltip(btnAlignRight, OBJECTS.SETTINGS.getl("text_AlignRight"));
         UJavaFX.setTooltip(btnAlignJustify, OBJECTS.SETTINGS.getl("text_AlignJustify"));
+        UJavaFX.setTooltip(lblAc, OBJECTS.SETTINGS.getl("tt_ToolbarAC"));
+        UJavaFX.setTooltip(lblHl, OBJECTS.SETTINGS.getl("tt_ToolbarHL"));
     }
 
     private void setFindWorking(boolean working) {
@@ -580,6 +626,13 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     }
 
     private void setupWidgetsAppearance() {
+        imgAcHlWorking.setImage(new Image(getClass().getResourceAsStream("/gifs/loading.gif")));
+        imgAcHlWorking.setVisible(false);
+        lblAc.setStyle(inactiveLabelStyle);
+        lblAc.setId("0");
+        lblHl.setStyle(inactiveLabelStyle);
+        lblHl.setId("0");
+
         setFindWorking(false);   
         imgFindWorking.setImage(new Image(getClass().getResourceAsStream("/gifs/loading.gif")));
         hideFindSection();

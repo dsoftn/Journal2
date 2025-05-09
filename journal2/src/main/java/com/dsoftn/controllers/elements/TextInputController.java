@@ -69,19 +69,19 @@ public class TextInputController implements IElementController, ICustomEventList
             if (taskEvent.getState() == TaskStateEnum.COMPLETED) {
                 if (taskEvent.getMessage().equals("SAVE: Ctrl+S")) {
                     // Save text
-                    if (behavior == Behavior.BLOCK_NAME) {
+                    if (behavior == Behavior.BLOCK_NAME_ENTER) {
                         saveAndClose(taskEvent);
                     }
                 }
                 else if (taskEvent.getMessage().equals("SAVE: Ctrl+Shift+S")) {
                     // Save text as draft
-                    if (behavior == Behavior.BLOCK_NAME) {
+                    if (behavior == Behavior.BLOCK_NAME_ENTER) {
                         saveAndClose(taskEvent);
                     }
                 }
                 else if (taskEvent.getMessage().equals("SAVE: Alt+ENTER")) {
                     // Save text as draft
-                    if (behavior == Behavior.BLOCK_NAME) {
+                    if (behavior == Behavior.BLOCK_NAME_ENTER) {
                         saveAndClose(taskEvent);
                     }
                 }
@@ -186,7 +186,6 @@ public class TextInputController implements IElementController, ICustomEventList
 
         // Add Rich text
         hBoxRichText.getChildren().add(rTxtRichText);
-        HBox.setHgrow(rTxtRichText, Priority.ALWAYS);
 
         // Create toolbar
         toolbarController = ELEMENTS.getTextEditToolbarController(stage);
@@ -196,18 +195,8 @@ public class TextInputController implements IElementController, ICustomEventList
         this.root.getChildren().add(0, toolbarController.getRoot());
 
         // Create TextHandler
-        this.textHandler = new TextHandler(rTxtRichText, toolbarController);
+        this.textHandler = new TextHandler(rTxtRichText, toolbarController, behavior);
         this.textHandler.setReceiverID(myName);
-        // this.textHandler.enableAutoComplete(false);
-        // this.textHandler.enableMarkingIntegers(false);
-        // this.textHandler.enableMarkingDoubles(false);
-        // this.textHandler.enableMarkingDates(false);
-        // this.textHandler.enableMarkingTimes(false);
-        // this.textHandler.enableMarkingSerbianMobileNumbers(false);
-        // this.textHandler.enableMarkingSerbianLandlineNumbers(false);
-        // this.textHandler.enableMarkingInternationalPhoneNumbers(false);
-        test();
-
 
         setupWidgetsText();
         setupWidgetsAppearance();
@@ -217,45 +206,6 @@ public class TextInputController implements IElementController, ICustomEventList
     public void closeMe() {
     }
 
-    private void test() {
-        // Load file (CONSTANTS.FOLDER_DATA_APP_SETTINGS + "/_000000.txt")
-        String content = "";
-        try (Stream<String> stream = Files.lines(Paths.get(CONSTANTS.FOLDER_DATA_APP_SETTINGS + "/_000000.txt"))) {
-            content = stream.collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            UError.exception("TextInputController.test: Failed to read file", e);
-        }
-
-        UHDocument doc = new UHDocument(content);
-
-        List<UHTag> roots = doc.getTags();
-
-        List<UHTag> bodies = roots.get(1).findTags("a");
-        System.out.println("Attributes: " + bodies.get(0).getAttributesMap());
-        System.out.println(bodies.get(0).getTagCode());
-
-        UHTag parent = bodies.get(0).getParent();
-        System.out.println("Attributes: " + parent.getAttributesMap());
-        System.out.println(parent.getTagCode());
-        
-        UHTag parent1 = parent.getParent();
-        System.out.println("Attributes: " + parent1.getAttributesMap());
-        System.out.println(parent1.getTagCode());
-
-        UHTag parent2 = parent1.getParent();
-        System.out.println("Attributes: " + parent2.getAttributesMap());
-        System.out.println(parent2.getTagCode());
-
-        UHTag parent3 = parent2.getParent();
-        System.out.println("Attributes: " + parent3.getAttributesMap());
-        System.out.println(parent3.getTagCode());
-
-        UHTag parent4 = parent3.getParent();
-        System.out.println(parent4);
-
-
-    }
-
     // Public methods
 
     public String getReceiverID() { return receiverID; }
@@ -263,23 +213,7 @@ public class TextInputController implements IElementController, ICustomEventList
     public void setReceiverID(String receiverID) { this.receiverID = receiverID; }
 
     public void setBehavior(Behavior behavior) {
-        switch (behavior) {
-            case BLOCK_NAME:
-                this.behavior = behavior;
-                rTxtRichText.setBehavior(Behavior.BLOCK_NAME);
-                StyleSheetChar css = new StyleSheetChar();
-                css.setCss(OBJECTS.SETTINGS.getvSTRING("CssBlockName"));
-                rTxtRichText.setCssChar(css);
-                rTxtRichText.setStyle(css.getCss());
-                StyleSheetParagraph cssParagraph = new StyleSheetParagraph();
-                cssParagraph.setAlignmentEnum(AlignmentEnum.CENTER);
-                // rTxtRichText.setParagraphCss(cssParagraph);
-                rTxtRichText.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockNameMinTextWidgetHeight"));
-                rTxtRichText.setMinHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
-                rTxtRichText.setPrefHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRichTextHeight"));
-                // rTxtRichText.setMaxNumberOfParagraphs(2);
-                break;
-        }
+        this.behavior = behavior;
     }
 
     // Private methods
@@ -294,7 +228,7 @@ public class TextInputController implements IElementController, ICustomEventList
     // FXML methods
     @FXML
     private void onBtnOkAction() {
-        if (behavior == Behavior.BLOCK_NAME) {
+        if (behavior == Behavior.BLOCK_NAME_ENTER) {
             saveAndClose(new TaskStateEvent(myName, rTxtRichText.getRTWTextObject(), "SAVE: OK_BUTTON"));
         }
     }

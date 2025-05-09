@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.TextEditToolbarController">
    <children>
@@ -51,6 +52,28 @@
                         <Button fx:id="btnAlignCenter" layoutX="804.0" layoutY="11.0" mnemonicParsing="false" onAction="#onBtnAlignCenterAction" styleClass="button-icon" />
                         <Button fx:id="btnAlignRight" layoutX="839.0" layoutY="11.0" mnemonicParsing="false" onAction="#onBtnAlignRightAction" styleClass="button-icon" />
                         <Button fx:id="btnAlignJustify" layoutX="874.0" layoutY="11.0" mnemonicParsing="false" onAction="#onBtnAlignJustifyAction" styleClass="button-icon" />
+                        <HBox fx:id="hBoxWorking" alignment="CENTER">
+                           <children>
+                              <ImageView fx:id="imgAcHlWorking" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </ImageView>
+                              <Label fx:id="lblAc" text="AC">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets right="2.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="lblHl" text="HL">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
                      </children>
                   </HBox>
                </content>
