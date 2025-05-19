@@ -1,22 +1,26 @@
 package com.dsoftn.services.text_handler;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
-import com.dsoftn.controllers.elements.TextEditToolbarController.AlignmentEnum;
+import com.dsoftn.controllers.pop_up_windows.RTSettingsPopup;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
+import com.dsoftn.utils.USettings;
 
 import javafx.application.Platform;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
@@ -74,11 +78,10 @@ public class TextHandler {
     private ContextMenu contextRTWidgetMenu = new ContextMenu();
     private Map<String, MenuItem> contextRTWidgetMenuItems = new LinkedHashMap<>();
     private Behavior behavior = null;
+    private RTSettingsPopup rtSettingsPopup = null;
 
     // Constructor
     public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController, Behavior behavior) {
-        marker = new Marker(txtWidget, this);
-
         this.toolbarController = toolbarController;
         if (toolbarController != null) {
             toolbarController.setTextHandler(this);
@@ -86,43 +89,19 @@ public class TextHandler {
 
         this.rtWidget = txtWidget;
         this.behavior = behavior;
+
+        marker = new Marker(txtWidget, this);
         
-        setBehavior(this.behavior);
+        setBehavior();
     }
 
     // Public methods
+    public Behavior getBehavior() { return behavior; }
+    
     public void enableAutoComplete(boolean enable) {
         rtWidget.ac.enableAutoComplete(enable);
     }
 
-    public void enableMarkingIntegers(boolean enable) {
-        marker.allowMarkingIntegers(enable);
-    }
-
-    public void enableMarkingDoubles(boolean enable) {
-        marker.allowMarkingDoubles(enable);
-    }
-
-    public void enableMarkingDates(boolean enable) {
-        marker.allowMarkingDates(enable);
-    }
-
-    public void enableMarkingTimes(boolean enable) {
-        marker.allowMarkingTimes(enable);
-    }
-
-    public void enableMarkingSerbianMobileNumbers(boolean enable) {
-        marker.allowMarkingSerbianMobileNumbers(enable);
-    }
-
-    public void enableMarkingSerbianLandlineNumbers(boolean enable) {
-        marker.allowMarkingSerbianLandlineNumbers(enable);
-    }
-
-    public void enableMarkingInternationalPhoneNumbers(boolean enable) {
-        marker.allowMarkingInternationalPhoneNumbers(enable);
-    }
-    
     public void setReceiverID(String receiverID) { this.receiverID = receiverID; }
 
     public void msgFromToolbar(String messageSTRING) {
@@ -273,6 +252,8 @@ public class TextHandler {
         }
         else if (messageSTRING.equals("CONTEXT_MENU:HIDE")) {
             hideRTWidgetContextMenu();
+        } else if (messageSTRING.startsWith("INSERT_MODE:")) {
+            msgForToolbar(messageSTRING);
         }
     }
 
@@ -367,15 +348,35 @@ public class TextHandler {
     }
 
     private void createRTWidgetContextMenu() {
+        // Separator
+        List<String> separatorAfterItem = List.of("PASTE");
+        
         // Cut
         contextRTWidgetMenuItems.put("CUT", getCMItemCut());
-        contextRTWidgetMenu.getItems().add(contextRTWidgetMenuItems.get("CUT"));
         // Copy
         contextRTWidgetMenuItems.put("COPY", getCMItemCopy());
-        contextRTWidgetMenu.getItems().add(contextRTWidgetMenuItems.get("COPY"));
         // Paste
         contextRTWidgetMenuItems.put("PASTE", getCMItemPaste());
-        contextRTWidgetMenu.getItems().add(contextRTWidgetMenuItems.get("PASTE"));
+        // Options
+        contextRTWidgetMenuItems.put("OPTIONS", getCMIItemOptions());
+
+        List<String> allowedItems = new ArrayList<>();
+        
+        // BEHAVIOR - selection of menu items
+        if (behavior == Behavior.BLOCK_NAME_ENTER) {
+            allowedItems = List.of("CUT", "COPY", "PASTE", "OPTIONS");
+        }
+        else if (behavior == Behavior.BLOCK_NAME_SHOW) {
+            allowedItems = List.of("COPY", "OPTIONS");
+        }
+
+        for (String item : allowedItems) {
+            contextRTWidgetMenu.getItems().add(contextRTWidgetMenuItems.get(item));
+            if (separatorAfterItem.contains(item)) {
+                contextRTWidgetMenu.getItems().add(getCMItemSeparator());
+            }
+        }
+
     }
 
     private MenuItem getCMItemCut() {
@@ -420,10 +421,27 @@ public class TextHandler {
         return paste;
     }
 
+    private MenuItem getCMIItemOptions() {
+        MenuItem options = new MenuItem(OBJECTS.SETTINGS.getl("text_Options"));
+        Image imgOptions = new Image(getClass().getResourceAsStream("/images/options_bw.png"));
+        ImageView imgOptionsView = new ImageView(imgOptions);
+        imgOptionsView.setPreserveRatio(true);
+        imgOptionsView.setFitHeight(20);
+        options.setGraphic(imgOptionsView);
+        options.setOnAction(event -> {
+            showRTSettingsPopup();
+        });
 
-    private void setBehavior(Behavior behavior) {
-        this.rtWidget.ac = new ACHandler(rtWidget);
-        rtWidget.ac.textHandler = this;
+        return options;
+    }
+
+    private SeparatorMenuItem getCMItemSeparator() {
+        return new SeparatorMenuItem();
+    }
+
+
+    private void setBehavior() {
+        this.rtWidget.ac = new ACHandler(rtWidget, this);
         createRTWidgetContextMenu();
 
         switch (behavior) {
@@ -431,14 +449,14 @@ public class TextHandler {
                 // rtWidget.setBehavior(Behavior.BLOCK_NAME_ENTER);
                 HBox.setHgrow(rtWidget, Priority.ALWAYS);
                 StyleSheetChar css = new StyleSheetChar();
-                css.setCss(OBJECTS.SETTINGS.getvSTRING("CssBlockName"));
+                css.setCss(USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior, "-fx-font-family: 'Arial';-fx-font-size: 30px;").getValueSTRING());
                 rtWidget.setCssChar(css);
-                rtWidget.setStyle(css.getCss());
+                // rtWidget.setStyle(css.getCss());
                 StyleSheetParagraph cssParagraph = new StyleSheetParagraph();
-                cssParagraph.setAlignmentEnum(AlignmentEnum.CENTER);
+                cssParagraph.setCss(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", behavior, "-fx-text-alignment: center;").getValueSTRING());
                 rtWidget.setParagraphCss(cssParagraph);
-                rtWidget.setMinTextWidgetHeight(OBJECTS.SETTINGS.getvINTEGER("BlockName_MinRTWidgetHeight"));
-                rtWidget.setMaxNumberOfParagraphs(OBJECTS.SETTINGS.getvINTEGER("BlockName_MaxNumberOfParagraphs"));
+                rtWidget.setMinTextWidgetHeight(USettings.getAppOrUserSettingsItem("MinRTWidgetHeight", behavior, 40).getValueINT());
+                rtWidget.setMaxNumberOfParagraphs(USettings.getAppOrUserSettingsItem("MaxNumberOfParagraphs", behavior, 5).getValueINT());
                 break;
             case BLOCK_NAME_SHOW:
                 // rtWidget.setBehavior(Behavior.BLOCK_NAME_SHOW);
@@ -464,5 +482,28 @@ public class TextHandler {
         });
     }
 
+    private void showRTSettingsPopup() {
+        rtSettingsPopup = new RTSettingsPopup(this::onRTSettingsPopupExit, behavior);
+        rtSettingsPopup.startMe(rtWidget.getScene().getWindow());
+    }
+
+    private void onRTSettingsPopupExit(Boolean result) {
+        if (result) {
+            boolean hasAc = rtWidget.ac.hasCurrentAC();
+            rtWidget.ac.removeCurrentAC();
+            marker.updateSettings();
+            rtWidget.ac.updateSettings();
+
+            for (int i = 0; i < rtWidget.cssStyles.size(); i++) {
+                rtWidget.setStyle(i, i + 1, rtWidget.cssStyles.get(i).getCss());
+            }
+
+            marker.mark();
+            if (hasAc) {
+                rtWidget.ac.showAC(rtWidget.getCaretPosition(), rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()));
+            }
+        }
+        rtSettingsPopup = null;
+    }
 
 }

@@ -26,6 +26,7 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -183,6 +184,43 @@ public class UJavaFX {
         setTooltip(node, text, null, null, null, null);
     }
 
+    public static void setPopupGeometry(String keyName, Popup popup) {
+        if (!OBJECTS.SETTINGS.isAppSettingExists(keyName)) {
+            OBJECTS.SETTINGS.addAppSettings(keyName, "", true);
+        }
+
+        Map<String, Double> geometry = getStageGeometryMap(OBJECTS.SETTINGS.getAppSTRING(keyName));
+
+        if (geometry.containsKey("PosX")) {
+            popup.setX(geometry.get("PosX"));
+        }
+        if (geometry.containsKey("PosY")) {
+            popup.setY(geometry.get("PosY"));
+        }
+        if (geometry.containsKey("Width")) {
+            popup.setWidth(geometry.get("Width"));
+        }
+        if (geometry.containsKey("Height")) {
+            popup.setHeight(geometry.get("Height"));
+        }
+    }
+
+    public static void savePopupGeometry(String keyName, Popup popup) {
+        if (!OBJECTS.SETTINGS.isAppSettingExists(keyName)) {
+            OBJECTS.SETTINGS.addAppSettings(keyName, "", true);
+        }
+
+        Map<String, Double> geometry = getStageGeometryMap(OBJECTS.SETTINGS.getAppSTRING(keyName));
+
+        geometry.put("PosX", popup.getX());
+        geometry.put("PosY", popup.getY());
+        geometry.put("Width", popup.getWidth());
+        geometry.put("Height", popup.getHeight());
+
+        OBJECTS.SETTINGS.setApp(keyName, getStageGeometryString(geometry));
+    }
+
+
     public static void setStageGeometry(String keyName, Stage stage) {
         if (!OBJECTS.SETTINGS.isAppSettingExists(keyName)) {
             OBJECTS.SETTINGS.addAppSettings(keyName, "", true);
@@ -312,7 +350,7 @@ public class UJavaFX {
      */
     public static List<String> getBasicFonts(List<String> allFonts) {
         if (allFonts == null) {
-            allFonts = Font.getFontNames();
+            allFonts = getAllFonts();
         }
 
         List<String> fonts = new ArrayList<>();
@@ -324,8 +362,7 @@ public class UJavaFX {
             for (String font : fonts) {
                 if (font.startsWith(fontBaseName)) {
                     found = true;
-                    
-                    if (fontName.toLowerCase().contains("regular")) {
+                    if (fontName.toLowerCase().contains("regular")) { // If font name contains "Regular" then it is the default font for the font family, so we use it instead of the other fonts with the same name but different styles (e.g. "Regular", "Italic", "Bold", etc.)
                         fonts.set(fonts.indexOf(font), fontName);
                         break;
                     }
@@ -342,6 +379,10 @@ public class UJavaFX {
         }
 
         return fonts;
+    }
+
+    public static List<String> getAllFonts() {
+        return Font.getFontNames();
     }
 
 

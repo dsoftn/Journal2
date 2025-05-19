@@ -1,0 +1,46 @@
+.label-title1 {
+    -fx-background-color: transparent;
+    -fx-text-fill: #00f5d4;
+    -fx-font-size: 24px;
+    -fx-font-weight: normal;
+    /* -fx-font-style: italic; */
+}
+
+.label-title2 {
+    -fx-background-color: transparent;
+    -fx-text-fill: #00f5d4;
+    -fx-font-size: 20px;
+    -fx-font-weight: normal;
+    /* -fx-font-style: italic; */
+}
+
+/* Button - Small */
+.button-small {
+    -fx-background-color: linear-gradient(to bottom, #003554, #051923);
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 10px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #0582ca;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+    -fx-padding: 3 15 3 15;
+}
+
+.button-small:hover {
+    -fx-background-color: linear-gradient(to bottom, #051923, #003554);
+    -fx-border-color: #00a6fb;
+}
+
+.button-small:pressed {
+    -fx-background-color: linear-gradient(to bottom, #003554, #006494);
+    -fx-border-color: #00a6fb;
+}
+
+.button-small:disabled {
+    -fx-background-color: transparent;
+    -fx-text-fill: #636465;
+    -fx-border-color: #636465;
+    -fx-cursor: default;
+}
+

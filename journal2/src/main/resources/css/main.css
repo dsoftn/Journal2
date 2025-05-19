@@ -25,6 +25,7 @@ CSS setting in Default class for Widgets:
     Button
     Spinner
     List
+    CheckBox
 
 
 COLORS:
@@ -207,6 +208,18 @@ Button:
     -fx-text-fill: #636465;
     -fx-border-color: #636465;
     -fx-cursor: default;
+}
+
+/* Close button */
+.button-close {
+    -fx-background-color: transparent;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-opacity: 0.6;
+}
+
+.button-close:hover {
+    -fx-opacity: 1.0;
 }
 
 /* List widget - Default */
@@ -564,4 +577,59 @@ Button:
 }
 
 
+/* CheckBox - Default */
+.check-box-default {
+    -fx-background-color: transparent;
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 12px;
+    -fx-padding: 5 0 5 0;
+}
 
+.check-box-default:hover {
+    -fx-text-fill: #00f5d4;
+    -fx-cursor: hand;
+}
+
+.check-box-default:disabled {
+    -fx-text-fill: #636465;
+}
+
+.check-box-default .box {
+    -fx-background-color: #051923;
+    -fx-border-color: #2f6690;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-padding: 3;
+}
+
+.check-box-default .box:hover {
+    -fx-border-color: #078fdf;
+}
+
+.check-box-default:selected .box {
+    -fx-background-color: #003554;
+    -fx-border-color: #00a6fb;
+}
+
+.check-box-default:selected .mark {
+    -fx-background-color: #00a6fb;
+}
+
+.check-box-default:disabled .box {
+    -fx-background-color: #2c2c2c;
+    -fx-border-color: #636465;
+}
+
+.check-box-default:disabled:selected .mark {
+    -fx-background-color: #636465;
+}
+
+/* Popup */
+.popup-root {
+    -fx-border-color: #2f6690;
+    -fx-border-width: 2px;
+    -fx-border-style: solid;
+    -fx-border-radius: 5px;
+}

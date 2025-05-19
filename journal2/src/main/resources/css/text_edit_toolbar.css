@@ -9,6 +9,21 @@
     -fx-text-fill: #626262;
 }
 
+/* Label - Selected */
+.label-selected-mini {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: darkblue;
+    -fx-font-size: 16px;
+}
+
+/* Label - sub-title */
+.label-subtitle {
+    -fx-background-color: transparent;
+    -fx-text-fill: #00f5d4;
+    -fx-font-size: 20px;
+    -fx-font-weight: normal;
+    -fx-font-style: italic;
+}
 
 /* Button transparent with icon only */
 .button-icon {
@@ -147,6 +162,8 @@
 .button-text:disabled {
     -fx-background-color: #212121;
     -fx-text-fill: #636465;
+    -fx-border-color: #636465;
+    -fx-border-width: 1px;
     -fx-cursor: default;
 }
 
@@ -202,6 +219,17 @@
     -fx-border-width: 2px;
 }
 
+.combo-box:editable > .text-field {
+    -fx-background-color: #051923;
+    -fx-text-fill: #00a6fb;
+    -fx-font-size: 12px;
+    -fx-border-color: #2f6690;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+    -fx-border-radius: 5px;
+}
+
+
 
 /* Text field - Find and replace */
 .text-field-find {
@@ -236,3 +264,4 @@
     -fx-border-style: solid;
     -fx-border-radius: 5px;
 }
+

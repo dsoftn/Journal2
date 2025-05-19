@@ -13,6 +13,7 @@ import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
+import com.dsoftn.utils.USettings;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -86,34 +87,6 @@ public class Marker implements ICustomEventListener {
     }
 
     //  Public methods
-    public void allowMarkingIntegers(boolean allow) {
-        numberDateTimeMarking.allowMarkingIntegers = allow;
-    }
-
-    public void allowMarkingDoubles(boolean allow) {
-        numberDateTimeMarking.allowMarkingDoubles = allow;
-    }
-
-    public void allowMarkingDates(boolean allow) {
-        numberDateTimeMarking.allowMarkingDates = allow;
-    }
-
-    public void allowMarkingTimes(boolean allow) {
-        numberDateTimeMarking.allowMarkingTimes = allow;
-    }
-
-    public void allowMarkingSerbianMobileNumbers(boolean allow) {
-        numberDateTimeMarking.allowMarkingSerbianMobileNumbers = allow;
-    }
-
-    public void allowMarkingSerbianLandlineNumbers(boolean allow) {
-        numberDateTimeMarking.allowMarkingSerbianLandlineNumbers = allow;
-    }
-
-    public void allowMarkingInternationalPhoneNumbers(boolean allow) {
-        numberDateTimeMarking.allowMarkingInternationalPhoneNumbers = allow;
-    }
-
     public void onTextChange() {
         if (pause.getStatus() == PauseTransition.Status.RUNNING) {
             pause.stop();
@@ -198,6 +171,23 @@ public class Marker implements ICustomEventListener {
         return findReplace.changeStyle(styleSheet);
     }
 
+    public void updateSettings() {
+        TextHandler.Behavior behavior = textHandler.getBehavior();
+
+        if (numberDateTimeMarking != null) {
+            numberDateTimeMarking.updateSettings(behavior);
+        }
+
+        if (webMark != null) {
+            webMark.updateSettings(behavior);
+        }
+
+        if (findReplace != null) {
+            findReplace.updateSettings(behavior);
+        }
+    }
+
+
     //  Private methods
     private boolean taskMark() {
         // This is Task, marking should be done in specific order
@@ -207,7 +197,7 @@ public class Marker implements ICustomEventListener {
         if (cssChars == null) { return false; }
 
         // Numbers, dates, times
-        List<MarkedItem> markedNumbersDatesTimes = NumberDateTimeMarking.getNumbersDatesTimes(rtWidget.getText(),  currentTask);
+        List<MarkedItem> markedNumbersDatesTimes = NumberDateTimeMarking.getNumbersDatesTimes(rtWidget.getText(),  currentTask, textHandler.getBehavior());
         if (markedNumbersDatesTimes == null) { return false; }
         List<StyleSheetChar> cssCharsNDT = numberDateTimeMarking.calculate(cssChars, markedNumbersDatesTimes, currentTask);
         if (cssCharsNDT == null) { return false; }
@@ -232,6 +222,10 @@ public class Marker implements ICustomEventListener {
 
     private boolean markText() {
         // This is not Task, marking should be done in specific order
+
+        if (!USettings.getAppOrUserSettingsItem("AllowMarking", textHandler.getBehavior()).getValueBOOLEAN()) {
+            return true;
+        }
 
         try {
             if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {

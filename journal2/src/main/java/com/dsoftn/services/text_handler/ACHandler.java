@@ -22,6 +22,7 @@ import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
+import com.dsoftn.utils.USettings;
 import com.dsoftn.utils.UString;
 
 import javafx.application.Platform;
@@ -42,22 +43,25 @@ public class ACHandler implements ICustomEventListener {
     private String myName = UJavaFX.getUniqueId();
     private boolean ACisShown = false;
     private Task<Boolean> task = null;
-    public TextHandler textHandler = null;
+    private TextHandler textHandler = null;
 
-    public boolean canShowAC = false;
-    public StyleSheetChar ACStyle = new StyleSheetChar();
-    public int maxAutoCompleteRecommendations = 0;
-    public int maxAutoCompleteRecommendedWords = 0;
-    public int autoCompleteDelay = 0;
+    private boolean canShowAC = false;
+    private StyleSheetChar ACStyle = new StyleSheetChar();
+    private int maxAutoCompleteRecommendations = 0;
+    private int maxAutoCompleteRecommendedWords = 0;
+    private int autoCompleteDelay = 0;
 
     // Constructor
-    public ACHandler(RTWidget rtWidget) {
+    public ACHandler(RTWidget rtWidget, TextHandler textHandler) {
+        this.textHandler = textHandler;
+        TextHandler.Behavior behavior = textHandler.getBehavior();
+
         this.rtWidget = rtWidget;
-        ACStyle.setCss(OBJECTS.SETTINGS.getvSTRING("cssAutoCompleteStyle"));
-        canShowAC = OBJECTS.SETTINGS.getvBOOLEAN("AllowAutoComplete");
-        maxAutoCompleteRecommendations = OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendations");
-        maxAutoCompleteRecommendedWords = OBJECTS.SETTINGS.getvINTEGER("MaxAutoCompleteRecommendedWords");
-        autoCompleteDelay = OBJECTS.SETTINGS.getvINTEGER("AutoCompleteDelay");
+        ACStyle.setCss(USettings.getAppOrUserSettingsItem("CssAutoCompleteStyle", behavior).getValueSTRING());
+        canShowAC = USettings.getAppOrUserSettingsItem("AllowAutoComplete", behavior).getValueBOOLEAN();
+        maxAutoCompleteRecommendations = USettings.getAppOrUserSettingsItem("MaxAutoCompleteRecommendations", behavior).getValueINT();
+        maxAutoCompleteRecommendedWords = USettings.getAppOrUserSettingsItem("MaxAutoCompleteRecommendedWords", behavior).getValueINT();
+        autoCompleteDelay = USettings.getAppOrUserSettingsItem("AutoCompleteDelay", behavior).getValueINT();
 
         OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
     }
@@ -101,8 +105,8 @@ public class ACHandler implements ICustomEventListener {
                     rtWidget.ignoreCaretPositionChange = true;
                     rtWidget.insertText(positionInWidgetTMP, getCurrentAC());
                     ACisShown = true;
-                    ACStyle.setFontName(rtWidget.cssChar.getFontName());
-                    ACStyle.setFontSize(rtWidget.cssChar.getFontSize());
+                    ACStyle = rtWidget.cssChar.duplicate();
+                    ACStyle.setCss(USettings.getAppOrUserSettingsItem("CssAutoCompleteStyle", textHandler.getBehavior()).getValueSTRING());
                     rtWidget.setStyle(positionInWidgetTMP, positionInWidgetTMP + getCurrentAC().length(), ACStyle.getCss());
                     rtWidget.moveTo(positionInWidgetTMP);
                     Platform.runLater(() -> {
@@ -134,6 +138,18 @@ public class ACHandler implements ICustomEventListener {
 
 
     // Public methods
+    public int getAutoCompleteDelay() {
+        return autoCompleteDelay;
+    }
+
+    public void updateSettings() {
+        this.canShowAC = USettings.getAppOrUserSettingsItem("AllowAutoComplete", textHandler.getBehavior()).getValueBOOLEAN();
+        this.maxAutoCompleteRecommendations = USettings.getAppOrUserSettingsItem("MaxAutoCompleteRecommendations", textHandler.getBehavior()).getValueINT();
+        this.maxAutoCompleteRecommendedWords = USettings.getAppOrUserSettingsItem("MaxAutoCompleteRecommendedWords", textHandler.getBehavior()).getValueINT();
+        this.autoCompleteDelay = USettings.getAppOrUserSettingsItem("AutoCompleteDelay", textHandler.getBehavior()).getValueINT();
+        this.ACStyle.setCss(USettings.getAppOrUserSettingsItem("CssAutoCompleteStyle", textHandler.getBehavior()).getValueSTRING());
+    }
+
     public void enableAutoComplete(boolean enable) {
         this.canShowAC = enable;
     }
@@ -173,8 +189,8 @@ public class ACHandler implements ICustomEventListener {
     }
 
     public void updateStyleSheet(StyleSheetChar styleSheetChar) {
-        this.ACStyle.setFontName(styleSheetChar.getFontName());
-        this.ACStyle.setFontSize(styleSheetChar.getFontSize());
+        this.ACStyle = styleSheetChar.duplicate();
+        this.ACStyle.setCss(USettings.getAppOrUserSettingsItem("CssAutoCompleteStyle", textHandler.getBehavior()).getValueSTRING());
     }
 
     public void nextAC() {
@@ -186,8 +202,6 @@ public class ACHandler implements ICustomEventListener {
         currentRecommendedIndex = recommendedACList.size() - 1 == currentRecommendedIndex ? 0 : currentRecommendedIndex + 1;
         ignoreTextChange = true;
         rtWidget.insertText(positionInWidget, getCurrentAC());
-        ACStyle.setFontName(rtWidget.cssChar.getFontName());
-        ACStyle.setFontSize(rtWidget.cssChar.getFontSize());
         rtWidget.setStyle(positionInWidget, positionInWidget + getCurrentAC().length(), ACStyle.getCss());
         rtWidget.moveTo(positionInWidget);
     }
@@ -201,8 +215,6 @@ public class ACHandler implements ICustomEventListener {
         currentRecommendedIndex = currentRecommendedIndex == 0 ? recommendedACList.size() - 1 : currentRecommendedIndex - 1;
         ignoreTextChange = true;
         rtWidget.insertText(positionInWidget, getCurrentAC());
-        ACStyle.setFontName(rtWidget.cssChar.getFontName());
-        ACStyle.setFontSize(rtWidget.cssChar.getFontSize());
         rtWidget.setStyle(positionInWidget, positionInWidget + getCurrentAC().length(), ACStyle.getCss());
         rtWidget.moveTo(positionInWidget);
     }

@@ -40,6 +40,9 @@ public class UNumbers {
 
     public static boolean isStringDouble(String str) {
         try {
+            if (str.toLowerCase().contains("d") || str.toLowerCase().contains("f")) {
+                return false;
+            }
             Double.parseDouble(str);
             return true;
         } catch (NumberFormatException e) {
@@ -86,7 +89,8 @@ public class UNumbers {
                 if (doubleValue != null) {
                     return doubleValue.intValue();
                 }
-                }
+                return null;
+            }
             else if (object instanceof Long) {
                 return ((Long) object).intValue();
             }
@@ -116,7 +120,12 @@ public class UNumbers {
                 return ((Integer) object).doubleValue();
             }
             else if (object instanceof String) {
-                return Double.parseDouble((String) object);
+                String str = object.toString();
+                if (!str.toLowerCase().contains("d") && !str.toLowerCase().contains("f")) {
+                    return Double.parseDouble((String) object);
+                } else {
+                    return null;
+                }
             }
             else if (object instanceof Long) {
                 return ((Long) object).doubleValue();

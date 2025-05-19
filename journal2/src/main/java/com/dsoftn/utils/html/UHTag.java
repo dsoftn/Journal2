@@ -148,7 +148,7 @@ public class UHTag {
                 return entry.getValue();
             }
         }
-        return null;
+        return "";
     }
 
     public String getTextRemoveAllTags() {

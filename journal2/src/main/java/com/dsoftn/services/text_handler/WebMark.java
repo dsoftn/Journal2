@@ -9,6 +9,7 @@ import com.dsoftn.OBJECTS;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.WordExtractor;
+import com.dsoftn.utils.USettings;
 
 import javafx.concurrent.Task;
 
@@ -17,6 +18,10 @@ public class WebMark {
     private RTWidget rtWidget = null;
     private List<StyleSheetChar> cssChars = new ArrayList<>();
     private List<MarkedItem> foundItems = new ArrayList<>();
+    private boolean allowMarkingWebLinks = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingWebLinks");
+    private boolean allowMarkingEmails = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingEmails");
+    private String cssMarkedWebLink = OBJECTS.SETTINGS.getvSTRING("CssMarkedWebLink");
+    private String cssMarkedEmail = OBJECTS.SETTINGS.getvSTRING("CssMarkedEmail");
 
     // Constructor
     public WebMark(RTWidget rtWidget) {
@@ -24,17 +29,25 @@ public class WebMark {
     }
 
     // Public methods
+    public void updateSettings(TextHandler.Behavior behavior) {
+        allowMarkingWebLinks = USettings.getAppOrUserSettingsItem("AllowMarkingWebLinks", behavior).getValueBOOLEAN();
+        allowMarkingEmails = USettings.getAppOrUserSettingsItem("AllowMarkingEmails", behavior).getValueBOOLEAN();
+        cssMarkedWebLink = USettings.getAppOrUserSettingsItem("CssMarkedWebLink", behavior).getValueSTRING();
+        cssMarkedEmail = USettings.getAppOrUserSettingsItem("CssMarkedEmail", behavior).getValueSTRING();
+    }
+
+
     public List<StyleSheetChar> calculate(List<StyleSheetChar> cssChars, Task<Boolean> taskHandler) {
         this.cssChars = cssChars;
         foundItems = new ArrayList<>();
 
         String text = rtWidget.getText() + " ";
 
-        if (OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingWebLinks")) {
+        if (allowMarkingWebLinks) {
             if (!addWebLinks(text, taskHandler)) { return null; }
         }
         
-        if (OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingEmails")) {
+        if (allowMarkingEmails) {
             if (!addEmails(text, taskHandler)) { return null; }
         }
 
@@ -70,7 +83,7 @@ public class WebMark {
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
         StyleSheetChar webLinkCss = new StyleSheetChar(true);
-        webLinkCss.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedWebLink"));
+        webLinkCss.setCss(cssMarkedWebLink);
 
         for (WordExtractor.WordItem word : words) {
             if (taskHandler.isCancelled()) {
@@ -90,7 +103,7 @@ public class WebMark {
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
         StyleSheetChar eMailCss = new StyleSheetChar(true);
-        eMailCss.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedEmail"));
+        eMailCss.setCss(cssMarkedEmail);
 
         for (WordExtractor.WordItem word : words) {
             if (taskHandler.isCancelled()) {

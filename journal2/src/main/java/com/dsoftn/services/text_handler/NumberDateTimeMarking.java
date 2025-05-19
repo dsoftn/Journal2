@@ -11,6 +11,7 @@ import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.WordExtractor;
 import com.dsoftn.utils.UDate;
 import com.dsoftn.utils.UNumbers;
+import com.dsoftn.utils.USettings;
 import com.dsoftn.utils.UString;
 
 import javafx.concurrent.Task;
@@ -21,13 +22,16 @@ public class NumberDateTimeMarking {
     private List<StyleSheetChar> cssChars = new ArrayList<>();
     private List<MarkedItem> markedItems = new ArrayList<>();
 
-    public boolean allowMarkingIntegers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingIntegers");
-    public boolean allowMarkingDoubles = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDoubles");
-    public boolean allowMarkingDates = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDates");
-    public boolean allowMarkingTimes = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingTimes");
-    public boolean allowMarkingSerbianMobileNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingSerbianMobileNumbers");
-    public boolean allowMarkingSerbianLandlineNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingSerbianLandlineNumbers");
-    public boolean allowMarkingInternationalPhoneNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingInternationalPhoneNumbers");
+    private boolean allowMarkingIntegers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingIntegers");
+    private boolean allowMarkingDoubles = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDoubles");
+    private boolean allowMarkingDates = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDates");
+    private boolean allowMarkingTimes = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingTimes");
+    private boolean allowMarkingSerbianMobileNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingSerbianMobileNumbers");
+    private String cssMarkedSerbianMobileNumbers = OBJECTS.SETTINGS.getvSTRING("CssMarkedSerbianMobileNumbers");
+    private boolean allowMarkingSerbianLandlineNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingSerbianLandlineNumbers");
+    private String cssMarkedSerbianLandlineNumbers = OBJECTS.SETTINGS.getvSTRING("CssMarkedSerbianLandlineNumbers");
+    private boolean allowMarkingInternationalPhoneNumbers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingInternationalPhoneNumbers");
+    private String cssMarkedInternationalPhoneNumbers = OBJECTS.SETTINGS.getvSTRING("CssMarkedInternationalPhoneNumbers");
 
     // Constructor
     public NumberDateTimeMarking(RTWidget rtWidget) {
@@ -35,6 +39,19 @@ public class NumberDateTimeMarking {
     }
 
     // Public methods
+    public void updateSettings(TextHandler.Behavior behavior) {
+        allowMarkingIntegers = USettings.getAppOrUserSettingsItem("AllowMarkingIntegers", behavior).getValueBOOLEAN();
+        allowMarkingDoubles = USettings.getAppOrUserSettingsItem("AllowMarkingDoubles", behavior).getValueBOOLEAN();
+        allowMarkingDates = USettings.getAppOrUserSettingsItem("AllowMarkingDates", behavior).getValueBOOLEAN();
+        allowMarkingTimes = USettings.getAppOrUserSettingsItem("AllowMarkingTimes", behavior).getValueBOOLEAN();
+        allowMarkingSerbianMobileNumbers = USettings.getAppOrUserSettingsItem("AllowMarkingSerbianMobileNumbers", behavior).getValueBOOLEAN();
+        cssMarkedSerbianMobileNumbers = USettings.getAppOrUserSettingsItem("CssMarkedSerbianMobileNumbers", behavior).getValueSTRING();
+        allowMarkingSerbianLandlineNumbers = USettings.getAppOrUserSettingsItem("AllowMarkingSerbianLandlineNumbers", behavior).getValueBOOLEAN();
+        cssMarkedSerbianLandlineNumbers = USettings.getAppOrUserSettingsItem("CssMarkedSerbianLandlineNumbers", behavior).getValueSTRING();
+        allowMarkingInternationalPhoneNumbers = USettings.getAppOrUserSettingsItem("AllowMarkingInternationalPhoneNumbers", behavior).getValueBOOLEAN();
+        cssMarkedInternationalPhoneNumbers = USettings.getAppOrUserSettingsItem("CssMarkedInternationalPhoneNumbers", behavior).getValueSTRING();
+    }
+
     public List<StyleSheetChar> calculate(List<StyleSheetChar> cssChars, List<MarkedItem> markedNumDateTime, Task<Boolean> taskHandler) {
         this.cssChars = cssChars;
         markedItems = new ArrayList<>();
@@ -98,7 +115,7 @@ public class NumberDateTimeMarking {
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
         StyleSheetChar serbianMobileCss = new StyleSheetChar(true);
-        serbianMobileCss.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedSerbianMobileNumbers"));
+        serbianMobileCss.setCss(cssMarkedSerbianMobileNumbers);
 
         boolean hasItem = false;
         for (WordExtractor.WordItem word : words) {
@@ -147,7 +164,7 @@ public class NumberDateTimeMarking {
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
         StyleSheetChar serbianLandlineCss = new StyleSheetChar(true);
-        serbianLandlineCss.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedSerbianLandlineNumbers"));
+        serbianLandlineCss.setCss(cssMarkedSerbianLandlineNumbers);
 
         boolean hasItem = false;
         for (WordExtractor.WordItem word : words) {
@@ -196,7 +213,7 @@ public class NumberDateTimeMarking {
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
         StyleSheetChar internationalPhoneCss = new StyleSheetChar(true);
-        internationalPhoneCss.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedInternationalPhoneNumbers"));
+        internationalPhoneCss.setCss(cssMarkedInternationalPhoneNumbers);
 
         boolean hasItem = false;
         for (WordExtractor.WordItem word : words) {
@@ -241,18 +258,18 @@ public class NumberDateTimeMarking {
     }
 
     // Static methods
-    public static List<MarkedItem> getNumbersDatesTimes(String text, Task<Boolean> taskHandler) {
+    public static List<MarkedItem> getNumbersDatesTimes(String text, Task<Boolean> taskHandler, TextHandler.Behavior behavior) {
         final String numbers = "0123456789";
         final String allowed = numbers + ".,:";
 
         StyleSheetChar cssDate = new StyleSheetChar(true);
-        cssDate.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedDate"));
+        cssDate.setCss(USettings.getAppOrUserSettingsItem("CssMarkedDate", behavior).getValueSTRING());
         StyleSheetChar cssTime = new StyleSheetChar(true);
-        cssTime.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedTime"));
+        cssTime.setCss(USettings.getAppOrUserSettingsItem("CssMarkedTime", behavior).getValueSTRING());
         StyleSheetChar cssInteger = new StyleSheetChar(true);
-        cssInteger.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedInteger"));
+        cssInteger.setCss(USettings.getAppOrUserSettingsItem("CssMarkedInteger", behavior).getValueSTRING());
         StyleSheetChar cssDouble = new StyleSheetChar(true);
-        cssDouble.setCss(OBJECTS.SETTINGS.getvSTRING("CssMarkedDouble"));
+        cssDouble.setCss(USettings.getAppOrUserSettingsItem("CssMarkedDouble", behavior).getValueSTRING());
 
         List<MarkedItem> result = new ArrayList<>();
         text += " ";

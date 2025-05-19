@@ -1183,6 +1183,335 @@
         "languageCode": "en",
         "creationDate": "2025.05.08 21:08:56",
         "userData": ""
+      },
+      "text_Options": {
+        "key": "text_Options",
+        "value": "Options",
+        "languageCode": "en",
+        "creationDate": "2025.05.15 13:40:46",
+        "userData": ""
+      },
+      "RtTextSample_Init": {
+        "key": "RtTextSample_Init",
+        "value": "This is initial style for text and paragraph !",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 17:23:29",
+        "userData": ""
+      },
+      "RtTextSample_AC1": {
+        "key": "RtTextSample_AC1",
+        "value": "Some text",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 17:39:01",
+        "userData": ""
+      },
+      "RtTextSample_AC2": {
+        "key": "RtTextSample_AC2",
+        "value": "AutoComplete sample recomendation [1/#1]",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 17:40:10",
+        "userData": ""
+      },
+      "text_Samples": {
+        "key": "text_Samples",
+        "value": "Samples",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 20:56:13",
+        "userData": ""
+      },
+      "text_Integer": {
+        "key": "text_Integer",
+        "value": "Integer",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 20:57:55",
+        "userData": ""
+      },
+      "text_Decimal": {
+        "key": "text_Decimal",
+        "value": "Decimal",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 21:04:39",
+        "userData": ""
+      },
+      "text_Date": {
+        "key": "text_Date",
+        "value": "Date",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 21:04:56",
+        "userData": ""
+      },
+      "text_Time": {
+        "key": "text_Time",
+        "value": "Time",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 21:05:12",
+        "userData": ""
+      },
+      "text_WebLink": {
+        "key": "text_WebLink",
+        "value": "Web link",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 21:05:35",
+        "userData": ""
+      },
+      "text_Email": {
+        "key": "text_Email",
+        "value": "e-Mail",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 21:06:03",
+        "userData": ""
+      },
+      "text_SerbianMobileNumber": {
+        "key": "text_SerbianMobileNumber",
+        "value": "Serbian mobile phone",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 21:06:30",
+        "userData": ""
+      },
+      "text_SerbianLandlineNumber": {
+        "key": "text_SerbianLandlineNumber",
+        "value": "Serbian landline phone",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 21:06:49",
+        "userData": ""
+      },
+      "text_InternationalPhoneNumber": {
+        "key": "text_InternationalPhoneNumber",
+        "value": "International phone",
+        "languageCode": "en",
+        "creationDate": "2025.05.17 21:07:25",
+        "userData": ""
+      },
+      "RtSettings_Title_BLOCK_NAME_ENTER": {
+        "key": "RtSettings_Title_BLOCK_NAME_ENTER",
+        "value": "Settings: Block name enter",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:21:27",
+        "userData": ""
+      },
+      "RtSettings_lblInitText": {
+        "key": "RtSettings_lblInitText",
+        "value": "Default style",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:23:59",
+        "userData": ""
+      },
+      "tt_RtSettings_InitText": {
+        "key": "tt_RtSettings_InitText",
+        "value": "This is the starting style of text and paragraph when you open this textbox.",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:31:23",
+        "userData": ""
+      },
+      "tt_RtSettings_InitText_Title": {
+        "key": "tt_RtSettings_InitText_Title",
+        "value": "Initial settings",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:31:56",
+        "userData": ""
+      },
+      "text_TextStyle": {
+        "key": "text_TextStyle",
+        "value": "Text Style",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:40:25",
+        "userData": ""
+      },
+      "text_ParagraphStyle": {
+        "key": "text_ParagraphStyle",
+        "value": "Paragraph Style",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:40:52",
+        "userData": ""
+      },
+      "tt_RtSettings_MinHeight": {
+        "key": "tt_RtSettings_MinHeight",
+        "value": "The minimum textbox height in pixels (8 - 2000).",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:59:11",
+        "userData": ""
+      },
+      "tt_RtSettings_MinHeight_Title": {
+        "key": "tt_RtSettings_MinHeight_Title",
+        "value": "Textbox Height",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:46:50",
+        "userData": ""
+      },
+      "text_NumberOfParagraphsAllowed": {
+        "key": "text_NumberOfParagraphsAllowed",
+        "value": "Number of paragraphs allowed",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:48:59",
+        "userData": ""
+      },
+      "tt_RtSettings_NumPar": {
+        "key": "tt_RtSettings_NumPar",
+        "value": "The maximum number of paragraphs allowed in this Textbox.\nIf this number is \"0\", the number of paragraphs is not limited.",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:51:05",
+        "userData": ""
+      },
+      "tt_RtSettings_NumPar_Title": {
+        "key": "tt_RtSettings_NumPar_Title",
+        "value": "Permissible number of paragraphs",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:51:53",
+        "userData": ""
+      },
+      "text_AutoCompleteRecommendations": {
+        "key": "text_AutoCompleteRecommendations",
+        "value": "AutoComplete recommendations",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:54:11",
+        "userData": ""
+      },
+      "text_Enabled": {
+        "key": "text_Enabled",
+        "value": "Enabled",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:55:19",
+        "userData": ""
+      },
+      "text_MaxNumberOfRecommendations": {
+        "key": "text_MaxNumberOfRecommendations",
+        "value": "Max number of recommendations",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 10:57:21",
+        "userData": ""
+      },
+      "tt_RtSettings_MaxRec": {
+        "key": "tt_RtSettings_MaxRec",
+        "value": "If there are more than one recommendation, this determines the maximum number of recommendations (1-99).",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:24:49",
+        "userData": ""
+      },
+      "tt_RtSettings_MaxRec_Title": {
+        "key": "tt_RtSettings_MaxRec_Title",
+        "value": "Maximum number of recommendations",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:25:27",
+        "userData": ""
+      },
+      "text_MaxWords": {
+        "key": "text_MaxWords",
+        "value": "Max words",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:28:26",
+        "userData": ""
+      },
+      "tt_RtSettings_MaxWords": {
+        "key": "tt_RtSettings_MaxWords",
+        "value": "The maximum number of words in one referral.\nIf you want recommendations to be shorter, reduce this number.",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:30:02",
+        "userData": ""
+      },
+      "tt_RtSettings_MaxWords_Title": {
+        "key": "tt_RtSettings_MaxWords_Title",
+        "value": "Max number of words in one referral",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:30:59",
+        "userData": ""
+      },
+      "text_DelayMS": {
+        "key": "text_DelayMS",
+        "value": "Delay MS",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:35:28",
+        "userData": ""
+      },
+      "tt_RtSettings_Delay_Title": {
+        "key": "tt_RtSettings_Delay_Title",
+        "value": "AutoComplete Delay",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:36:48",
+        "userData": ""
+      },
+      "tt_RtSettings_Delay": {
+        "key": "tt_RtSettings_Delay",
+        "value": "It determines how much time it must pass from the last typed character to the appearance of Autocomplete.\nPassed time is expressed in milliseconds.\nDepending on your typing speed, this number should be reduced or increased.\n(Number 200 corresponds to typing more than 5 chars per second)",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:41:12",
+        "userData": ""
+      },
+      "text_Style": {
+        "key": "text_Style",
+        "value": "Style",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:47:50",
+        "userData": ""
+      },
+      "text_HighLightingText": {
+        "key": "text_HighLightingText",
+        "value": "HighLighting text",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:49:26",
+        "userData": ""
+      },
+      "text_SetDefaultValues": {
+        "key": "text_SetDefaultValues",
+        "value": "Set default values",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:54:07",
+        "userData": ""
+      },
+      "text_Apply": {
+        "key": "text_Apply",
+        "value": "Apply",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:54:32",
+        "userData": ""
+      },
+      "text_MinTextBoxHeight": {
+        "key": "text_MinTextBoxHeight",
+        "value": "Min textbox height",
+        "languageCode": "en",
+        "creationDate": "2025.05.18 11:58:48",
+        "userData": ""
+      },
+      "text_Default": {
+        "key": "text_Default",
+        "value": "Default",
+        "languageCode": "en",
+        "creationDate": "2025.05.19 13:26:11",
+        "userData": ""
+      },
+      "text_Regular": {
+        "key": "text_Regular",
+        "value": "Regular",
+        "languageCode": "en",
+        "creationDate": "2025.05.19 13:27:41",
+        "userData": ""
+      },
+      "text_DEFAULT": {
+        "key": "text_DEFAULT",
+        "value": "DEFAULT",
+        "languageCode": "en",
+        "creationDate": "2025.05.19 14:33:22",
+        "userData": ""
+      },
+      "text_Before": {
+        "key": "text_Before",
+        "value": "Before",
+        "languageCode": "en",
+        "creationDate": "2025.05.19 16:34:30",
+        "userData": ""
+      },
+      "text_AfterChanges": {
+        "key": "text_AfterChanges",
+        "value": "After Changes",
+        "languageCode": "en",
+        "creationDate": "2025.05.19 16:35:29",
+        "userData": ""
+      },
+      "text_TextFormatting": {
+        "key": "text_TextFormatting",
+        "value": "Text Formatting",
+        "languageCode": "en",
+        "creationDate": "2025.05.19 23:58:35",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -2367,6 +2696,335 @@
         "value": "Markiranje izraza u tekstu je u toku...",
         "languageCode": "sr-lat",
         "creationDate": "2025.05.08 21:08:56",
+        "userData": ""
+      },
+      "text_Options": {
+        "key": "text_Options",
+        "value": "Opcije",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.15 13:40:46",
+        "userData": ""
+      },
+      "RtTextSample_Init": {
+        "key": "RtTextSample_Init",
+        "value": "Ovo je početni stil za tekst i paragraf !",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 17:23:29",
+        "userData": ""
+      },
+      "RtTextSample_AC1": {
+        "key": "RtTextSample_AC1",
+        "value": "Neki tekst",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 17:39:01",
+        "userData": ""
+      },
+      "RtTextSample_AC2": {
+        "key": "RtTextSample_AC2",
+        "value": "AutoComplete primer preporuke [1/#1]",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 17:40:10",
+        "userData": ""
+      },
+      "text_Samples": {
+        "key": "text_Samples",
+        "value": "Primeri",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 20:56:13",
+        "userData": ""
+      },
+      "text_Integer": {
+        "key": "text_Integer",
+        "value": "Ceo broj",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 20:57:55",
+        "userData": ""
+      },
+      "text_Decimal": {
+        "key": "text_Decimal",
+        "value": "Decimalni broj",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 21:04:39",
+        "userData": ""
+      },
+      "text_Date": {
+        "key": "text_Date",
+        "value": "Datum",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 21:04:56",
+        "userData": ""
+      },
+      "text_Time": {
+        "key": "text_Time",
+        "value": "Vreme",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 21:05:12",
+        "userData": ""
+      },
+      "text_WebLink": {
+        "key": "text_WebLink",
+        "value": "Veb stranica",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 21:05:35",
+        "userData": ""
+      },
+      "text_Email": {
+        "key": "text_Email",
+        "value": "e-Mail",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 21:06:03",
+        "userData": ""
+      },
+      "text_SerbianMobileNumber": {
+        "key": "text_SerbianMobileNumber",
+        "value": "Srpski mobilni telefon",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 21:06:30",
+        "userData": ""
+      },
+      "text_SerbianLandlineNumber": {
+        "key": "text_SerbianLandlineNumber",
+        "value": "Srpski fiksni telefon",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 21:06:49",
+        "userData": ""
+      },
+      "text_InternationalPhoneNumber": {
+        "key": "text_InternationalPhoneNumber",
+        "value": "Međunarodni telefon",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.17 21:07:25",
+        "userData": ""
+      },
+      "RtSettings_Title_BLOCK_NAME_ENTER": {
+        "key": "RtSettings_Title_BLOCK_NAME_ENTER",
+        "value": "Podešavanja: Unos naziva bloka",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:21:27",
+        "userData": ""
+      },
+      "RtSettings_lblInitText": {
+        "key": "RtSettings_lblInitText",
+        "value": "Podrazumevani stil",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:23:59",
+        "userData": ""
+      },
+      "tt_RtSettings_InitText": {
+        "key": "tt_RtSettings_InitText",
+        "value": "Ovo je početni stil teksta i paragrafa kada otvorite ovaj TextBox.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:31:23",
+        "userData": ""
+      },
+      "tt_RtSettings_InitText_Title": {
+        "key": "tt_RtSettings_InitText_Title",
+        "value": "Inicijalne postavke",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:31:56",
+        "userData": ""
+      },
+      "text_TextStyle": {
+        "key": "text_TextStyle",
+        "value": "Stil teksta",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:40:25",
+        "userData": ""
+      },
+      "text_ParagraphStyle": {
+        "key": "text_ParagraphStyle",
+        "value": "Stil paragrafa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:40:52",
+        "userData": ""
+      },
+      "tt_RtSettings_MinHeight": {
+        "key": "tt_RtSettings_MinHeight",
+        "value": "Minimalna visina TextBox-a u pikselima (8 - 2000).",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:59:11",
+        "userData": ""
+      },
+      "tt_RtSettings_MinHeight_Title": {
+        "key": "tt_RtSettings_MinHeight_Title",
+        "value": "TextBox visina",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:46:50",
+        "userData": ""
+      },
+      "text_NumberOfParagraphsAllowed": {
+        "key": "text_NumberOfParagraphsAllowed",
+        "value": "Broj dozvoljenih paragrafa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:48:59",
+        "userData": ""
+      },
+      "tt_RtSettings_NumPar": {
+        "key": "tt_RtSettings_NumPar",
+        "value": "Maksimalni broj paragrafa dozvoljen u ovom TextBox-u.\nAko je ovaj broj \"0\", broj paragrafa nije ograničen.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:51:05",
+        "userData": ""
+      },
+      "tt_RtSettings_NumPar_Title": {
+        "key": "tt_RtSettings_NumPar_Title",
+        "value": "Dozvoljeni broj paragrafa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:51:53",
+        "userData": ""
+      },
+      "text_AutoCompleteRecommendations": {
+        "key": "text_AutoCompleteRecommendations",
+        "value": "AutoComplete preporuke",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:54:11",
+        "userData": ""
+      },
+      "text_Enabled": {
+        "key": "text_Enabled",
+        "value": "Omogućeno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:55:19",
+        "userData": ""
+      },
+      "text_MaxNumberOfRecommendations": {
+        "key": "text_MaxNumberOfRecommendations",
+        "value": "Maksimalan broj preporuka",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 10:57:21",
+        "userData": ""
+      },
+      "tt_RtSettings_MaxRec": {
+        "key": "tt_RtSettings_MaxRec",
+        "value": "Ako postoji više od jedne preporuke, ovo određuje maksimalni broj preporuka (1-99).",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:24:49",
+        "userData": ""
+      },
+      "tt_RtSettings_MaxRec_Title": {
+        "key": "tt_RtSettings_MaxRec_Title",
+        "value": "Maksimalni broj preporuka",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:25:27",
+        "userData": ""
+      },
+      "text_MaxWords": {
+        "key": "text_MaxWords",
+        "value": "Maksimalno reči",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:28:26",
+        "userData": ""
+      },
+      "tt_RtSettings_MaxWords": {
+        "key": "tt_RtSettings_MaxWords",
+        "value": "Maksimalni broj reči u jednoj preporuci.\nAko želite da preporuke budu kraće, smanjite ovaj broj.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:30:02",
+        "userData": ""
+      },
+      "tt_RtSettings_MaxWords_Title": {
+        "key": "tt_RtSettings_MaxWords_Title",
+        "value": "Maksimalno reči u jednoj preporuci",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:30:59",
+        "userData": ""
+      },
+      "text_DelayMS": {
+        "key": "text_DelayMS",
+        "value": "Odloženo MS",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:35:28",
+        "userData": ""
+      },
+      "tt_RtSettings_Delay_Title": {
+        "key": "tt_RtSettings_Delay_Title",
+        "value": "Odloženi AutoComplete",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:36:48",
+        "userData": ""
+      },
+      "tt_RtSettings_Delay": {
+        "key": "tt_RtSettings_Delay",
+        "value": "Određuje koliko vremena mora da prođe od poslednjeg otkucanog karaktera do pojavljivanja AutoComplet-a.\nVreme je izraženo u milisekundama.\nU zavisnosti od brzine vašeg kucanja ovaj broj treba smanjiti ili povećati.\n(Broj 200 odgovara kucanju više od 5 karaktera u sekundi)",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:41:12",
+        "userData": ""
+      },
+      "text_Style": {
+        "key": "text_Style",
+        "value": "Stil",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:47:50",
+        "userData": ""
+      },
+      "text_HighLightingText": {
+        "key": "text_HighLightingText",
+        "value": "Markiranje teksta",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:49:26",
+        "userData": ""
+      },
+      "text_SetDefaultValues": {
+        "key": "text_SetDefaultValues",
+        "value": "Postavi predodređene vrednosti",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:54:07",
+        "userData": ""
+      },
+      "text_Apply": {
+        "key": "text_Apply",
+        "value": "Primeni",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:54:32",
+        "userData": ""
+      },
+      "text_MinTextBoxHeight": {
+        "key": "text_MinTextBoxHeight",
+        "value": "Minimalna visina TextBox-a",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.18 11:58:48",
+        "userData": ""
+      },
+      "text_Default": {
+        "key": "text_Default",
+        "value": "Podrazumevano",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.19 13:26:11",
+        "userData": ""
+      },
+      "text_Regular": {
+        "key": "text_Regular",
+        "value": "Redovan",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.19 13:27:41",
+        "userData": ""
+      },
+      "text_DEFAULT": {
+        "key": "text_DEFAULT",
+        "value": "DEFAULT",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.19 14:33:22",
+        "userData": ""
+      },
+      "text_Before": {
+        "key": "text_Before",
+        "value": "Pre",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.19 16:34:30",
+        "userData": ""
+      },
+      "text_AfterChanges": {
+        "key": "text_AfterChanges",
+        "value": "Posle promena",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.19 16:35:29",
+        "userData": ""
+      },
+      "text_TextFormatting": {
+        "key": "text_TextFormatting",
+        "value": "Formatiranje Teksta",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.19 23:58:35",
         "userData": ""
       }
     }

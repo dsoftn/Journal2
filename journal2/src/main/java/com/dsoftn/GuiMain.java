@@ -143,6 +143,10 @@ public class GuiMain extends Application {
             return;
         }
 
+        // Destroy splash screen and login window
+        loginStage = null;
+        splashScreenController = null;
+
         // Start Main Window
         startMainWin(primaryStage);
     }

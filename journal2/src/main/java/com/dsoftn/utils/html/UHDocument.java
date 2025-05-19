@@ -5,6 +5,7 @@ import java.util.List;
 public class UHDocument {
     // Variables
     private String htmlCode = "";
+    private List<UHTag> tags = null;
 
     // Constructor
     public UHDocument(String htmlCode) {
@@ -51,6 +52,32 @@ public class UHDocument {
     public UHTag findFirstTag(String tagName) {
         List<UHTag> result = findTags(tagName);
         return result == null || result.isEmpty() ? null : result.get(0);
+    }
+
+    public List<UHTag> getDOM() {
+        if (tags == null) {
+            tags = getAllTags();
+        }
+        return tags;
+    }
+
+    // Private methods
+    private List<UHTag> getAllTags() {
+        List<UHTag> allTags = getTags();
+        for (UHTag tag : allTags) {
+            updateDOM(tag);
+        }
+        return tags;
+    }
+
+    private void updateDOM(UHTag tag) {
+        tags.add(tag);
+        List<UHTag> children = tag.getChildren();
+        if (children != null) {
+            for (UHTag child : children) {
+                updateDOM(child);
+            }
+        }
     }
 
 }

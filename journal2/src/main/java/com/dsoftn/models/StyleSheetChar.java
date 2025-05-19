@@ -19,7 +19,7 @@ public class StyleSheetChar {
 
     private String stroke = "transparent"; // -fx-stroke: #000000;
     private Integer strokeWidth = 0; // -fx-stroke-width: 1px;
-    private String strokeType = "outside"; // -fx-stroke-type: (inside, outside, center)
+    private String strokeType = "outside"; // -fx-stroke-type: (inside, outside, centered)
 
     private String styleBeforeMerge = "";
 

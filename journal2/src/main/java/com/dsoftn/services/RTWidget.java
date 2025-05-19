@@ -10,7 +10,6 @@ import org.fxmisc.richtext.model.TwoDimensional;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
-import com.dsoftn.controllers.elements.TextInputController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
@@ -122,10 +121,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     public void setMaxNumberOfParagraphs(Integer maxNumberOfParagraphs) {
-        if (maxNumberOfParagraphs == null) {
+        if (maxNumberOfParagraphs == null || maxNumberOfParagraphs < 1) {
             maxNumberOfParagraphs = Integer.MAX_VALUE;
-        } else if (maxNumberOfParagraphs < 1) {
-            maxNumberOfParagraphs = 1;
         }
 
         this.maxNumberOfParagraphs = maxNumberOfParagraphs;
@@ -138,11 +135,6 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
         return true;
     }
-
-    // public void setBehavior(TextHandler.Behavior behavior) {
-    //     this.behavior = behavior;
-    //     ac = new ACHandler(this);
-    // }
 
     public void msgFromHandler(String messageSTRING) {
         // Process information from handler
@@ -163,6 +155,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     public void msgFromHandler(StyleSheetChar styleSheet) {
+        styleSheet = styleSheet.duplicate();
         this.timer.resetInterval();
         // If has selection
         if (!this.getSelectedText().isEmpty()) {
@@ -188,6 +181,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     public void msgFromHandler(StyleSheetParagraph styleSheet, Integer paragraphIndex) {
+        styleSheet = styleSheet.duplicate();
         this.timer.resetInterval();
         // If has selection
         if (!this.getSelectedText().isEmpty()) {
@@ -266,7 +260,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     public String getTextNoAC() {
-        if (!ac.hasCurrentAC()) {
+        if (ac == null || !ac.hasCurrentAC()) {
             return this.getText();
         }
 
@@ -298,7 +292,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
      * Sets plain text, if styled text is passed then it will set it as plain text
      */
     public void setTextPlain(String text) {
-        ac.removeCurrentAC();
+        if (ac != null) {
+            ac.removeCurrentAC();
+        }
+
         text = RTWText.transformToTextWithZeroWidthSpace(text);
 
         busy = true;
@@ -690,7 +687,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             else if (event.getCode() == KeyCode.SPACE && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 if (this.readOnly) { event.consume(); return; }
                 event.consume();
-                msgForHandler("CONTEXT_MENU:SHOW");
+                showAC();
             }
 
             
@@ -818,12 +815,14 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     private void showAC() {
+        if (ac == null) return;
+
         if (pauseAC != null) {
             pauseAC.playFromStart();
             return;
         }
         
-        pauseAC = new PauseTransition(javafx.util.Duration.millis(ac.autoCompleteDelay));
+        pauseAC = new PauseTransition(javafx.util.Duration.millis(ac.getAutoCompleteDelay()));
         pauseAC.setOnFinished(e -> {
             pauseAC = null;
             Platform.runLater(() -> {
@@ -1075,6 +1074,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         demarkCharOVERWRITE(curPos);
         isOverwriteMode = !isOverwriteMode;
         markCharOVERWRITE(curPos);
+        msgForHandler("INSERT_MODE:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + isOverwriteMode);
 
         Platform.runLater(() -> {
             this.busy = false;
@@ -1354,6 +1354,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                     ignoreCaretPositionChangePERMANENT = false;
                     fixCaretPosition(this.getCaretPosition());
                     this.cssChar = getPredictedCssChar(this.getCaretPosition());
+                    this.cssParagraph = this.cssParagraphStyles.get(this.getParIndex(this.getCaretPosition())).duplicate();
+                    this.cssParagraphPrev = null;
                     sendToHandlerCharAndParagraphCurrentStyle();
                     markCharOVERWRITE(this.getCaretPosition());
                     this.stateChanged = true;

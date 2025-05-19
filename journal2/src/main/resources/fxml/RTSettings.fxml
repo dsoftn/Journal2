@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="796.0" prefWidth="1110.0" styleClass="popup-root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.RTSettingsController">
+   <children>
+      <VBox fx:id="vBoxRoot" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <HBox fx:id="hBoxTitle" alignment="CENTER">
+               <children>
+                  <Region HBox.hgrow="SOMETIMES" />
+                  <Label fx:id="lblTitle" styleClass="label-title-default" text="Enter Block Name: settings" />
+                  <Region HBox.hgrow="SOMETIMES" />
+                  <Button fx:id="btnClose" mnemonicParsing="false" onAction="#onBtnCloseAction" styleClass="button-close" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox fx:id="hBoxInitText" spacing="10.0">
+               <children>
+                  <VBox spacing="5.0">
+                     <children>
+                        <HBox spacing="10.0">
+                           <children>
+                              <Label fx:id="lblInitText" styleClass="label-title1" text="Default style" />
+                              <Button fx:id="btnInitTextStyle" mnemonicParsing="false" onAction="#onBtnInitStyleAction" styleClass="button-default" text="Text Style">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="btnInitParStyle" mnemonicParsing="false" styleClass="button-default" text="Paragraph Style" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
+                           <children>
+                              <Label fx:id="lblInitMinHeight" styleClass="label-default" text="Min height" />
+                              <TextField fx:id="txtInitMinHeight" maxWidth="70.0" styleClass="text-field-default" />
+                              <Label fx:id="lblInitNumPar" styleClass="label-default" text="Number of paragraphs">
+                                 <HBox.margin>
+                                    <Insets left="15.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="txtInitNumPar" maxWidth="50.0" styleClass="text-field-default" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="vBoxInitTextSample" maxHeight="60.0" HBox.hgrow="SOMETIMES" />
+               </children>
+            </HBox>
+            <Separator fx:id="sepAcHl1">
+               <padding>
+                  <Insets bottom="5.0" top="5.0" />
+               </padding>
+            </Separator>
+            <VBox fx:id="vBoxAC" maxHeight="180.0" spacing="5.0" VBox.vgrow="SOMETIMES">
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                     <children>
+                        <Label fx:id="lblAcSubTitle" styleClass="label-title1" text="AutoComplete recommendations" />
+                        <CheckBox fx:id="chkAcEnabled" mnemonicParsing="false" onAction="#OnChkAcEnabledAction" style="-fx-font-size: 16;" styleClass="check-box-default" text="Enabled">
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </CheckBox>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="SOMETIMES">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <children>
+                        <Label fx:id="lblAcMaxRec" styleClass="label-default" text="Max recommendations" />
+                        <Spinner fx:id="spnAcMaxRec" editable="true" prefWidth="60.0" styleClass="spinner-default" />
+                        <Label fx:id="lblAcMaxWords" layoutX="30.0" layoutY="18.0" styleClass="label-default" text="Max words">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                        <Spinner fx:id="spnAcMaxWords" editable="true" layoutX="157.0" layoutY="10.0" prefWidth="60.0" styleClass="spinner-default" />
+                        <Label fx:id="lblAcDelay" layoutX="30.0" layoutY="18.0" styleClass="label-default" text="Delay MS" />
+                        <Spinner fx:id="spnAcDelay" editable="true" layoutX="157.0" layoutY="10.0" prefWidth="120.0" styleClass="spinner-default" />
+                        <Button fx:id="btnAcStyle" mnemonicParsing="false" onAction="#onBtnAcStyleAction" styleClass="button-default" text="Style">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <VBox fx:id="vBoxAcSample" maxHeight="52.0" VBox.vgrow="SOMETIMES" />
+               </children>
+            </VBox>
+            <Separator fx:id="sepAcHl">
+               <padding>
+                  <Insets bottom="5.0" top="5.0" />
+               </padding>
+            </Separator>
+            <HBox fx:id="hBoxHL" spacing="10.0" VBox.vgrow="SOMETIMES">
+               <children>
+                  <VBox spacing="3.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlSubTitle" styleClass="label-title1" text="HighLighting text" />
+                              <CheckBox fx:id="chkHlEnabled" mnemonicParsing="false" onAction="#onChkHlEnabledAction" style="-fx-font-size: 16;" styleClass="check-box-default" text="Enabled">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </CheckBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlInt" styleClass="label-title2" text="Integer" />
+                              <CheckBox fx:id="chkHlInt" mnemonicParsing="false" onAction="#onChkHlIntAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlInt" mnemonicParsing="false" onAction="#onBtnHlIntAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlDec" styleClass="label-title2" text="Decimal" />
+                              <CheckBox fx:id="chkHlDec" mnemonicParsing="false" onAction="#onChkHlDecAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlDec" mnemonicParsing="false" onAction="#onBtnHlDecAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlDate" styleClass="label-title2" text="Date" />
+                              <CheckBox fx:id="chkHlDate" mnemonicParsing="false" onAction="#onChkHlDateAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlDate" mnemonicParsing="false" onAction="#onBtnHlDateAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlTime" styleClass="label-title2" text="Time" />
+                              <CheckBox fx:id="chkHlTime" mnemonicParsing="false" onAction="#onChkHlTimeAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlTime" mnemonicParsing="false" onAction="#onBtnHlTimeAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlWeb" styleClass="label-title2" text="Web link" />
+                              <CheckBox fx:id="chkHlWeb" mnemonicParsing="false" onAction="#onChkHlWebAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlWeb" mnemonicParsing="false" onAction="#onBtnHlWebAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlMail" styleClass="label-title2" text="E-Mail" />
+                              <CheckBox fx:id="chkHlMail" mnemonicParsing="false" onAction="#onChkHlMailAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlMail" mnemonicParsing="false" onAction="#onBtnHlMailAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlSMP" styleClass="label-title2" text="Serbian Mobile Phone" />
+                              <CheckBox fx:id="chkHlSMP" mnemonicParsing="false" onAction="#onChkHlSMPAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlSMP" mnemonicParsing="false" onAction="#onBtnHlSMPAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlSLP" styleClass="label-title2" text="Serbian Landline Phone" />
+                              <CheckBox fx:id="chkHlSLP" mnemonicParsing="false" onAction="#onChkHlSLPAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlSLP" mnemonicParsing="false" onAction="#onBtnHlSLPAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="lblHlIntPhone" styleClass="label-title2" text="International Phone" />
+                              <CheckBox fx:id="chkHlIntPhone" mnemonicParsing="false" onAction="#onChkHlIntPhoneAction" style="-fx-font-size: 14;" styleClass="check-box-default" text="Enabled" />
+                              <Button fx:id="btnHlIntPhone" mnemonicParsing="false" onAction="#onBtnHlIntPhoneAction" styleClass="button-small" text="Style" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="20.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="vBoxHlSample" HBox.hgrow="SOMETIMES" />
+               </children>
+            </HBox>
+            <Separator>
+               <padding>
+                  <Insets bottom="5.0" top="5.0" />
+               </padding>
+            </Separator>
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+               <children>
+                  <Button fx:id="btnDefault" layoutX="763.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnDefaultAction" styleClass="button-default" text="Set default values" />
+                  <Button fx:id="btnApply" mnemonicParsing="false" onAction="#onBtnApplyAction" styleClass="button-default" text="Apply" />
+                  <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#onBtnCancelAction" styleClass="button-default" text="Cancel" />
+               </children>
+               <VBox.margin>
+                  <Insets right="10.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+   <stylesheets>
+      <URL value="@../css/main.css" />
+      <URL value="@../css/rt_settings.css" />
+   </stylesheets>
+</AnchorPane>

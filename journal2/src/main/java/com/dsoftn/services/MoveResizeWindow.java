@@ -217,6 +217,7 @@ public class MoveResizeWindow {
         this(popup, dragNodes.toArray(new Node[0]));
     }
 
+    // Public methods
 
     public void enableWindowResize(boolean resize) {
         this.resize = resize;

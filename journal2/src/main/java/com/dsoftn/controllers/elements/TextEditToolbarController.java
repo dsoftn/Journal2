@@ -15,7 +15,11 @@ import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,6 +37,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class TextEditToolbarController implements IElementController, ICustomEventListener {
     public enum AlignmentEnum {
@@ -58,6 +63,10 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     private String receiverID = null;
     private IBaseController parentController = null;
     private TextHandler textHandler = null;
+    private ObservableList<String> allFonts = FXCollections.observableArrayList(UJavaFX.getAllFonts());
+    private FilteredList<String> filteredFonts = new FilteredList<>(allFonts, p -> true);
+    private boolean ignoreFontChange = false;
+    private PauseTransition fontChangeDelay = new PauseTransition(Duration.millis(200));
 
     private String inactiveLabelStyle = "-fx-text-fill: #808080; -fx-background-color: transparent;";
     private String activeLabelStyle = "-fx-text-fill: #0000ff; -fx-background-color: #ffff00;";
@@ -146,6 +155,8 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         private Label lblAc;
         @FXML
         private Label lblHl;
+        @FXML
+        private Label lblINS;
 
     // Find / Replace
     @FXML
@@ -319,6 +330,9 @@ public class TextEditToolbarController implements IElementController, ICustomEve
             }
             lblHl.setStyle(inactiveLabelStyle);
             lblHl.setId("0");
+        } else if (messageSTRING.startsWith("INSERT_MODE:")) {
+            boolean insertMode = Boolean.parseBoolean(messageSTRING.split(Pattern.quote(CONSTANTS.EMPTY_PARAGRAPH_STRING), -1)[1]);
+            lblINS.setVisible(insertMode);
         }
 
     }
@@ -340,7 +354,6 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     public void setTextHandler(TextHandler textHandler) { this.textHandler = textHandler; }
 
     public void showFindSection() {
-        boolean sendMsgToHandler = hBoxFind.isVisible();
         hBoxWorking.setVisible(false);
         hBoxWorking.setManaged(false);
 
@@ -352,7 +365,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         hBoxReplace.setManaged(false);
         txtFind.requestFocus();
         
-        if (sendMsgToHandler && !txtFind.getText().isEmpty()) {
+        if (!txtFind.getText().isEmpty()) {
             msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_ALL.name(), null));
         }
     }
@@ -372,8 +385,6 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     }
 
     public void showReplaceSection() {
-        boolean sendMsgToHandler = hBoxFind.isVisible();
-
         hBoxWorking.setVisible(false);
         hBoxWorking.setManaged(false);
 
@@ -383,10 +394,12 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         hBoxFind.setManaged(true);
         hBoxReplace.setVisible(true);
         hBoxReplace.setManaged(true);
-        txtReplace.requestFocus();
 
-        if (sendMsgToHandler && !txtFind.getText().isEmpty()) {
+        if (!txtFind.getText().isEmpty()) {
             msgForHandler(findReplaceActionForHandler(TextToolbarActionEnum.FIND_ALL.name(), null));
+            txtReplace.requestFocus();
+        } else {
+            txtFind.requestFocus();
         }
     }
 
@@ -626,6 +639,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
     }
 
     private void setupWidgetsAppearance() {
+        lblINS.setVisible(false);
         imgAcHlWorking.setImage(new Image(getClass().getResourceAsStream("/gifs/loading.gif")));
         imgAcHlWorking.setVisible(false);
         lblAc.setStyle(inactiveLabelStyle);
@@ -654,6 +668,7 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         spnFontSize.setValueFactory(valueFactory);
 
         // Populate font ComboBox
+        ignoreFontChange = true;
         cmbFont.setCellFactory(cb -> new ListCell<>() {
             @Override
             protected void updateItem(String fontName, boolean empty) {
@@ -667,22 +682,41 @@ public class TextEditToolbarController implements IElementController, ICustomEve
                 }
             }
         });
-        cmbFont.setItems(FXCollections.observableArrayList(UJavaFX.getBasicFonts(null)));
+        cmbFont.setEditable(true);
+        cmbFont.setItems(filteredFonts);
+        cmbFont.getEditor().setStyle("-fx-font-size: 14px;");
+        
+        cmbFont.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+            if (ignoreFontChange) { return; }
+            ignoreFontChange = true;
+            
+            fontChangeDelay.setOnFinished(e -> {
+                if (allFonts.contains(newText) && !newText.isEmpty()) {
+                    filteredFonts.setPredicate(f -> true);
+                    curCharStyle.setFontName(newText);
+                    updateCharStyle(curCharStyle);
+                    msgForHandler(curCharStyle);
+                } else {
+                    filteredFonts.setPredicate(fontName -> fontName.toLowerCase().contains(newText.toLowerCase()));
+                    if (!filteredFonts.isEmpty()) {
+                        cmbFont.show();
+                    }
+                }
+                ignoreFontChange = false;
+            });
+
+            fontChangeDelay.playFromStart();
+        });
+
+        Platform.runLater(() -> {
+            ignoreFontChange = false;
+        });
 
         // Link Spinner value to StyleSheet
         spnFontSize.valueProperty().addListener((obs, oldValue, newValue) -> {
             curCharStyle.setFontSize(newValue);
             updateCharStyle(curCharStyle);
             msgForHandler(curCharStyle);
-        });
-
-        // Link ComboBox value to StyleSheet
-        cmbFont.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                curCharStyle.setFontName(newValue);
-                updateCharStyle(curCharStyle);
-                msgForHandler(curCharStyle);
-            }
         });
 
         // Find text field listener

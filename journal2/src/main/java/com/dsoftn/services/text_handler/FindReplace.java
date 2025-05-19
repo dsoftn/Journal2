@@ -7,6 +7,7 @@ import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
+import com.dsoftn.utils.USettings;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -35,6 +36,10 @@ public class FindReplace {
     }
 
     // Public methods
+    public void updateSettings(TextHandler.Behavior behavior) {
+        foundStyle.setCss(USettings.getAppOrUserSettingsItem("CssFindMarked", behavior).getValueSTRING());
+        selectedStyle.setCss(USettings.getAppOrUserSettingsItem("CssFindSelected", behavior).getValueSTRING());
+    }
 
     public List<StyleSheetChar> calculate(String messageString, List<StyleSheetChar> cssChars, Task<Boolean> taskHandler) {
         if (messageString == null || messageString.isEmpty() || messageString.startsWith("FIND/REPLACE ACTION:FIND CLOSED")) {
