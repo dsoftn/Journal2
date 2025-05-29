@@ -1282,13 +1282,6 @@
         "creationDate": "2025.05.17 21:07:25",
         "userData": ""
       },
-      "RtSettings_Title_BLOCK_NAME_ENTER": {
-        "key": "RtSettings_Title_BLOCK_NAME_ENTER",
-        "value": "Settings: Block name enter",
-        "languageCode": "en",
-        "creationDate": "2025.05.18 10:21:27",
-        "userData": ""
-      },
       "RtSettings_lblInitText": {
         "key": "RtSettings_lblInitText",
         "value": "Default style",
@@ -1665,6 +1658,13 @@
         "value": "Effects",
         "languageCode": "en",
         "creationDate": "2025.05.28 11:45:08",
+        "userData": ""
+      },
+      "RtSettings_Title_BLOCK_NAME": {
+        "key": "RtSettings_Title_BLOCK_NAME",
+        "value": "Settings: Block name",
+        "languageCode": "en",
+        "creationDate": "2025.05.29 23:01:44",
         "userData": ""
       }
     },
@@ -2950,13 +2950,6 @@
         "creationDate": "2025.05.17 21:07:25",
         "userData": ""
       },
-      "RtSettings_Title_BLOCK_NAME_ENTER": {
-        "key": "RtSettings_Title_BLOCK_NAME_ENTER",
-        "value": "Podešavanja: Unos naziva bloka",
-        "languageCode": "sr-lat",
-        "creationDate": "2025.05.18 10:21:27",
-        "userData": ""
-      },
       "RtSettings_lblInitText": {
         "key": "RtSettings_lblInitText",
         "value": "Podrazumevani stil",
@@ -3333,6 +3326,13 @@
         "value": "Efekti",
         "languageCode": "sr-lat",
         "creationDate": "2025.05.28 11:45:08",
+        "userData": ""
+      },
+      "RtSettings_Title_BLOCK_NAME": {
+        "key": "RtSettings_Title_BLOCK_NAME",
+        "value": "Podešavanja: Naziv bloka",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.29 23:01:44",
         "userData": ""
       }
     }

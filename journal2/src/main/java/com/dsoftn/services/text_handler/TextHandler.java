@@ -31,8 +31,7 @@ import javafx.stage.Stage;
 
 public class TextHandler {
     public enum Behavior {
-        BLOCK_NAME_ENTER(1),
-        BLOCK_NAME_SHOW(2);
+        BLOCK_NAME(1);
 
         // Variables
         private final int value;
@@ -94,6 +93,7 @@ public class TextHandler {
         this.behavior = behavior;
 
         marker = new Marker(txtWidget, this);
+        marker.updateSettings();
         
         setBehavior();
     }
@@ -271,7 +271,11 @@ public class TextHandler {
         msgForToolbar(styleSheet);
     }
 
-    
+    public void updateSettings() {
+        marker.updateSettings();
+        rtWidget.ac.updateSettings();
+    }
+
     // Private methods
 
     // Messages for toolbar
@@ -352,7 +356,7 @@ public class TextHandler {
 
     private void createRTWidgetContextMenu() {
         // Separator
-        List<String> separatorAfterItem = List.of("PASTE");
+        List<String> separatorAfterItem = List.of();
         
         // Cut
         contextRTWidgetMenuItems.put("CUT", getCMItemCut());
@@ -360,17 +364,22 @@ public class TextHandler {
         contextRTWidgetMenuItems.put("COPY", getCMItemCopy());
         // Paste
         contextRTWidgetMenuItems.put("PASTE", getCMItemPaste());
+        // Select All
+        contextRTWidgetMenuItems.put("SELECT_ALL", getSelectAll());
         // Options
         contextRTWidgetMenuItems.put("OPTIONS", getCMIItemOptions());
 
         List<String> allowedItems = new ArrayList<>();
         
         // BEHAVIOR - selection of menu items
-        if (behavior == Behavior.BLOCK_NAME_ENTER) {
-            allowedItems = List.of("CUT", "COPY", "PASTE", "OPTIONS");
+        if (behavior == Behavior.BLOCK_NAME) {
+            separatorAfterItem = List.of("SELECT_ALL");
+            allowedItems = List.of("CUT", "COPY", "PASTE", "SELECT_ALL", "OPTIONS");
         }
-        else if (behavior == Behavior.BLOCK_NAME_SHOW) {
-            allowedItems = List.of("COPY", "OPTIONS");
+
+        if (rtWidget.isReadOnly()) {
+            separatorAfterItem = List.of("SELECT_ALL");
+            allowedItems = List.of("COPY", "SELECT_ALL", "OPTIONS");
         }
 
         for (String item : allowedItems) {
@@ -424,6 +433,21 @@ public class TextHandler {
         return paste;
     }
 
+    private MenuItem getSelectAll() {
+        MenuItem selectAll = new MenuItem(OBJECTS.SETTINGS.getl("text_SelectAll"));
+        Image imgSelectAll = new Image(getClass().getResourceAsStream("/images/select_all.png"));
+        ImageView imgSelectAllView = new ImageView(imgSelectAll);
+        imgSelectAllView.setPreserveRatio(true);
+        imgSelectAllView.setFitHeight(20);
+        selectAll.setGraphic(imgSelectAllView);
+        selectAll.setOnAction(event -> {
+            msgForWidget("SELECT_ALL");
+        });
+
+        return selectAll;
+    }
+
+
     private MenuItem getCMIItemOptions() {
         MenuItem options = new MenuItem(OBJECTS.SETTINGS.getl("text_Options"));
         Image imgOptions = new Image(getClass().getResourceAsStream("/images/options_bw.png"));
@@ -445,10 +469,11 @@ public class TextHandler {
 
     private void setBehavior() {
         this.rtWidget.ac = new ACHandler(rtWidget, this);
+        this.rtWidget.ac.updateSettings();
         createRTWidgetContextMenu();
 
         switch (behavior) {
-            case BLOCK_NAME_ENTER:
+            case BLOCK_NAME:
                 // rtWidget.setBehavior(Behavior.BLOCK_NAME_ENTER);
                 HBox.setHgrow(rtWidget, Priority.ALWAYS);
                 StyleSheetChar css = new StyleSheetChar();
@@ -460,11 +485,6 @@ public class TextHandler {
                 rtWidget.setParagraphCss(cssParagraph);
                 rtWidget.setMinTextWidgetHeight(USettings.getAppOrUserSettingsItem("MinRTWidgetHeight", behavior, 40).getValueINT());
                 rtWidget.setMaxNumberOfParagraphs(USettings.getAppOrUserSettingsItem("MaxNumberOfParagraphs", behavior, 5).getValueINT());
-                break;
-            case BLOCK_NAME_SHOW:
-                // rtWidget.setBehavior(Behavior.BLOCK_NAME_SHOW);
-                HBox.setHgrow(rtWidget, Priority.ALWAYS);
-                rtWidget.setReadOnly(true);
                 break;
             default:
                 break;

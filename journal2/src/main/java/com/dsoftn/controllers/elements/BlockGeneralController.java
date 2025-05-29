@@ -58,8 +58,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fxmisc.richtext.InlineCssTextArea;
-
 
 public class BlockGeneralController implements IBaseController, IElementController, ICustomEventListener {
 
@@ -469,7 +467,8 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     private void setupWidgetsAppearance() {
         // Block name
-        textHandlerBlockName = new TextHandler(rtwBlockName, null, TextHandler.Behavior.BLOCK_NAME_SHOW, stage);
+        rtwBlockName.setReadOnly(true);
+        textHandlerBlockName = new TextHandler(rtwBlockName, null, TextHandler.Behavior.BLOCK_NAME, stage);
         rtwBlockName.setRTWTextObject(new RTWText(block.getNameStyle()));
         hBoxName.getChildren().add(rtwBlockName);
     }
@@ -630,6 +629,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
             return;
         }
 
+        textHandlerBlockName.updateSettings();
         btnName.setText(OBJECTS.SETTINGS.getl("text_ChangeName"));
         hBoxName.setVisible(true);
         hBoxName.setManaged(true);
@@ -847,7 +847,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
         }
 
         EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.BLOCK_NAME_ENTER);
-        TextInputController textInputController = ELEMENTS.getTextInputController(emptyDialogController.getStage(), TextHandler.Behavior.BLOCK_NAME_ENTER, myName);
+        TextInputController textInputController = ELEMENTS.getTextInputController(emptyDialogController.getStage(), TextHandler.Behavior.BLOCK_NAME, myName);
 
         textInputController.setParentController(emptyDialogController);
         textInputController.setReceiverID(myName + "BLOCK_NAME");

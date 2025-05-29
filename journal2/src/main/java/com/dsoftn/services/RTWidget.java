@@ -151,6 +151,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         }
         else if (messageSTRING.equals("PASTE")) {
             pasteText();
+        } else if (messageSTRING.equals("SELECT_ALL")) {
+            handleKeyPressed_CTRL_A(null);
         }
     }
 
@@ -1913,7 +1915,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private void handleKeyPressed_CTRL_A(KeyEvent event) {
         this.busy = true;
         ac.removeCurrentAC();
-        event.consume();
+        if (event != null) event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 

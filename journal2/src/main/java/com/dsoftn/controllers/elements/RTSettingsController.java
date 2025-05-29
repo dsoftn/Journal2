@@ -7,6 +7,9 @@ import java.util.function.Consumer;
 import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
+import com.dsoftn.controllers.MsgBoxController;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.MoveResizeWindow;
@@ -799,7 +802,18 @@ public class RTSettingsController implements IBaseController {
             OBJECTS.SETTINGS.save(false, false, true);
             onExitCallback.accept(true);
             closeMe();
+        } else {
+            MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(stage);
+            msgBoxFailed.setTitleText("Settings");
+            msgBoxFailed.setHeaderText("Failed to Save Settings");
+            msgBoxFailed.setHeaderIcon(MsgBoxIcon.WARNING);
+            msgBoxFailed.setContentText("Unable to save settings.\nData validation failed.");
+            msgBoxFailed.setContentIcon(MsgBoxIcon.SETTINGS);
+            msgBoxFailed.setButtons(MsgBoxButton.OK);
+            msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
+            msgBoxFailed.startMe();
         }
+
     }
 
     @FXML
@@ -910,7 +924,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssAutoCompleteStyle);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onAcStyleExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onAcStyleExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_AutoCompleteRecommendations"));
         formatChar.startMe();
     }
@@ -929,7 +943,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedInteger);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlIntExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlIntExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Integer"));
         formatChar.startMe();
     }
@@ -948,7 +962,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedDouble);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlDecExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlDecExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Decimal"));
         formatChar.startMe();
     }
@@ -967,7 +981,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedDate);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlDateExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlDateExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Date"));
         formatChar.startMe();
     }
@@ -986,7 +1000,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedTime);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlTimeExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlTimeExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Time"));
         formatChar.startMe();
     }
@@ -1005,7 +1019,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedWebLink);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlWebExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlWebExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_WebLink"));
         formatChar.startMe();
     }
@@ -1024,7 +1038,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedEmail);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlMailExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlMailExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Email"));
         formatChar.startMe();
     }
@@ -1043,7 +1057,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedSerbianMobileNumbers);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlSMPExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlSMPExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_SerbianMobileNumber"));
         formatChar.startMe();
     }
@@ -1062,7 +1076,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedSerbianLandlineNumbers);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlSLPExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlSLPExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_SerbianLandlineNumber"));
         formatChar.startMe();
     }
@@ -1081,7 +1095,7 @@ public class RTSettingsController implements IBaseController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedInternationalPhoneNumbers);
 
-        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlIntPhoneExitCallback);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlIntPhoneExitCallback);
         formatChar.setTitle(OBJECTS.SETTINGS.getl("text_InternationalPhoneNumber"));
         formatChar.startMe();
     }

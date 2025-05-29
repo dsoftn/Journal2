@@ -55,19 +55,19 @@ public class TextInputController implements IElementController, ICustomEventList
             if (taskEvent.getState() == TaskStateEnum.COMPLETED) {
                 if (taskEvent.getMessage().equals("SAVE: Ctrl+S")) {
                     // Save text
-                    if (behavior == Behavior.BLOCK_NAME_ENTER) {
+                    if (behavior == Behavior.BLOCK_NAME) {
                         saveAndClose(taskEvent);
                     }
                 }
                 else if (taskEvent.getMessage().equals("SAVE: Ctrl+Shift+S")) {
                     // Save text as draft
-                    if (behavior == Behavior.BLOCK_NAME_ENTER) {
+                    if (behavior == Behavior.BLOCK_NAME) {
                         saveAndClose(taskEvent);
                     }
                 }
                 else if (taskEvent.getMessage().equals("SAVE: Alt+ENTER")) {
                     // Save text as draft
-                    if (behavior == Behavior.BLOCK_NAME_ENTER) {
+                    if (behavior == Behavior.BLOCK_NAME) {
                         saveAndClose(taskEvent);
                     }
                 }
@@ -214,7 +214,7 @@ public class TextInputController implements IElementController, ICustomEventList
     // FXML methods
     @FXML
     private void onBtnOkAction() {
-        if (behavior == Behavior.BLOCK_NAME_ENTER) {
+        if (behavior == Behavior.BLOCK_NAME) {
             saveAndClose(new TaskStateEvent(myName, rTxtRichText.getRTWTextObject(), "SAVE: OK_BUTTON"));
         }
     }

@@ -39,7 +39,8 @@ public class MsgBoxController implements IBaseController {
         BLOCK_GENERIC("/images/block_generic.png"),
         READ_ONLY("/images/read_only.png"),
         PARAGRAPH("/images/paragraph.png"),
-        LIMIT("/images/limit.png");
+        LIMIT("/images/limit.png"),
+        SETTINGS("/images/settings.png");
 
         private final String iconPath;
 
