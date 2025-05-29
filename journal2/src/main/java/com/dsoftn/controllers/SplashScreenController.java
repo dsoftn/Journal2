@@ -28,9 +28,7 @@ import com.dsoftn.utils.LanguagesEnum;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.events.TaskStateEvent;
-import com.dsoftn.services.Clip;
 import com.dsoftn.services.TextFilter;
-import com.dsoftn.services.timer.GlobalTimer;
 
 
 public class SplashScreenController implements IBaseController, ICustomEventListener {

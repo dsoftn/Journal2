@@ -469,7 +469,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     private void setupWidgetsAppearance() {
         // Block name
-        textHandlerBlockName = new TextHandler(rtwBlockName, null, TextHandler.Behavior.BLOCK_NAME_SHOW);
+        textHandlerBlockName = new TextHandler(rtwBlockName, null, TextHandler.Behavior.BLOCK_NAME_SHOW, stage);
         rtwBlockName.setRTWTextObject(new RTWText(block.getNameStyle()));
         hBoxName.getChildren().add(rtwBlockName);
     }
@@ -847,7 +847,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
         }
 
         EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.BLOCK_NAME_ENTER);
-        TextInputController textInputController = ELEMENTS.getTextInputController(stage, TextHandler.Behavior.BLOCK_NAME_ENTER, myName);
+        TextInputController textInputController = ELEMENTS.getTextInputController(emptyDialogController.getStage(), TextHandler.Behavior.BLOCK_NAME_ENTER, myName);
 
         textInputController.setParentController(emptyDialogController);
         textInputController.setReceiverID(myName + "BLOCK_NAME");

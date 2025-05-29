@@ -223,6 +223,9 @@ public class Clip {
     }
 
     public String getStyledText() {
+        if (styledText == null) {
+            return "";
+        }
         return styledText;
     }
 

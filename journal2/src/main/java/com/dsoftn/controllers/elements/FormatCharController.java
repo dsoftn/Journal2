@@ -1,18 +1,18 @@
 package com.dsoftn.controllers.elements;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
-import com.dsoftn.Interfaces.IElementController;
-import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.ClipboardChangedEvent;
-import com.dsoftn.events.TaskStateEvent;
+import com.dsoftn.services.MoveResizeWindow;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
-import com.dsoftn.utils.UError;
+import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UNumbers;
 
@@ -32,18 +32,23 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-public class FormatCharController implements IElementController, ICustomEventListener {
+public class FormatCharController implements IBaseController, ICustomEventListener {
     //  Variables
     private String myName = UJavaFX.getUniqueId();
-    private AnchorPane anchorRoot = null;
-    private String receiverID = null;
+    private Stage stage = null;
+    private Consumer<StyleSheetChar> onExitCallback;
+    private String settingsName = null;
+    private List<Node> dragNodes = new ArrayList<>();
     private StyleSheetChar originalCharStyle = new StyleSheetChar(true);
     private StyleSheetChar curCharStyle = new StyleSheetChar(true);
     private boolean ignoreFontChange = false;
@@ -175,45 +180,12 @@ public class FormatCharController implements IElementController, ICustomEventLis
     // Interface IElementController methods
     @Override
     public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     @Override
     public Stage getStage() {
-        return null;
-    }
-
-    @Override
-    public VBox getRoot() {
-        return null;
-    }
-
-    @Override
-    public void setRoot(VBox root) {
-    }
-
-    @Override
-    public void setParentController(IBaseController parentController) {
-    }
-
-    @Override
-    public IBaseController getParentController() {
-        return null;
-    }
-
-    @Override
-    public void addToLayout(VBox layout) {
-    }
-
-    @Override
-    public void addToLayout(VBox layout, int insertIntoIndex) {
-    }
-
-    @Override
-    public void removeFromLayout() {
-    }
-
-    @Override
-    public void removeFromLayout(VBox layout) {
+        return stage;
     }
 
     @Override
@@ -222,52 +194,94 @@ public class FormatCharController implements IElementController, ICustomEventLis
     }
 
     @Override
-    public void calculateData() {
-        UError.error("FormatCharController.calculateData: Not implemented without StyleSheetChar or CSS");
-    }
-
-    public void calculateData(StyleSheetChar oldStyleSheet, StyleSheetChar newStyleSheet) {
-        calculateData(oldStyleSheet.getCss(), newStyleSheet.getCss());
-    }
-
-    public void calculateData(String oldCss, String newCss) {
+    public void startMe() {
+        // Register for ClipboardChanged event
         OBJECTS.EVENT_HANDLER.register(this, ClipboardChangedEvent.CLIPBOARD_CHANGED_EVENT);
 
-        originalCharStyle.setCss(oldCss);
-        curCharStyle.setCss(newCss);
+        // Remove window border
+        stage.initStyle(StageStyle.UNDECORATED);
+        // Make window modal
+        stage.initModality(Modality.WINDOW_MODAL);
+
+        // Exit on ESC
+        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                event.consume();
+                onExitCallback.accept(null);
+                closeMe();
+            }
+        });
+
+        // Setup drag nodes
+        dragNodes.add(lblTitle);
+
+        // Setup stage
+        UJavaFX.setStageGeometry(settingsName, stage);
+        new MoveResizeWindow(stage, dragNodes);
+
+        // Setup widgets
         setupWidgetsText();
         setupWidgetsAppearance();
         updateCss(curCharStyle);
+
+        stage.show();
     }
 
     @Override
     public void closeMe() {
+        OBJECTS.EVENT_HANDLER.unregister(this);
+        UJavaFX.saveStageGeometry(settingsName, stage);
+        stage.close();
+    }
+
+    public void setOnExitCallback(Consumer<StyleSheetChar> onExitCallback) {
+        this.onExitCallback = onExitCallback;
+    }
+
+    public void setOldStyleSheet(StyleSheetChar oldStyleSheet) {
+        originalCharStyle = oldStyleSheet;
+    }
+
+    public void setNewStyleSheet(StyleSheetChar newStyleSheet) {
+        curCharStyle = newStyleSheet;
+    }
+    
+    public void setBehavior(TextHandler.Behavior behavior) {
+        settingsName = "FormatChar_" + behavior.toString();
     }
 
     // Public methods
-
-    public StyleSheetChar getStyleSheet() {
-        return curCharStyle;
-    }
 
     public void setTitle(String title) {
         lblTitle.setText(title);
     }
 
-    public void setAnchorPaneRoot(AnchorPane root) {
-        this.anchorRoot = root;
-    }
-
-    public AnchorPane getAnchorPaneRoot() {
-        return anchorRoot;
-    }
-
-    public List<Node> getDragNodes() {
-        return List.of(lblTitle);
-    }
-
     // Private methods
     private void setupWidgetsText() {
+        lblFont.setText(OBJECTS.SETTINGS.getl("text_Font"));
+        lblFontName.setText(OBJECTS.SETTINGS.getl("text_FontName"));
+        lblFontSize.setText(OBJECTS.SETTINGS.getl("text_FontSize"));
+        lblFontBold.setText(OBJECTS.SETTINGS.getl("text_Bold"));
+        lblFontItalic.setText(OBJECTS.SETTINGS.getl("text_Italic"));
+        lblFontUnderline.setText(OBJECTS.SETTINGS.getl("text_Underline"));
+        lblFontStriketrought.setText(OBJECTS.SETTINGS.getl("text_Strikethrough"));
+        lblColor.setText(OBJECTS.SETTINGS.getl("text_Color"));
+        lblColorFG.setText(OBJECTS.SETTINGS.getl("text_Foreground"));
+        lblColorBG.setText(OBJECTS.SETTINGS.getl("text_Background"));
+        chkColorFG.setText(OBJECTS.SETTINGS.getl("text_Default"));
+        chkColorBG.setText(OBJECTS.SETTINGS.getl("text_Default"));
+        lblStroke.setText(OBJECTS.SETTINGS.getl("text_Stroke"));
+        lblStrokeColor.setText(OBJECTS.SETTINGS.getl("text_StrokeColor"));
+        chkStrokeColor.setText(OBJECTS.SETTINGS.getl("text_Default"));
+        lblStrokeWidth.setText(OBJECTS.SETTINGS.getl("text_Width"));
+        lblStrokeType.setText(OBJECTS.SETTINGS.getl("text_Type"));
+        lblCss.setText(OBJECTS.SETTINGS.getl("text_CSSchanges"));
+        btnCssCopy.setText(OBJECTS.SETTINGS.getl("text_Copy"));
+        btnCssPaste.setText(OBJECTS.SETTINGS.getl("text_Paste"));
+        btnCssDiscard.setText(OBJECTS.SETTINGS.getl("text_DiscardChanges"));
+        lblSample.setText(OBJECTS.SETTINGS.getl("text_Sample"));
+        btnApply.setText(OBJECTS.SETTINGS.getl("text_Apply"));
+        btnCancel.setText(OBJECTS.SETTINGS.getl("text_Cancel"));
     }
 
     private void setupWidgetsAppearance() {
@@ -439,7 +453,7 @@ public class FormatCharController implements IElementController, ICustomEventLis
 
         // Color
         btnColorFG.setOnAction(event -> {
-            UJavaFX.showColorPickerPopUp(anchorRoot.getScene().getWindow(), color -> {
+            UJavaFX.showColorPickerPopUp(stage.getScene().getWindow(), color -> {
                 curCharStyle.setFgColor(color);
                 btnColorFG.setStyle("-fx-text-fill: " + color + ";");
                 curFGColor = color;
@@ -467,7 +481,7 @@ public class FormatCharController implements IElementController, ICustomEventLis
         });
 
         btnColorBG.setOnAction(event -> {
-            UJavaFX.showColorPickerPopUp(anchorRoot.getScene().getWindow(), color -> {
+            UJavaFX.showColorPickerPopUp(stage.getScene().getWindow(), color -> {
                 curCharStyle.setBgColor(color);
                 btnColorBG.setStyle("-fx-background-color: " + color + ";");
                 curBGColor = color;
@@ -496,7 +510,7 @@ public class FormatCharController implements IElementController, ICustomEventLis
 
         // Stroke Color
         btnStrokeColor.setOnAction(event -> {
-            UJavaFX.showColorPickerPopUp(anchorRoot.getScene().getWindow(), color -> {
+            UJavaFX.showColorPickerPopUp(stage.getScene().getWindow(), color -> {
                 curCharStyle.setStroke(color);
                 btnStrokeColor.setStyle("-fx-background-color: " + color + ";");
                 curStrokeColor = color;
@@ -555,7 +569,7 @@ public class FormatCharController implements IElementController, ICustomEventLis
         // CSS
         btnCssCopy.setDisable(true);
         btnCssDiscard.setDisable(true);
-        if (OBJECTS.CLIP.getClipText() == null || !OBJECTS.CLIP.getClipText().startsWith("-fx-")) {
+        if (OBJECTS.CLIP.getClipText() == null || (!OBJECTS.CLIP.getClipText().startsWith("-fx-") && !OBJECTS.CLIP.getClipText().startsWith("-rtfx-"))) {
             btnCssPaste.setDisable(true);
         }
         txtCss.textProperty().addListener((obs, oldText, newText) -> {
@@ -567,10 +581,6 @@ public class FormatCharController implements IElementController, ICustomEventLis
                 btnCssDiscard.setDisable(false);
             }
         });
-
-
-
-
     }
 
     private void updateCss(StyleSheetChar styleSheet) {
@@ -684,17 +694,20 @@ public class FormatCharController implements IElementController, ICustomEventLis
 
     @FXML
     private void onBtnCloseAction() {
-        OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(getMyName(), TaskStateEnum.COMPLETED, "CLOSE"));
+        onExitCallback.accept(null);
+        closeMe();
     }
 
     @FXML
     private void onBtnApplyAction() {
-        OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(getMyName(), TaskStateEnum.COMPLETED, "APPLY"));
+        onExitCallback.accept(curCharStyle);
+        closeMe();
     }
 
     @FXML
     private void onBtnCancelAction() {
-        OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(getMyName(), TaskStateEnum.COMPLETED, "CANCEL"));
+        onExitCallback.accept(null);
+        closeMe();
     }
 
     @FXML
@@ -714,7 +727,7 @@ public class FormatCharController implements IElementController, ICustomEventLis
 
     @FXML
     private void onBtnCssDiscardAction() {
-        curCharStyle = new StyleSheetChar(true);
+        curCharStyle = originalCharStyle.duplicate();
         updateCss(curCharStyle);
     }
 

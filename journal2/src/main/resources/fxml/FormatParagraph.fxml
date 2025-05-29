@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane styleClass="popup-root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.elements.FormatParagraphController">
+   <children>
+      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <HBox fx:id="hBoxTitle">
+               <children>
+                  <Region HBox.hgrow="SOMETIMES" />
+                  <Label fx:id="lblTitle" styleClass="label-title-default" text="TITLE" />
+                  <Region HBox.hgrow="SOMETIMES" />
+                  <Button fx:id="btnClose" mnemonicParsing="false" onAction="#onBtnCloseAction" styleClass="button-close" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="15.0" />
+               </VBox.margin>
+            </HBox>
+            <Region VBox.vgrow="SOMETIMES" />
+            <HBox maxHeight="30.0">
+               <children>
+                  <Label fx:id="lblParSettings" styleClass="label-subtitle" text="Paragraph settings" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label fx:id="lblAlignment" styleClass="label-default" text="Alignment" />
+                  <ComboBox fx:id="cmbAlignment" maxWidth="1.7976931348623157E308" minWidth="100.0" styleClass="combo-box-font" />
+                  <Label fx:id="lblColorBG" styleClass="label-default" text="Background">
+                     <HBox.margin>
+                        <Insets left="15.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Button fx:id="btnColorBG" mnemonicParsing="false" styleClass="button-text">
+                     <padding>
+                        <Insets left="21.0" right="21.0" />
+                     </padding>
+                  </Button>
+                  <CheckBox fx:id="chkColorBG" mnemonicParsing="false" styleClass="check-box-default" text="Default" />
+                  <Label fx:id="lblBGRadius" styleClass="label-default" text="Radius">
+                     <HBox.margin>
+                        <Insets left="25.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="cmbBGRadius" editable="true" maxWidth="100.0" minWidth="100.0" styleClass="combo-box-font" />
+                  <Label fx:id="lblPadding" styleClass="label-default" text="Padding">
+                     <HBox.margin>
+                        <Insets left="15.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="cmbPadding" editable="true" maxWidth="100.0" minWidth="100.0" styleClass="combo-box-font" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets left="15.0" />
+               </VBox.margin>
+            </HBox>
+            <Region minHeight="20.0" VBox.vgrow="SOMETIMES" />
+            <HBox maxHeight="30.0">
+               <children>
+                  <Label fx:id="lblBorder" styleClass="label-subtitle" text="Paragraph border" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label fx:id="lblBorderColor" styleClass="label-default" text="Color" />
+                  <Button fx:id="btnBorderColor" mnemonicParsing="false" styleClass="button-text">
+                     <padding>
+                        <Insets left="21.0" right="21.0" />
+                     </padding>
+                  </Button>
+                  <CheckBox fx:id="chkBorderColor" mnemonicParsing="false" styleClass="check-box-default" text="Default" />
+                  <Label fx:id="lblBorderWidth" styleClass="label-default" text="Width">
+                     <HBox.margin>
+                        <Insets left="25.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="cmbBorderWidth" editable="true" maxWidth="100.0" minWidth="100.0" styleClass="combo-box-font" />
+                  <Label fx:id="lblBorderStyle" styleClass="label-default" text="Style">
+                     <HBox.margin>
+                        <Insets left="15.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="cmbBorderStyle" maxWidth="1.7976931348623157E308" minWidth="100.0" styleClass="combo-box-font" />
+                  <Label fx:id="lblBorderRadius" styleClass="label-default" text="Radius">
+                     <HBox.margin>
+                        <Insets left="15.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="cmbBorderRadius" editable="true" maxWidth="100.0" minWidth="100.0" styleClass="combo-box-font" />
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" />
+               </VBox.margin>
+            </HBox>
+            <Region minHeight="20.0" VBox.vgrow="SOMETIMES" />
+            <HBox maxHeight="30.0">
+               <children>
+                  <Label fx:id="lblParEffects" styleClass="label-subtitle" text="Paragraph effects" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label fx:id="lblEffects" styleClass="label-default" text="Effects: " />
+                  <ComboBox fx:id="cmbEffects" editable="true" maxWidth="1.7976931348623157E308" minWidth="100.0" styleClass="combo-box-font" HBox.hgrow="SOMETIMES" />
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" />
+               </VBox.margin>
+            </HBox>
+            <Region minHeight="20.0" VBox.vgrow="SOMETIMES" />
+            <HBox maxHeight="30.0">
+               <children>
+                  <Label fx:id="lblCss" styleClass="label-subtitle" text="Css changes" />
+                  <Button fx:id="btnCssCopy" mnemonicParsing="false" onAction="#onBtnCssCopyAction" style="-fx-font-size: 10;" styleClass="button-default" text="Copy">
+                     <HBox.margin>
+                        <Insets left="35.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnCssPaste" mnemonicParsing="false" onAction="#onBtnCssPasteAction" style="-fx-font-size: 10;" styleClass="button-default" text="Paste">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnCssDiscard" mnemonicParsing="false" onAction="#onBtnCssDiscardAction" style="-fx-font-size: 10;" styleClass="button-default" text="Discard changes">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox maxHeight="25.0">
+               <children>
+                  <TextField fx:id="txtCss" editable="false" maxWidth="1.7976931348623157E308" style="-fx-font-size: 10;" styleClass="text-field-default" HBox.hgrow="SOMETIMES">
+                     <HBox.margin>
+                        <Insets left="15.0" right="15.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <Region VBox.vgrow="SOMETIMES" />
+            <HBox maxHeight="30.0">
+               <children>
+                  <Label fx:id="lblSample" styleClass="label-subtitle" text="Sample" />
+               </children>
+            </HBox>
+            <VBox fx:id="vBoxSample" />
+            <Region VBox.vgrow="SOMETIMES" />
+            <Separator prefWidth="200.0">
+               <padding>
+                  <Insets bottom="5.0" top="5.0" />
+               </padding>
+            </Separator>
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+               <children>
+                  <Button fx:id="btnApply" mnemonicParsing="false" onAction="#onBtnApplyAction" styleClass="button-default" text="Apply" />
+                  <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#onBtnCancelAction" styleClass="button-default" text="Cancel" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+   <stylesheets>
+      <URL value="@../css/main.css" />
+      <URL value="@../css/text_edit_toolbar.css" />
+   </stylesheets>
+</AnchorPane>

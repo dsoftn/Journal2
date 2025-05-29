@@ -59,7 +59,8 @@ public class StyleSheetParagraph {
         }
 
         if (!(bgColor == null) && !bgColor.isEmpty()) {
-            css += "-rtfx-background-color: " + bgColor + ";";
+            // css += "-rtfx-background-color: " + bgColor + ";";
+            css += "-fx-background-color: " + bgColor + ";";
         }
 
         if (!(bold == null)) {
@@ -95,7 +96,8 @@ public class StyleSheetParagraph {
         }
 
         if (!(bgRadius == null)) {
-            css += "-rtfx-background-radius: " + bgRadius + ";";
+            // css += "-rtfx-background-radius: " + bgRadius + ";";
+            css += "-fx-background-radius: " + bgRadius + "px;";
         }
 
         if (!(borderColor == null) && !borderColor.isEmpty()) {
@@ -111,11 +113,11 @@ public class StyleSheetParagraph {
         }
 
         if (!(borderRadius == null)) {
-            css += "-fx-border-radius: " + borderRadius + ";";
+            css += "-fx-border-radius: " + borderRadius + "px;";
         }
 
         if (!(padding == null) && !padding.isEmpty()) {
-            css += "-fx-padding: " + padding + ";";
+            css += "-fx-padding: " + padding + "px;";
         }
 
         if (!(alignment == null) && !alignment.isEmpty()) {
@@ -162,6 +164,9 @@ public class StyleSheetParagraph {
                     case "-rtfx-background-color":
                         setBgColor(cssItemValue);
                         break;
+                    case "-fx-background-color":
+                        setBgColor(cssItemValue);
+                        break;
                     case "-fx-font-weight":
                         setBold(cssItemValue.equals("bold"));
                         break;
@@ -175,7 +180,10 @@ public class StyleSheetParagraph {
                         setStrikethrough(cssItemValue.equals("true"));
                         break;
                     case "-rtfx-background-radius":
-                        setBgRadius(Integer.parseInt(cssItemValue));
+                        setBgRadius(Integer.parseInt(cssItemValue.split(Pattern.quote("px"))[0]));
+                        break;
+                    case "-fx-background-radius":
+                        setBgRadius(Integer.parseInt(cssItemValue.split(Pattern.quote("px"))[0]));
                         break;
                     case "-fx-border-color":
                         setBorderColor(cssItemValue);
@@ -187,10 +195,10 @@ public class StyleSheetParagraph {
                         setBorderStyle(cssItemValue);
                         break;
                     case "-fx-border-radius":
-                        setBorderRadius(Integer.parseInt(cssItemValue));
+                        setBorderRadius(Integer.parseInt(cssItemValue.split(Pattern.quote("px"))[0]));
                         break;
                     case "-fx-padding":
-                        setPadding(cssItemValue);
+                        setPadding(cssItemValue.split(Pattern.quote("px"))[0]);
                         break;
                     case "-fx-text-alignment":
                         setAlignment(cssItemValue);
@@ -303,12 +311,21 @@ public class StyleSheetParagraph {
     public void setAlignmentEnum(AlignmentEnum alignment) { this.alignment = alignment.name().toLowerCase(); }
     public String getStroke() { return stroke; }
     public void setStroke(String stroke) { this.stroke = stroke; }
-    public int getStrokeWidth() { return strokeWidth; }
-    public void setStrokeWidth(int strokeWidth) { this.strokeWidth = strokeWidth; }
+    public Integer getStrokeWidth() { return strokeWidth; }
+    public void setStrokeWidth(Integer strokeWidth) { this.strokeWidth = strokeWidth; }
     public String getStrokeType() { return strokeType; }
     public void setStrokeType(String strokeType) { this.strokeType = strokeType; }
     public String getEffect() { return effect; }
-    public void setEffect(String effect) { this.effect = effect; }
+    public void setEffect(String effect) {
+        if (effect != null) {
+            if (effect.isEmpty()) {
+                effect = null;
+            } else if (effect.strip().startsWith("-fx-effect:")) {
+                effect = effect.strip().substring(11).strip();
+            }
+        }
+        this.effect = effect;
+    }
 
     // Overrides methods "equals()" and "hashCode()"
     

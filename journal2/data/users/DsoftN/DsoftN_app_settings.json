@@ -131,7 +131,7 @@
   },
   "CssDefaultParagraphStyle_BLOCK_NAME_ENTER": {
     "key": "CssDefaultParagraphStyle_BLOCK_NAME_ENTER",
-    "value": "-fx-text-alignment: center;",
+    "value": "-fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #282828, #000000), radial-gradient(radius 90%, #222222, transparent);;-fx-text-alignment: center;",
     "defaultValue": "-fx-text-alignment: center;",
     "min": "Null",
     "max": "Null",
@@ -287,7 +287,7 @@
   },
   "CssAutoCompleteStyle_BLOCK_NAME_ENTER": {
     "key": "CssAutoCompleteStyle_BLOCK_NAME_ENTER",
-    "value": "-fx-fill: #404040;",
+    "value": "-fx-fill: #404040;-fx-font-style: italic;-fx-stroke: #B7B7B7FF;-fx-stroke-width: 1px;-fx-stroke-type: inside;",
     "defaultValue": "-fx-fill: #404040;",
     "min": "Null",
     "max": "Null",
@@ -456,7 +456,7 @@
   },
   "CssMarkedSerbianLandlineNumbers_BLOCK_NAME_ENTER": {
     "key": "CssMarkedSerbianLandlineNumbers_BLOCK_NAME_ENTER",
-    "value": "-fx-fill:#6f26bc;",
+    "value": "-fx-fill: #9b67d3;-fx-stroke: #7A7AFFFF;-fx-stroke-width: 1px;-fx-stroke-type: inside;",
     "defaultValue": "-fx-fill:#6f26bc;",
     "min": "none",
     "max": "none",
@@ -469,7 +469,7 @@
   },
   "CssMarkedInternationalPhoneNumbers_BLOCK_NAME_ENTER": {
     "key": "CssMarkedInternationalPhoneNumbers_BLOCK_NAME_ENTER",
-    "value": "-fx-fill:#d84ccf;",
+    "value": "-fx-font-style: italic;-fx-stroke: #FF5B5BFF;-fx-stroke-width: 1px;-fx-stroke-type: inside;",
     "defaultValue": "-fx-fill:#d84ccf;",
     "min": "none",
     "max": "none",
@@ -482,7 +482,7 @@
   },
   "RTSettingsPopup_BLOCK_NAME_ENTER": {
     "key": "RTSettingsPopup_BLOCK_NAME_ENTER",
-    "value": "PosX\u003d424.0\nPosY\u003d158.0\nWidth\u003d1110.0\nHeight\u003d796.0\n",
+    "value": "PosX\u003d419.0\nPosY\u003d127.0\nWidth\u003d1110.0\nHeight\u003d813.0\n",
     "defaultValue": "",
     "min": "null",
     "max": "null",
@@ -495,7 +495,7 @@
   },
   "FormatCharPopup_BLOCK_NAME_ENTER": {
     "key": "FormatCharPopup_BLOCK_NAME_ENTER",
-    "value": "PosX\u003d559.0\nPosY\u003d185.0\nWidth\u003d940.0\nHeight\u003d532.0\n",
+    "value": "PosX\u003d627.0\nPosY\u003d202.0\nWidth\u003d940.0\nHeight\u003d532.0\n",
     "defaultValue": "",
     "min": "null",
     "max": "null",
@@ -594,6 +594,45 @@
     "dataType": 8,
     "description": "Delay to show autocomplete",
     "creationDate": "2025.04.23 13:00:21",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "FormatParagraphPopup_BLOCK_NAME_ENTER": {
+    "key": "FormatParagraphPopup_BLOCK_NAME_ENTER",
+    "value": "PosX\u003d696.0\nPosY\u003d285.0\nWidth\u003d778.0\nHeight\u003d550.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.05.27 22:22:30",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTSettings_BLOCK_NAME_ENTER": {
+    "key": "RTSettings_BLOCK_NAME_ENTER",
+    "value": "status\u003d0.0\nPosX\u003d328.0\nPosY\u003d133.0\nWidth\u003d1162.0\nHeight\u003d796.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.05.29 18:21:14",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "FormatChar_BLOCK_NAME_ENTER": {
+    "key": "FormatChar_BLOCK_NAME_ENTER",
+    "value": "status\u003d0.0\nPosX\u003d490.0\nPosY\u003d203.0\nWidth\u003d940.0\nHeight\u003d531.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.05.29 18:26:41",
     "userData": "",
     "canBeSavedInFile": true
   }

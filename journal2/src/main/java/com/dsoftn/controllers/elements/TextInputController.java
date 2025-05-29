@@ -1,36 +1,22 @@
 package com.dsoftn.controllers.elements;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.dsoftn.CONSTANTS;
 import com.dsoftn.ELEMENTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
-import com.dsoftn.controllers.elements.TextEditToolbarController.AlignmentEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
-import com.dsoftn.models.StyleSheetChar;
-import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.services.text_handler.TextHandler.Behavior;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
-import com.dsoftn.utils.html.UHDocument;
-import com.dsoftn.utils.html.UHTag;
 
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -195,7 +181,7 @@ public class TextInputController implements IElementController, ICustomEventList
         this.root.getChildren().add(0, toolbarController.getRoot());
 
         // Create TextHandler
-        this.textHandler = new TextHandler(rTxtRichText, toolbarController, behavior);
+        this.textHandler = new TextHandler(rTxtRichText, toolbarController, behavior, stage);
         this.textHandler.setReceiverID(myName);
 
         setupWidgetsText();

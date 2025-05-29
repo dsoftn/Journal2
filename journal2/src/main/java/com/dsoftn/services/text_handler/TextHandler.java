@@ -8,8 +8,8 @@ import java.util.Map;
 import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.controllers.MsgBoxController;
+import com.dsoftn.controllers.elements.RTSettingsController;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
-import com.dsoftn.controllers.pop_up_windows.RTSettingsPopup;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
@@ -26,6 +26,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 
 
 public class TextHandler {
@@ -70,6 +71,7 @@ public class TextHandler {
     }
     
     // Variables
+    private Stage stage = null;
     private RTWidget rtWidget = null;
     private TextEditToolbarController toolbarController = null;
     private UndoHandler undoHandler = new UndoHandler();
@@ -78,10 +80,11 @@ public class TextHandler {
     private ContextMenu contextRTWidgetMenu = new ContextMenu();
     private Map<String, MenuItem> contextRTWidgetMenuItems = new LinkedHashMap<>();
     private Behavior behavior = null;
-    private RTSettingsPopup rtSettingsPopup = null;
+    private RTSettingsController rtSettingsController = null;
 
     // Constructor
-    public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController, Behavior behavior) {
+    public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController, Behavior behavior, Stage stage) {
+        this.stage = stage;
         this.toolbarController = toolbarController;
         if (toolbarController != null) {
             toolbarController.setTextHandler(this);
@@ -429,7 +432,7 @@ public class TextHandler {
         imgOptionsView.setFitHeight(20);
         options.setGraphic(imgOptionsView);
         options.setOnAction(event -> {
-            showRTSettingsPopup();
+            showRTSettings();
         });
 
         return options;
@@ -482,12 +485,12 @@ public class TextHandler {
         });
     }
 
-    private void showRTSettingsPopup() {
-        rtSettingsPopup = new RTSettingsPopup(this::onRTSettingsPopupExit, behavior);
-        rtSettingsPopup.startMe(rtWidget.getScene().getWindow());
+    private void showRTSettings() {
+        rtSettingsController = DIALOGS.getRTSettingsController(stage, behavior, this::onRTSettingsExit);
+        rtSettingsController.startMe();
     }
 
-    private void onRTSettingsPopupExit(Boolean result) {
+    private void onRTSettingsExit(Boolean result) {
         if (result) {
             boolean hasAc = rtWidget.ac.hasCurrentAC();
             rtWidget.ac.removeCurrentAC();
@@ -503,7 +506,7 @@ public class TextHandler {
                 rtWidget.ac.showAC(rtWidget.getCaretPosition(), rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()));
             }
         }
-        rtSettingsPopup = null;
+        rtSettingsController = null;
     }
 
 }

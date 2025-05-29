@@ -1,25 +1,21 @@
 package com.dsoftn.controllers.elements;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
+import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
-import com.dsoftn.Interfaces.IElementController;
-import com.dsoftn.Settings.SettingsItem;
-import com.dsoftn.controllers.pop_up_windows.FormatCharPopup;
-import com.dsoftn.enums.models.TaskStateEnum;
-import com.dsoftn.events.TaskStateEvent;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
+import com.dsoftn.services.MoveResizeWindow;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.text_handler.TextHandler;
-import com.dsoftn.services.timer.SingleShotTimer;
 import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UNumbers;
 import com.dsoftn.utils.USettings;
-import com.dsoftn.utils.UString;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -34,23 +30,26 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
+import javafx.stage.StageStyle;
 import javafx.util.converter.IntegerStringConverter;
 
-public class RTSettingsController implements IElementController {
+public class RTSettingsController implements IBaseController {
     // Variables
+    private Consumer<Boolean> onExitCallback;
     private Stage stage = null;
     private String myName = UJavaFX.getUniqueId();
-    private AnchorPane anchorRoot = null;
+    private String settingsName = null;
+    private List<Node> dragNodes = new ArrayList<>();
     private TextHandler.Behavior behavior = null;
     private RTWidget rtwInitTextSample = null;
     private RTWidget rtwAcSample = null;
     private RTWidget rtwHlSample = null;
-    private Window ownerWindow = null;
     private String invalidEntry = "-fx-background-color: darkred;";
 
     private String cssInitTextStyle = null;
@@ -203,57 +202,49 @@ public class RTSettingsController implements IElementController {
         return stage;
     }
     @Override
-    public VBox getRoot() {
-        return vBoxRoot;
-    }
-    public AnchorPane getAnchorPaneRoot() {
-        return anchorRoot;
-    }
-    public void setAnchorPaneRoot(AnchorPane root) {
-        this.anchorRoot = root;
-    }
-    @Override
-    public void setParentController(IBaseController parentController) {
-    }
-    @Override
-    public IBaseController getParentController() {
-        return null;
-    }
-    @Override
-    public void setRoot(VBox root) {
-    }
-    @Override
-    public void addToLayout(VBox layout) {
-    }
-    @Override
-    public void addToLayout(VBox layout, int insertIntoIndex) {
-    }
-    @Override
-    public void removeFromLayout() {
-    }
-    @Override
-    public void removeFromLayout(VBox layout) {
-    }
-    @Override
     public String getMyName() {
         return myName;
     }
     @Override
-    public void calculateData() {
+    public void startMe() {
+        // Remove window border
+        stage.initStyle(StageStyle.UNDECORATED);
+        // Make window modal
+        stage.initModality(Modality.WINDOW_MODAL);
+
+        // Check if ESC is pressed
+        stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                event.consume();
+                onExitCallback.accept(false);
+                closeMe();
+            }
+        });
+
+        // Setup drag nodes
+        dragNodes.add(lblTitle);
+
+        UJavaFX.setStageGeometry(settingsName, stage);
+        new MoveResizeWindow(stage, dragNodes);
+
         setupWidgetsText();
         setupWidgetsAppearance();
         setupSpinnerValidators();
         setupData(behavior);
+
+        stage.show();
     }
     @Override
     public void closeMe() {
+        UJavaFX.saveStageGeometry(settingsName, stage);
+        stage.close();
+    }
+    
+    public void setOnExitCallback(Consumer<Boolean> onExitCallback) {
+        this.onExitCallback = onExitCallback;
     }
 
     // Public methods
-    public void setOwnerWindow(Window ownerWindow) {
-        this.ownerWindow = ownerWindow;
-    }
-
     public void showACSection(boolean show) {
         vBoxAC.setVisible(show);
         vBoxAC.setManaged(show);
@@ -263,10 +254,7 @@ public class RTSettingsController implements IElementController {
 
     public void setBehavior(TextHandler.Behavior behavior) {
         this.behavior = behavior;
-    }
-
-    public List<Node> getDragNodes() {
-        return List.of(lblTitle);
+        settingsName = "RTSettings_" + behavior.name();
     }
 
     // Private methods
@@ -368,6 +356,10 @@ public class RTSettingsController implements IElementController {
 
         // Text Field for initial text number of paragraphs
         txtInitNumPar.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.equals("0")) {
+                txtInitNumPar.setText("MAX");
+                return;
+            }
             if (isValidNumPar(newValue)) {
                 lblInitNumPar.setStyle("-fx-background-color: transparent;");
                 txtInitNumPar.setStyle("-fx-background-color: #051923;");
@@ -797,20 +789,23 @@ public class RTSettingsController implements IElementController {
     // FXML methods
     @FXML
     private void onBtnCancelAction(ActionEvent event) {
-        OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(myName, TaskStateEnum.COMPLETED, "CANCEL"));
+        onExitCallback.accept(false);
+        closeMe();
     }
 
     @FXML
     private void onBtnApplyAction(ActionEvent event) {
         if (saveData()) {
-            OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(myName, TaskStateEnum.COMPLETED, "APPLY"));
             OBJECTS.SETTINGS.save(false, false, true);
+            onExitCallback.accept(true);
+            closeMe();
         }
     }
 
     @FXML
     private void onBtnCloseAction(ActionEvent event) {
-        OBJECTS.EVENT_HANDLER.fireEvent(new TaskStateEvent(myName, TaskStateEnum.COMPLETED, "CLOSE"));
+        onExitCallback.accept(false);
+        closeMe();
     }
 
     @FXML
@@ -877,8 +872,9 @@ public class RTSettingsController implements IElementController {
     private void onBtnInitStyleAction(ActionEvent event) {
         StyleSheetChar css = new StyleSheetChar(cssInitTextStyle);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onInitStyleExitCallback, behavior, css, css, OBJECTS.SETTINGS.getl("RtSettings_lblInitText"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onInitStyleExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("RtSettings_lblInitText"));
+        formatChar.startMe();
     }
 
     private void onInitStyleExitCallback(StyleSheetChar styleSheet) {
@@ -891,12 +887,32 @@ public class RTSettingsController implements IElementController {
     }
 
     @FXML
+    private void onBtnInitParStyleAction(ActionEvent event) {
+        StyleSheetParagraph css = new StyleSheetParagraph(cssInitParStyle);
+
+        FormatParagraphController formatParagraph = DIALOGS.getFormatParagraphController(stage, behavior, css, css, new StyleSheetChar(cssInitTextStyle), this::onInitParStyleExitCallback);
+        formatParagraph.setTitle(OBJECTS.SETTINGS.getl("RtSettings_lblInitParagraphStyle"));
+        formatParagraph.startMe();
+    }
+
+    private void onInitParStyleExitCallback(StyleSheetParagraph styleSheet) {
+        if (styleSheet == null) {
+            return;
+        }
+        
+        cssInitParStyle = styleSheet.getCss();
+        updateSamples();
+    }
+
+
+    @FXML
     private void onBtnAcStyleAction(ActionEvent event) {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssAutoCompleteStyle);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onAcStyleExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_AutoCompleteRecommendations"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onAcStyleExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_AutoCompleteRecommendations"));
+        formatChar.startMe();
     }
 
     private void onAcStyleExitCallback(StyleSheetChar styleSheet) {
@@ -913,8 +929,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedInteger);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlIntExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_Integer"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlIntExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Integer"));
+        formatChar.startMe();
     }
 
     private void onHlIntExitCallback(StyleSheetChar styleSheet) {
@@ -931,8 +948,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedDouble);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlDecExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_Decimal"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlDecExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Decimal"));
+        formatChar.startMe();
     }
 
     private void onHlDecExitCallback(StyleSheetChar styleSheet) {
@@ -949,8 +967,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedDate);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlDateExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_Date"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlDateExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Date"));
+        formatChar.startMe();
     }
 
     private void onHlDateExitCallback(StyleSheetChar styleSheet) {
@@ -967,8 +986,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedTime);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlTimeExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_Time"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlTimeExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Time"));
+        formatChar.startMe();
     }
 
     private void onHlTimeExitCallback(StyleSheetChar styleSheet) {
@@ -985,8 +1005,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedWebLink);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlWebExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_WebLink"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlWebExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_WebLink"));
+        formatChar.startMe();
     }
 
     private void onHlWebExitCallback(StyleSheetChar styleSheet) {
@@ -1003,8 +1024,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedEmail);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlMailExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_Email"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlMailExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_Email"));
+        formatChar.startMe();
     }
 
     private void onHlMailExitCallback(StyleSheetChar styleSheet) {
@@ -1021,8 +1043,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedSerbianMobileNumbers);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlSMPExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_SerbianMobileNumber"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlSMPExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_SerbianMobileNumber"));
+        formatChar.startMe();
     }
 
     private void onHlSMPExitCallback(StyleSheetChar styleSheet) {
@@ -1039,8 +1062,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedSerbianLandlineNumbers);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlSLPExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_SerbianLandlineNumber"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlSLPExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_SerbianLandlineNumber"));
+        formatChar.startMe();
     }
 
     private void onHlSLPExitCallback(StyleSheetChar styleSheet) {
@@ -1057,8 +1081,9 @@ public class RTSettingsController implements IElementController {
         StyleSheetChar css = new StyleSheetChar(true);
         css.setCss(cssMarkedInternationalPhoneNumbers);
 
-        FormatCharPopup formatCharPopup = new FormatCharPopup(this::onHlIntPhoneExitCallback, behavior, new StyleSheetChar(cssInitTextStyle), css, OBJECTS.SETTINGS.getl("text_InternationalPhoneNumber"));
-        formatCharPopup.startMe(ownerWindow, null, null);
+        FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, css, css, this::onHlIntPhoneExitCallback);
+        formatChar.setTitle(OBJECTS.SETTINGS.getl("text_InternationalPhoneNumber"));
+        formatChar.startMe();
     }
 
     private void onHlIntPhoneExitCallback(StyleSheetChar styleSheet) {

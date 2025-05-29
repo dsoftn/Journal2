@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 public class MoveResizeWindow {
 
@@ -178,16 +179,20 @@ public class MoveResizeWindow {
 
     // Variables
     private Popup popup;
+    private Stage stage;
     private AnchorPane ancRoot;
     private Map<String, Double> mousePos = null; // Used to resize window
     private boolean resize = true;
     private boolean move = true;
     private double minSize = 50;
     private List<Node> dragNodes = new ArrayList<>();
+    private boolean isPopup = false;
+    private boolean isStage = false;
 
 
     // Constructor
     public MoveResizeWindow(Popup popup, Node... dragNodes) {
+        isPopup = true;
         this.popup = popup;
         this.ancRoot = (AnchorPane) popup.getScene().getRoot();
         this.dragNodes.addAll(List.of(dragNodes));
@@ -217,6 +222,37 @@ public class MoveResizeWindow {
         this(popup, dragNodes.toArray(new Node[0]));
     }
 
+    public MoveResizeWindow(Stage stage, Node... dragNodes) {
+        isStage = true;
+        this.stage = stage;
+        this.ancRoot = (AnchorPane) stage.getScene().getRoot();
+        this.dragNodes.addAll(List.of(dragNodes));
+
+        ancRoot.setMaxHeight(Double.MAX_VALUE);
+        ancRoot.setMaxWidth(Double.MAX_VALUE);
+
+        // Setup events
+        ancRoot.getScene().addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
+            onRootMouseMoved(event);
+        });
+
+        ancRoot.getScene().addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            onRootMousePressed(event);
+        });
+
+        ancRoot.getScene().addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
+            onRootMouseDragged(event);
+        });
+
+        ancRoot.getScene().addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+            onRootMouseReleased(event);
+        });
+    }
+
+    public MoveResizeWindow(Stage stage, List<Node> dragNodes) {
+        this(stage, dragNodes.toArray(new Node[0]));
+    }
+
     // Public methods
 
     public void enableWindowResize(boolean resize) {
@@ -230,13 +266,17 @@ public class MoveResizeWindow {
     // Move / Resize events
 
     private void setStageGeometry(double posX, double posY, double width, double height) {
-        popup.setX(posX);
-        popup.setY(posY);
-        // popup.setWidth(width);
-        // popup.setHeight(height);
-
-        ancRoot.setPrefHeight(height);
-        ancRoot.setPrefWidth(width);
+        if (isStage) {
+            stage.setX(posX);
+            stage.setY(posY);
+            stage.setWidth(width);
+            stage.setHeight(height);
+        } else if (isPopup) {
+            popup.setX(posX);
+            popup.setY(posY);
+            ancRoot.setPrefHeight(height);
+            ancRoot.setPrefWidth(width);
+        }
     }
 
     private boolean isStageInBounds(double posX, double posY, double width, double height) {
@@ -391,10 +431,17 @@ public class MoveResizeWindow {
         }
 
         mousePos = new HashMap<String, Double>();
-        mousePos.put("rootX", popup.getX());
-        mousePos.put("rootY", popup.getY());
-        mousePos.put("rootW", popup.getWidth());
-        mousePos.put("rootH", popup.getHeight());
+        if (isStage) {
+            mousePos.put("rootX", stage.getX());
+            mousePos.put("rootY", stage.getY());
+            mousePos.put("rootW", stage.getWidth());
+            mousePos.put("rootH", stage.getHeight());
+        } else if (isPopup) {
+            mousePos.put("rootX", popup.getX());
+            mousePos.put("rootY", popup.getY());
+            mousePos.put("rootW", popup.getWidth());
+            mousePos.put("rootH", popup.getHeight());
+        }
         mousePos.put("mouseX", event.getScreenX());
         mousePos.put("mouseY", event.getScreenY());
         mousePos.put("action", mouseType.getValue());

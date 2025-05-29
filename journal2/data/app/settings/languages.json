@@ -1512,6 +1512,160 @@
         "languageCode": "en",
         "creationDate": "2025.05.19 23:58:35",
         "userData": ""
+      },
+      "text_ParagraphFormatting": {
+        "key": "text_ParagraphFormatting",
+        "value": "Paragraph Formatting",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:20:36",
+        "userData": ""
+      },
+      "text_FontName": {
+        "key": "text_FontName",
+        "value": "Font name",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:45:25",
+        "userData": ""
+      },
+      "text_FontSize": {
+        "key": "text_FontSize",
+        "value": "Font size",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:46:07",
+        "userData": ""
+      },
+      "text_Font": {
+        "key": "text_Font",
+        "value": "Font",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:47:37",
+        "userData": ""
+      },
+      "text_Color": {
+        "key": "text_Color",
+        "value": "Color",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:48:00",
+        "userData": ""
+      },
+      "text_Foreground": {
+        "key": "text_Foreground",
+        "value": "Foreground",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:49:05",
+        "userData": ""
+      },
+      "text_Background": {
+        "key": "text_Background",
+        "value": "Background",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:49:25",
+        "userData": ""
+      },
+      "text_Stroke": {
+        "key": "text_Stroke",
+        "value": "Stroke",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:51:59",
+        "userData": ""
+      },
+      "text_StrokeColor": {
+        "key": "text_StrokeColor",
+        "value": "Stroke color",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:52:40",
+        "userData": ""
+      },
+      "text_Width": {
+        "key": "text_Width",
+        "value": "Width",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:53:28",
+        "userData": ""
+      },
+      "text_Type": {
+        "key": "text_Type",
+        "value": "Type",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:53:54",
+        "userData": ""
+      },
+      "text_CSSchanges": {
+        "key": "text_CSSchanges",
+        "value": "CSS changes",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:54:51",
+        "userData": ""
+      },
+      "text_Sample": {
+        "key": "text_Sample",
+        "value": "Sample",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:55:19",
+        "userData": ""
+      },
+      "text_DiscardChanges": {
+        "key": "text_DiscardChanges",
+        "value": "Discard changes",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 21:56:53",
+        "userData": ""
+      },
+      "RtSettings_lblInitParagraphStyle": {
+        "key": "RtSettings_lblInitParagraphStyle",
+        "value": "Default paragraph style",
+        "languageCode": "en",
+        "creationDate": "2025.05.27 22:17:47",
+        "userData": ""
+      },
+      "text_ParagraphSettings": {
+        "key": "text_ParagraphSettings",
+        "value": "Paragraph settings",
+        "languageCode": "en",
+        "creationDate": "2025.05.28 11:37:44",
+        "userData": ""
+      },
+      "text_Alignment": {
+        "key": "text_Alignment",
+        "value": "Alignment",
+        "languageCode": "en",
+        "creationDate": "2025.05.28 11:38:21",
+        "userData": ""
+      },
+      "text_Radius": {
+        "key": "text_Radius",
+        "value": "Radius",
+        "languageCode": "en",
+        "creationDate": "2025.05.28 11:39:18",
+        "userData": ""
+      },
+      "text_Padding": {
+        "key": "text_Padding",
+        "value": "Padding",
+        "languageCode": "en",
+        "creationDate": "2025.05.28 11:40:10",
+        "userData": ""
+      },
+      "text_ParagraphBorder": {
+        "key": "text_ParagraphBorder",
+        "value": "Paragraph border",
+        "languageCode": "en",
+        "creationDate": "2025.05.28 11:41:13",
+        "userData": ""
+      },
+      "text_ParagraphEffects": {
+        "key": "text_ParagraphEffects",
+        "value": "Paragraph effects",
+        "languageCode": "en",
+        "creationDate": "2025.05.28 11:42:38",
+        "userData": ""
+      },
+      "text_Effects": {
+        "key": "text_Effects",
+        "value": "Effects",
+        "languageCode": "en",
+        "creationDate": "2025.05.28 11:45:08",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -3025,6 +3179,160 @@
         "value": "Formatiranje Teksta",
         "languageCode": "sr-lat",
         "creationDate": "2025.05.19 23:58:35",
+        "userData": ""
+      },
+      "text_ParagraphFormatting": {
+        "key": "text_ParagraphFormatting",
+        "value": "Formatiranje Paragrafa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:20:36",
+        "userData": ""
+      },
+      "text_FontName": {
+        "key": "text_FontName",
+        "value": "Naziv fonta",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:45:25",
+        "userData": ""
+      },
+      "text_FontSize": {
+        "key": "text_FontSize",
+        "value": "Veličina fonta",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:46:07",
+        "userData": ""
+      },
+      "text_Font": {
+        "key": "text_Font",
+        "value": "Font",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:47:37",
+        "userData": ""
+      },
+      "text_Color": {
+        "key": "text_Color",
+        "value": "Boja",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:48:00",
+        "userData": ""
+      },
+      "text_Foreground": {
+        "key": "text_Foreground",
+        "value": "Boja slova",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:49:05",
+        "userData": ""
+      },
+      "text_Background": {
+        "key": "text_Background",
+        "value": "Boja pozadine",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:49:25",
+        "userData": ""
+      },
+      "text_Stroke": {
+        "key": "text_Stroke",
+        "value": "Stroke",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:51:59",
+        "userData": ""
+      },
+      "text_StrokeColor": {
+        "key": "text_StrokeColor",
+        "value": "Stroke boja",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:52:40",
+        "userData": ""
+      },
+      "text_Width": {
+        "key": "text_Width",
+        "value": "Širina",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:53:28",
+        "userData": ""
+      },
+      "text_Type": {
+        "key": "text_Type",
+        "value": "Vrsta",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:53:54",
+        "userData": ""
+      },
+      "text_CSSchanges": {
+        "key": "text_CSSchanges",
+        "value": "CSS promene",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:54:51",
+        "userData": ""
+      },
+      "text_Sample": {
+        "key": "text_Sample",
+        "value": "Primer",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:55:19",
+        "userData": ""
+      },
+      "text_DiscardChanges": {
+        "key": "text_DiscardChanges",
+        "value": "Odbaci promene",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 21:56:53",
+        "userData": ""
+      },
+      "RtSettings_lblInitParagraphStyle": {
+        "key": "RtSettings_lblInitParagraphStyle",
+        "value": "Podrazumevani paragraf stil",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.27 22:17:47",
+        "userData": ""
+      },
+      "text_ParagraphSettings": {
+        "key": "text_ParagraphSettings",
+        "value": "Podešavanja paragrafa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.28 11:37:44",
+        "userData": ""
+      },
+      "text_Alignment": {
+        "key": "text_Alignment",
+        "value": "Poravnanje",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.28 11:38:21",
+        "userData": ""
+      },
+      "text_Radius": {
+        "key": "text_Radius",
+        "value": "Radijus",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.28 11:39:18",
+        "userData": ""
+      },
+      "text_Padding": {
+        "key": "text_Padding",
+        "value": "Odmak",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.28 11:40:10",
+        "userData": ""
+      },
+      "text_ParagraphBorder": {
+        "key": "text_ParagraphBorder",
+        "value": "Okvir paragrafa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.28 11:41:13",
+        "userData": ""
+      },
+      "text_ParagraphEffects": {
+        "key": "text_ParagraphEffects",
+        "value": "Efekti paragrafa",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.28 11:42:38",
+        "userData": ""
+      },
+      "text_Effects": {
+        "key": "text_Effects",
+        "value": "Efekti",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.28 11:45:08",
         "userData": ""
       }
     }

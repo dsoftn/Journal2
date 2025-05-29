@@ -1,12 +1,9 @@
 package com.dsoftn;
 
 import com.dsoftn.models.Block;
-import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.SelectionData;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.controllers.elements.BlockGeneralController;
-import com.dsoftn.controllers.elements.FormatCharController;
-import com.dsoftn.controllers.elements.RTSettingsController;
 import com.dsoftn.controllers.elements.SelectionController;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
 import com.dsoftn.controllers.elements.TextInputController;
@@ -15,7 +12,6 @@ import com.dsoftn.utils.UError;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 
@@ -90,36 +86,6 @@ public class ELEMENTS {
         }
     }
 
-    public static RTSettingsController getRTSettingsController(TextHandler.Behavior behavior) {
-        FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/RTSettings.fxml"));
-        
-        try {
-            AnchorPane root = loader.load();
-            RTSettingsController controller = loader.getController();
-            controller.setAnchorPaneRoot(root);
-            controller.setBehavior(behavior);
-            controller.calculateData();
-            return controller;
-        } catch (Exception e) {
-            UError.exception("ELEMENTS.getRTSettingsController: Failed to load element", e);
-            return null;
-        }
-    }
-
-    public static FormatCharController getFormatCharController(StyleSheetChar oldStyleSheet, StyleSheetChar newStyleSheet) {
-        FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/FormatChar.fxml"));
-        
-        try {
-            AnchorPane root = loader.load();
-            FormatCharController controller = loader.getController();
-            controller.setAnchorPaneRoot(root);
-            controller.calculateData(oldStyleSheet, newStyleSheet);
-            return controller;
-        } catch (Exception e) {
-            UError.exception("ELEMENTS.getFormatCharController: Failed to load element", e);
-            return null;
-        }
-    }
 
 
 }
