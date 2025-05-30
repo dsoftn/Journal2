@@ -34,7 +34,6 @@ public class Clip {
     private String lastClipUrl = getClipUrl();
     ContinuousTimer timer = new ContinuousTimer(200);
     private String styledText = null;
-    private boolean ignoreClipboardChanges = false;
 
     // Constructor
 
@@ -142,11 +141,6 @@ public class Clip {
     // System clipboard listener
 
     private void onClipboardChanged() {
-        if (ignoreClipboardChanges) {
-            ignoreClipboardChanges = false;
-            return;
-        }
-
         String changed = whatChangedInSystemClipboard();
 
         if (changed == null) {
@@ -217,7 +211,7 @@ public class Clip {
     public void setStyledText(String styledText) {
         this.styledText = styledText;
         timer.stop();
-        ignoreClipboardChanges = true;
+        lastClipText = RTWText.transformToPlainText(styledText);
         setClipText(RTWText.transformToPlainText(styledText));
         timer.play(null);
     }

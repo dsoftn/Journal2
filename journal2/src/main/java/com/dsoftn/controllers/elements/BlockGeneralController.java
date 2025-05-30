@@ -262,6 +262,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     @Override
     public void closeMe() {
+        OBJECTS.EVENT_HANDLER.unregister(this);
         removeFromLayout();
     }
 

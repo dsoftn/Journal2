@@ -171,8 +171,9 @@ public class RTWText {
         
         String selText = rtwWidget.getSelectedText();
         List<StyleSheetChar> selCss = rtwWidget.cssStyles.subList(rtwWidget.getSelection().getStart(), rtwWidget.getSelection().getEnd());
+        List<StyleSheetParagraph> selParCss = rtwWidget.cssParagraphStyles.subList(rtwWidget.getParIndex(rtwWidget.getSelection().getStart()), rtwWidget.getParIndex(rtwWidget.getSelection().getEnd()) + 1);
 
-        RTWText rtwText = new RTWText(selText, selCss, null);
+        RTWText rtwText = new RTWText(selText, selCss, selParCss);
 
         return rtwText;
     }
@@ -184,6 +185,7 @@ public class RTWText {
 
         String pText = rtwText.extractText(rtwText.resultString);
         List<StyleSheetChar> pCharCss = rtwText.extractCssChars(rtwText.resultString);
+        List<StyleSheetParagraph> pParCss = rtwText.extractCssParagraphs(rtwText.resultString);
         
         if (pText.startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
             pText = pText.substring(1);
@@ -196,7 +198,7 @@ public class RTWText {
             }
         }
 
-        rtwWidget.pastePlainText(null, pText, pCharCss);
+        rtwWidget.pastePlainText(null, pText, pCharCss, pParCss);
     }
 
     public static void paste(RTWidget rtwWidget, String styledText) {

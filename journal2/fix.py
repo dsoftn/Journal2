@@ -1,6 +1,7 @@
 import os
 def fix_fxml_files():
-    fxml_files = [f for f in os.listdir('.') if f.endswith('.fxml')]    
+    folder_path = ".\\src\\main\\resources\\fxml\\"
+    fxml_files = [f for f in os.listdir(folder_path) if f.endswith('.fxml')]    
     old_xmlns = 'xmlns="http://javafx.com/javafx/23.0.1"'
     new_xmlns = 'xmlns="http://javafx.com/javafx/21"'
 
@@ -12,7 +13,7 @@ def fix_fxml_files():
 
     for fxml_file in fxml_files:
         # Read file content
-        with open(fxml_file, 'r', encoding='utf-8') as f:
+        with open(folder_path + fxml_file, 'r', encoding='utf-8') as f:
             content = f.read()
             occurrences = content.count(old_xmlns)
 
@@ -26,7 +27,7 @@ def fix_fxml_files():
         elif occurrences == 1:
             new_content = content.replace(old_xmlns, new_xmlns)
     
-            with open(fxml_file, 'w', encoding='utf-8') as f:
+            with open(folder_path + fxml_file, 'w', encoding='utf-8') as f:
                 f.write(new_content)
                 print(f"Updated {fxml_file}")
             one_occurrence += 1

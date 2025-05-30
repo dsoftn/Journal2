@@ -17,7 +17,9 @@ import com.dsoftn.services.text_handler.ACHandler;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.services.timer.ContinuousTimer;
 import com.dsoftn.utils.UError;
+import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UString;
+import com.dsoftn.utils.USettings;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -884,8 +886,11 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private int getPosGlobal(int paragraphIndex, int column) {
         return this.position(paragraphIndex, column).toOffset();
     }
-    private int getParIndex(int globalPosition) {
+    public int getParIndex(int globalPosition) {
         return this.offsetToPosition(globalPosition, TwoDimensional.Bias.Forward).getMajor();
+    }
+    private String getParPlainText(int paragraphIndex) {
+        return getParagraphTextNoAC(paragraphIndex).replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "");
     }
     private int getColIndex(int globalPosition) {
         return this.offsetToPosition(globalPosition, TwoDimensional.Bias.Forward).getMinor();
@@ -1012,11 +1017,14 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         return true;
     }
 
-    public void pastePlainText(Integer globalPosition, String text, List<StyleSheetChar> cssList) {
+    public void pastePlainText(Integer globalPosition, String text, List<StyleSheetChar> cssList, List<StyleSheetParagraph> cssParagraphList) {
         if (globalPosition == null) {
             globalPosition = this.getCaretPosition();
         }
         text = RTWText.transformToPlainText(text);
+        if (text.isEmpty()) {
+            return;
+        }
 
         StyleSheetChar cssC = getPredictedCssChar(globalPosition);
         StyleSheetParagraph cssP = this.cssParagraphStyles.get(getParIndex(globalPosition)).duplicate();
@@ -1028,29 +1036,40 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             this.cssStyles.add(globalPosition + i, cssC.duplicate());
         }
 
-        for (int i = getParIndex(globalPosition) + 1; i < getParIndex(globalPosition ) + 1 + UString.Count(text, "\n"); i++) {
-            if (OBJECTS.SETTINGS.getvBOOLEAN("PreserveParagraphStyle")) {
-                this.cssParagraphStyles.add(i, cssP.duplicate());
-            } else {
-                this.cssParagraphStyles.add(i, new StyleSheetParagraph());
+        int parIndex = getParIndex(globalPosition);
+        int parToInsertCount = UString.Count(text, "\n");
+
+        // If first paragraph is empty then use first paragraph style from cssParagraphList
+        if (cssParagraphList != null && cssParagraphList.size() > 0 && getParPlainText(parIndex).isEmpty()) {
+            cssParagraphStyles.add(parIndex, cssParagraphList.get(0).duplicate());
+        }
+
+        // Set paragraph styles from 1 to parToInsertCount
+        if (cssParagraphList == null || cssParagraphList.size() != parToInsertCount + 1) {
+            // If no paragraph styles are provided then use default paragraph style
+            for (int i = parIndex + 1; i < parIndex + 1 + parToInsertCount; i++) {
+                if (OBJECTS.SETTINGS.getvBOOLEAN("PreserveParagraphStyle")) {
+                    this.cssParagraphStyles.add(i, cssP.duplicate());
+                } else {
+                    this.cssParagraphStyles.add(i, new StyleSheetParagraph(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", textHandler.getBehavior()).getValueSTRING()));
+                }
             }
+        } else {
+            // If paragraph styles are provided then use them
+            for (int i = 1; i < parToInsertCount + 1; i++) {
+                this.cssParagraphStyles.add(parIndex + i, cssParagraphList.get(i).duplicate());
+            }
+
         }
         
         this.insertText(globalPosition, text);
 
-        for (int i = 0; i < text.length(); i++) {
-            if (cssList != null && cssList.size() > i) {
-                cssC = cssList.get(i).duplicate();
-            }
-            this.setStyle(globalPosition + i, globalPosition + i + 1, cssC.getCss());
+        for (int i = globalPosition; i < globalPosition + text.length(); i++) {
+            this.setStyle(i, i + 1, this.cssStyles.get(i).getCss());
         }
 
-        for (int i = getParIndex(globalPosition) + 1; i < getParIndex(globalPosition ) + 1 + UString.Count(text, "\n"); i++) {
-            if (OBJECTS.SETTINGS.getvBOOLEAN("PreserveParagraphStyle")) {
-                this.setParagraphStyle(i, cssP.getCss());
-            } else {
-                this.setParagraphStyle(i, new StyleSheetParagraph().getCss());
-            }
+        for (int i = getParIndex(globalPosition); i < getParIndex(globalPosition ) + 1 + UString.Count(text, "\n"); i++) {
+            this.setParagraphStyle(i, this.cssParagraphStyles.get(i).getCss());
         }
 
         fixSafeCharInAllParagraphs();
@@ -1058,7 +1077,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     private void pastePlainText(Integer globalPosition, String text) {
-        pastePlainText(globalPosition, text, null);
+        pastePlainText(globalPosition, text, null, null);
     }
 
     private void handleMousePressed(MouseEvent event) {
