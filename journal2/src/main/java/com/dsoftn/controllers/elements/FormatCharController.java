@@ -239,11 +239,11 @@ public class FormatCharController implements IBaseController, ICustomEventListen
     }
 
     public void setOldStyleSheet(StyleSheetChar oldStyleSheet) {
-        originalCharStyle = oldStyleSheet;
+        originalCharStyle = oldStyleSheet.duplicate();
     }
 
     public void setNewStyleSheet(StyleSheetChar newStyleSheet) {
-        curCharStyle = newStyleSheet;
+        curCharStyle = newStyleSheet.duplicate();
     }
     
     public void setBehavior(TextHandler.Behavior behavior) {

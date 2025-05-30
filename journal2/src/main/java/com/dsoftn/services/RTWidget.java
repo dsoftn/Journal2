@@ -24,6 +24,7 @@ import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 
 public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextArea
@@ -422,6 +423,11 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                 return;
             }
             msgForHandler("SELECTED: True");
+            cssChar = cssStyles.get(this.getSelection().getStart()).duplicate();
+            cssParagraph = cssParagraphStyles.get(this.getParIndex(this.getSelection().getStart())).duplicate();
+            cssCharPrev = null;
+            cssParagraphPrev = null;
+            sendToHandlerCharAndParagraphCurrentStyle();
         });
                 
         // Text change
@@ -1058,12 +1064,20 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private void handleMousePressed(MouseEvent event) {
         busy = true;
         ac.removeCurrentAC();
+        demarkCharOVERWRITE(this.getCaretPosition());
         if (event.isPrimaryButtonDown()) {
             msgForHandler("CONTEXT_MENU:HIDE");
+        } else if (event.isSecondaryButtonDown() && this.getSelectedText().isEmpty()) {
+            int index = this.hit(event.getX(), event.getY()).getInsertionIndex();
+            this.moveTo(index);
         }
 
         Platform.runLater(() -> {
             fixCaretPosition(this.getCaretPosition());
+            markCharOVERWRITE(this.getCaretPosition());
+            if (event.isSecondaryButtonDown()) {
+                textHandler.showRTWidgetContextMenu(event);
+            }
             this.busy = false;
         });
     }

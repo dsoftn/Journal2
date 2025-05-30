@@ -18,6 +18,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -83,6 +84,8 @@ public class MainWinController implements IBaseController {
     public void startMe() {
         stage.setTitle(CONSTANTS.APPLICATION_NAME);
 
+        setupWidgetsAppearance();
+
         stage.show();
 
         anchorWorkArea.prefWidthProperty().bind(scrPaneWorkArea.widthProperty());
@@ -110,6 +113,23 @@ public class MainWinController implements IBaseController {
 
             return;
         }
+    }
+
+    private void setupWidgetsAppearance() {
+        scrPaneWorkArea.addEventFilter(ScrollEvent.SCROLL, event -> {
+            double deltaY = event.getDeltaY();
+            double contentHeight = scrPaneWorkArea.getContent().getBoundsInLocal().getHeight();
+            double scrollDelta = deltaY / contentHeight;
+
+            scrPaneWorkArea.setVvalue(
+                clamp(scrPaneWorkArea.getVvalue() - scrollDelta, 0, 1)
+            );
+            event.consume();
+        });
+    }
+
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
 
     // FXML event handlers

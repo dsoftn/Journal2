@@ -1666,6 +1666,20 @@
         "languageCode": "en",
         "creationDate": "2025.05.29 23:01:44",
         "userData": ""
+      },
+      "text_FormatText": {
+        "key": "text_FormatText",
+        "value": "Format text",
+        "languageCode": "en",
+        "creationDate": "2025.05.30 14:18:43",
+        "userData": ""
+      },
+      "text_FormatParagraph": {
+        "key": "text_FormatParagraph",
+        "value": "Format paragraph",
+        "languageCode": "en",
+        "creationDate": "2025.05.30 14:32:47",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -3333,6 +3347,20 @@
         "value": "Podešavanja: Naziv bloka",
         "languageCode": "sr-lat",
         "creationDate": "2025.05.29 23:01:44",
+        "userData": ""
+      },
+      "text_FormatText": {
+        "key": "text_FormatText",
+        "value": "Tekst format",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.30 14:18:43",
+        "userData": ""
+      },
+      "text_FormatParagraph": {
+        "key": "text_FormatParagraph",
+        "value": "Paragraf format",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.05.30 14:32:47",
         "userData": ""
       }
     }

@@ -8,6 +8,8 @@ import java.util.Map;
 import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.controllers.MsgBoxController;
+import com.dsoftn.controllers.elements.FormatCharController;
+import com.dsoftn.controllers.elements.FormatParagraphController;
 import com.dsoftn.controllers.elements.RTSettingsController;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
@@ -18,12 +20,14 @@ import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.USettings;
 
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
@@ -320,7 +324,7 @@ public class TextHandler {
         }
     }
 
-    private void showRTWidgetContextMenu(ContextMenuEvent contextMenuEvent) {
+    public void showRTWidgetContextMenu(Event event) {
         // Cut
         if (rtWidget.getSelectedText().isEmpty() || rtWidget.isReadOnly()) {
             contextRTWidgetMenuItems.get("CUT").setDisable(true);
@@ -341,7 +345,7 @@ public class TextHandler {
         }
 
 
-        if (contextMenuEvent == null) {
+        if (event == null) {
             rtWidget.getCaretBounds().ifPresent(bounds -> {
                 double screenX = bounds.getMinX();
                 double screenY = bounds.getMaxY();
@@ -349,8 +353,10 @@ public class TextHandler {
                     contextRTWidgetMenu.show(rtWidget, screenX, screenY);
                 });
             });
-        } else {
-            contextRTWidgetMenu.show(rtWidget, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+        } else if (event instanceof ContextMenuEvent) {
+            contextRTWidgetMenu.show(rtWidget, ((ContextMenuEvent) event).getScreenX(), ((ContextMenuEvent) event).getScreenY());
+        } else if (event instanceof MouseEvent) {
+            contextRTWidgetMenu.show(rtWidget, ((MouseEvent) event).getScreenX(), ((MouseEvent) event).getScreenY());
         }
     }
 
@@ -366,6 +372,10 @@ public class TextHandler {
         contextRTWidgetMenuItems.put("PASTE", getCMItemPaste());
         // Select All
         contextRTWidgetMenuItems.put("SELECT_ALL", getSelectAll());
+        // Format Text
+        contextRTWidgetMenuItems.put("FORMAT_TEXT", getCMItemFormatText());
+        // Format Paragraph
+        contextRTWidgetMenuItems.put("FORMAT_PARAGRAPH", getCMItemFormatParagraph());
         // Options
         contextRTWidgetMenuItems.put("OPTIONS", getCMIItemOptions());
 
@@ -373,8 +383,8 @@ public class TextHandler {
         
         // BEHAVIOR - selection of menu items
         if (behavior == Behavior.BLOCK_NAME) {
-            separatorAfterItem = List.of("SELECT_ALL");
-            allowedItems = List.of("CUT", "COPY", "PASTE", "SELECT_ALL", "OPTIONS");
+            separatorAfterItem = List.of("SELECT_ALL", "FORMAT_PARAGRAPH");
+            allowedItems = List.of("CUT", "COPY", "PASTE", "SELECT_ALL", "FORMAT_TEXT", "FORMAT_PARAGRAPH", "OPTIONS");
         }
 
         if (rtWidget.isReadOnly()) {
@@ -447,6 +457,57 @@ public class TextHandler {
         return selectAll;
     }
 
+    private MenuItem getCMItemFormatText() {
+        MenuItem formatText = new MenuItem(OBJECTS.SETTINGS.getl("text_FormatText"));
+        Image imgFormatText = new Image(getClass().getResourceAsStream("/images/text_format.png"));
+        ImageView imgFormatTextView = new ImageView(imgFormatText);
+        imgFormatTextView.setPreserveRatio(true);
+        imgFormatTextView.setFitHeight(20);
+        formatText.setGraphic(imgFormatTextView);
+        formatText.setOnAction(event -> {
+            StyleSheetChar defCharCss = new StyleSheetChar();
+            defCharCss.setCss(USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior).getValueSTRING());
+            FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, defCharCss, rtWidget.getCssChar(), this::onTextFormatExitCallback);
+            formatChar.setTitle(OBJECTS.SETTINGS.getl("text_FormatText"));
+            formatChar.startMe();
+        });
+
+        return formatText;
+    }
+
+    private void onTextFormatExitCallback(StyleSheetChar result) {
+        if (result != null) {
+            msgForWidget(result);
+            msgForToolbar(result);
+        }
+    }
+
+    private MenuItem getCMItemFormatParagraph() {
+        MenuItem formatParagraph = new MenuItem(OBJECTS.SETTINGS.getl("text_FormatParagraph"));
+        Image imgFormatParagraph = new Image(getClass().getResourceAsStream("/images/paragraph_format.png"));
+        ImageView imgFormatParagraphView = new ImageView(imgFormatParagraph);
+        imgFormatParagraphView.setPreserveRatio(true);
+        imgFormatParagraphView.setFitHeight(20);
+        formatParagraph.setGraphic(imgFormatParagraphView);
+        formatParagraph.setOnAction(event -> {
+            StyleSheetParagraph defParCss = new StyleSheetParagraph();
+            defParCss.setCss(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", behavior).getValueSTRING());
+            FormatParagraphController formatParagraphController = DIALOGS.getFormatParagraphController(stage, behavior, defParCss, rtWidget.getParagraphCss(), rtWidget.getCssChar(), this::onParagraphFormatExitCallback);
+            formatParagraphController.setTitle(OBJECTS.SETTINGS.getl("text_FormatParagraph"));
+            formatParagraphController.startMe();
+        });
+
+        return formatParagraph;
+    }
+
+    private void onParagraphFormatExitCallback(StyleSheetParagraph result) {
+        if (result != null) {
+            msgForWidget(result);
+            msgForToolbar(result);
+        }
+    }
+
+
 
     private MenuItem getCMIItemOptions() {
         MenuItem options = new MenuItem(OBJECTS.SETTINGS.getl("text_Options"));
@@ -499,10 +560,10 @@ public class TextHandler {
         msgForToolbar("REDO:" + undoHandler.canRedo());
 
         // RTWidget context menu
-        this.rtWidget.setOnContextMenuRequested(event -> {
-            hideRTWidgetContextMenu();
-            showRTWidgetContextMenu(event);
-        });
+        // this.rtWidget.setOnContextMenuRequested(event -> {
+        //     hideRTWidgetContextMenu();
+        //     showRTWidgetContextMenu(event);
+        // });
     }
 
     private void showRTSettings() {

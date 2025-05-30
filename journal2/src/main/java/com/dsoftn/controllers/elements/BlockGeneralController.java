@@ -262,10 +262,6 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     @Override
     public void closeMe() {
-        if (stage != null) {
-            stage.close();
-        }
-
         removeFromLayout();
     }
 

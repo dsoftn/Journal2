@@ -207,15 +207,15 @@ public class FormatParagraphController implements IBaseController, ICustomEventL
     }
 
     public void setOldStyleSheet(StyleSheetParagraph oldStyleSheet) {
-        originalParStyle = oldStyleSheet;
+        originalParStyle = oldStyleSheet.duplicate();
     }
 
     public void setNewStyleSheet(StyleSheetParagraph newStyleSheet) {
-        curParStyle = newStyleSheet;
+        curParStyle = newStyleSheet.duplicate();
     }
 
     public void setDefaultCharStyle(StyleSheetChar defaultCharStyle) {
-        this.defaultCharStyle = defaultCharStyle;
+        this.defaultCharStyle = defaultCharStyle.duplicate();
     }
 
     // Public methods
@@ -668,8 +668,6 @@ public class FormatParagraphController implements IBaseController, ICustomEventL
         curParStyle =originalParStyle.duplicate();
         updateCss(curParStyle);
     }
-
-
 
 
 

@@ -427,5 +427,18 @@
     "creationDate": "2025.05.29 23:16:26",
     "userData": "",
     "canBeSavedInFile": true
+  },
+  "FormatParagraph_BLOCK_NAME": {
+    "key": "FormatParagraph_BLOCK_NAME",
+    "value": "status\u003d0.0\nPosX\u003d570.0\nPosY\u003d164.0\nWidth\u003d780.0\nHeight\u003d549.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.05.30 15:23:56",
+    "userData": "",
+    "canBeSavedInFile": true
   }
 }
