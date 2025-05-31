@@ -51,12 +51,15 @@ public class FormatCharController implements IBaseController, ICustomEventListen
     private List<Node> dragNodes = new ArrayList<>();
     private StyleSheetChar originalCharStyle = new StyleSheetChar(true);
     private StyleSheetChar curCharStyle = new StyleSheetChar(true);
+    private StyleSheetChar startingCurCharStyle = new StyleSheetChar(true);
     private boolean ignoreFontChange = false;
     private int sampleStart = 0;
     private int sampleEnd = 0;
     private final String DELIMITER = ".....";
     private RTWidget sampleWidget = null;
     private String invalidEntry = "-fx-background-color: darkred;";
+    private String changedEntry = "-fx-border-width: 2px; -fx-border-style: solid;";
+    private String unchangedEntry = "-fx-border-width: 1; -fx-border-style: dashed;";
     private String curFGColor = null;
     private String curBGColor = null;
     private String curStrokeColor = null;
@@ -244,6 +247,7 @@ public class FormatCharController implements IBaseController, ICustomEventListen
 
     public void setNewStyleSheet(StyleSheetChar newStyleSheet) {
         curCharStyle = newStyleSheet.duplicate();
+        startingCurCharStyle = newStyleSheet.duplicate();
     }
     
     public void setBehavior(TextHandler.Behavior behavior) {
@@ -688,7 +692,19 @@ public class FormatCharController implements IBaseController, ICustomEventListen
         StyleSheetChar css = originalCharStyle.duplicate();
         css.setCss(curCharStyle.getCss());
         sampleWidget.setStyle(sampleStart, sampleEnd, css.getCss());
+        repaintSelectedChoices();
     }
+
+    private void repaintSelectedChoices() {
+        if (curCharStyle.equals(startingCurCharStyle)) {
+            btnApply.setDisable(true);
+            txtCss.setStyle(unchangedEntry);
+        } else {
+            btnApply.setDisable(false);
+            txtCss.setStyle(changedEntry);
+        }
+    }
+
 
     // FXML methods
 

@@ -43,9 +43,12 @@ public class FormatParagraphController implements IBaseController, ICustomEventL
     private List<Node> dragNodes = new ArrayList<>();
     private StyleSheetParagraph originalParStyle = new StyleSheetParagraph();
     private StyleSheetParagraph curParStyle = new StyleSheetParagraph();
+    private StyleSheetParagraph startingCurParStyle = new StyleSheetParagraph();
     private StyleSheetChar defaultCharStyle = new StyleSheetChar(true);
     private RTWidget sampleWidget = null;
     private String invalidEntry = "-fx-background-color: darkred;";
+    private String changedEntry = "-fx-border-width: 2px; -fx-border-style: solid;";
+    private String unchangedEntry = "-fx-border-width: 1; -fx-border-style: dashed;";
     private String curBGColor = null;
     private String curBorderColor = null;
 
@@ -212,6 +215,7 @@ public class FormatParagraphController implements IBaseController, ICustomEventL
 
     public void setNewStyleSheet(StyleSheetParagraph newStyleSheet) {
         curParStyle = newStyleSheet.duplicate();
+        startingCurParStyle = newStyleSheet.duplicate();
     }
 
     public void setDefaultCharStyle(StyleSheetChar defaultCharStyle) {
@@ -626,6 +630,17 @@ public class FormatParagraphController implements IBaseController, ICustomEventL
     private void updateSample() {
         txtCss.setText(curParStyle.getCss());
         sampleWidget.setParagraphStyle(1, curParStyle.getCss());
+        repaintSelectedChoices();
+    }
+
+    private void repaintSelectedChoices() {
+        if (curParStyle.equals(startingCurParStyle)) {
+            btnApply.setDisable(true);
+            txtCss.setStyle(unchangedEntry);
+        } else {
+            btnApply.setDisable(false);
+            txtCss.setStyle(changedEntry);
+        }
     }
 
     // FXML methods

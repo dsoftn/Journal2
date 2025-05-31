@@ -1041,7 +1041,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
         // If first paragraph is empty then use first paragraph style from cssParagraphList
         if (cssParagraphList != null && cssParagraphList.size() > 0 && getParPlainText(parIndex).isEmpty()) {
-            cssParagraphStyles.add(parIndex, cssParagraphList.get(0).duplicate());
+            cssParagraphStyles.set(parIndex, cssParagraphList.get(0).duplicate());
         }
 
         // Set paragraph styles from 1 to parToInsertCount

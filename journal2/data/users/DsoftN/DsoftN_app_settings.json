@@ -391,7 +391,7 @@
   },
   "EmptyDialog_BLOCK_NAME_ENTER": {
     "key": "EmptyDialog_BLOCK_NAME_ENTER",
-    "value": "status\u003d0.0\nPosX\u003d310.0\nPosY\u003d267.0\nWidth\u003d1300.0\nHeight\u003d603.0\n",
+    "value": "status\u003d0.0\nPosX\u003d403.0\nPosY\u003d272.0\nWidth\u003d1306.0\nHeight\u003d603.0\n",
     "defaultValue": "",
     "min": "null",
     "max": "null",
