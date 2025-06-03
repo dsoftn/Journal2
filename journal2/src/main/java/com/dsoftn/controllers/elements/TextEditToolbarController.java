@@ -450,14 +450,37 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         return true;
     }
 
-    public void setToolbarSectionsVisibility() {
+    public void setToolbarSectionVisible(ToolbarSectionsEnum section, boolean visible) {
+        switch (section) {
+            case CLIPBOARD:
+                setToolbarSectionVisibleCLIPBOARD(visible);
+                break;
+            case INSERT:
+                setToolbarSectionVisibleINSERT(visible);
+                break;
+            case FIND_REPLACE:
+                setToolbarSectionVisibleFIND_REPLACE(visible);
+                break;
+            case BOLD_ITALIC_UNDERLINE_STRIKETHROUGH:
+                setToolbarSectionVisibleBOLD_ITALIC_UNDERLINE_STRIKETHROUGH(visible);
+                break;
+            case ALIGNMENT:
+                setToolbarSectionVisibleALIGNMENT(visible);
+                break;
+            default:
+                UError.error("TextEditToolbarController.setToolbarSectionVisible", "Unknown section: " + section.toString());
+                break;
+        }
+    }
+
+    // Private methods
+
+    private void setToolbarSectionsVisibility() {
         for (ToolbarSectionsEnum section : ToolbarSectionsEnum.values()) {
             String settingKey = "ToolbarSectionVisible_" + section.toString();
             setToolbarSectionVisible(section, OBJECTS.SETTINGS.getvBOOLEAN(settingKey));
         }
     }
-
-    // Private methods
 
     private String findReplaceActionForHandler(String action, String findText) {
         /*
@@ -485,29 +508,6 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         result += wholeWords;
 
         return result;
-    }
-
-    private void setToolbarSectionVisible(ToolbarSectionsEnum section, boolean visible) {
-        switch (section) {
-            case CLIPBOARD:
-                setToolbarSectionVisibleCLIPBOARD(visible);
-                break;
-            case INSERT:
-                setToolbarSectionVisibleINSERT(visible);
-                break;
-            case FIND_REPLACE:
-                setToolbarSectionVisibleFIND_REPLACE(visible);
-                break;
-            case BOLD_ITALIC_UNDERLINE_STRIKETHROUGH:
-                setToolbarSectionVisibleBOLD_ITALIC_UNDERLINE_STRIKETHROUGH(visible);
-                break;
-            case ALIGNMENT:
-                setToolbarSectionVisibleALIGNMENT(visible);
-                break;
-            default:
-                UError.error("TextEditToolbarController.setToolbarSectionVisible", "Unknown section: " + section.toString());
-                break;
-        }
     }
 
     private void setToolbarSectionVisibleCLIPBOARD(boolean visible) {

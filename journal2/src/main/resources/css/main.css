@@ -98,6 +98,17 @@ Button:
     -fx-font-style: italic;
 }
 
+/* Label - AddModel Warning */
+.label-add-model-warning {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff0000;
+    -fx-border-color: #9f4918;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 16px;
+    -fx-padding: 5 10 5 10;
+}
 
 /* Combo box - Default */
 .combo-box-default {

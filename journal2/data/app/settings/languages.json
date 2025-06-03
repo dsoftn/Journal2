@@ -1680,6 +1680,104 @@
         "languageCode": "en",
         "creationDate": "2025.05.30 14:32:47",
         "userData": ""
+      },
+      "ActorAdd_Title": {
+        "key": "ActorAdd_Title",
+        "value": "Add new Actor",
+        "languageCode": "en",
+        "creationDate": "2025.06.02 21:19:25",
+        "userData": ""
+      },
+      "ActorEdit_Title": {
+        "key": "ActorEdit_Title",
+        "value": "Update Actor  [#1]",
+        "languageCode": "en",
+        "creationDate": "2025.06.02 21:20:23",
+        "userData": ""
+      },
+      "text_Name": {
+        "key": "text_Name",
+        "value": "Name",
+        "languageCode": "en",
+        "creationDate": "2025.06.02 21:20:46",
+        "userData": ""
+      },
+      "text_Nick": {
+        "key": "text_Nick",
+        "value": "Nick",
+        "languageCode": "en",
+        "creationDate": "2025.06.02 21:21:05",
+        "userData": ""
+      },
+      "text_Description": {
+        "key": "text_Description",
+        "value": "Description",
+        "languageCode": "en",
+        "creationDate": "2025.06.02 21:21:44",
+        "userData": ""
+      },
+      "text_MakeThisAsDefaultActorForNewBlocks": {
+        "key": "text_MakeThisAsDefaultActorForNewBlocks",
+        "value": "Make this as default actor for new blocks",
+        "languageCode": "en",
+        "creationDate": "2025.06.02 21:23:12",
+        "userData": ""
+      },
+      "text_Update": {
+        "key": "text_Update",
+        "value": "Update",
+        "languageCode": "en",
+        "creationDate": "2025.06.02 21:24:00",
+        "userData": ""
+      },
+      "text_Add": {
+        "key": "text_Add",
+        "value": "Add",
+        "languageCode": "en",
+        "creationDate": "2025.06.02 21:24:25",
+        "userData": ""
+      },
+      "text_DataNotSaved": {
+        "key": "text_DataNotSaved",
+        "value": "Data not saved",
+        "languageCode": "en",
+        "creationDate": "2025.06.03 00:38:12",
+        "userData": ""
+      },
+      "ActorClose_DataNotSavedWarning": {
+        "key": "ActorClose_DataNotSavedWarning",
+        "value": "You have unsaved data.\nDo you want to save data before closing this dialog ?",
+        "languageCode": "en",
+        "creationDate": "2025.06.03 00:40:00",
+        "userData": ""
+      },
+      "ActorEdit_NameCannotBeEmpty": {
+        "key": "ActorEdit_NameCannotBeEmpty",
+        "value": "Actor name is empty !\nYou must set actor name before saving data !",
+        "languageCode": "en",
+        "creationDate": "2025.06.03 00:41:56",
+        "userData": ""
+      },
+      "ActorEdit_NickAndNameAlreadyExists": {
+        "key": "ActorEdit_NickAndNameAlreadyExists",
+        "value": "The Actor already exists !?\nThe role with the same name and nickname has already been recorded in the database.\nPlease change the name or nickname of the role so you can record it.",
+        "languageCode": "en",
+        "creationDate": "2025.06.03 00:44:04",
+        "userData": ""
+      },
+      "text_InvalidData": {
+        "key": "text_InvalidData",
+        "value": "Invalid Data",
+        "languageCode": "en",
+        "creationDate": "2025.06.03 00:44:48",
+        "userData": ""
+      },
+      "RtSettings_Title_ACTOR_DESCRIPTION": {
+        "key": "RtSettings_Title_ACTOR_DESCRIPTION",
+        "value": "Settings: Actor description",
+        "languageCode": "en",
+        "creationDate": "2025.06.03 12:53:24",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -3361,6 +3459,104 @@
         "value": "Paragraf format",
         "languageCode": "sr-lat",
         "creationDate": "2025.05.30 14:32:47",
+        "userData": ""
+      },
+      "ActorAdd_Title": {
+        "key": "ActorAdd_Title",
+        "value": "Dodavanje nove uloge",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.02 21:19:25",
+        "userData": ""
+      },
+      "ActorEdit_Title": {
+        "key": "ActorEdit_Title",
+        "value": "Ažuriraj ulogu  [#1]",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.02 21:20:23",
+        "userData": ""
+      },
+      "text_Name": {
+        "key": "text_Name",
+        "value": "Naziv",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.02 21:20:46",
+        "userData": ""
+      },
+      "text_Nick": {
+        "key": "text_Nick",
+        "value": "Nadimak",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.02 21:21:05",
+        "userData": ""
+      },
+      "text_Description": {
+        "key": "text_Description",
+        "value": "Opis",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.02 21:21:44",
+        "userData": ""
+      },
+      "text_MakeThisAsDefaultActorForNewBlocks": {
+        "key": "text_MakeThisAsDefaultActorForNewBlocks",
+        "value": "Postavi kao podrazumevanu ulogu za nove blokove",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.02 21:23:12",
+        "userData": ""
+      },
+      "text_Update": {
+        "key": "text_Update",
+        "value": "Ažuriraj",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.02 21:24:00",
+        "userData": ""
+      },
+      "text_Add": {
+        "key": "text_Add",
+        "value": "Dodaj",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.02 21:24:25",
+        "userData": ""
+      },
+      "text_DataNotSaved": {
+        "key": "text_DataNotSaved",
+        "value": "Podaci nisu snimljeni",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.03 00:38:12",
+        "userData": ""
+      },
+      "ActorClose_DataNotSavedWarning": {
+        "key": "ActorClose_DataNotSavedWarning",
+        "value": "Imate podatke koji nisu snimljeni.\nDa li želite da sačuvate podatke pre zatvaranja ovog dijaloga?",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.03 00:40:00",
+        "userData": ""
+      },
+      "ActorEdit_NameCannotBeEmpty": {
+        "key": "ActorEdit_NameCannotBeEmpty",
+        "value": "Ime uloge je prazno!\nMorate postaviti naziv uloge pre snimanja podataka!",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.03 00:41:56",
+        "userData": ""
+      },
+      "ActorEdit_NickAndNameAlreadyExists": {
+        "key": "ActorEdit_NickAndNameAlreadyExists",
+        "value": "Uloga vec postoji !?\nUloga sa istim nazivom i nadimkom je vec snimljena u bazu podataka.\nMolim vas da promenite naziv ili nadimak uloge kako bi mogli da je snimite.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.03 00:44:04",
+        "userData": ""
+      },
+      "text_InvalidData": {
+        "key": "text_InvalidData",
+        "value": "Podaci nisu validni",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.03 00:44:48",
+        "userData": ""
+      },
+      "RtSettings_Title_ACTOR_DESCRIPTION": {
+        "key": "RtSettings_Title_ACTOR_DESCRIPTION",
+        "value": "Podešavanja: Opis uloge",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.03 12:53:24",
         "userData": ""
       }
     }

@@ -49,8 +49,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     public boolean stateChanged = true; // Used with Undo/Redo
     private ContinuousTimer timer = new ContinuousTimer(OBJECTS.SETTINGS.getvINTEGER("IntervalBetweenTextChangesMS"));
     private PauseTransition pauseAC = null;
-    // public TextHandler.Behavior behavior = null;
     public ACHandler ac = null;
+    private List<KeyEvent> keyEvents = new ArrayList<>();
 
     public boolean isOverwriteMode = false;
    
@@ -133,6 +133,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
     public boolean canBeClosed() {
         if (ac.hasCurrentAC()) {
+            ac.removeCurrentAC();
             return false;
         }
 
@@ -712,35 +713,9 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
         // Key typed
         this.addEventFilter(KeyEvent.KEY_TYPED, event -> {
-            if (this.readOnly) {
-                event.consume();
-                return;
-            }
+            event.consume();
 
-            msgForHandler("CONTEXT_MENU:HIDE");
-
-            if (event.getCharacter().equals("")) return;
-            
-            if (this.busy) {
-                event.consume();
-                return;
-            }
-            this.busy = true;
-            this.timer.resetInterval();
-
-            try {
-                handleKeyTyped_CHARACTER(event);
-            } catch (Exception e) {
-                UError.exception("handleKeyTyped_CHARACTER", e);
-            }
-
-            Platform.runLater(() -> {
-                while (getTextNoAC().length() > cssStyles.size()) {
-                    this.deletePreviousChar();
-                }
-                this.busy = false;
-            });
-
+            processKeyEvent(event, true);
         });
         
         
@@ -805,6 +780,63 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     // Private methods
+
+    private void processKeyEvent(KeyEvent event, boolean isNewChar) {
+            if (this.readOnly) {
+                event.consume();
+                return;
+            }
+
+            // msgForHandler("CONTEXT_MENU:HIDE");
+            event.consume();
+            if (event.getCharacter().length() == 0 || 
+                event.getCharacter().equals("\n") || 
+                event.getCharacter().equals("\t") ||
+                event.getCharacter().equals("\r") ||
+                event.getCharacter().charAt(0) < 32 ||
+                event.getCharacter().charAt(0) > 126 ||
+                event.isControlDown() ||
+                event.isAltDown() ||
+                event.getCharacter().equals("")) {
+                return;
+            }
+
+            if (this.busy) {
+                if (isNewChar) {
+                    keyEvents.add(event);
+                } else {
+                    keyEvents.add(0, event);
+                }
+                return;
+            }
+            this.busy = true;
+            
+            KeyEvent newEvent;
+            if (isNewChar) {
+                keyEvents.add(event);
+                newEvent = keyEvents.remove(0);
+            } else {
+                newEvent = event;
+            }
+            
+            this.timer.resetInterval();
+
+            try {
+                handleKeyTyped_CHARACTER(newEvent);
+            } catch (Exception e) {
+                UError.exception("handleKeyTyped_CHARACTER", e);
+            }
+
+            Platform.runLater(() -> {
+                while (getTextNoAC().length() > cssStyles.size()) {
+                    this.deletePreviousChar();
+                }
+                this.busy = false;
+                if (keyEvents.size() > 0) {
+                    processKeyEvent(keyEvents.remove(0), false);
+                }
+            });
+    }
 
     private void actionBeforeChanges() {
         msgForHandler(TextToolbarActionEnum.FIND_CLOSE.name());
@@ -1021,7 +1053,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         if (globalPosition == null) {
             globalPosition = this.getCaretPosition();
         }
-        text = RTWText.transformToPlainText(text);
+        
+        text = RTWText.transformToPlainText(text, cssList);
         if (text.isEmpty()) {
             return;
         }
@@ -1961,18 +1994,6 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     private void handleKeyTyped_CHARACTER(KeyEvent event) {
-        if (event.getCharacter().isEmpty() || 
-            event.getCharacter().equals("\n") || 
-            event.getCharacter().equals("\t") ||
-            event.getCharacter().equals("\r") ||
-            event.isControlDown() ||
-            event.isAltDown()) {
-
-                event.consume();
-                // this.busy = false;
-                return;
-        }
-
         ac.removeCurrentAC();
         actionBeforeChanges();
 
@@ -1987,8 +2008,6 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             this.moveTo(start);
         }
 
-        event.consume();
-        
         ignoreTextChangePERMANENT = true;
         ignoreCaretPositionChangePERMANENT = true;
 

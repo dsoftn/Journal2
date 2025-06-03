@@ -31,6 +31,8 @@ TABLE actors
     nick TEXT NOT NULL - short name of the actor
     name TEXT NOT NULL - full name of the actor
     description TEXT NOT NULL - description of the actor
+    description_styled TEXT NOT NULL - description of the actor with style
+    default_actor INTEGER NOT NULL - 0 or 1 - It determines if actor will be automatically added to new blocks
     created TEXT NOT NULL - date in format for JSON
     updated TEXT NOT NULL - date in format for JSON
     default_attachment INTEGER - default attachment id

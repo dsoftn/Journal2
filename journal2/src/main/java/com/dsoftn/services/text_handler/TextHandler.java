@@ -35,7 +35,8 @@ import javafx.stage.Stage;
 
 public class TextHandler {
     public enum Behavior {
-        BLOCK_NAME(1);
+        BLOCK_NAME(1),
+        ACTOR_DESCRIPTION(2);
 
         // Variables
         private final int value;
@@ -280,6 +281,22 @@ public class TextHandler {
         rtWidget.ac.updateSettings();
     }
 
+    public boolean canBeClosed() {
+        if (toolbarController != null) {
+            if (!toolbarController.canBeClosed()) {
+                return false;
+            }
+        }
+
+        if (rtWidget != null) {
+            if (!rtWidget.canBeClosed()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // Private methods
 
     // Messages for toolbar
@@ -383,6 +400,9 @@ public class TextHandler {
         
         // BEHAVIOR - selection of menu items
         if (behavior == Behavior.BLOCK_NAME) {
+            separatorAfterItem = List.of("SELECT_ALL", "FORMAT_PARAGRAPH");
+            allowedItems = List.of("CUT", "COPY", "PASTE", "SELECT_ALL", "FORMAT_TEXT", "FORMAT_PARAGRAPH", "OPTIONS");
+        } else if (behavior == Behavior.ACTOR_DESCRIPTION) {
             separatorAfterItem = List.of("SELECT_ALL", "FORMAT_PARAGRAPH");
             allowedItems = List.of("CUT", "COPY", "PASTE", "SELECT_ALL", "FORMAT_TEXT", "FORMAT_PARAGRAPH", "OPTIONS");
         }
@@ -535,18 +555,35 @@ public class TextHandler {
 
         switch (behavior) {
             case BLOCK_NAME:
-                // rtWidget.setBehavior(Behavior.BLOCK_NAME_ENTER);
                 HBox.setHgrow(rtWidget, Priority.ALWAYS);
                 StyleSheetChar css = new StyleSheetChar();
                 css.setCss(USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior, "-fx-font-family: 'Arial';-fx-font-size: 30px;").getValueSTRING());
                 rtWidget.setCssChar(css);
-                // rtWidget.setStyle(css.getCss());
                 StyleSheetParagraph cssParagraph = new StyleSheetParagraph();
                 cssParagraph.setCss(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", behavior, "-fx-text-alignment: center;").getValueSTRING());
                 rtWidget.setParagraphCss(cssParagraph);
                 rtWidget.setMinTextWidgetHeight(USettings.getAppOrUserSettingsItem("MinRTWidgetHeight", behavior, 40).getValueINT());
                 rtWidget.setMaxNumberOfParagraphs(USettings.getAppOrUserSettingsItem("MaxNumberOfParagraphs", behavior, 5).getValueINT());
                 break;
+            case ACTOR_DESCRIPTION:
+                HBox.setHgrow(rtWidget, Priority.ALWAYS);
+                StyleSheetChar cssActor = new StyleSheetChar();
+                cssActor.setCss(USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior, "-fx-font-family: 'Arial';-fx-font-size: 20px;").getValueSTRING());
+                rtWidget.setCssChar(cssActor);
+                StyleSheetParagraph cssParagraphActor = new StyleSheetParagraph();
+                cssParagraphActor.setCss(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", behavior, "-fx-text-alignment: left;").getValueSTRING());
+                rtWidget.setParagraphCss(cssParagraphActor);
+                rtWidget.setMinTextWidgetHeight(USettings.getAppOrUserSettingsItem("MinRTWidgetHeight", behavior, 40).getValueINT());
+                rtWidget.setMaxNumberOfParagraphs(USettings.getAppOrUserSettingsItem("MaxNumberOfParagraphs", behavior, 0).getValueINT());
+                if (toolbarController != null) {
+                    toolbarController.setToolbarSectionVisible(TextEditToolbarController.ToolbarSectionsEnum.CLIPBOARD, false);
+                    toolbarController.setToolbarSectionVisible(TextEditToolbarController.ToolbarSectionsEnum.INSERT, false);
+                    toolbarController.setToolbarSectionVisible(TextEditToolbarController.ToolbarSectionsEnum.FIND_REPLACE, false);
+                    toolbarController.setToolbarSectionVisible(TextEditToolbarController.ToolbarSectionsEnum.ALIGNMENT, false);
+                }
+                break;
+
+
             default:
                 break;
         }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="569.0" prefWidth="948.0" styleClass="popup-root" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dsoftn.controllers.models.ActorEditController">
+   <children>
+      <VBox layoutX="256.0" layoutY="74.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Region HBox.hgrow="SOMETIMES" />
+                  <ImageView fx:id="imgActor" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <Label fx:id="lblTitle" styleClass="label-title-default" text="Actor edit ID [1]" />
+                  <ImageView fx:id="imgNew" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <Region HBox.hgrow="SOMETIMES" />
+                  <Button fx:id="btnClose" mnemonicParsing="false" onAction="#onBtnCloseAction" styleClass="button-close" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <VBox HBox.hgrow="SOMETIMES">
+                     <children>
+                        <Label fx:id="lblName" styleClass="label-default" text="Name" />
+                        <TextField fx:id="txtName" styleClass="text-field-default" />
+                     </children>
+                  </VBox>
+                  <Region maxWidth="20.0" minWidth="25.0" />
+                  <VBox HBox.hgrow="SOMETIMES">
+                     <children>
+                        <Label fx:id="lblNick" styleClass="label-default" text="Nick" />
+                        <TextField fx:id="txtNick" styleClass="text-field-default" />
+                     </children>
+                  </VBox>
+               </children>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox fx:id="hBoxInfo" alignment="CENTER">
+               <children>
+                  <Label fx:id="lblInfo" styleClass="label-add-model-warning" text="Info message" />
+               </children>
+            </HBox>
+            <VBox maxHeight="1.7976931348623157E308" VBox.vgrow="SOMETIMES">
+               <children>
+                  <HBox fx:id="hBoxToolbarPlaceholder" spacing="15.0" />
+                  <HBox spacing="15.0">
+                     <children>
+                        <Label fx:id="lblDescription" styleClass="label-default" text="Description" />
+                     </children>
+                  </HBox>
+                  <VBox fx:id="vBoxRTWidgetPlaceholder" VBox.vgrow="SOMETIMES" />
+               </children>
+            </VBox>
+            <VBox>
+               <children>
+                  <HBox alignment="BOTTOM_LEFT" spacing="15.0">
+                     <children>
+                        <Label fx:id="lblAttachments" styleClass="label-default" text="Attachments" />
+                     </children>
+                  </HBox>
+                  <FlowPane fx:id="flowAttachments" />
+               </children>
+            </VBox>
+            <HBox>
+               <children>
+                  <CheckBox fx:id="chkDefault" mnemonicParsing="false" styleClass="check-box-default" text="Make this as default actor" />
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0">
+               <padding>
+                  <Insets bottom="5.0" top="5.0" />
+               </padding>
+            </Separator>
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+               <children>
+                  <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#onBtnUpdateAction" styleClass="button-default" text="Update Actor" />
+                  <Button fx:id="btnAdd" layoutX="512.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnAddAction" styleClass="button-default" text="Add Actor" />
+                  <Button fx:id="btnCancel" layoutX="434.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBtnCancelAction" styleClass="button-default" text="Cancel" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

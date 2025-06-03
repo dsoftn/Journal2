@@ -28,6 +28,7 @@ public class MsgBoxController implements IBaseController {
         INFORMATION("/images/information.png"),
         WARNING("/images/warning.png"),
         ERROR("/images/error.png"),
+        INVALID_DATA("/images/invalid_data.png"),
         FILE_SEARCH("/images/file_search2.png"),
         FILE_ERROR("/images/file_error.png"),
         SETTINGS_FILE("/images/settings_file2.png"),
@@ -40,7 +41,8 @@ public class MsgBoxController implements IBaseController {
         READ_ONLY("/images/read_only.png"),
         PARAGRAPH("/images/paragraph.png"),
         LIMIT("/images/limit.png"),
-        SETTINGS("/images/settings.png");
+        SETTINGS("/images/settings.png"),
+        SAVE("/images/save.png");
 
         private final String iconPath;
 

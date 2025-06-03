@@ -6,10 +6,10 @@ import com.dsoftn.services.text_handler.TextHandler;
 
 public class USettings {
 
-    public static SettingsItem getAppOrUserSettingsItem(String key, TextHandler.Behavior behavior, String defaultStringValue, Integer defaultIntValue) {
+    public static SettingsItem getAppOrUserSettingsItem(String key, String settingsName, String defaultStringValue, Integer defaultIntValue) {
         String suffix = "";
-        if (behavior != null) {
-            suffix = "_" + behavior.toString();
+        if (settingsName != null) {
+            suffix = "_" + settingsName;
         } else {
             return OBJECTS.SETTINGS.getUserSettingsItem(key);
         }
@@ -32,6 +32,10 @@ public class USettings {
         return OBJECTS.SETTINGS.getAppSettingsItem(key + suffix);
     }
 
+    public static SettingsItem getAppOrUserSettingsItem(String key, TextHandler.Behavior behavior, String defaultStringValue, Integer defaultIntValue) {
+        return getAppOrUserSettingsItem(key, behavior.name(), defaultStringValue, defaultIntValue);
+    }
+
     public static SettingsItem getAppOrUserSettingsItem(String key, TextHandler.Behavior behavior) {
         return getAppOrUserSettingsItem(key, behavior, null, null);
     }
@@ -43,6 +47,7 @@ public class USettings {
     public static SettingsItem getAppOrUserSettingsItem(String key, TextHandler.Behavior behavior, Integer defaultIntValue) {
         return getAppOrUserSettingsItem(key, behavior, null, defaultIntValue);
     }
+
 
 
 }

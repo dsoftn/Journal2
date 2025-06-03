@@ -5,13 +5,16 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.enums.models.AttachmentTypeEnum;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
+import com.dsoftn.services.RTWText;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UList;
@@ -36,6 +39,8 @@ public class Actor implements IModelEntity, ICustomEventListener {
     private String nick = "";
     private String name = "";
     private String description = "";
+    private String descriptionStyled = "";
+    private int defaultActor = 0;
     private String created = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private String updated = LocalDateTime.now().format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
     private List<Integer> relatedAttachments = new ArrayList<Integer>();
@@ -153,6 +158,8 @@ public class Actor implements IModelEntity, ICustomEventListener {
             this.nick = rs.getString("nick");
             this.name = rs.getString("name");
             this.description = rs.getString("description");
+            this.descriptionStyled = rs.getString("description_styled");
+            this.defaultActor = rs.getInt("default_actor");
             this.created = rs.getString("created");
             this.updated = rs.getString("updated");
             this.defaultAttachment = rs.getInt("default_attachment");
@@ -174,6 +181,7 @@ public class Actor implements IModelEntity, ICustomEventListener {
         return this.nick != null &&
                 this.name != null &&
                 this.description != null &&
+                this.descriptionStyled != null &&
                 this.created != null &&
                 this.updated != null;
     }
@@ -191,11 +199,13 @@ public class Actor implements IModelEntity, ICustomEventListener {
             // Add to database
             stmt = db.preparedStatement(
                 "INSERT INTO actors " + 
-                "(nick, name, description, created, updated, default_attachment) " + 
-                "VALUES (?, ?, ?, ?, ?, ?)",
+                "(nick, name, description, description_styled, default_actor, created, updated, default_attachment) " + 
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 this.nick,
                 this.name,
                 this.description,
+                this.descriptionStyled,
+                this.defaultActor,
                 this.created,
                 this.updated,
                 this.defaultAttachment);
@@ -254,11 +264,13 @@ public class Actor implements IModelEntity, ICustomEventListener {
             // Update in database
             stmt = db.preparedStatement(
                 "UPDATE actors " + 
-                "SET nick = ?, name = ?, description = ?, created = ?, updated = ?, default_attachment = ? " + 
+                "SET nick = ?, name = ?, description = ?, description_styled = ?, default_actor = ?, created = ?, updated = ?, default_attachment = ? " + 
                 "WHERE id = ?",
                 this.nick,
                 this.name,
                 this.description,
+                this.descriptionStyled,
+                this.defaultActor,
                 this.created,
                 this.updated,
                 this.defaultAttachment,
@@ -366,6 +378,8 @@ public class Actor implements IModelEntity, ICustomEventListener {
         actor.nick = this.nick;
         actor.name = this.name;
         actor.description = this.description;
+        actor.descriptionStyled = this.descriptionStyled;
+        actor.defaultActor = this.defaultActor;
         actor.created = this.created;
         actor.updated = this.updated;
         actor.defaultAttachment = this.defaultAttachment;
@@ -438,6 +452,10 @@ public class Actor implements IModelEntity, ICustomEventListener {
     
     public String getDescription() { return this.description; }
 
+    public String getDescriptionStyled() { return this.descriptionStyled; }
+
+    public boolean isDefaultActor() { return this.defaultActor == 1; }
+
     public LocalDateTime getCreatedOBJ() {
         try {
             return LocalDateTime.parse(this.created, CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -500,7 +518,11 @@ public class Actor implements IModelEntity, ICustomEventListener {
 
     public void setName(String name) { this.name = name; }
     
-    public void setDescription(String description) { this.description = description; }
+    public void setDescription(String description) { this.description = RTWText.transformToPlainText(description); this.descriptionStyled = description; }
+
+    public void setDescriptionStyled(String descriptionStyled) { this.descriptionStyled = descriptionStyled; this.description = RTWText.transformToPlainText(descriptionStyled); }
+
+    public void setDefaultActor(boolean defaultActor) { this.defaultActor = defaultActor ? 1 : 0; }
 
     public void setCreated(LocalDateTime created) {
         this.created = created.format(CONSTANTS.DATE_TIME_FORMATTER_FOR_JSON);
@@ -545,5 +567,31 @@ public class Actor implements IModelEntity, ICustomEventListener {
     public void setDefaultAttachment(int defaultAttachment) { this.defaultAttachment = defaultAttachment; }
 
     public void setDefaultAttachment(Attachment defaultAttachment) { this.defaultAttachment = defaultAttachment.getID(); }
+
+    // Override methods
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+
+        Actor other = (Actor) obj;
+
+        return  this.id == other.id &&
+                this.nick.equals(other.nick) &&
+                this.name.equals(other.name) &&
+                this.description.equals(other.description) &&
+                this.descriptionStyled.equals(other.descriptionStyled) &&
+                this.defaultActor == other.defaultActor &&
+                this.created.equals(other.created) &&
+                this.updated.equals(other.updated) &&
+                this.defaultAttachment == other.defaultAttachment &&
+                UList.hasSameElements(this.relatedAttachments, other.relatedAttachments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.nick, this.name, this.description, this.descriptionStyled, this.defaultActor, this.created, this.updated, this.defaultAttachment, new HashSet<>(this.relatedAttachments));
+    }
 
 }

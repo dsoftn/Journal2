@@ -117,7 +117,7 @@ public class RTWText {
 
     public String getPlainText() { return extractText(resultString).replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, ""); }
 
-    public static String transformToPlainText(String text) {
+    public static String transformToPlainText(String text, List<StyleSheetChar> cssChars) {
         if (RTWText.isStyledText(text)) {
             String result = "";
 
@@ -142,7 +142,31 @@ public class RTWText {
             text = result;
         }
         
+        int pos = 0;
+        List<Integer> indexes = new ArrayList<>();
+        if (cssChars != null) {
+            while (true) {
+                int index = text.indexOf(CONSTANTS.EMPTY_PARAGRAPH_STRING, pos);
+                if (index == -1) {
+                    break;
+                }
+                if (cssChars.size() > index) {
+                    indexes.add(index);
+                }
+                pos = index + 1;
+            }
+        }
+        for (int i = indexes.size() - 1; i >= 0; i--) {
+            if (cssChars.size() > indexes.get(i) ) {
+                cssChars.remove((int) indexes.get(i));
+            }
+        }
+
         return text.replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "").replaceAll("\\R", "\n");
+    }
+
+    public static String transformToPlainText(String text) {
+        return transformToPlainText(text, null);
     }
 
     public static String transformToTextWithZeroWidthSpace(String plainText) {

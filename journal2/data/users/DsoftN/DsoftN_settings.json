@@ -14,8 +14,8 @@
   },
   "DatabaseTables": {
     "key": "DatabaseTables",
-    "value": "CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, name_style TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, text_style TEXT NOT NULL, draft INTEGER NOT NULL, block_type TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS actors (id INTEGER PRIMARY KEY AUTOINCREMENT, nick TEXT NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, downloaded INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS definitions_variants (id INTEGER PRIMARY KEY, text TEXT NOT NULL, definition_id INTEGER NOT NULL, match_case INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS definitions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS blocks_diary (id INTEGER PRIMARY KEY AUTOINCREMENT, base_block_id INTEGER NOT NULL, show_def_attachment INTEGER NOT NULL, text TEXT NOT NULL, text_style TEXT NOT NULL);",
-    "defaultValue": "CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, name_style TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, text_style TEXT NOT NULL, draft INTEGER NOT NULL, block_type TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS actors (id INTEGER PRIMARY KEY AUTOINCREMENT, nick TEXT NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, downloaded INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS definitions_variants (id INTEGER PRIMARY KEY, text TEXT NOT NULL, definition_id INTEGER NOT NULL, match_case INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS definitions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS blocks_diary (id INTEGER PRIMARY KEY AUTOINCREMENT, base_block_id INTEGER NOT NULL, show_def_attachment INTEGER NOT NULL, text TEXT NOT NULL, text_style TEXT NOT NULL);",
+    "value": "CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, name_style TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, text_style TEXT NOT NULL, draft INTEGER NOT NULL, block_type TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS actors (id INTEGER PRIMARY KEY AUTOINCREMENT, nick TEXT NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, description_styled TEXT NOT NULL, default_actor INTEGER NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, downloaded INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS definitions_variants (id INTEGER PRIMARY KEY, text TEXT NOT NULL, definition_id INTEGER NOT NULL, match_case INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS definitions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS blocks_diary (id INTEGER PRIMARY KEY AUTOINCREMENT, base_block_id INTEGER NOT NULL, show_def_attachment INTEGER NOT NULL, text TEXT NOT NULL, text_style TEXT NOT NULL);",
+    "defaultValue": "CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, name_style TEXT NOT NULL, date TEXT NOT NULL, text TEXT NOT NULL, text_style TEXT NOT NULL, draft INTEGER NOT NULL, block_type TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS actors (id INTEGER PRIMARY KEY AUTOINCREMENT, nick TEXT NOT NULL, name TEXT NOT NULL, description TEXT NOT NULL, description_styled TEXT NOT NULL, default_actor INTEGER NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, parent INTEGER NOT NULL, created TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS attachments (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, type INTEGER NOT NULL, is_supported INTEGER NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, downloaded INTEGER NOT NULL, created TEXT NOT NULL, file_path TEXT NOT NULL, file_size TEXT NOT NULL, file_created TEXT NOT NULL, file_modified TEXT NOT NULL, file_accessed TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS relations (id INTEGER PRIMARY KEY, base_model INTEGER NOT NULL, base_id INTEGER NOT NULL, related_model INTEGER NOT NULL, related_id INTEGER NOT NULL, description TEXT NOT NULL, created TEXT NOT NULL);\nCREATE TABLE IF NOT EXISTS definitions_variants (id INTEGER PRIMARY KEY, text TEXT NOT NULL, definition_id INTEGER NOT NULL, match_case INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS definitions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, source TEXT NOT NULL, source_type INTEGER NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL, default_attachment INTEGER NOT NULL);\nCREATE TABLE IF NOT EXISTS blocks_diary (id INTEGER PRIMARY KEY AUTOINCREMENT, base_block_id INTEGER NOT NULL, show_def_attachment INTEGER NOT NULL, text TEXT NOT NULL, text_style TEXT NOT NULL);",
     "min": "Null",
     "max": "Null",
     "settingType": 8,
@@ -311,32 +311,6 @@
     "userData": "",
     "canBeSavedInFile": false
   },
-  "BlockNameFontSize": {
-    "key": "BlockNameFontSize",
-    "value": "30",
-    "defaultValue": "30",
-    "min": "Null",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 8,
-    "description": "Default font size.",
-    "creationDate": "2025.03.24 19:05:24",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
-  "BlockNameMinTextWidgetHeight": {
-    "key": "BlockNameMinTextWidgetHeight",
-    "value": "40",
-    "defaultValue": "40",
-    "min": "Null",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 8,
-    "description": "",
-    "creationDate": "2025.03.24 19:17:43",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
   "GlobalTimerTickIntervalMS": {
     "key": "GlobalTimerTickIntervalMS",
     "value": "50",
@@ -415,19 +389,6 @@
     "userData": "",
     "canBeSavedInFile": false
   },
-  "BlockNameFontName": {
-    "key": "BlockNameFontName",
-    "value": "Arial",
-    "defaultValue": "Arial",
-    "min": "Null",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 4,
-    "description": "",
-    "creationDate": "2025.03.26 19:05:04",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
   "PreserveParagraphStyle": {
     "key": "PreserveParagraphStyle",
     "value": "True",
@@ -441,32 +402,6 @@
     "userData": "",
     "canBeSavedInFile": false
   },
-  "BlockName_MinRichTextHeight": {
-    "key": "BlockName_MinRichTextHeight",
-    "value": "50",
-    "defaultValue": "50",
-    "min": "14",
-    "max": "150",
-    "settingType": 8,
-    "dataType": 8,
-    "description": "Min widget height when entering block name.",
-    "creationDate": "2025.04.09 21:36:20",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
-  "CssBlockName": {
-    "key": "CssBlockName",
-    "value": "-fx-font-family: \u0027Arial\u0027;-fx-font-size: 30px;",
-    "defaultValue": "-fx-font-family: \u0027Arial\u0027;-fx-font-size: 30px;",
-    "min": "Null",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 4,
-    "description": "Default text css for block name",
-    "creationDate": "2025.04.10 17:28:21",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
   "IntervalBetweenTextChangesMS": {
     "key": "IntervalBetweenTextChangesMS",
     "value": "1000",
@@ -477,32 +412,6 @@
     "dataType": 8,
     "description": "Time passed between text changes. Used for Undo/Redo.",
     "creationDate": "2025.04.18 10:57:31",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
-  "ShowAutoCompleteBLOCK_NAME": {
-    "key": "ShowAutoCompleteBLOCK_NAME",
-    "value": "True",
-    "defaultValue": "True",
-    "min": "Null",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 128,
-    "description": "",
-    "creationDate": "2025.04.20 11:21:55",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
-  "cssAutoCompleteStyle": {
-    "key": "cssAutoCompleteStyle",
-    "value": "-fx-fill: #404040;",
-    "defaultValue": "-fx-fill: #404040;",
-    "min": "Null",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 4,
-    "description": "",
-    "creationDate": "2025.04.20 12:26:18",
     "userData": "",
     "canBeSavedInFile": false
   },
@@ -815,32 +724,6 @@
     "dataType": 128,
     "description": "",
     "creationDate": "2025.05.07 22:25:39",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
-  "BlockName_MinRTWidgetHeight": {
-    "key": "BlockName_MinRTWidgetHeight",
-    "value": "40",
-    "defaultValue": "40",
-    "min": "0",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 8,
-    "description": "",
-    "creationDate": "2025.05.08 16:53:40",
-    "userData": "",
-    "canBeSavedInFile": false
-  },
-  "BlockName_MaxNumberOfParagraphs": {
-    "key": "BlockName_MaxNumberOfParagraphs",
-    "value": "5",
-    "defaultValue": "5",
-    "min": "1",
-    "max": "Null",
-    "settingType": 8,
-    "dataType": 8,
-    "description": "",
-    "creationDate": "2025.05.08 16:56:17",
     "userData": "",
     "canBeSavedInFile": false
   },

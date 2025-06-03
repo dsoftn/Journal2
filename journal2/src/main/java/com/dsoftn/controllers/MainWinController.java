@@ -8,6 +8,7 @@ import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.controllers.EmptyDialogController.WindowBehavior;
 import com.dsoftn.controllers.elements.BlockGeneralController;
 import com.dsoftn.controllers.elements.SelectionController;
+import com.dsoftn.controllers.models.ActorEditController;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.models.Actor;
 import com.dsoftn.models.Block;
@@ -36,6 +37,9 @@ public class MainWinController implements IBaseController {
     // Menu
     @FXML
     MenuItem mnuNew;
+
+    @FXML
+    MenuItem mnuAddActor;
 
     // Areas
     @FXML
@@ -136,8 +140,10 @@ public class MainWinController implements IBaseController {
 
     @FXML
     public void onMnuNew() {
-        // BlockDiary blockDiary = new BlockDiary();
-        // blockDiary.add();
+        if (!OBJECTS.BLOCKS.isExists(1)) {
+            BlockDiary blockDiary = new BlockDiary();
+            blockDiary.add();
+        }
         // System.out.println(blockDiary.getID());
         // System.out.println(blockDiary.getBaseBlockID());
 
@@ -167,6 +173,12 @@ public class MainWinController implements IBaseController {
         blockController.addToLayout(vBoxWorkArea);
         scrollToElement(vBoxWorkArea.getChildren().size() - 1, vBoxWorkArea, scrPaneWorkArea);
         
+    }
+
+    @FXML
+    public void onMnuAddActor() {
+        ActorEditController actorEditController = DIALOGS.getActorEditController(stage, null);
+        actorEditController.startMe();
     }
 
     @FXML

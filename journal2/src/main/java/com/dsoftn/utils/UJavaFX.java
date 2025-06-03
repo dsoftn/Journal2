@@ -8,6 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.dsoftn.OBJECTS;
+import com.dsoftn.Settings.DataType;
+import com.dsoftn.Settings.SettingType;
+import com.dsoftn.Settings.SettingsItem;
 import com.dsoftn.controllers.pop_up_windows.ColorPopup;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
@@ -220,7 +223,6 @@ public class UJavaFX {
         OBJECTS.SETTINGS.setApp(keyName, getStageGeometryString(geometry));
     }
 
-
     public static void setStageGeometry(String keyName, Stage stage) {
         if (!OBJECTS.SETTINGS.isAppSettingExists(keyName)) {
             OBJECTS.SETTINGS.addAppSettings(keyName, "", true);
@@ -385,6 +387,46 @@ public class UJavaFX {
         return Font.getFontNames();
     }
 
+    public static void handleNodeFontSizeChange(Node node, String settingName, String nodeName, Integer defaultSize) {
+        SettingsItem currentSettingItem;
+        if (OBJECTS.SETTINGS.isUserSettingExists(settingName)) {
+            currentSettingItem = USettings.getAppOrUserSettingsItem(settingName, nodeName, null, UNumbers.toInteger(defaultSize));
+        } else if (OBJECTS.SETTINGS.isAppSettingExists(settingName + "_" + nodeName)) {
+            currentSettingItem = OBJECTS.SETTINGS.getAppSettingsItem(settingName + "_" + nodeName);
+        } else {
+            currentSettingItem = new SettingsItem();
+            currentSettingItem.setKey(settingName + "_" + nodeName);
+            currentSettingItem.setValue(defaultSize);
+            currentSettingItem.setDefaultValue(defaultSize);
+            currentSettingItem.setDataType(DataType.INTEGER);
+            currentSettingItem.setSettingType(SettingType.APP);
+            currentSettingItem.setCanBeSavedInFile(true);
+            OBJECTS.SETTINGS.addAppSettings(currentSettingItem);
+        }
+        
+        String appSettingsKey = currentSettingItem.getKey();
 
+        node.setOnScroll(event -> {
+            if (event.isControlDown()) {
+                // Change app setting value
+                double deltaY = event.getDeltaY();
+                if (deltaY > 0) {
+                    if (OBJECTS.SETTINGS.getvINTEGER("MaxListFontSize") > OBJECTS.SETTINGS.getAppINTEGER(appSettingsKey)) {
+                        OBJECTS.SETTINGS.setApp(appSettingsKey, OBJECTS.SETTINGS.getAppINTEGER(appSettingsKey) + 1);
+                    }
+                } else {
+                    if (OBJECTS.SETTINGS.getvINTEGER("MinListFontSize") < OBJECTS.SETTINGS.getAppINTEGER(appSettingsKey)) {
+                        OBJECTS.SETTINGS.setApp(appSettingsKey, OBJECTS.SETTINGS.getAppINTEGER(appSettingsKey) - 1);
+                    }
+                }
+                event.consume();
+
+                // Update node font size
+                node.setStyle("-fx-font-size: " + OBJECTS.SETTINGS.getAppINTEGER(appSettingsKey) + "px;");
+            }
+        });
+        
+        node.setStyle("-fx-font-size: " + OBJECTS.SETTINGS.getAppINTEGER(appSettingsKey) + "px;");
+    }
 
 }

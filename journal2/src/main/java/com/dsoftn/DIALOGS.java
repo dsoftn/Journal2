@@ -8,6 +8,8 @@ import com.dsoftn.controllers.SplashScreenController;
 import com.dsoftn.controllers.elements.FormatCharController;
 import com.dsoftn.controllers.elements.FormatParagraphController;
 import com.dsoftn.controllers.elements.RTSettingsController;
+import com.dsoftn.controllers.models.ActorEditController;
+import com.dsoftn.models.Actor;
 import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.TextHandler;
@@ -156,6 +158,26 @@ public class DIALOGS {
         }
     }
 
+    public static ActorEditController getActorEditController(Stage parentStage, Actor actor) {
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(DIALOGS.class.getResource("/fxml/ActorEdit.fxml"));
+        Parent root;
+        try {
+            root = loader.load();
+            ActorEditController controller = loader.getController();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            if (parentStage != null) {
+                stage.initOwner(parentStage);
+            }
+            controller.setStage(stage);
+            controller.setActor(actor);
+            return controller;
+        } catch (Exception e) {
+            UError.exception("DIALOGS.getActorEditController: Failed to load dialog", e);
+            return null;
+        }
+    }
 
 
 }

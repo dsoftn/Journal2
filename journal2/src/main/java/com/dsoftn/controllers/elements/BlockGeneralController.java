@@ -736,11 +736,6 @@ public class BlockGeneralController implements IBaseController, IElementControll
             return;
         }
 
-        OBJECTS.CLIP.setIDs(ModelEnum.ACTOR, 1);
-        OBJECTS.CLIP.addIDs(ModelEnum.ACTOR, 2);
-
-        System.out.println(OBJECTS.CLIP.getIDs(ModelEnum.ACTOR));
-
         EmptyDialogController emptyDialogController = DIALOGS.getEmptyDialogController_FRAMELESS(stage, WindowBehavior.ACTOR_SELECT_STANDARD);
         SelectionController selectionController = ELEMENTS.getSelectionController(ModelEnum.BLOCK, ModelEnum.ACTOR, stage, this.myName + "ACTORS");
 
