@@ -68,7 +68,7 @@
                         <Label fx:id="lblDescription" styleClass="label-default" text="Description" />
                      </children>
                   </HBox>
-                  <VBox fx:id="vBoxRTWidgetPlaceholder" VBox.vgrow="SOMETIMES" />
+                  <VBox fx:id="vBoxRTWidgetPlaceholder" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
             <VBox>

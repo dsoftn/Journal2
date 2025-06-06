@@ -294,12 +294,12 @@ public class FormatCharController implements IBaseController, ICustomEventListen
         }
 
         // Create sample widget
-        sampleWidget = new RTWidget();
+        sampleWidget = new RTWidget(vBoxSample);
         sampleWidget.setMinTextWidgetHeight(35);
         sampleWidget.setReadOnly(true);
         sampleWidget.getStyleClass().add("rich-text");
         VBox.setVgrow(sampleWidget, javafx.scene.layout.Priority.ALWAYS);
-        vBoxSample.getChildren().add(sampleWidget);
+        // vBoxSample.getChildren().add(sampleWidget);
         String sampleText = "\n" + OBJECTS.SETTINGS.getl("text_Before");
         int delimiterStart = sampleText.length() + 2;
         sampleText += DELIMITER;

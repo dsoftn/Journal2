@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dsoftn.CONSTANTS;
 import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
+import com.dsoftn.Interfaces.IModelEntity;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
+import com.dsoftn.controllers.models.ActorEditController;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
@@ -45,14 +48,18 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -84,6 +91,7 @@ public class SelectionController implements IElementController, ICustomEventList
     private boolean ignoreListChanges = false;
     private String receiverID = null;
     private IBaseController parentController = null;
+    ContextMenu contextMenu = null;
 
     private List<SelectionData.Item> dataAll = new ArrayList<>();
     private List<SelectionData.Item> dataFiltered = null;
@@ -369,32 +377,33 @@ public class SelectionController implements IElementController, ICustomEventList
 
         if (addedModel != null) {
             dataAll.add(addedModel);
+            lstItems.getItems().add(addedModel);
         }
         if (updatedModelOld != null && updatedModelNew != null) {
             int index = dataAll.indexOf(updatedModelOld);
-            if (index != -1) dataAll.set(index, updatedModelNew);
+            if (index != -1) { dataAll.set(index, updatedModelNew); lstItems.getItems().set(index, updatedModelNew); }
 
             index = dataLast.indexOf(updatedModelOld);
-            if (index != -1) dataLast.set(index, updatedModelNew);
+            if (index != -1) {dataLast.set(index, updatedModelNew); populateLast(dataLast); }
 
             index = dataMost.indexOf(updatedModelOld);
-            if (index != -1) dataMost.set(index, updatedModelNew);
+            if (index != -1) {dataMost.set(index, updatedModelNew); populateMost(dataMost); }
 
             index = currentlySelected.indexOf(updatedModelOld);
-            if (index != -1) currentlySelected.set(index, updatedModelNew);
+            if (index != -1) {currentlySelected.set(index, updatedModelNew); updateSelectedItemAppearance(true, true, true); }
         }
         if (deletedModel != null) {
             int index = dataAll.indexOf(deletedModel);
-            if (index != -1) dataAll.remove(index);
+            if (index != -1) {dataAll.remove(index); lstItems.getItems().remove(index); }
 
             index = dataLast.indexOf(deletedModel);
-            if (index != -1) dataLast.remove(index);
+            if (index != -1) {dataLast.remove(index); populateLast(dataLast); }
 
             index = dataMost.indexOf(deletedModel);
-            if (index != -1) dataMost.remove(index);
+            if (index != -1) {dataMost.remove(index); populateMost(dataMost); }
 
             index = currentlySelected.indexOf(deletedModel);
-            if (index != -1) currentlySelected.remove(index);
+            if (index != -1) {currentlySelected.remove(index); updateSelectedItemAppearance(true, true, true); }
         }
 
         updateSelectedItemAppearance(true, true, true);
@@ -473,11 +482,35 @@ public class SelectionController implements IElementController, ICustomEventList
             return;
         }
 
-        OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
+        OBJECTS.EVENT_HANDLER.register(
+            this,
+            TaskStateEvent.TASK_STATE_EVENT,
+            ClipboardChangedEvent.CLIPBOARD_CHANGED_EVENT,
+            ActorAddedEvent.ACTOR_ADDED_EVENT,
+            ActorUpdatedEvent.ACTOR_UPDATED_EVENT,
+            ActorDeletedEvent.ACTOR_DELETED_EVENT,
+            AttachmentAddedEvent.ATTACHMENT_ADDED_EVENT,
+            AttachmentUpdatedEvent.ATTACHMENT_UPDATED_EVENT,
+            AttachmentDeletedEvent.ATTACHMENT_DELETED_EVENT,
+            BlockAddedEvent.BLOCK_ADDED_EVENT,
+            BlockUpdatedEvent.BLOCK_UPDATED_EVENT,
+            BlockDeletedEvent.BLOCK_DELETED_EVENT,
+            CategoryAddedEvent.CATEGORY_ADDED_EVENT,
+            CategoryUpdatedEvent.CATEGORY_UPDATED_EVENT,
+            CategoryDeletedEvent.CATEGORY_DELETED_EVENT,
+            TagAddedEvent.TAG_ADDED_EVENT,
+            TagUpdatedEvent.TAG_UPDATED_EVENT,
+            TagDeletedEvent.TAG_DELETED_EVENT,
+            DefinitionAddedEvent.DEFINITION_ADDED_EVENT,
+            DefinitionUpdatedEvent.DEFINITION_UPDATED_EVENT,
+            DefinitionDeletedEvent.DEFINITION_DELETED_EVENT
+        );
 
         setupWidgetsText();
         setupWidgetsAppearance();
         loadSettings();
+
+        UJavaFX.handleNodeFontSizeChange(txtFind, mySettingsName + "_FontSize", "txtFind", 14);
 
         // Calc list items
         UJavaFX.taskStart(this::calcListItems, myName + "LIST");
@@ -526,6 +559,11 @@ public class SelectionController implements IElementController, ICustomEventList
 
     private void calcListItems() {
         dataAll = selectionData.getAllItems();
+        for (int i = currentlySelected.size() - 1; i >= 0; i--) {
+            if (!dataAll.contains(currentlySelected.get(i))) {
+                currentlySelected.remove(i);
+            }
+        }
     }
 
     private void populateList() {
@@ -908,6 +946,14 @@ public class SelectionController implements IElementController, ICustomEventList
             listSelectionChanged();
         });
 
+        lstItems.setOnContextMenuRequested(event -> {
+            showListContextMenu(event);
+        });
+
+        lstItems.setOnMouseClicked(event -> {
+            if (contextMenu != null) contextMenu.hide();
+        });
+
         lstItems.setOnScroll(event -> {
             if (event.isControlDown()) {
                 double deltaY = event.getDeltaY();
@@ -928,6 +974,119 @@ public class SelectionController implements IElementController, ICustomEventList
         
         txtFind.textProperty().addListener((observable, oldValue, newValue) -> onFilterTextChanged(newValue));
     }
+
+    private void showListContextMenu(ContextMenuEvent event) {
+        contextMenu = new ContextMenu();
+
+        List<SelectionData.Item> selectedItems = lstItems.getSelectionModel().getSelectedItems();
+
+        // Copy
+        MenuItem copy = new MenuItem(OBJECTS.SETTINGS.getl("text_Copy"));
+        Image imgCopy = new Image(getClass().getResourceAsStream("/images/copy.png"));
+        ImageView imgCopyView = new ImageView(imgCopy);
+        imgCopyView.setPreserveRatio(true);
+        imgCopyView.setFitHeight(20);
+        copy.setGraphic(imgCopyView);
+        copy.setOnAction(event1 -> {
+            if (selectedItems != null && !selectedItems.isEmpty()) {
+                List<Integer> ids = selectedItems.stream().map(item -> item.getId()).collect(Collectors.toList());
+                OBJECTS.CLIP.setIDs(selectionData.getRelatedModel(), ids);
+            }
+        });
+
+        // Edit
+        MenuItem edit = new MenuItem(OBJECTS.SETTINGS.getl("text_Edit"));
+        Image imgEdit = new Image(getClass().getResourceAsStream("/images/edit.png"));
+        ImageView imgEditView = new ImageView(imgEdit);
+        imgEditView.setPreserveRatio(true);
+        imgEditView.setFitHeight(20);
+        edit.setGraphic(imgEditView);
+        edit.setOnAction(event1 -> {
+            if (selectedItems != null && selectedItems.size() == 1) {
+                SelectionData.Item item = selectedItems.get(0);
+                editItem(selectionData.getRelatedModel(), item.getId());
+            }
+        });
+
+        // Delete
+        MenuItem delete = new MenuItem(OBJECTS.SETTINGS.getl("text_Delete"));
+        Image imgDelete = new Image(getClass().getResourceAsStream("/images/delete.png"));
+        ImageView imgDeleteView = new ImageView(imgDelete);
+        imgDeleteView.setPreserveRatio(true);
+        imgDeleteView.setFitHeight(20);
+        delete.setGraphic(imgDeleteView);
+        delete.setOnAction(event1 -> {
+            if (selectedItems != null && selectedItems.size() == 1) {
+                SelectionData.Item item = selectedItems.get(0);
+                deleteItem(selectionData.getRelatedModel(), item.getId());
+            }
+        });
+
+        contextMenu.getItems().add(copy);
+        if (selectedItems == null || selectedItems.size() != 1) {
+            edit.setDisable(true);
+            delete.setDisable(true);
+        }
+        contextMenu.getItems().add(new SeparatorMenuItem());
+        contextMenu.getItems().add(edit);
+        contextMenu.getItems().add(delete);
+
+        contextMenu.show(lstItems, event.getScreenX(), event.getScreenY());
+    }
+
+    private void editItem(ModelEnum model, int id) {
+        switch (model) {
+            case ACTOR:
+                ActorEditController actorEditController = DIALOGS.getActorEditController(CONSTANTS.PRIMARY_STAGE, OBJECTS.ACTORS.getEntity(id));
+                actorEditController.startMe();
+                break;
+            case BLOCK:
+                break;
+            case DEFINITION:
+                break;
+            case ATTACHMENT:
+                break;
+            case CATEGORY:
+                break;
+            case TAG:
+                break;
+            case RELATION:
+                break;
+            case DEF_VARIANT:
+            case ALL:
+            case NONE:
+            default:
+                break;
+        }
+    }
+
+    private void deleteItem(ModelEnum model, int id) {
+        switch (model) {
+            case ACTOR:
+                if (OBJECTS.ACTORS.confirmDelete(id)) {
+                    OBJECTS.ACTORS.getEntity(id).delete();
+                }
+                break;
+            case BLOCK:
+                break;
+            case DEFINITION:
+                break;
+            case ATTACHMENT:
+                break;
+            case CATEGORY:
+                break;
+            case TAG:
+                break;
+            case RELATION:
+                break;
+            case DEF_VARIANT:
+            case ALL:
+            case NONE:
+            default:
+                break;
+        }
+    }
+
 
     private void toggleSection(Section section, boolean isDisabled) {
         switch (section) {

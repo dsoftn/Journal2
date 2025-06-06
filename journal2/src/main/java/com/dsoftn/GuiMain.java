@@ -235,6 +235,7 @@ public class GuiMain extends Application {
         });
 
         controller.setStage(primaryStage);
+        CONSTANTS.PRIMARY_STAGE = primaryStage;
 
         controller.startMe();
     }

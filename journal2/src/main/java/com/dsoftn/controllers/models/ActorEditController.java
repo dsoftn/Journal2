@@ -3,6 +3,8 @@ package com.dsoftn.controllers.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fxmisc.richtext.StyledTextArea;
+
 import com.dsoftn.DIALOGS;
 import com.dsoftn.ELEMENTS;
 import com.dsoftn.OBJECTS;
@@ -16,6 +18,7 @@ import com.dsoftn.models.Actor;
 import com.dsoftn.services.MoveResizeWindow;
 import com.dsoftn.services.RTWText;
 import com.dsoftn.services.RTWidget;
+import com.dsoftn.services.RTWidgetClean;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
@@ -43,7 +46,7 @@ public class ActorEditController implements IBaseController, ICustomEventListene
     private String settingsName = "ActorEdit";
     private Stage stage = null;
     private Actor actor = null;
-    private RTWidget rtwDescription = new RTWidget();
+    private RTWidget rtwDescription = null;
     private TextHandler textHandler = null;
 
     // FXML variables
@@ -120,9 +123,9 @@ public class ActorEditController implements IBaseController, ICustomEventListene
 
     @Override
     public void startMe() {
-        setupData(actor);
         setupWidgetsText();
         setupWidgetsAppearance();
+        setupData(actor);
 
         // Set Window as undecorated
         stage.initStyle(StageStyle.UNDECORATED);
@@ -232,7 +235,8 @@ public class ActorEditController implements IBaseController, ICustomEventListene
         hBoxToolbarPlaceholder.getChildren().add(toolbarController.getRoot());
 
         // Add RTWidget
-        vBoxRTWidgetPlaceholder.getChildren().add(rtwDescription);
+        rtwDescription = new RTWidget(vBoxRTWidgetPlaceholder);
+        // vBoxRTWidgetPlaceholder.getChildren().add(rtwDescription);
 
         // Create TextHandler
         textHandler = new TextHandler(rtwDescription, toolbarController, TextHandler.Behavior.ACTOR_DESCRIPTION, stage);
@@ -285,7 +289,7 @@ public class ActorEditController implements IBaseController, ICustomEventListene
             List<Actor> actors = OBJECTS.ACTORS.getEntityAll();
             for (int i = 0; i < actors.size(); i++) {
                 Actor otherActor = actors.get(i);
-                if (otherActor.getNick().equals(txtNick.getText()) && otherActor.getName().equals(txtName.getText())) {
+                if (otherActor.getNick().equals(txtNick.getText()) && otherActor.getName().equals(txtName.getText()) && otherActor.getID() != actor.getID()) {
                     return OBJECTS.SETTINGS.getl("ActorEdit_NickAndNameAlreadyExists");
                 }
             }
@@ -327,6 +331,10 @@ public class ActorEditController implements IBaseController, ICustomEventListene
             return false;
         }
 
+        if (txtNick.getText().isEmpty()) {
+            txtNick.setText(txtName.getText());
+        }
+        
         if (actor == null) {
             actor = new Actor();
             actor.setNick(txtNick.getText());

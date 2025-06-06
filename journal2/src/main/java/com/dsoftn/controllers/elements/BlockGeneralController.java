@@ -78,7 +78,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
     private boolean showReadOnly = true;
     private boolean readOnly = false;
 
-    private RTWidget rtwBlockName = new RTWidget(); // Rich text widget for block name
+    private RTWidget rtwBlockName = null; // Rich text widget for block name
     private TextHandler textHandlerBlockName = null;
 
     // FXML variables
@@ -119,7 +119,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
         private Button btnCategory;
 
     @FXML
-    private HBox hBoxName;
+    private VBox vBoxName;
 
     @FXML
     private HBox hBoxContent; // Here goes block content
@@ -338,7 +338,7 @@ public class BlockGeneralController implements IBaseController, IElementControll
             vBoxRoot.getChildren().clear();
             vBoxRoot.getChildren().add(hBoxTitle);
             vBoxRoot.getChildren().add(hBoxHeader);
-            vBoxRoot.getChildren().add(hBoxName);
+            vBoxRoot.getChildren().add(vBoxName);
             vBoxRoot.getChildren().add(hBoxContent);
             vBoxRoot.getChildren().add(hBoxAttachments);
             vBoxRoot.getChildren().add(hBoxBlocks);
@@ -464,19 +464,20 @@ public class BlockGeneralController implements IBaseController, IElementControll
 
     private void setupWidgetsAppearance() {
         // Block name
+        rtwBlockName = new RTWidget(null);
         rtwBlockName.setReadOnly(true);
         textHandlerBlockName = new TextHandler(rtwBlockName, null, TextHandler.Behavior.BLOCK_NAME, stage);
         rtwBlockName.setRTWTextObject(new RTWText(block.getNameStyle()));
-        hBoxName.getChildren().add(rtwBlockName);
+        vBoxName.getChildren().add(rtwBlockName);
     }
 
     private void adjustWidgets(Block block) {
         // Block Title
         if (block.getName() == null || block.getName().isEmpty()) {
-            showNode(hBoxName, false);
+            showNode(vBoxName, false);
         }
         else {
-            showNode(hBoxName, true);
+            showNode(vBoxName, true);
         }
         
         // Related attachments
@@ -621,15 +622,15 @@ public class BlockGeneralController implements IBaseController, IElementControll
     private void setBtnName(Block block) {
         if (block.getName() == null || block.getName().isEmpty()) {
             btnName.setText(OBJECTS.SETTINGS.getl("text_SetName"));
-            hBoxName.setVisible(false);
-            hBoxName.setManaged(false);
+            vBoxName.setVisible(false);
+            vBoxName.setManaged(false);
             return;
         }
 
         textHandlerBlockName.updateSettings();
         btnName.setText(OBJECTS.SETTINGS.getl("text_ChangeName"));
-        hBoxName.setVisible(true);
-        hBoxName.setManaged(true);
+        vBoxName.setVisible(true);
+        vBoxName.setManaged(true);
         rtwBlockName.setTextStyled(block.getNameStyle());
     }
 

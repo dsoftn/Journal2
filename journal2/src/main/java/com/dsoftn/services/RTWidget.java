@@ -3,6 +3,7 @@ package com.dsoftn.services;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.fxmisc.richtext.Caret.CaretVisibility;
 import org.fxmisc.richtext.StyledTextArea;
@@ -17,19 +18,28 @@ import com.dsoftn.services.text_handler.ACHandler;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.services.timer.ContinuousTimer;
 import com.dsoftn.utils.UError;
-import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UString;
 import com.dsoftn.utils.USettings;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 
-public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextArea
+public class RTWidget extends StyledTextArea<String, String> {
     // Variables
     public StyleSheetChar cssChar = null; // Current char style
     private StyleSheetChar cssCharPrev = null; // Previous char style that has been sent to handler
@@ -51,11 +61,16 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     private PauseTransition pauseAC = null;
     public ACHandler ac = null;
     private List<KeyEvent> keyEvents = new ArrayList<>();
+    private ScrollPane scrollPane = null;
+    private VBox scrollPaneContainer = null;
+    private VBox scrollPaneContent = null;
+    private double extraRightPadding = 0;
+    private int prevCaretPosition = 0;
 
     public boolean isOverwriteMode = false;
    
     // Constructors
-    public RTWidget(StyleSheetChar cssStyleSheet, Integer maxNumberOfParagraphs) {
+    public RTWidget(VBox scrollPaneContainer, StyleSheetChar cssStyleSheet, Integer maxNumberOfParagraphs) {
         super(
             "",  // initialText
             (text, style) -> text.setStyle(style), // Apply style to characters
@@ -63,13 +78,17 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             (paragraph, style) -> paragraph.setStyle(style), // Apply style to paragraphs
             false
         );
+
+        setupScrollPane(scrollPaneContainer);
     
+        setPadding(null, null, null, null);
+
         this.cssChar = cssStyleSheet;
         
         if (maxNumberOfParagraphs == null) {
             maxNumberOfParagraphs = Integer.MAX_VALUE;
         } else if (maxNumberOfParagraphs < 1) {
-            maxNumberOfParagraphs = 1;
+            maxNumberOfParagraphs = Integer.MAX_VALUE;
         } else {
             this.maxNumberOfParagraphs = maxNumberOfParagraphs;
         }
@@ -77,7 +96,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         this.cssParagraphStyles.add(cssParagraph.duplicate());
     }
     
-    public RTWidget(StyleSheetChar cssStyleSheet) {
+    public RTWidget(VBox scrollPaneContainer, StyleSheetChar cssStyleSheet) {
         super(
             "",  // initialText
             (text, style) -> text.setStyle(style), // Apply style to characters
@@ -85,13 +104,17 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             (paragraph, style) -> paragraph.setStyle(style), // Apply style to paragraphs
             false
         );
+
+        setupScrollPane(scrollPaneContainer);
+
+        setPadding(null, null, null, null);
 
         this.cssChar = cssStyleSheet;
 
         this.cssParagraphStyles.add(cssParagraph.duplicate());
     }
 
-    public RTWidget() {
+    public RTWidget(VBox scrollPaneContainer) {
         super(
             "",  // initialText
             (text, style) -> text.setStyle(style), // Apply style to characters
@@ -99,6 +122,10 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             (paragraph, style) -> paragraph.setStyle(style), // Apply style to paragraphs
             false
         );
+
+        setupScrollPane(scrollPaneContainer);
+
+        setPadding(null, null, null, null);
 
         this.cssChar = new StyleSheetChar();
 
@@ -106,6 +133,24 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     // Public methods
+
+    public void setPadding(Double top, Double right, Double bottom, Double left, TextHandler.Behavior behavior) {
+        if (behavior == null) {
+            if (textHandler == null) return;
+            behavior = textHandler.getBehavior();
+        }
+
+        if (top == null) top = (double) USettings.getAppOrUserSettingsItem("RTWidgetPaddingTop", behavior, null, 5).getValueINT();
+        if (right == null) right = (double) USettings.getAppOrUserSettingsItem("RTWidgetPaddingRight", behavior, null, 5).getValueINT() + extraRightPadding;
+        if (bottom == null) bottom = (double) USettings.getAppOrUserSettingsItem("RTWidgetPaddingBottom", behavior, null, 5).getValueINT();
+        if (left == null) left = (double) USettings.getAppOrUserSettingsItem("RTWidgetPaddingLeft", behavior, null, 5).getValueINT();
+        this.setPadding(new javafx.geometry.Insets(top, right, bottom, left));
+        fixHeight();
+    }
+
+    public void setPadding(Double top, Double right, Double bottom, Double left) {
+        setPadding(top, right, bottom, left, null);
+    }
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
@@ -251,11 +296,12 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
 
     public void setMinTextWidgetHeight(int minTextWidgetHeight) {
         this.minTextWidgetHeight = minTextWidgetHeight;
-        this.setMinHeight(minTextWidgetHeight);
+        this.setMinHeight(minTextWidgetHeight + this.getPadding().getTop() + this.getPadding().getBottom());
     }
 
     public void setTextHandler(TextHandler textHandler) {
         this.textHandler = textHandler;
+        this.setPadding(null, null, null, null);
     }
 
     /**
@@ -334,6 +380,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             sendToHandlerCharAndParagraphCurrentStyle();
             markCharOVERWRITE(this.getCaretPosition());
             this.stateChanged = true;
+            fixHeight();
             this.busy = false;
         });
     }
@@ -372,6 +419,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             ignoreTextChangePERMANENT = false;
             ignoreCaretPositionChangePERMANENT = false;
             this.stateChanged = true;
+            fixHeight();
             this.busy = false;
         });
     }
@@ -405,6 +453,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             this.requestFollowCaret();
             this.requestFocus();
             this.stateChanged = true;
+            fixHeight();
             this.busy = false;
         });
     }
@@ -414,7 +463,7 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         this.setMaxHeight(Double.MAX_VALUE);
         this.setWrapText(true);
         this.getStyleClass().add("rich-text");
-        this.setMinHeight(minTextWidgetHeight);
+        this.setMinHeight(minTextWidgetHeight + this.getPadding().getTop() + this.getPadding().getBottom());
 
         fixSafeCharInAllParagraphs();
         sendToHandlerCharAndParagraphCurrentStyle();
@@ -779,7 +828,99 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         });
     }
 
+    public void addToContainerVBox(Integer index) {
+        if (scrollPaneContainer == null) {
+            return;
+        }
+        if (scrollPane == null) {
+            return;
+        }
+        if (index == null) {
+            scrollPaneContainer.getChildren().add(this.scrollPane);
+            return;
+        }
+        scrollPaneContainer.getChildren().add(index, this.scrollPane);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        scrollPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                Platform.runLater(() -> {
+                    ScrollBar vBar = findVerticalScrollBar(scrollPane);
+                    if (vBar != null) {
+                        vBar.visibleProperty().addListener((vObs, wasVisible, isVisible) -> {
+                            if (isVisible) {
+                                extraRightPadding = 16;
+                                this.setPadding(null, null, null, null);
+                            } else {
+                                extraRightPadding = 0;
+                                this.setPadding(null, null, null, null);
+                            }
+                        });
+
+                        if (vBar.isVisible()) {
+                            extraRightPadding = 16;
+                            this.setPadding(null, null, null, null);
+                        }
+                    }
+                });
+            }
+        });        
+    }
+
+    public void removeFromContainerVBox() {
+        if (scrollPaneContainer == null) {
+            return;
+        }
+        if (scrollPane == null) {
+            return;
+        }
+        scrollPaneContainer.getChildren().remove(this.scrollPane);
+    }
+
     // Private methods
+
+    private ScrollBar findVerticalScrollBar(ScrollPane scrollPane) {
+        for (Node node : scrollPane.lookupAll(".scroll-bar")) {
+            if (node instanceof ScrollBar sb && sb.getOrientation() == Orientation.VERTICAL) {
+                return sb;
+            }
+        }
+        return null;
+    }
+
+    private void setupScrollPane(VBox scrollPaneContainer) {
+        if (scrollPaneContainer == null) {
+            return;
+        }
+
+        this.scrollPaneContainer = scrollPaneContainer;
+        this.scrollPane = new ScrollPane();
+        this.scrollPane.setFitToWidth(true);
+        this.scrollPane.setFitToHeight(true);
+        this.scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        this.scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        this.scrollPane.setPannable(true);
+        // this.scrollPane.setHvalue(1.0);
+        // this.scrollPane.setVvalue(1.0);
+        this.scrollPane.setMinHeight(16);
+        this.scrollPane.setMinWidth(20);
+        // set calculated height
+        this.scrollPane.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        this.scrollPane.setPrefWidth(0);
+        this.scrollPane.setMaxHeight(Double.MAX_VALUE);
+        this.scrollPane.setMaxWidth(Double.MAX_VALUE);
+        // this.scrollPaneContent = new VBox();
+        // this.scrollPaneContent.setMinHeight(0);
+        // this.scrollPaneContent.setMinWidth(0);
+        // this.scrollPaneContent.setPrefHeight(0);
+        // this.scrollPaneContent.setPrefWidth(0);
+        // this.scrollPaneContent.setMaxHeight(Double.MAX_VALUE);
+        // this.scrollPaneContent.setMaxWidth(Double.MAX_VALUE);
+        // this.scrollPaneContent.getChildren().add(this);
+        this.scrollPane.setContent(this);
+
+        addToContainerVBox(null);
+    }
 
     private void processKeyEvent(KeyEvent event, boolean isNewChar) {
             if (this.readOnly) {
@@ -849,9 +990,14 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         if (this.busy) {
             return;
         }
+        if (!stateChanged) {
+            return;
+        }
+
         this.busy = true;
         textHandler.msgFromWidget("TAKE_SNAPSHOT");
         Platform.runLater(() -> {
+            stateChanged = false;
             this.busy = false;
         });
     }
@@ -962,11 +1108,13 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             pause.setOnFinished(e -> {
                 Double height = this.totalHeightEstimateProperty().getValue();
                 if (height != null) {
-                    height = height + 2;
-                    if (height < minTextWidgetHeight) {
-                        height = (double) minTextWidgetHeight;
+                    height = height + 2 + this.getPadding().getTop() + this.getPadding().getBottom();
+                    if (height < minTextWidgetHeight + this.getPadding().getTop() + this.getPadding().getBottom()) {
+                        height = (double) minTextWidgetHeight + this.getPadding().getTop() + this.getPadding().getBottom();
                     }
                     this.setPrefHeight(height);
+                    this.setMinHeight(height);
+                    this.setMaxHeight(height);
                 }
             });
             pause.play();
@@ -1199,6 +1347,9 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                 Platform.runLater(() -> {
                     markCharOVERWRITE(this.getCaretPosition());
                     this.stateChanged = true;
+                    Platform.runLater(() -> {
+                        trackCursorInScrollPane();
+                    });
                     this.busy = false;
                 });
             });
@@ -1219,6 +1370,9 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
                 Platform.runLater(() -> {
                     markCharOVERWRITE(this.getCaretPosition());
                     this.stateChanged = true;
+                    Platform.runLater(() -> {
+                        trackCursorInScrollPane();
+                    });
                     this.busy = false;
                 });
             });
@@ -1237,6 +1391,9 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
             Platform.runLater(() -> {
                 markCharOVERWRITE(this.getCaretPosition());
                 this.stateChanged = true;
+                Platform.runLater(() -> {
+                    trackCursorInScrollPane();
+                });
                 this.busy = false;
             });
         });
@@ -2085,6 +2242,8 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
     }
 
     private void handleCaretPositionChange(Object obs, Integer oldPos, Integer newPos) {
+        trackCursorInScrollPane();
+
         if (this.ignoreCaretPositionChange || this.ignoreCaretPositionChangePERMANENT) {
             this.ignoreCaretPositionChange = false;
             return;
@@ -2101,11 +2260,63 @@ public class RTWidget extends StyledTextArea<String, String> { // InlineCssTextA
         sendToHandlerCharAndParagraphCurrentStyle();
 
         Platform.runLater(() -> {
+            trackCursorInScrollPane();
             this.busy = false;
         });
 
     }
 
+    private void trackCursorInScrollPane() {
+        Platform.runLater(() -> {
+            if (scrollPane == null) {
+                return;
+            }
+            
+            double contentHeight = scrollPane.getContent().getBoundsInLocal().getHeight();
+            double scrollPaneHeight = scrollPane.getViewportBounds().getHeight();
+            
+            // If scrollPane is not set yet or content is smaller than scrollPane then do nothing
+            if (contentHeight <= scrollPaneHeight || this.getCaretPosition() == prevCaretPosition) {
+                prevCaretPosition = this.getCaretPosition();
+                return;
+            }
+
+            Optional<Bounds> optBounds = this.getCaretBounds();
+            Bounds boundsRTW = this.localToScreen(this.getBoundsInLocal());
+            if (optBounds.isPresent()) {
+                
+                Bounds caretBounds = optBounds.get();
+
+                double caretTop = caretBounds.getMinY() - boundsRTW.getMinY() - this.getPadding().getTop();
+                double caretBottom = caretBounds.getMaxY() - boundsRTW.getMinY() + this.getPadding().getBottom();
+                double contentVisibleTop = (contentHeight - scrollPaneHeight) * scrollPane.getVvalue();
+                double contentVisibleBottom = contentVisibleTop + scrollPaneHeight;
+
+                if (caretTop >= contentVisibleTop && caretBottom <= contentVisibleBottom) {
+                    return;
+                }
+
+                double barPos = 0;
+                if (caretTop < contentVisibleTop && caretBottom <= contentVisibleBottom) {
+                    barPos = (caretTop / (contentHeight - scrollPaneHeight));
+                }
+
+                if (caretBottom > contentVisibleBottom && caretTop >= contentVisibleTop) {
+                    barPos = (caretBottom - scrollPaneHeight) / (contentHeight - scrollPaneHeight);
+                }
+
+                if (barPos < 0) {
+                    barPos = 0;
+                } else if (barPos > 1) {
+                    barPos = 1;
+                }
+                
+                scrollPane.setVvalue(barPos);
+            }
+            
+        });
+    }
+        
     private void sendToHandlerCharAndParagraphCurrentStyle() {
         // Send current char style to Handler if it has changed
         if (this.cssCharPrev == null || !this.cssCharPrev.equals(this.cssChar)) {

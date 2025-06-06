@@ -1,7 +1,7 @@
 {
   "AllowMarkingIntegers_BLOCK_NAME": {
     "key": "AllowMarkingIntegers_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "none",
     "max": "none",
@@ -14,7 +14,7 @@
   },
   "AllowMarkingDoubles_BLOCK_NAME": {
     "key": "AllowMarkingDoubles_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -27,7 +27,7 @@
   },
   "AllowMarkingDates_BLOCK_NAME": {
     "key": "AllowMarkingDates_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -40,7 +40,7 @@
   },
   "AllowMarkingTimes_BLOCK_NAME": {
     "key": "AllowMarkingTimes_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -53,7 +53,7 @@
   },
   "AllowMarkingSerbianMobileNumbers_BLOCK_NAME": {
     "key": "AllowMarkingSerbianMobileNumbers_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -79,7 +79,7 @@
   },
   "AllowMarkingSerbianLandlineNumbers_BLOCK_NAME": {
     "key": "AllowMarkingSerbianLandlineNumbers_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -105,7 +105,7 @@
   },
   "AllowMarkingInternationalPhoneNumbers_BLOCK_NAME": {
     "key": "AllowMarkingInternationalPhoneNumbers_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -131,7 +131,7 @@
   },
   "AllowMarkingWebLinks_BLOCK_NAME": {
     "key": "AllowMarkingWebLinks_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -144,7 +144,7 @@
   },
   "AllowMarkingEmails_BLOCK_NAME": {
     "key": "AllowMarkingEmails_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -222,7 +222,7 @@
   },
   "AllowAutoComplete_BLOCK_NAME": {
     "key": "AllowAutoComplete_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -313,7 +313,7 @@
   },
   "MaxNumberOfParagraphs_BLOCK_NAME": {
     "key": "MaxNumberOfParagraphs_BLOCK_NAME",
-    "value": "5",
+    "value": "10",
     "defaultValue": "5",
     "min": "Null",
     "max": "Null",
@@ -321,6 +321,58 @@
     "dataType": 8,
     "description": "",
     "creationDate": "2025.05.17 11:43:57",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTWidgetPaddingTop_BLOCK_NAME": {
+    "key": "RTWidgetPaddingTop_BLOCK_NAME",
+    "value": "5",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 10,
+    "dataType": 8,
+    "description": "Top padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:12",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTWidgetPaddingRight_BLOCK_NAME": {
+    "key": "RTWidgetPaddingRight_BLOCK_NAME",
+    "value": "5",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 10,
+    "dataType": 8,
+    "description": "Right padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:35",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTWidgetPaddingBottom_BLOCK_NAME": {
+    "key": "RTWidgetPaddingBottom_BLOCK_NAME",
+    "value": "5",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 10,
+    "dataType": 8,
+    "description": "Bottom padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:54",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTWidgetPaddingLeft_BLOCK_NAME": {
+    "key": "RTWidgetPaddingLeft_BLOCK_NAME",
+    "value": "5",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 10,
+    "dataType": 8,
+    "description": "Left padding for RTWidget",
+    "creationDate": "2025.06.05 13:38:08",
     "userData": "",
     "canBeSavedInFile": true
   },
@@ -378,7 +430,7 @@
   },
   "AllowMarking_BLOCK_NAME": {
     "key": "AllowMarking_BLOCK_NAME",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -389,48 +441,48 @@
     "userData": "",
     "canBeSavedInFile": true
   },
-  "EmptyDialog_ACTOR_SELECT_STANDARD": {
-    "key": "EmptyDialog_ACTOR_SELECT_STANDARD",
-    "value": "status\u003d0.0\nPosX\u003d687.0\nPosY\u003d124.0\nWidth\u003d546.0\nHeight\u003d669.0\n",
+  "EmptyDialog_BLOCK_NAME_ENTER": {
+    "key": "EmptyDialog_BLOCK_NAME_ENTER",
+    "value": "status\u003d0.0\nPosX\u003d310.0\nPosY\u003d267.0\nWidth\u003d1300.0\nHeight\u003d541.0\n",
     "defaultValue": "",
     "min": "null",
     "max": "null",
     "settingType": 2,
     "dataType": 4,
     "description": "",
-    "creationDate": "2025.06.03 17:29:12",
+    "creationDate": "2025.06.05 15:04:23",
     "userData": "",
     "canBeSavedInFile": true
   },
-  "Selection_BLOCK_ACTOR_ListFontSize": {
-    "key": "Selection_BLOCK_ACTOR_ListFontSize",
-    "value": "12",
-    "defaultValue": "12",
+  "RTSettings_BLOCK_NAME": {
+    "key": "RTSettings_BLOCK_NAME",
+    "value": "status\u003d0.0\nPosX\u003d405.0\nPosY\u003d58.0\nWidth\u003d1110.0\nHeight\u003d865.0\n",
+    "defaultValue": "",
     "min": "null",
     "max": "null",
     "settingType": 2,
-    "dataType": 8,
+    "dataType": 4,
     "description": "",
-    "creationDate": "2025.06.03 17:29:16",
+    "creationDate": "2025.06.05 15:04:36",
     "userData": "",
     "canBeSavedInFile": true
   },
-  "Selection_BLOCK_ACTOR_SplitPaneDividerPosition": {
-    "key": "Selection_BLOCK_ACTOR_SplitPaneDividerPosition",
-    "value": "0.4",
-    "defaultValue": "0.4",
+  "FormatParagraph_BLOCK_NAME": {
+    "key": "FormatParagraph_BLOCK_NAME",
+    "value": "status\u003d0.0\nPosX\u003d570.0\nPosY\u003d162.0\nWidth\u003d780.0\nHeight\u003d553.0\n",
+    "defaultValue": "",
     "min": "null",
     "max": "null",
     "settingType": 2,
-    "dataType": 64,
+    "dataType": 4,
     "description": "",
-    "creationDate": "2025.06.03 17:29:16",
+    "creationDate": "2025.06.05 15:08:53",
     "userData": "",
     "canBeSavedInFile": true
   },
   "AllowMarkingIntegers_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingIntegers_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "none",
     "max": "none",
@@ -443,7 +495,7 @@
   },
   "AllowMarkingDoubles_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingDoubles_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -456,7 +508,7 @@
   },
   "AllowMarkingDates_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingDates_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -469,7 +521,7 @@
   },
   "AllowMarkingTimes_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingTimes_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -482,7 +534,7 @@
   },
   "AllowMarkingSerbianMobileNumbers_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingSerbianMobileNumbers_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -508,7 +560,7 @@
   },
   "AllowMarkingSerbianLandlineNumbers_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingSerbianLandlineNumbers_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -534,7 +586,7 @@
   },
   "AllowMarkingInternationalPhoneNumbers_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingInternationalPhoneNumbers_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -560,7 +612,7 @@
   },
   "AllowMarkingWebLinks_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingWebLinks_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -573,7 +625,7 @@
   },
   "AllowMarkingEmails_ACTOR_DESCRIPTION": {
     "key": "AllowMarkingEmails_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -651,7 +703,7 @@
   },
   "AllowAutoComplete_ACTOR_DESCRIPTION": {
     "key": "AllowAutoComplete_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "true",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -753,6 +805,58 @@
     "userData": "",
     "canBeSavedInFile": true
   },
+  "RTWidgetPaddingTop_ACTOR_DESCRIPTION": {
+    "key": "RTWidgetPaddingTop_ACTOR_DESCRIPTION",
+    "value": "10",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 10,
+    "dataType": 8,
+    "description": "Top padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:12",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTWidgetPaddingRight_ACTOR_DESCRIPTION": {
+    "key": "RTWidgetPaddingRight_ACTOR_DESCRIPTION",
+    "value": "10",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 10,
+    "dataType": 8,
+    "description": "Right padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:35",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTWidgetPaddingBottom_ACTOR_DESCRIPTION": {
+    "key": "RTWidgetPaddingBottom_ACTOR_DESCRIPTION",
+    "value": "10",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 10,
+    "dataType": 8,
+    "description": "Bottom padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:54",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTWidgetPaddingLeft_ACTOR_DESCRIPTION": {
+    "key": "RTWidgetPaddingLeft_ACTOR_DESCRIPTION",
+    "value": "10",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 10,
+    "dataType": 8,
+    "description": "Left padding for RTWidget",
+    "creationDate": "2025.06.05 13:38:08",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
   "CssMarkedDate_ACTOR_DESCRIPTION": {
     "key": "CssMarkedDate_ACTOR_DESCRIPTION",
     "value": "-fx-fill:#95e229;-fx-font-style: italic;",
@@ -763,6 +867,19 @@
     "dataType": 4,
     "description": "Css for all found items in text",
     "creationDate": "2025.05.01 14:47:16",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "ActorEdit_FontSize_txtName": {
+    "key": "ActorEdit_FontSize_txtName",
+    "value": "16",
+    "defaultValue": "16",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.06.05 15:23:08",
     "userData": "",
     "canBeSavedInFile": true
   },
@@ -779,6 +896,19 @@
     "userData": "",
     "canBeSavedInFile": true
   },
+  "ActorEdit_FontSize_txtNick": {
+    "key": "ActorEdit_FontSize_txtNick",
+    "value": "16",
+    "defaultValue": "16",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.06.05 15:23:08",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
   "CssMarkedInteger_ACTOR_DESCRIPTION": {
     "key": "CssMarkedInteger_ACTOR_DESCRIPTION",
     "value": "-fx-fill:#29e22f;",
@@ -789,6 +919,19 @@
     "dataType": 4,
     "description": "Css for all found items in text",
     "creationDate": "2025.05.01 14:45:04",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "ActorEdit_FontSize_chkDefault": {
+    "key": "ActorEdit_FontSize_chkDefault",
+    "value": "14",
+    "defaultValue": "14",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.06.05 15:23:08",
     "userData": "",
     "canBeSavedInFile": true
   },
@@ -805,45 +948,6 @@
     "userData": "",
     "canBeSavedInFile": true
   },
-  "ActorEdit_FontSize_txtName": {
-    "key": "ActorEdit_FontSize_txtName",
-    "value": "16",
-    "defaultValue": "16",
-    "min": "null",
-    "max": "null",
-    "settingType": 2,
-    "dataType": 8,
-    "description": "",
-    "creationDate": "2025.06.03 17:29:21",
-    "userData": "",
-    "canBeSavedInFile": true
-  },
-  "ActorEdit_FontSize_txtNick": {
-    "key": "ActorEdit_FontSize_txtNick",
-    "value": "16",
-    "defaultValue": "16",
-    "min": "null",
-    "max": "null",
-    "settingType": 2,
-    "dataType": 8,
-    "description": "",
-    "creationDate": "2025.06.03 17:29:21",
-    "userData": "",
-    "canBeSavedInFile": true
-  },
-  "ActorEdit_FontSize_chkDefault": {
-    "key": "ActorEdit_FontSize_chkDefault",
-    "value": "14",
-    "defaultValue": "14",
-    "min": "null",
-    "max": "null",
-    "settingType": 2,
-    "dataType": 8,
-    "description": "",
-    "creationDate": "2025.06.03 17:29:21",
-    "userData": "",
-    "canBeSavedInFile": true
-  },
   "ActorEdit": {
     "key": "ActorEdit",
     "value": "status\u003d0.0\nPosX\u003d486.0\nPosY\u003d157.0\nWidth\u003d948.0\nHeight\u003d569.0\n",
@@ -853,13 +957,13 @@
     "settingType": 2,
     "dataType": 4,
     "description": "",
-    "creationDate": "2025.06.03 17:29:21",
+    "creationDate": "2025.06.05 15:23:08",
     "userData": "",
     "canBeSavedInFile": true
   },
   "AllowMarking_ACTOR_DESCRIPTION": {
     "key": "AllowMarking_ACTOR_DESCRIPTION",
-    "value": "True",
+    "value": "false",
     "defaultValue": "True",
     "min": "Null",
     "max": "Null",
@@ -867,6 +971,97 @@
     "dataType": 128,
     "description": "Marking in text is enabled",
     "creationDate": "2025.05.16 17:21:26",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "RTSettings_ACTOR_DESCRIPTION": {
+    "key": "RTSettings_ACTOR_DESCRIPTION",
+    "value": "status\u003d0.0\nPosX\u003d405.0\nPosY\u003d58.0\nWidth\u003d1110.0\nHeight\u003d865.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.06.05 15:23:27",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "EmptyDialog_ACTOR_SELECT_STANDARD": {
+    "key": "EmptyDialog_ACTOR_SELECT_STANDARD",
+    "value": "status\u003d0.0\nPosX\u003d97.0\nPosY\u003d187.0\nWidth\u003d897.0\nHeight\u003d674.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.06.05 15:24:23",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "Selection_BLOCK_ACTOR_FontSize_txtFind": {
+    "key": "Selection_BLOCK_ACTOR_FontSize_txtFind",
+    "value": "14",
+    "defaultValue": "14",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.06.05 15:24:23",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "Selection_BLOCK_ACTOR_ListFontSize": {
+    "key": "Selection_BLOCK_ACTOR_ListFontSize",
+    "value": "12",
+    "defaultValue": "12",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 8,
+    "description": "",
+    "creationDate": "2025.06.05 15:24:31",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "Selection_BLOCK_ACTOR_SplitPaneDividerPosition": {
+    "key": "Selection_BLOCK_ACTOR_SplitPaneDividerPosition",
+    "value": "0.49035187287173665",
+    "defaultValue": "0.4392735527809308",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 64,
+    "description": "",
+    "creationDate": "2025.06.05 15:24:31",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "FormatChar_ACTOR_DESCRIPTION": {
+    "key": "FormatChar_ACTOR_DESCRIPTION",
+    "value": "status\u003d0.0\nPosX\u003d490.0\nPosY\u003d168.0\nWidth\u003d940.0\nHeight\u003d535.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.06.05 15:24:42",
+    "userData": "",
+    "canBeSavedInFile": true
+  },
+  "FormatChar_BLOCK_NAME": {
+    "key": "FormatChar_BLOCK_NAME",
+    "value": "status\u003d0.0\nPosX\u003d490.0\nPosY\u003d168.0\nWidth\u003d940.0\nHeight\u003d537.0\n",
+    "defaultValue": "",
+    "min": "null",
+    "max": "null",
+    "settingType": 2,
+    "dataType": 4,
+    "description": "",
+    "creationDate": "2025.06.06 19:04:47",
     "userData": "",
     "canBeSavedInFile": true
   }

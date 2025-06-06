@@ -279,6 +279,7 @@ public class TextHandler {
     public void updateSettings() {
         marker.updateSettings();
         rtWidget.ac.updateSettings();
+        rtWidget.setPadding(null, null, null, null);
     }
 
     public boolean canBeClosed() {
@@ -610,6 +611,7 @@ public class TextHandler {
 
     private void onRTSettingsExit(Boolean result) {
         if (result) {
+            rtWidget.setPadding(null, null, null, null);
             boolean hasAc = rtWidget.ac.hasCurrentAC();
             rtWidget.ac.removeCurrentAC();
             marker.updateSettings();

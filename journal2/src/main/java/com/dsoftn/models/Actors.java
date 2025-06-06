@@ -9,9 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.dsoftn.Interfaces.IModelRepository;
+import com.dsoftn.controllers.MsgBoxController;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
+import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
 import com.dsoftn.enums.models.ModelEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.Interfaces.ICustomEventListener;
+import com.dsoftn.CONSTANTS;
+import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.services.SQLiteDB;
 import com.dsoftn.utils.UError;
@@ -274,6 +279,17 @@ public class Actors implements IModelRepository<Actor>, ICustomEventListener {
 
     // Public methods
 
+    public boolean confirmDelete(int id) {
+        Actor actor = getEntity(id);
+        if (actor == null) return false;
+
+        if (msgConfirmDelete(actor)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public List<Actor> getActorsListFromIDs(List<Integer> actorIDs) {
         List<Actor> actors = new ArrayList<>();
         for (Integer actorID : actorIDs) {
@@ -294,5 +310,49 @@ public class Actors implements IModelRepository<Actor>, ICustomEventListener {
 
         return getActorsListFromIDs(actorIDs);
     }
+
+    public boolean canBeDeleted(Actor actor) {
+        if (actor == null) return false;
+
+        // Check if actor is used in any relation
+        if (OBJECTS.RELATIONS.getRelationsList(ModelEnum.BLOCK, null, ModelEnum.ACTOR, actor.getID()).size() > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Private methods
+
+    private boolean msgConfirmDelete(Actor actor) {
+        if (actor == null) return false;
+        if (!canBeDeleted(actor)) {
+            // Msg cannot be deleted
+            MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(CONSTANTS.PRIMARY_STAGE);
+            msgBoxController.setTitleText(OBJECTS.SETTINGS.getl("text_Delete"));
+            msgBoxController.setHeaderText(OBJECTS.SETTINGS.getl("text_DeleteActor"));
+            msgBoxController.setHeaderIcon(MsgBoxIcon.WARNING);
+            msgBoxController.setContentText(OBJECTS.SETTINGS.getl("ActorDelete_CannotBeDeleted").replace("#1", actor.getFriendlyName()));
+            msgBoxController.setContentIcon(MsgBoxIcon.DELETE);
+            msgBoxController.setButtons(MsgBoxButton.OK);
+            msgBoxController.setDefaultButton(MsgBoxButton.OK);
+            msgBoxController.startMe();
+
+            return false;
+        }
+
+        MsgBoxController msgBoxController = DIALOGS.getMsgBoxController(CONSTANTS.PRIMARY_STAGE);
+        msgBoxController.setTitleText(OBJECTS.SETTINGS.getl("text_Delete"));
+        msgBoxController.setHeaderText(OBJECTS.SETTINGS.getl("text_DeleteActor"));
+        msgBoxController.setHeaderIcon(MsgBoxIcon.QUESTION);
+        msgBoxController.setContentText(OBJECTS.SETTINGS.getl("ActorDelete_ConfirmDelete").replace("#1", actor.getFriendlyName()));
+        msgBoxController.setContentIcon(MsgBoxIcon.DELETE);
+        msgBoxController.setButtons(MsgBoxButton.YES, MsgBoxButton.NO, MsgBoxButton.CANCEL);
+        msgBoxController.setDefaultButton(MsgBoxButton.NO);
+        msgBoxController.startMe();
+
+        return msgBoxController.getSelectedButton() == MsgBoxButton.YES;
+    }
+
 
 }

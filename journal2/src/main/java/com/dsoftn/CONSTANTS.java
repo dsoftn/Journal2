@@ -4,10 +4,13 @@ import java.time.format.DateTimeFormatter;
 
 import com.dsoftn.utils.UFile;
 
+import javafx.stage.Stage;
+
 public class CONSTANTS {
 
     // Global
     public static final String APPLICATION_NAME = "My Journal 2";
+    public static Stage PRIMARY_STAGE = null;
     public static final String FOLDER_DATA = "data";
     public static final String FOLDER_DATA_APP = UFile.concatPaths("data", "app");
     public static final String FOLDER_DATA_APP_SETTINGS = UFile.concatPaths("data", "app", "settings");
@@ -33,8 +36,6 @@ public class CONSTANTS {
 
     public static final String EMPTY_PARAGRAPH_STRING = "\u200B"; // Zero-width space at beginning of each paragraph
     public static final char EMPTY_PARAGRAPH_CHAR = '\u200B'; // Zero-width space at beginning of each paragraph
-    // public static final String EMPTY_PARAGRAPH_STRING = "~"; // Zero-width space at beginning of each paragraph
-    // public static final char EMPTY_PARAGRAPH_CHAR = '~'; // Zero-width space at beginning of each paragraph
     public static final String WORD_DELIMITERS = " ~!@#$%^&*()_+=`{}|[]\\:\";'<>?,./-" + EMPTY_PARAGRAPH_STRING;
 
     public static final String RTW_TEXT_HEADER = EMPTY_PARAGRAPH_STRING.repeat(3) + "RTW"; // RTW = Rich Text Widget header

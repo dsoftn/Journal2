@@ -364,12 +364,12 @@ public class FormatParagraphController implements IBaseController, ICustomEventL
         }
 
         // Create sample widget
-        sampleWidget = new RTWidget();
+        sampleWidget = new RTWidget(vBoxSample);
         sampleWidget.setMinTextWidgetHeight(35);
         sampleWidget.setReadOnly(true);
         sampleWidget.getStyleClass().add("rich-text");
         VBox.setVgrow(sampleWidget, javafx.scene.layout.Priority.ALWAYS);
-        vBoxSample.getChildren().add(sampleWidget);
+        // vBoxSample.getChildren().add(sampleWidget);
         String sampleText = "\n" + OBJECTS.SETTINGS.getl("text_ParagraphStyle");
         sampleWidget.setCssChar(defaultCharStyle.duplicate());
         sampleWidget.setTextPlain(sampleText);

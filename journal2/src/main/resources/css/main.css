@@ -75,6 +75,7 @@ Button:
     -fx-text-fill: #636465;
 }
 
+/* Label - Link */
 .label-link {
     -fx-background-color: transparent;
     -fx-text-fill: #b1b1b1;
@@ -90,6 +91,7 @@ Button:
     -fx-text-fill: #636465;
 }
 
+/* Label - Title */
 .label-title-default {
     -fx-background-color: transparent;
     -fx-text-fill: #00f5d4;

@@ -36,8 +36,8 @@ public class TextInputController implements IElementController, ICustomEventList
 
     // FXML variables
     @FXML
-    private HBox hBoxRichText; // Here goes rich text widget
-        private RTWidget rTxtRichText = new RTWidget(); // Rich text widget
+    private VBox vBoxRichText; // Here goes rich text widget
+        private RTWidget rTxtRichText = null; // Rich text widget
 
     @FXML
     private HBox hBoxControls;
@@ -171,7 +171,8 @@ public class TextInputController implements IElementController, ICustomEventList
         OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
 
         // Add Rich text
-        hBoxRichText.getChildren().add(rTxtRichText);
+        rTxtRichText = new RTWidget(vBoxRichText);
+        // vBoxRichText.getChildren().add(rTxtRichText);
 
         // Create toolbar
         toolbarController = ELEMENTS.getTextEditToolbarController(stage);

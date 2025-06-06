@@ -96,6 +96,25 @@ public class RTSettingsController implements IBaseController {
         @FXML
         private TextField txtInitNumPar;
         @FXML
+        private Label lblPadding;
+        @FXML
+        private Label lblPaddingTop;
+        @FXML
+        private TextField txtPaddingTop;
+        @FXML
+        private Label lblPaddingRight;
+        @FXML
+        private TextField txtPaddingRight;
+        @FXML
+        private Label lblPaddingBottom;
+        @FXML
+        private TextField txtPaddingBottom;
+        @FXML
+        private Label lblPaddingLeft;
+        @FXML
+        private TextField txtPaddingLeft;
+
+        @FXML
         private VBox vBoxInitTextSample; // Placeholder for RTWidget - Init text sample
     
     @FXML
@@ -234,6 +253,7 @@ public class RTSettingsController implements IBaseController {
         setupWidgetsAppearance();
         setupSpinnerValidators();
         setupData(behavior);
+        setRtwInitTextSamplePadding();
 
         stage.show();
     }
@@ -273,6 +293,17 @@ public class RTSettingsController implements IBaseController {
         lblInitNumPar.setText(OBJECTS.SETTINGS.getl("text_NumberOfParagraphsAllowed"));
         UJavaFX.setTooltip(lblInitNumPar, OBJECTS.SETTINGS.getl("tt_RtSettings_NumPar"), OBJECTS.SETTINGS.getl("tt_RtSettings_NumPar_Title"), new Image(getClass().getResourceAsStream("/images/paragraph.png")), 30, 30);
         UJavaFX.setTooltip(txtInitNumPar, OBJECTS.SETTINGS.getl("tt_RtSettings_NumPar"), OBJECTS.SETTINGS.getl("tt_RtSettings_NumPar_Title"), new Image(getClass().getResourceAsStream("/images/paragraph.png")), 30, 30);
+        lblPadding.setText(OBJECTS.SETTINGS.getl("text_Padding"));
+        UJavaFX.setTooltip(lblPadding, OBJECTS.SETTINGS.getl("tt_RtSettings_Padding"), OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Title"), new Image(getClass().getResourceAsStream("/images/padding.png")), 30, 30);
+        lblPaddingTop.setText(OBJECTS.SETTINGS.getl("text_Top"));
+        UJavaFX.setTooltip(lblPaddingTop, OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Top"), OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Top_Title"), new Image(getClass().getResourceAsStream("/images/move.png")), 30, 30);
+        lblPaddingRight.setText(OBJECTS.SETTINGS.getl("text_Right"));
+        UJavaFX.setTooltip(lblPaddingRight, OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Right"), OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Right_Title"), new Image(getClass().getResourceAsStream("/images/move.png")), 30, 30);
+        lblPaddingBottom.setText(OBJECTS.SETTINGS.getl("text_Bottom"));
+        UJavaFX.setTooltip(lblPaddingBottom, OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Bottom"), OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Bottom_Title"), new Image(getClass().getResourceAsStream("/images/move.png")), 30, 30);
+        lblPaddingLeft.setText(OBJECTS.SETTINGS.getl("text_Left"));
+        UJavaFX.setTooltip(lblPaddingLeft, OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Left"), OBJECTS.SETTINGS.getl("tt_RtSettings_Padding_Left_Title"), new Image(getClass().getResourceAsStream("/images/move.png")), 30, 30);
+
         lblAcSubTitle.setText(OBJECTS.SETTINGS.getl("text_AutoCompleteRecommendations"));
         chkAcEnabled.setText(OBJECTS.SETTINGS.getl("text_Enabled"));
         lblAcMaxRec.setText(OBJECTS.SETTINGS.getl("text_MaxNumberOfRecommendations"));
@@ -321,20 +352,21 @@ public class RTSettingsController implements IBaseController {
 
     private void setupWidgetsAppearance() {
         // Add RTWidgets
-        rtwInitTextSample = new RTWidget();
+        rtwInitTextSample = new RTWidget(null);
         rtwInitTextSample.setReadOnly(true);
         rtwInitTextSample.getStyleClass().add("rich-text");
         VBox.setVgrow(rtwInitTextSample, javafx.scene.layout.Priority.ALWAYS);
+        setRtwInitTextSamplePadding();
         vBoxInitTextSample.getChildren().add(rtwInitTextSample);
 
-        rtwAcSample = new RTWidget();
+        rtwAcSample = new RTWidget(null);
         rtwAcSample.setMinTextWidgetHeight(35);
         rtwAcSample.setReadOnly(true);
         rtwAcSample.getStyleClass().add("rich-text");
         VBox.setVgrow(rtwAcSample, javafx.scene.layout.Priority.ALWAYS);
         vBoxAcSample.getChildren().add(rtwAcSample);
         
-        rtwHlSample = new RTWidget();
+        rtwHlSample = new RTWidget(null);
         rtwHlSample.setMinTextWidgetHeight(35);
         rtwHlSample.setPadding(new Insets(0, 0, 0, 10));
         rtwHlSample.setReadOnly(true);
@@ -369,6 +401,42 @@ public class RTSettingsController implements IBaseController {
             }
         });
 
+        // Text Field for padding top
+        txtPaddingTop.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidPaddingTop(newValue)) {
+                lblPaddingTop.setStyle("-fx-background-color: transparent;");
+                txtPaddingTop.setStyle("-fx-background-color: #051923;");
+            }
+            setRtwInitTextSamplePadding();
+        });
+
+        // Text Field for padding right
+        txtPaddingRight.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidPaddingRight(newValue)) {
+                lblPaddingRight.setStyle("-fx-background-color: transparent;");
+                txtPaddingRight.setStyle("-fx-background-color: #051923;");
+            }
+            setRtwInitTextSamplePadding();
+        });
+
+        // Text Field for padding bottom
+        txtPaddingBottom.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidPaddingBottom(newValue)) {
+                lblPaddingBottom.setStyle("-fx-background-color: transparent;");
+                txtPaddingBottom.setStyle("-fx-background-color: #051923;");
+            }
+            setRtwInitTextSamplePadding();
+        });
+
+        // Text Field for padding left
+        txtPaddingLeft.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidPaddingLeft(newValue)) {
+                lblPaddingLeft.setStyle("-fx-background-color: transparent;");
+                txtPaddingLeft.setStyle("-fx-background-color: #051923;");
+            }
+            setRtwInitTextSamplePadding();
+        });
+
         // Spinner for AutoComplete - Max recommendations
         SpinnerValueFactory<Integer> valueFactory = 
             new SpinnerValueFactory.IntegerSpinnerValueFactory(
@@ -397,6 +465,17 @@ public class RTSettingsController implements IBaseController {
         spnAcDelay.setValueFactory(valueFactory);
 
     }
+
+    private void setRtwInitTextSamplePadding() {
+        rtwInitTextSample.setPadding(
+            isValidPaddingTop(txtPaddingTop.getText()) ? Double.parseDouble(txtPaddingTop.getText()) : (double) USettings.getAppOrUserSettingsItem("RTWidgetPaddingTop", behavior).getValueINT(),
+            isValidPaddingRight(txtPaddingRight.getText()) ? Double.parseDouble(txtPaddingRight.getText()) : (double) USettings.getAppOrUserSettingsItem("RTWidgetPaddingRight", behavior).getValueINT(),
+            isValidPaddingBottom(txtPaddingBottom.getText()) ? Double.parseDouble(txtPaddingBottom.getText()) : (double) USettings.getAppOrUserSettingsItem("RTWidgetPaddingBottom", behavior).getValueINT(),
+            isValidPaddingLeft(txtPaddingLeft.getText()) ? Double.parseDouble(txtPaddingLeft.getText()) : (double) USettings.getAppOrUserSettingsItem("RTWidgetPaddingLeft", behavior).getValueINT(),
+            behavior
+            );
+    }
+
 
     private void setupSpinnerValidators() {
         TextFormatter<Integer> acMaxRecFormatter = new TextFormatter<>(new IntegerStringConverter(), 0, change -> {
@@ -450,6 +529,10 @@ public class RTSettingsController implements IBaseController {
         
         cssInitTextStyle = USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior).getValueSTRING();
         cssInitParStyle = USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", behavior).getValueSTRING();
+        txtPaddingTop.setText(USettings.getAppOrUserSettingsItem("RTWidgetPaddingTop", behavior).getValueINT().toString());
+        txtPaddingRight.setText(USettings.getAppOrUserSettingsItem("RTWidgetPaddingRight", behavior).getValueINT().toString());
+        txtPaddingBottom.setText(USettings.getAppOrUserSettingsItem("RTWidgetPaddingBottom", behavior).getValueINT().toString());
+        txtPaddingLeft.setText(USettings.getAppOrUserSettingsItem("RTWidgetPaddingLeft", behavior).getValueINT().toString());
 
         // AutoComplete
         chkAcEnabled.setSelected(USettings.getAppOrUserSettingsItem("AllowAutoComplete", behavior).getValueBOOLEAN());
@@ -488,6 +571,10 @@ public class RTSettingsController implements IBaseController {
         // Default text and paragraph style
         txtInitMinHeight.setText(USettings.getAppOrUserSettingsItem("MinRTWidgetHeight", behavior).getDefaultValueINT().toString());
         txtInitNumPar.setText("MAX");
+        txtPaddingTop.setText(USettings.getAppOrUserSettingsItem("RTWidgetPaddingTop", behavior).getDefaultValueINT().toString());
+        txtPaddingRight.setText(USettings.getAppOrUserSettingsItem("RTWidgetPaddingRight", behavior).getDefaultValueINT().toString());
+        txtPaddingBottom.setText(USettings.getAppOrUserSettingsItem("RTWidgetPaddingBottom", behavior).getDefaultValueINT().toString());
+        txtPaddingLeft.setText(USettings.getAppOrUserSettingsItem("RTWidgetPaddingLeft", behavior).getDefaultValueINT().toString());
         
         cssInitTextStyle = USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior).getDefaultValueSTRING();
         cssInitParStyle = USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", behavior).getDefaultValueSTRING();
@@ -537,6 +624,10 @@ public class RTSettingsController implements IBaseController {
         } else {
             OBJECTS.SETTINGS.setApp("MaxNumberOfParagraphs" + behaviorName, UNumbers.toInteger(txtInitNumPar.getText()));
         }
+        OBJECTS.SETTINGS.setApp("RTWidgetPaddingTop" + behaviorName, UNumbers.toInteger(txtPaddingTop.getText()));
+        OBJECTS.SETTINGS.setApp("RTWidgetPaddingRight" + behaviorName, UNumbers.toInteger(txtPaddingRight.getText()));
+        OBJECTS.SETTINGS.setApp("RTWidgetPaddingBottom" + behaviorName, UNumbers.toInteger(txtPaddingBottom.getText()));
+        OBJECTS.SETTINGS.setApp("RTWidgetPaddingLeft" + behaviorName, UNumbers.toInteger(txtPaddingLeft.getText()));
 
         OBJECTS.SETTINGS.setApp("CssDefaultTextStyle" + behaviorName, cssInitTextStyle);
         OBJECTS.SETTINGS.setApp("CssDefaultParagraphStyle" + behaviorName, cssInitParStyle);
@@ -580,6 +671,10 @@ public class RTSettingsController implements IBaseController {
         // Default text and paragraph style
         if (!isValidMinHeight(null)) { success = false; }
         if (!isValidNumPar(null)) { success = false; }
+        if (!isValidPaddingTop(null)) { success = false; }
+        if (!isValidPaddingRight(null)) { success = false; }
+        if (!isValidPaddingBottom(null)) { success = false; }
+        if (!isValidPaddingLeft(null)) { success = false; }
 
         // AutoComplete
         if (!isValidAcMaxRec(null)) { success = false; }
@@ -621,6 +716,46 @@ public class RTSettingsController implements IBaseController {
         if (UNumbers.toInteger(text) == null || UNumbers.toInteger(text) < 1) {
             lblInitNumPar.setStyle(invalidEntry);
             txtInitNumPar.setStyle(invalidEntry);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidPaddingTop(String text) {
+        if (text == null) text = txtPaddingTop.getText();
+        if (UNumbers.toDouble(text) == null || UNumbers.toDouble(text) < OBJECTS.SETTINGS.getUserSettingsItem("RTWidgetPaddingTop").getMinINT() || UNumbers.toDouble(text) > OBJECTS.SETTINGS.getUserSettingsItem("RTWidgetPaddingTop").getMaxINT()) {
+            lblPaddingTop.setStyle(invalidEntry);
+            txtPaddingTop.setStyle(invalidEntry);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidPaddingRight(String text) {
+        if (text == null) text = txtPaddingRight.getText();
+        if (UNumbers.toDouble(text) == null || UNumbers.toDouble(text) < OBJECTS.SETTINGS.getUserSettingsItem("RTWidgetPaddingRight").getMinINT() || UNumbers.toDouble(text) > OBJECTS.SETTINGS.getUserSettingsItem("RTWidgetPaddingRight").getMaxINT()) {
+            lblPaddingRight.setStyle(invalidEntry);
+            txtPaddingRight.setStyle(invalidEntry);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidPaddingBottom(String text) {
+        if (text == null) text = txtPaddingBottom.getText();
+        if (UNumbers.toDouble(text) == null || UNumbers.toDouble(text) < OBJECTS.SETTINGS.getUserSettingsItem("RTWidgetPaddingBottom").getMinINT() || UNumbers.toDouble(text) > OBJECTS.SETTINGS.getUserSettingsItem("RTWidgetPaddingBottom").getMaxINT()) {
+            lblPaddingBottom.setStyle(invalidEntry);
+            txtPaddingBottom.setStyle(invalidEntry);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidPaddingLeft(String text) {
+        if (text == null) text = txtPaddingLeft.getText();
+        if (UNumbers.toDouble(text) == null || UNumbers.toDouble(text) < OBJECTS.SETTINGS.getUserSettingsItem("RTWidgetPaddingLeft").getMinINT() || UNumbers.toDouble(text) > OBJECTS.SETTINGS.getUserSettingsItem("RTWidgetPaddingLeft").getMaxINT()) {
+            lblPaddingLeft.setStyle(invalidEntry);
+            txtPaddingLeft.setStyle(invalidEntry);
             return false;
         }
         return true;
@@ -804,16 +939,15 @@ public class RTSettingsController implements IBaseController {
             closeMe();
         } else {
             MsgBoxController msgBoxFailed = DIALOGS.getMsgBoxController(stage);
-            msgBoxFailed.setTitleText("Settings");
-            msgBoxFailed.setHeaderText("Failed to Save Settings");
+            msgBoxFailed.setTitleText(OBJECTS.SETTINGS.getl("text_Saving"));
+            msgBoxFailed.setHeaderText(OBJECTS.SETTINGS.getl("text_Failed_to_Save_Settings"));
             msgBoxFailed.setHeaderIcon(MsgBoxIcon.WARNING);
-            msgBoxFailed.setContentText("Unable to save settings.\nData validation failed.");
+            msgBoxFailed.setContentText(OBJECTS.SETTINGS.getl("RtSettings_SaveFailed"));
             msgBoxFailed.setContentIcon(MsgBoxIcon.SETTINGS);
             msgBoxFailed.setButtons(MsgBoxButton.OK);
             msgBoxFailed.setDefaultButton(MsgBoxButton.OK);
             msgBoxFailed.startMe();
         }
-
     }
 
     @FXML

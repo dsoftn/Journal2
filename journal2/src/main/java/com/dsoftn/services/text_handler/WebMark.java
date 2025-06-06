@@ -86,7 +86,7 @@ public class WebMark {
         webLinkCss.setCss(cssMarkedWebLink);
 
         for (WordExtractor.WordItem word : words) {
-            if (taskHandler.isCancelled()) {
+            if (taskHandler == null || taskHandler.isCancelled()) {
                 return false;
             }
 
@@ -106,7 +106,7 @@ public class WebMark {
         eMailCss.setCss(cssMarkedEmail);
 
         for (WordExtractor.WordItem word : words) {
-            if (taskHandler.isCancelled()) {
+            if (taskHandler == null || taskHandler.isCancelled()) {
                 return false;
             }
 

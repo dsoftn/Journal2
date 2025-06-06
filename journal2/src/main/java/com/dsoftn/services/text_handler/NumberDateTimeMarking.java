@@ -57,7 +57,7 @@ public class NumberDateTimeMarking {
         markedItems = new ArrayList<>();
 
         for (MarkedItem item : markedNumDateTime) {
-            if (taskHandler.isCancelled()) {
+            if (taskHandler == null || taskHandler.isCancelled()) {
                 return null;
             }
 
@@ -119,7 +119,7 @@ public class NumberDateTimeMarking {
 
         boolean hasItem = false;
         for (WordExtractor.WordItem word : words) {
-            if (taskHandler.isCancelled()) {
+            if (taskHandler == null || taskHandler.isCancelled()) {
                 return false;
             }
 
@@ -168,7 +168,7 @@ public class NumberDateTimeMarking {
 
         boolean hasItem = false;
         for (WordExtractor.WordItem word : words) {
-            if (taskHandler.isCancelled()) {
+            if (taskHandler == null || taskHandler.isCancelled()) {
                 return false;
             }
 
@@ -217,7 +217,7 @@ public class NumberDateTimeMarking {
 
         boolean hasItem = false;
         for (WordExtractor.WordItem word : words) {
-            if (taskHandler.isCancelled()) {
+            if (taskHandler == null || taskHandler.isCancelled()) {
                 return false;
             }
 
@@ -279,11 +279,11 @@ public class NumberDateTimeMarking {
         int start = 0;
 
         for (int i = 0; i < text.length(); i++) {
-            if (taskHandler.isCancelled()) {
+            if (taskHandler == null || taskHandler.isCancelled()) {
                 return null;
             }
 
-            if (text.charAt(i) == '-' && i < text.length() -1 && numbers.indexOf(text.charAt(i + 1)) != -1) {
+            if (text.charAt(i) == '-' && i < (text.length() - 1) && numbers.indexOf(text.charAt(i + 1)) != -1) {
                 item += text.charAt(i);
                 if (!foundItem) {
                     start = i;

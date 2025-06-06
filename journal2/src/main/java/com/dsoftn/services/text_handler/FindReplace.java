@@ -43,7 +43,7 @@ public class FindReplace {
 
     public List<StyleSheetChar> calculate(String messageString, List<StyleSheetChar> cssChars, Task<Boolean> taskHandler) {
         if (messageString == null || messageString.isEmpty() || messageString.startsWith("FIND/REPLACE ACTION:FIND CLOSED")) {
-            unMark();
+            if (hasSelectedItem()) unMark();
             foundItems = new ArrayList<>();
             selectedItemIndex = null;
             this.messageSTRING = null;
@@ -143,6 +143,10 @@ public class FindReplace {
         selectItem(selectedItemIndex);
         msgForToolbar("READY");
         return true;
+    }
+
+    public boolean hasSelectedItem() {
+        return foundItems != null && !foundItems.isEmpty();
     }
 
     public void replaceOne(String withString) {
@@ -279,7 +283,7 @@ public class FindReplace {
 
         int pos = 0;
         while (pos < text.length()) {
-            if (taskHandler.isCancelled()) {
+            if (taskHandler == null || taskHandler.isCancelled()) {
                 return false;
             }
 

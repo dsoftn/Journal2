@@ -42,7 +42,9 @@ public class MsgBoxController implements IBaseController {
         PARAGRAPH("/images/paragraph.png"),
         LIMIT("/images/limit.png"),
         SETTINGS("/images/settings.png"),
-        SAVE("/images/save.png");
+        SAVE("/images/save.png"),
+        DELETE("/images/delete.png"),
+        QUESTION("/images/question.png");
 
         private final String iconPath;
 

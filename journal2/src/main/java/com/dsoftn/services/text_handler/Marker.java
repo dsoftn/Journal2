@@ -25,6 +25,7 @@ public class Marker implements ICustomEventListener {
     //  Variables
     private String myName = UJavaFX.getUniqueId();
     private RTWidget rtWidget = null;
+    private String lastRtWidgetText = "";
     private TextHandler textHandler = null;
     private String lastTextState = "";
     private List<StyleSheetChar> lastCssList = new ArrayList<>();
@@ -105,20 +106,33 @@ public class Marker implements ICustomEventListener {
     }
 
     public void mark(String messageSTRING) {
-        if (currentTask != null) {
-            currentTask.cancel();
-            currentTask = null;
-            // return;
+        try {
+            if (lastRtWidgetText.equals(rtWidget.getText())) return;
+            lastRtWidgetText = rtWidget.getText();
+
+            if (currentTask != null) {
+                currentTask.cancel();
+                currentTask = null;
+                // return;
+            }
+
+            textHandler.msgForToolbar("ACTION:WORKING");
+            textHandler.msgForToolbar(TextToolbarActionEnum.HL_WORKING.name() + ":" + true);
+
+            this.messageSTRING = messageSTRING;
+
+            findReplace.unMark();
+
+            currentTask = UJavaFX.taskStartWithResult(this::taskMark, this.myName);
+            
+        } catch (Exception ex) {
+            UError.error("Marker.mark: " + ex.getMessage(), "Error");
+            if (currentTask != null) {
+                currentTask.cancel();
+                currentTask = null;
+            }
+            // mark();
         }
-
-        textHandler.msgForToolbar("ACTION:WORKING");
-        textHandler.msgForToolbar(TextToolbarActionEnum.HL_WORKING.name() + ":" + true);
-
-        this.messageSTRING = messageSTRING;
-
-        findReplace.unMark();
-
-        currentTask = UJavaFX.taskStartWithResult(this::taskMark, this.myName);
     }
 
     public void mark() {
@@ -194,7 +208,7 @@ public class Marker implements ICustomEventListener {
         lastCssList = copyCssList(rtWidget.cssStyles);
 
         List<StyleSheetChar> cssChars = copyCssList(this.lastCssList);
-        if (cssChars == null) { return false; }
+        if (cssChars == null || cssChars.size() != rtWidget.getText().length()) { return false; }
 
         // Numbers, dates, times
         List<MarkedItem> markedNumbersDatesTimes = NumberDateTimeMarking.getNumbersDatesTimes(rtWidget.getText(),  currentTask, textHandler.getBehavior());
@@ -202,7 +216,7 @@ public class Marker implements ICustomEventListener {
         List<StyleSheetChar> cssCharsNDT = numberDateTimeMarking.calculate(cssChars, markedNumbersDatesTimes, currentTask);
         if (cssCharsNDT == null) { return false; }
         cssCharsNDT = copyCssList(cssCharsNDT);
-        
+
         // Web links, e-mail
         List<StyleSheetChar> cssCharsWeb = webMark.calculate(cssCharsNDT, currentTask);
         if (cssCharsWeb == null) { return false; }

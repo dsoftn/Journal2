@@ -368,6 +368,7 @@ public class Actor implements IModelEntity, ICustomEventListener {
     public boolean canBeDeleted() {
         if (this.id == CONSTANTS.INVALID_ID) return false;
         if (!OBJECTS.ACTORS.isExists(this.id)) return false;
+        if (!OBJECTS.ACTORS.canBeDeleted(this)) return false;
         return true;
     }
 

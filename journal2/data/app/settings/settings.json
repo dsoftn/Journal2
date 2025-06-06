@@ -804,5 +804,57 @@
     "creationDate": "2025.05.17 11:43:57",
     "userData": "",
     "canBeSavedInFile": false
+  },
+  "RTWidgetPaddingTop": {
+    "key": "RTWidgetPaddingTop",
+    "value": "5",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Top padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:12",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "RTWidgetPaddingRight": {
+    "key": "RTWidgetPaddingRight",
+    "value": "10",
+    "defaultValue": "10",
+    "min": "0",
+    "max": "100",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Right padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:35",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "RTWidgetPaddingBottom": {
+    "key": "RTWidgetPaddingBottom",
+    "value": "5",
+    "defaultValue": "5",
+    "min": "0",
+    "max": "100",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Bottom padding for RTWidget",
+    "creationDate": "2025.06.05 13:37:54",
+    "userData": "",
+    "canBeSavedInFile": false
+  },
+  "RTWidgetPaddingLeft": {
+    "key": "RTWidgetPaddingLeft",
+    "value": "10",
+    "defaultValue": "10",
+    "min": "0",
+    "max": "100",
+    "settingType": 8,
+    "dataType": 8,
+    "description": "Left padding for RTWidget",
+    "creationDate": "2025.06.05 13:38:08",
+    "userData": "",
+    "canBeSavedInFile": false
   }
 }

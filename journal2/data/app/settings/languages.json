@@ -1778,6 +1778,160 @@
         "languageCode": "en",
         "creationDate": "2025.06.03 12:53:24",
         "userData": ""
+      },
+      "text_Edit": {
+        "key": "text_Edit",
+        "value": "Edit",
+        "languageCode": "en",
+        "creationDate": "2025.06.04 00:55:57",
+        "userData": ""
+      },
+      "text_Delete": {
+        "key": "text_Delete",
+        "value": "Delete",
+        "languageCode": "en",
+        "creationDate": "2025.06.04 01:32:29",
+        "userData": ""
+      },
+      "text_DeleteActor": {
+        "key": "text_DeleteActor",
+        "value": "Delete Actor",
+        "languageCode": "en",
+        "creationDate": "2025.06.04 01:35:54",
+        "userData": ""
+      },
+      "ActorDelete_CannotBeDeleted": {
+        "key": "ActorDelete_CannotBeDeleted",
+        "value": "ACTOR: #1\nThis actor cannot be deleted because it is used in one of the blocks!",
+        "languageCode": "en",
+        "creationDate": "2025.06.04 01:39:47",
+        "userData": ""
+      },
+      "ActorDelete_ConfirmDelete": {
+        "key": "ActorDelete_ConfirmDelete",
+        "value": "ACTOR: #1\nThis operation will permanently delete this actor!\nAre you sure you want to delete this actor?",
+        "languageCode": "en",
+        "creationDate": "2025.06.04 01:39:25",
+        "userData": ""
+      },
+      "text_Top": {
+        "key": "text_Top",
+        "value": "Top",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:01:46",
+        "userData": ""
+      },
+      "text_Right": {
+        "key": "text_Right",
+        "value": "Right",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:02:07",
+        "userData": ""
+      },
+      "text_Bottom": {
+        "key": "text_Bottom",
+        "value": "Bottom",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:02:23",
+        "userData": ""
+      },
+      "text_Left": {
+        "key": "text_Left",
+        "value": "Left",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:02:37",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding": {
+        "key": "tt_RtSettings_Padding",
+        "value": "The padding of the text from the widget edge expressed in the pixels in which the text is located",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:06:47",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Title": {
+        "key": "tt_RtSettings_Padding_Title",
+        "value": "Text padding",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:07:17",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Top": {
+        "key": "tt_RtSettings_Padding_Top",
+        "value": "The padding of the text from the widget top border expressed in the pixels",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:09:14",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Top_Title": {
+        "key": "tt_RtSettings_Padding_Top_Title",
+        "value": "Text padding (TOP)",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:09:46",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Right": {
+        "key": "tt_RtSettings_Padding_Right",
+        "value": "The padding of the text from the widget right border expressed in the pixels",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:10:20",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Right_Title": {
+        "key": "tt_RtSettings_Padding_Right_Title",
+        "value": "Text padding (RIGHT)",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:10:40",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Bottom": {
+        "key": "tt_RtSettings_Padding_Bottom",
+        "value": "The padding of the text from the widget bottom border expressed in the pixels",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:11:09",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Bottom_Title": {
+        "key": "tt_RtSettings_Padding_Bottom_Title",
+        "value": "Text padding (BOTTOM)",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:11:33",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Left": {
+        "key": "tt_RtSettings_Padding_Left",
+        "value": "The padding of the text from the widget left border expressed in the pixels",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:12:07",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Left_Title": {
+        "key": "tt_RtSettings_Padding_Left_Title",
+        "value": "Text padding (LEFT)",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:12:26",
+        "userData": ""
+      },
+      "text_Saving": {
+        "key": "text_Saving",
+        "value": "Saving",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:30:07",
+        "userData": ""
+      },
+      "text_Failed_to_Save_Settings": {
+        "key": "text_Failed_to_Save_Settings",
+        "value": "Failed to save settings",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:31:49",
+        "userData": ""
+      },
+      "RtSettings_SaveFailed": {
+        "key": "RtSettings_SaveFailed",
+        "value": "Failed to save the settings.\nSome data is incorrectly entered.\nPlease correct the wrong data before saving.",
+        "languageCode": "en",
+        "creationDate": "2025.06.05 13:34:26",
+        "userData": ""
       }
     },
     "sr-lat": {
@@ -3557,6 +3711,160 @@
         "value": "Podešavanja: Opis uloge",
         "languageCode": "sr-lat",
         "creationDate": "2025.06.03 12:53:24",
+        "userData": ""
+      },
+      "text_Edit": {
+        "key": "text_Edit",
+        "value": "Uredi",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.04 00:55:57",
+        "userData": ""
+      },
+      "text_Delete": {
+        "key": "text_Delete",
+        "value": "Obriši",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.04 01:32:29",
+        "userData": ""
+      },
+      "text_DeleteActor": {
+        "key": "text_DeleteActor",
+        "value": "Obriši Ulogu",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.04 01:35:54",
+        "userData": ""
+      },
+      "ActorDelete_CannotBeDeleted": {
+        "key": "ActorDelete_CannotBeDeleted",
+        "value": "ULOGA: #1\nOva uloga ne može biti obrisana zato što se koristi u nekom od blokova !",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.04 01:39:47",
+        "userData": ""
+      },
+      "ActorDelete_ConfirmDelete": {
+        "key": "ActorDelete_ConfirmDelete",
+        "value": "ULOGA: #1\nOva operacija će trajno obrisati ovu ulogu !\nDa li ste sigurni da želite da obrišete ovu ulogu ?",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.04 01:39:25",
+        "userData": ""
+      },
+      "text_Top": {
+        "key": "text_Top",
+        "value": "Vrh",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:01:46",
+        "userData": ""
+      },
+      "text_Right": {
+        "key": "text_Right",
+        "value": "Desno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:02:07",
+        "userData": ""
+      },
+      "text_Bottom": {
+        "key": "text_Bottom",
+        "value": "Dno",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:02:23",
+        "userData": ""
+      },
+      "text_Left": {
+        "key": "text_Left",
+        "value": "Levo",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:02:37",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding": {
+        "key": "tt_RtSettings_Padding",
+        "value": "Odmak teksta od ivica widgeta izražen u pikselima u kom se tekst nalazi",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:06:47",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Title": {
+        "key": "tt_RtSettings_Padding_Title",
+        "value": "Odmak teksta",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:07:17",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Top": {
+        "key": "tt_RtSettings_Padding_Top",
+        "value": "Odmak teksta od gornje ivice widgeta izražen u pikselima",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:09:14",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Top_Title": {
+        "key": "tt_RtSettings_Padding_Top_Title",
+        "value": "Odmak teksta (VRH)",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:09:46",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Right": {
+        "key": "tt_RtSettings_Padding_Right",
+        "value": "Odmak teksta od desne ivice widgeta izražen u pikselima",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:10:20",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Right_Title": {
+        "key": "tt_RtSettings_Padding_Right_Title",
+        "value": "Odmak teksta (DESNO)",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:10:40",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Bottom": {
+        "key": "tt_RtSettings_Padding_Bottom",
+        "value": "Odmak teksta od donje ivice widgeta izražen u pikselima",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:11:09",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Bottom_Title": {
+        "key": "tt_RtSettings_Padding_Bottom_Title",
+        "value": "Odmak teksta (DOLE)",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:11:33",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Left": {
+        "key": "tt_RtSettings_Padding_Left",
+        "value": "Odmak teksta od leve ivice widgeta izražen u pikselima",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:12:07",
+        "userData": ""
+      },
+      "tt_RtSettings_Padding_Left_Title": {
+        "key": "tt_RtSettings_Padding_Left_Title",
+        "value": "Odmak teksta (LEVO)",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:12:26",
+        "userData": ""
+      },
+      "text_Saving": {
+        "key": "text_Saving",
+        "value": "Snimanje",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:30:07",
+        "userData": ""
+      },
+      "text_Failed_to_Save_Settings": {
+        "key": "text_Failed_to_Save_Settings",
+        "value": "Neuspešno snimanje podešavanja",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:31:49",
+        "userData": ""
+      },
+      "RtSettings_SaveFailed": {
+        "key": "RtSettings_SaveFailed",
+        "value": "Neuspešno snimanje podešavanja.\nNeki podaci su neispravno unešeni.\nMolim ispravite pogrešne podatke pre snimanja.",
+        "languageCode": "sr-lat",
+        "creationDate": "2025.06.05 13:34:26",
         "userData": ""
       }
     }

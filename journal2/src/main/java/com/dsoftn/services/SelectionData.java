@@ -113,6 +113,12 @@ public class SelectionData {
 
     // Public getters and setter methods
 
+    public void reset() {
+        itemsAll = null;
+        itemsLast = null;
+        itemsMost = null;
+    }
+
     public ModelEnum getBaseModel() {
         return baseModel;
     }
