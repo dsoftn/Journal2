@@ -13,6 +13,7 @@ import com.dsoftn.services.text_handler.TextHandler.Behavior;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
 
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -72,6 +73,9 @@ public class TextInputController implements IElementController, ICustomEventList
                     }
                 }
                 else if (taskEvent.getMessage().equals("SET TEXT")) {
+                    Platform.runLater(() -> {
+                        rTxtRichText.requestFocus();
+                    });
                     if (taskEvent.getRTWText().getPlainText().isEmpty()) {
                         return;
                     }

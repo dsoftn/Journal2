@@ -325,6 +325,7 @@ public class EmptyDialogController implements IBaseController {
         }
         
         stage.show();
+        // vBoxContent.requestFocus();
     }
 
     @Override

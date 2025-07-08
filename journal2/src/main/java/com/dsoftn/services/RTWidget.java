@@ -12,19 +12,21 @@ import org.fxmisc.richtext.model.TwoDimensional;
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
-import com.dsoftn.models.StyleSheetChar;
-import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.ACHandler;
+import com.dsoftn.services.text_handler.RTWidgetAction;
+import com.dsoftn.services.text_handler.RTWidgetAction.ActionType;
+import com.dsoftn.services.text_handler.StyleSheetChar;
+import com.dsoftn.services.text_handler.StyleSheetParagraph;
+import com.dsoftn.services.text_handler.StyledParagraph;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.services.timer.ContinuousTimer;
 import com.dsoftn.utils.UError;
-import com.dsoftn.utils.UString;
 import com.dsoftn.utils.USettings;
+import com.dsoftn.utils.UString;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
@@ -32,42 +34,38 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 
 public class RTWidget extends StyledTextArea<String, String> {
     // Variables
-    public StyleSheetChar cssChar = null; // Current char style
-    private StyleSheetChar cssCharPrev = null; // Previous char style that has been sent to handler
+    private StyleSheetChar cssChar = null; // Current char style
     private StyleSheetParagraph cssParagraph = new StyleSheetParagraph(); // Current paragraph style
-    private StyleSheetParagraph cssParagraphPrev = null; // Previous paragraph style that has been sent to handler
     private Integer maxNumberOfParagraphs = Integer.MAX_VALUE;
     private boolean readOnly = false;
     private int minTextWidgetHeight = 24;
-    public List<StyleSheetChar> cssStyles = new ArrayList<>();
-    public List<StyleSheetParagraph> cssParagraphStyles = new ArrayList<>();
-    private TextHandler textHandler = null;
-    private boolean ignoreTextChange = false;
-    public boolean ignoreCaretPositionChange = false;
-    public boolean ignoreTextChangePERMANENT = false;
+    private List<StyledParagraph> styledParagraphs = new ArrayList<>();
+    private List<RTWidgetAction> actionsStack = new ArrayList<>();
+    private boolean busy = false;
+    private boolean stateChanged = true; // Used with Undo/Redo
+    private int curCaretPos = 0; // Current caret position
+    private boolean hasSelection = false;
     private boolean ignoreCaretPositionChangePERMANENT = false;
-    public boolean busy = false;
-    public boolean stateChanged = true; // Used with Undo/Redo
-    private ContinuousTimer timer = new ContinuousTimer(OBJECTS.SETTINGS.getvINTEGER("IntervalBetweenTextChangesMS"));
-    private PauseTransition pauseAC = null;
-    public ACHandler ac = null;
-    private List<KeyEvent> keyEvents = new ArrayList<>();
+
+    private TextHandler textHandler = null;
+    private ACHandler ac = null;
+
+    private ContinuousTimer timerBetweenTextChanges = new ContinuousTimer(OBJECTS.SETTINGS.getvINTEGER("IntervalBetweenTextChangesMS"));
+    private PauseTransition pauseAC = null; // Used to delay showing AutoComplete
+
     private ScrollPane scrollPane = null;
     private VBox scrollPaneContainer = null;
     private VBox scrollPaneContent = null;
-    private double extraRightPadding = 0;
-    private int prevCaretPosition = 0;
+    private double extraRightPadding = 0; // Used to add padding to the right when vertical scrollbar is visible
 
-    public boolean isOverwriteMode = false;
+    private boolean isOverwriteMode = false;
    
     // Constructors
     public RTWidget(VBox scrollPaneContainer, StyleSheetChar cssStyleSheet, Integer maxNumberOfParagraphs) {
@@ -93,7 +91,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             this.maxNumberOfParagraphs = maxNumberOfParagraphs;
         }
 
-        this.cssParagraphStyles.add(cssParagraph.duplicate());
+        setInitialParagraph();
     }
     
     public RTWidget(VBox scrollPaneContainer, StyleSheetChar cssStyleSheet) {
@@ -111,7 +109,7 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         this.cssChar = cssStyleSheet;
 
-        this.cssParagraphStyles.add(cssParagraph.duplicate());
+        setInitialParagraph();
     }
 
     public RTWidget(VBox scrollPaneContainer) {
@@ -129,11 +127,11 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         this.cssChar = new StyleSheetChar();
 
-        this.cssParagraphStyles.add(cssParagraph.duplicate());
+        setInitialParagraph();
     }
 
     // Public methods
-
+    
     public void setPadding(Double top, Double right, Double bottom, Double left, TextHandler.Behavior behavior) {
         if (behavior == null) {
             if (textHandler == null) return;
@@ -156,10 +154,10 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.readOnly = readOnly;
         if (readOnly) {
             this.setShowCaret(CaretVisibility.OFF);
-            timer.stop();
+            timerBetweenTextChanges.stop();
         } else {
             this.setShowCaret(CaretVisibility.ON);
-            timer.play(() -> takeSnapshot());
+            timerBetweenTextChanges.play(() -> takeSnapshot());
         }
         
     }
@@ -182,82 +180,85 @@ public class RTWidget extends StyledTextArea<String, String> {
             return false;
         }
 
+        if (this.busy) {
+            return false;
+        }
+
+        if (actionsStack.size() > 0) {
+            executeActions(actionsStack);
+        }
+
         return true;
     }
 
     public void msgFromHandler(String messageSTRING) {
         // Process information from handler
-        if (messageSTRING.equals("CUT")) {
-            if (!this.getSelectedText().isEmpty()) {
-                copySelectedText();
-                handleKeyPressed_DELETE(null);
-            }
+        if (messageSTRING.equals(ActionType.CUT.name())) {
+            actionsStack.add(new RTWidgetAction(ActionType.CUT));
         }
         else if (messageSTRING.equals("COPY")) {
-            if (!this.getSelectedText().isEmpty()) {
-                copySelectedText();
-            }
+            actionsStack.add(new RTWidgetAction(ActionType.COPY));
         }
         else if (messageSTRING.equals("PASTE")) {
-            pasteText();
-        } else if (messageSTRING.equals("SELECT_ALL")) {
-            handleKeyPressed_CTRL_A(null);
+            actionsStack.add(new RTWidgetAction(ActionType.PASTE));
+        }
+        else if (messageSTRING.equals("SELECT_ALL")) {
+            actionsStack.add(new RTWidgetAction(ActionType.SELECT_ALL));
+        }
+
+        if (actionsStack.size() > 0) {
+            executeActions(actionsStack);
         }
     }
 
     public void msgFromHandler(StyleSheetChar styleSheet) {
+        busy = true;
         styleSheet = styleSheet.duplicate();
-        this.timer.resetInterval();
+        this.cssChar = styleSheet;
+        this.timerBetweenTextChanges.resetInterval();
+
         // If has selection
         if (!this.getSelectedText().isEmpty()) {
-            int start = this.getSelection().getStart();
-            if (start > 0 && this.getTextNoAC().charAt(start - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
-                start--;
-            }
-            int end = this.getSelection().getEnd();
-            this.cssChar = styleSheet;
-            this.cssCharPrev = styleSheet;
-            for (int i = start; i < end; i++) {
-                this.cssStyles.set(i, styleSheet.duplicate());
-            }
-            this.setStyle(start, end, styleSheet.getCss());
-            fixHeight();
+            applyStringStyle(this.getSelection().getStart(), this.getSelection().getEnd(), styleSheet);
             this.stateChanged = true;
-            return;
+        } else {
+            if (styledParagraphs.get(getParIndex(curCaretPos)).getPlainText().equals(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
+                styledParagraphs.get(getParIndex(curCaretPos)).getStyledStringList().get(0).setCssCharStyleObject(this.cssChar);
+                writeParagraph(getParIndex(curCaretPos));
+            }
         }
 
-        this.cssChar = styleSheet;
-        this.cssCharPrev = styleSheet;
         fixHeight();
+        markCharOVERWRITE(curCaretPos);
+        busy = false;
     }
 
     public void msgFromHandler(StyleSheetParagraph styleSheet, Integer paragraphIndex) {
+        busy = true;
         styleSheet = styleSheet.duplicate();
-        this.timer.resetInterval();
+        this.cssParagraph = styleSheet;
+        this.timerBetweenTextChanges.resetInterval();
+        
         // If has selection
         if (!this.getSelectedText().isEmpty()) {
-            int start = getParIndex(this.getSelection().getStart());
-            int end = getParIndex(this.getSelection().getEnd() - 1);
-            this.cssParagraph = styleSheet;
-            this.cssParagraphPrev = styleSheet;
-            for (int i = start; i <= end; i++) {
-                this.cssParagraphStyles.set(i, styleSheet.duplicate());
-                this.setParagraphStyle(i, styleSheet.getCss());
-            }
-            fixHeight();
+            applyParagraphStyle(this.getSelection().getStart(), this.getSelection().getEnd(), styleSheet);
             this.stateChanged = true;
+            fixHeight();
+            markCharOVERWRITE(curCaretPos);
+            busy = false;
             return;
+        } else {
+            if (paragraphIndex != null) {
+                moveTo(paragraphIndex, 1);
+                curCaretPos = this.getCaretPosition();
+            }
+            applyParagraphStyle(curCaretPos, curCaretPos, styleSheet);
         }
 
-        if (paragraphIndex == null) {
-            paragraphIndex = this.getCurrentParagraph();
-        }
-        this.cssParagraph = styleSheet;
-        this.cssParagraphPrev = styleSheet;
-        this.cssParagraphStyles.set(paragraphIndex, styleSheet.duplicate());
-        this.setParagraphStyle(paragraphIndex, styleSheet.getCss());
         this.stateChanged = true;
         fixHeight();
+        markCharOVERWRITE(curCaretPos);
+        busy = false;
     }
     
     public void msgFromHandler(StyleSheetParagraph styleSheet) {
@@ -271,6 +272,17 @@ public class RTWidget extends StyledTextArea<String, String> {
             this.cssChar = css.duplicate();
         }
 
+        int currentPar = getParIndex(curCaretPos);
+        if (styledParagraphs.get(currentPar).getPlainText().equals(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
+            styledParagraphs.get(currentPar).getStyledStringList().get(0).setCssCharStyleObject(this.cssChar);
+            writeParagraph(currentPar);
+        }
+
+        // if (!this.getSelectedText().isEmpty()) {
+        //     applyStringStyle(this.getSelection().getStart(), this.getSelection().getEnd(), this.cssChar);
+        //     this.stateChanged = true;
+        // }
+
         sendToHandlerCharAndParagraphCurrentStyle();
     }
 
@@ -278,15 +290,23 @@ public class RTWidget extends StyledTextArea<String, String> {
         return this.cssChar;
     }
 
+    public StyleSheetParagraph getCssParagraph() {
+        return this.cssParagraph;
+    }
+
     public void setParagraphCss(StyleSheetParagraph cssParagraph) {
+        busy = true;
+
         if (cssParagraph == null) {
             this.cssParagraph = new StyleSheetParagraph();
         } else {
             this.cssParagraph = cssParagraph.duplicate();
         }
         
-        this.setParagraphStyle(this.getCurrentParagraph(), cssParagraph.getCss());
-        this.cssParagraphStyles.set(this.getCurrentParagraph(), cssParagraph.duplicate());
+        applyParagraphStyle(curCaretPos, curCaretPos, cssParagraph);
+        this.stateChanged = true;
+        busy = false;
+
         sendToHandlerCharAndParagraphCurrentStyle();
     }
 
@@ -308,88 +328,64 @@ public class RTWidget extends StyledTextArea<String, String> {
      * Returns text without any formatting and without zero width space characters
      */
     public String getTextPlain() {
-        return this.getTextNoAC().replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "");
+        ac.removeCurrentAC();
+        return this.getText().replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "");
     }
 
-    public String getTextNoAC() {
-        if (ac == null || !ac.hasCurrentAC()) {
-            return this.getText();
-        }
-
-        String text = this.getText().substring(0, ac.getCurrentWidgetPosition());
-        if (ac.getCurrentWidgetPosition() < cssStyles.size()) {
-            if (this.getText().length() > cssStyles.size()) {
-                text += this.getText().substring(ac.getCurrentWidgetPosition() + ac.getCurrentAC().length());
-            }
-        }
-
-        return text;
-    }
-
-    public String getParagraphTextNoAC(int paragraphIndex) {
-        if (!ac.hasCurrentAC()) {
-            return this.getParagraph(paragraphIndex).getText();
-        }
-
-        // String text = this.getParagraph(paragraphIndex).getText().substring(0, ac.getCurrentWidgetPosition());
-        String text = this.getParagraph(paragraphIndex).getText().substring(0, offsetToPosition(ac.getCurrentWidgetPosition(), TwoDimensional.Bias.Forward).getMinor());
-        if (ac.getCurrentWidgetPosition() < cssStyles.size()) {
-            text += this.getParagraph(paragraphIndex).getText().substring(ac.getCurrentWidgetPosition());
-        }
-
-        return text;
+    public List<StyledParagraph> getStyledParagraphs() {
+        return styledParagraphs;
     }
 
     /**
      * Sets plain text, if styled text is passed then it will set it as plain text
      */
     public void setTextPlain(String text) {
+        busy = true;
+
         if (ac != null) {
             ac.removeCurrentAC();
         }
 
-        text = RTWText.transformToTextWithZeroWidthSpace(text);
+        text = RTWText.transformToPlainText(text);
 
-        busy = true;
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
-        actionBeforeChanges();
+        closeFindReplace();
 
         this.clear();
-        this.insertText(0, text);
+        styledParagraphs.clear();
 
-        this.cssStyles.clear();
-        this.cssParagraphStyles.clear();
-        
-        for (int i = 0; i < this.getTextNoAC().length(); i++) {
-            this.cssStyles.add(this.cssChar.duplicate());
+        String[] lines = text.split("\\R", -1);
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            StyledParagraph paragraph = new StyledParagraph(this.cssParagraph, this.cssChar);
+            paragraph.insertPlainText(0, line, this.cssChar);
+            styledParagraphs.add(paragraph);
+            writeParagraph(styledParagraphs.size() - 1);
+            if (i != lines.length - 1) {
+                this.insertText(this.getCaretPosition(), "\n" + CONSTANTS.EMPTY_PARAGRAPH_STRING);
+            }
         }
 
-        this.setStyle(0, this.getTextNoAC().length(), this.cssChar.getCss());
-
-        for (int i = 0; i < this.getParagraphs().size(); i++) {
-            this.cssParagraphStyles.add(this.cssParagraph.duplicate());
-            this.setParagraphStyle(i, this.cssParagraph.getCss());
+        if (styledParagraphs.size() == 0) {
+            styledParagraphs.add(new StyledParagraph(this.cssParagraph, this.cssChar));
         }
 
-        Platform.runLater(() -> {
-            ignoreTextChangePERMANENT = false;
-            ignoreCaretPositionChangePERMANENT = false;
-            this.moveTo(0, 1);
-            this.cssChar = getPredictedCssChar(this.getPosGlobal(0, 1));
-            sendToHandlerCharAndParagraphCurrentStyle();
-            markCharOVERWRITE(this.getCaretPosition());
-            this.stateChanged = true;
-            fixHeight();
-            this.busy = false;
-        });
+        setInitialParagraph();
+
+        this.moveTo(0, 1);
+        curCaretPos = 1;
+
+        markCharOVERWRITE(curCaretPos);
+        this.stateChanged = true;
+        fixHeight();
+        this.setFocused(true);
+        busy = false;
     }
 
     /**
      * Returns RTWText object, if indexes are not specified then it will return entire text
      */
-    public RTWText getRTWTextObject(Integer startIndex, Integer endIndex) {
-        return new RTWText(this.getTextNoAC(), this.cssStyles, this.cssParagraphStyles, startIndex, endIndex);
+    public RTWText getRTWTextObject(Integer globalStartPosition, Integer globalEndPosition) {
+        return new RTWText(styledParagraphs, globalStartPosition, globalEndPosition);
     }
 
     /**
@@ -404,24 +400,32 @@ public class RTWidget extends StyledTextArea<String, String> {
      */
     public void setRTWTextObject(RTWText rtwText) {
         busy = true;
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
-        ac.removeCurrentAC();
-        actionBeforeChanges();
 
-        rtwText.setDataToRTWidget(this);
+        if (ac != null) {
+            ac.removeCurrentAC();
+        }
 
-        this.requestFollowCaret();
-        this.requestFocus();
+        closeFindReplace();
+
+        styledParagraphs.clear();
+        this.clear();
+        styledParagraphs = rtwText.getStyledParagraphs();
+        for (int i = 0; i < styledParagraphs.size(); i++) {
+            writeParagraph(i);
+            if (i != styledParagraphs.size() - 1) {
+                this.insertText(this.getCaretPosition(), "\n" + CONSTANTS.EMPTY_PARAGRAPH_STRING);
+            }
+        }
+
+        setInitialParagraph();
+
         this.moveTo(0, 1);
+        curCaretPos = 1;
 
-        Platform.runLater(() -> {
-            ignoreTextChangePERMANENT = false;
-            ignoreCaretPositionChangePERMANENT = false;
-            this.stateChanged = true;
-            fixHeight();
-            this.busy = false;
-        });
+        this.stateChanged = true;
+        fixHeight();
+        this.setFocused(true);
+        this.busy = false;
     }
 
     /**
@@ -429,10 +433,6 @@ public class RTWidget extends StyledTextArea<String, String> {
      */
     public void setTextStyled(String text) {
         busy = true;
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
-        ac.removeCurrentAC();
-        actionBeforeChanges();
 
         if (text == null) {
             text = "";
@@ -440,22 +440,18 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         if (RTWText.isStyledText(text)) {
             RTWText rtwText = new RTWText(text);
-            rtwText.setDataToRTWidget(this);
+            setRTWTextObject(rtwText);
         } else {
-            this.setTextPlain(text);
+            setTextPlain(text);
         }
 
-        this.moveTo(0, 1);
+        moveTo(0, 1);
+        curCaretPos = 1;
+        this.stateChanged = true;
 
-        Platform.runLater(() -> {
-            ignoreTextChangePERMANENT = false;
-            ignoreCaretPositionChangePERMANENT = false;
-            this.requestFollowCaret();
-            this.requestFocus();
-            this.stateChanged = true;
-            fixHeight();
-            this.busy = false;
-        });
+        fixHeight();
+        this.setFocused(true);
+        busy = false;
     }
 
     public void setupWidget() {
@@ -465,27 +461,30 @@ public class RTWidget extends StyledTextArea<String, String> {
         this.getStyleClass().add("rich-text");
         this.setMinHeight(minTextWidgetHeight + this.getPadding().getTop() + this.getPadding().getBottom());
 
-        fixSafeCharInAllParagraphs();
         sendToHandlerCharAndParagraphCurrentStyle();
 
         //  Selected text
         this.selectedTextProperty().addListener((obs, oldText, newText) -> {
             if (newText.isEmpty()) {
-                msgForHandler("SELECTED: False");
+                if (this.hasSelection) {
+                    this.hasSelection = false;
+                    msgForHandler("SELECTED: False");
+                }
                 return;
             }
-            msgForHandler("SELECTED: True");
-            cssChar = cssStyles.get(this.getSelection().getStart()).duplicate();
-            cssParagraph = cssParagraphStyles.get(this.getParIndex(this.getSelection().getStart())).duplicate();
-            cssCharPrev = null;
-            cssParagraphPrev = null;
+            if (!this.hasSelection) {
+                this.hasSelection = true;
+                msgForHandler("SELECTED: True");
+            }
+            cssChar = styledParagraphs.get(this.getParIndex(this.getSelection().getStart())).getCssCharStyleObject(getParCol(this.getSelection().getStart())).duplicate();
+            cssParagraph = styledParagraphs.get(this.getParIndex(this.getSelection().getStart())).getCssParagraphStyleObject().duplicate();
             sendToHandlerCharAndParagraphCurrentStyle();
         });
                 
         // Text change
-        this.textProperty().addListener((obs, oldText, newText) -> {
-            handleTextChange(obs, oldText, newText);
-        });
+        // this.textProperty().addListener((obs, oldText, newText) -> {
+        //     handleTextChange(obs, oldText, newText);
+        // });
 
         // Caret position change
         this.caretPositionProperty().addListener((obs, oldPos, newPos) -> {
@@ -518,171 +517,199 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         // Key pressed
         this.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            this.timer.resetInterval();
-            if (this.busy) {
-                event.consume();
-                return;
-            }
+            this.timerBetweenTextChanges.resetInterval();
 
             msgForHandler("CONTEXT_MENU:HIDE");
 
             // INSERT
             if (event.getCode() == KeyCode.INSERT && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_INSERT();
+                event.consume();
+                if (this.readOnly) { return; }
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.INSERT_PRESSED));
+                executeActions(actionsStack);
             }
             // ENTER
             else if (event.getCode() == KeyCode.ENTER && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_ENTER(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.ENTER_PRESSED));
+                executeActions(actionsStack);
             }
             // DELETE
             else if (event.getCode() == KeyCode.DELETE && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_DELETE(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.DELETE));
+                executeActions(actionsStack);
             }
             // BACKSPACE
             else if (event.getCode() == KeyCode.BACK_SPACE && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_BACKSPACE(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.BACKSPACE_PRESSED));
+                executeActions(actionsStack);
             }
             // ARROW UP
             else if (event.getCode() == KeyCode.UP && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_UP(event);
+                handleKeyPressed_UP();
             }
             // ARROW UP + SHIFT
             else if (event.getCode() == KeyCode.UP && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_UP_SHIFT(event);
+                handleKeyPressed_UP_SHIFT();
             }
             // ARROW UP + CTRL
             else if (event.getCode() == KeyCode.UP && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_UP_CTRL(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_UP_CTRL();
             }
             // ARROW DOWN
             else if (event.getCode() == KeyCode.DOWN && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_DOWN(event);
+                handleKeyPressed_DOWN();
             }
             // ARROW DOWN + SHIFT
             else if (event.getCode() == KeyCode.DOWN && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_DOWN_SHIFT(event);
+                handleKeyPressed_DOWN_SHIFT();
             }
             // ARROW DOWN + CTRL
             else if (event.getCode() == KeyCode.DOWN && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_DOWN_CTRL(event);
+                handleKeyPressed_DOWN_CTRL();
             }
             // ARROW LEFT
             else if (event.getCode() == KeyCode.LEFT && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_LEFT(event);
+                event.consume();
+                if (this.readOnly) {return; }
+                handleKeyPressed_LEFT();
             }
             // ARROW LEFT + SHIFT
             else if (event.getCode() == KeyCode.LEFT && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_LEFT_SHIFT(event);
+                event.consume();
+                handleKeyPressed_LEFT_SHIFT();
             }
             // ARROW RIGHT
             else if (event.getCode() == KeyCode.RIGHT && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_RIGHT(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_RIGHT();
             }
             // ARROW RIGHT + SHIFT
             else if (event.getCode() == KeyCode.RIGHT && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_RIGHT_SHIFT(event);
+                event.consume();
+                handleKeyPressed_RIGHT_SHIFT();
             }
             // ARROW RIGHT + CTRL
             else if (event.getCode() == KeyCode.RIGHT && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_RIGHT_CTRL(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_RIGHT_CTRL();
             }
             // PAGE UP
             else if (event.getCode() == KeyCode.PAGE_UP && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_PgUP(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_PgUP();
             }
             // PAGE UP + SHIFT
             else if (event.getCode() == KeyCode.PAGE_UP && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_PgUP_SHIFT(event);
+                event.consume();
+                handleKeyPressed_PgUP_SHIFT();
             }
             // PAGE DOWN
             else if (event.getCode() == KeyCode.PAGE_DOWN && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_PgDOWN(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_PgDOWN();
             }
             // PAGE DOWN + SHIFT
             else if (event.getCode() == KeyCode.PAGE_DOWN && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_PgDOWN_SHIFT(event);
+                event.consume();
+                handleKeyPressed_PgDOWN_SHIFT();
             }
             // HOME
             else if (event.getCode() == KeyCode.HOME && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_HOME(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_HOME();
             }
             // HOME + SHIFT
             else if (event.getCode() == KeyCode.HOME && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_HOME_SHIFT(event);
+                event.consume();
+                handleKeyPressed_HOME_SHIFT();
             }
             // HOME + CTRL
             else if (event.getCode() == KeyCode.HOME && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_HOME_CTRL(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_HOME_CTRL();
             }
             // END
             else if (event.getCode() == KeyCode.END && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_END(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_END();
             }
             // END + SHIFT
             else if (event.getCode() == KeyCode.END && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_END_SHIFT(event);
+                event.consume();
+                handleKeyPressed_END_SHIFT();
             }
             // END + CTRL
             else if (event.getCode() == KeyCode.END && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_END_CTRL(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_END_CTRL();
             }
             // CTRL + C
             else if (event.getCode() == KeyCode.C && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 event.consume();
-                copySelectedText();
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.COPY));
+                executeActions(actionsStack);
             }
             // INSERT + CTRL
             else if (event.getCode() == KeyCode.INSERT && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
                 event.consume();
-                copySelectedText();
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.COPY));
+                executeActions(actionsStack);
             }
             // CTRL + V
             else if (event.getCode() == KeyCode.V && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
-                pasteText();
+                if (this.readOnly) { return; }
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.PASTE));
+                executeActions(actionsStack);
             }
             // INSERT + SHIFT
             else if (event.getCode() == KeyCode.INSERT && !event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
-                pasteText();
+                if (this.readOnly) { return; }
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.PASTE));
+                executeActions(actionsStack);
             }
             // TAB
             else if (event.getCode() == KeyCode.TAB && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_TAB(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_TAB();
             }
             // ESC
             else if (event.getCode() == KeyCode.ESCAPE && !event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
-                handleKeyPressed_ESC(event);
+                event.consume();
+                if (this.readOnly) { return; }
+                handleKeyPressed_ESC();
             }
             // CTRL + A
             else if (event.getCode() == KeyCode.A && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                handleKeyPressed_CTRL_A(event);
+                event.consume();
+                actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.SELECT_ALL));
+                executeActions(actionsStack);
             }
             // CTRL + F
             else if (event.getCode() == KeyCode.F && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
+                if (this.readOnly) { return; }
                 if (this.getSelectedText().isEmpty()) {
                     msgForHandler(TextToolbarActionEnum.FIND_SHOW.name());
                 } else {
@@ -698,8 +725,8 @@ public class RTWidget extends StyledTextArea<String, String> {
             }
             // CTRL + H
             else if (event.getCode() == KeyCode.H && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
+                if (this.readOnly) { return; }
                 if (this.getSelectedText().isEmpty()) {
                     msgForHandler(TextToolbarActionEnum.REPLACE_SHOW.name());
                 } else {
@@ -715,64 +742,62 @@ public class RTWidget extends StyledTextArea<String, String> {
             }
             // CTRL + Z
             else if (event.getCode() == KeyCode.Z && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
+                if (this.readOnly) { return; }
                 msgForHandler(TextToolbarActionEnum.UNDO.name());
             }
             // CTRL + Y
             else if (event.getCode() == KeyCode.Y && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
+                if (this.readOnly) { return; }
                 msgForHandler(TextToolbarActionEnum.REDO.name());
             }
             // CTRL + S
             else if (event.getCode() == KeyCode.S && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
+                if (this.readOnly) { return; }
                 msgForHandler("SAVE: Ctrl+S");
             }
             // CTRL + SHIFT + S
             else if (event.getCode() == KeyCode.S && event.isControlDown() && event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
+                if (this.readOnly) { return; }
                 msgForHandler("SAVE: Ctrl+Shift+S");
             }
             // ALT + ENTER
             else if (event.getCode() == KeyCode.ENTER && !event.isControlDown() && !event.isShiftDown() && event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
+                if (this.readOnly) { return; }
                 msgForHandler("SAVE: Alt+ENTER");
             }
             // CTRL + SPACE
             else if (event.getCode() == KeyCode.SPACE && event.isControlDown() && !event.isShiftDown() && !event.isAltDown()) {
-                if (this.readOnly) { event.consume(); return; }
                 event.consume();
+                if (this.readOnly) { return; }
                 showAC();
             }
 
             
             
             else {
-                if (this.readOnly) { event.consume(); return; }
-                this.busy = true;
                 event.consume();
-                this.busy = false;
+                if (this.readOnly) { return; }
             }
         });
 
         // Key typed
         this.addEventFilter(KeyEvent.KEY_TYPED, event -> {
             event.consume();
-
-            processKeyEvent(event, true);
+            actionsStack.add(new RTWidgetAction(RTWidgetAction.ActionType.TYPED_CHAR, event));
+            executeActions(actionsStack);
         });
         
         
         if (!this.readOnly) {
-            this.timer.play(() -> takeSnapshot());
-            this.timer.resetInterval();
+            this.timerBetweenTextChanges.play(() -> takeSnapshot());
+            this.timerBetweenTextChanges.resetInterval();
         } else {
-            this.timer.stop();
+            this.timerBetweenTextChanges.stop();
         }
 
         // this.requestFocus();
@@ -783,49 +808,114 @@ public class RTWidget extends StyledTextArea<String, String> {
             return;
         }
 
-        busy = true;
-
         RTWText rtwCopiedText = RTWText.copy(this);
         OBJECTS.CLIP.setStyledText(rtwCopiedText.getStyledText());
-
-        Platform.runLater(() -> {
-            this.busy = false;
-        });
     }
 
-    public void pasteText() {
-        if (!OBJECTS.CLIP.hasText()) {
-            return;
+    public void pasteText(Integer globalPosition, String text) {
+        if (globalPosition == null) {
+            globalPosition = curCaretPos;
         }
 
-        busy = true;
+        curCaretPos = globalPosition;
+        if (curCaretPos < this.getText().length() && this.getText().charAt(curCaretPos) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+            curCaretPos++;
+        }
+        this.moveTo(curCaretPos);
 
-        int pasteParagraphsCount = RTWText.countParagraphs(OBJECTS.CLIP.getStyledText()) - 1;
+        int pasteParagraphsCount = RTWText.countParagraphs(text);
         int selectedTextParagraphsCount = RTWText.countParagraphs(this.getSelectedText()) - 1;
-        if ((this.getParagraphs().size() - selectedTextParagraphsCount) + pasteParagraphsCount > this.maxNumberOfParagraphs) {
+        if ((styledParagraphs.size() - selectedTextParagraphsCount) + (pasteParagraphsCount - 1) > this.maxNumberOfParagraphs) {
             msgForHandler("PARAGRAPHS_LIMIT_EXCEEDED");
-            this.busy = false;
             return;
         }
 
         ac.removeCurrentAC();
-        actionBeforeChanges();
+        closeFindReplace();
 
         deleteSelectedText();
 
-        Platform.runLater(() -> {
-            if (RTWText.isStyledText(OBJECTS.CLIP.getStyledText())) {
-                RTWText.paste(this, OBJECTS.CLIP.getStyledText());
-            } else {
-                pastePlainText(null, OBJECTS.CLIP.getStyledText());
-            }
+        RTWText rtwText = new RTWText();
+        if (!RTWText.isStyledText(text)) {
+            rtwText.setDefaultCharCss(this.cssChar.duplicate());
+            rtwText.setDefaultParagraphCss(this.cssParagraph.duplicate());
+        };
+        rtwText.loadStyledOrPlainText(text);
 
-            Platform.runLater(() -> {
-                this.stateChanged = true;
-                fixHeight();
-                this.busy = false;
-            });
-        });
+        moveTo(curCaretPos);
+        int curParIndex = getParagraphsIndexes(curCaretPos, curCaretPos).get(0);
+        int curParCol = getParCol(curCaretPos, curParIndex);
+
+        ignoreCaretPositionChangePERMANENT = true;
+
+        // Case when there is only one paragraph text
+        if (pasteParagraphsCount == 1) {
+            StyledParagraph newPar = styledParagraphs.get(curParIndex).splitOnIndex(curParCol);
+            StyledParagraph oldPar = styledParagraphs.get(curParIndex);
+            oldPar.insertStyledStrings(curParCol, rtwText.getStyledParagraphs().get(0).getStyledStringList());
+            oldPar.insertStyledStrings(curParCol, newPar.getStyledStringList());
+            this.insertText(curCaretPos, rtwText.getStyledParagraphs().get(0).getPlainText().replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, ""));
+            this.moveTo(curCaretPos + rtwText.getStyledParagraphs().get(0).getPlainText().replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "").length());
+            curCaretPos = this.getCaretPosition();
+            ensureGoodCaretPosition();
+            this.stateChanged = true;
+            fixHeight();
+            ignoreCaretPositionChangePERMANENT = false;
+            refreshWidget();
+            return;
+        }
+
+        if (pasteParagraphsCount < 1) {
+            UError.error("RTWidget.pasteText: Paste text contains less than one paragraph.", "Error");
+            return;
+        }
+
+        // Case when there is multiple paragraphs text
+        StyledParagraph newPar = styledParagraphs.get(curParIndex).splitOnIndex(curParCol);
+        StyledParagraph oldPar = styledParagraphs.get(curParIndex);
+        oldPar.insertStyledStrings(curParCol, rtwText.getStyledParagraphs().get(0).getStyledStringList());
+        logHelper("After paste");
+        this.insertText(curCaretPos, rtwText.getStyledParagraphs().get(0).getPlainText().replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "") + "\n");
+        logHelper("After paste");
+        for (int i = 1; i < rtwText.getStyledParagraphs().size(); i++) {
+            styledParagraphs.add(curParIndex + i, rtwText.getStyledParagraphs().get(i));
+            this.insertText(this.getCaretPosition(), rtwText.getStyledParagraphs().get(i).getPlainText());
+            if (i == pasteParagraphsCount - 1) {
+                // Add remaining text from split paragraph to last pasted paragraph
+                styledParagraphs.get(curParIndex + i).insertStyledStrings(0, newPar.getStyledStringList());
+            }
+            // this.moveTo(curCaretPos + rtwText.getStyledParagraphs().get(i - 1).getPlainText().length());
+            if (i != pasteParagraphsCount - 1) {
+                this.insertText(this.getCaretPosition(), "\n");
+            }
+            logHelper("After paste");
+            // writeParagraph(curParIndex + i);
+        }
+
+        logHelper("After paste");
+
+        this.moveTo(curCaretPos + rtwText.getPlainText().length() + rtwText.countParagraphs() - 1);
+        curCaretPos = this.getCaretPosition();
+        ensureGoodCaretPosition();
+        this.stateChanged = true;
+        fixHeight();
+        ignoreCaretPositionChangePERMANENT = false;
+        refreshWidget();
+    }
+
+    public void refreshWidget() {
+        for (int i = 0; i < styledParagraphs.size(); i++) {
+            writeParagraph(i);
+        }
+        fixHeight();
+    }
+
+    public void pasteTextFromClipboard() {
+        if (!OBJECTS.CLIP.hasText()) {
+            return;
+        }
+
+        pasteText(null, OBJECTS.CLIP.getStyledText());
     }
 
     public void addToContainerVBox(Integer index) {
@@ -877,7 +967,218 @@ public class RTWidget extends StyledTextArea<String, String> {
         scrollPaneContainer.getChildren().remove(this.scrollPane);
     }
 
+    public void updateStyledStrings(int startGlobalPos, int endGlobalPos, String updateWithCss) {
+        List<Integer> paragraphsIndexes = getParagraphsIndexes(startGlobalPos, endGlobalPos);
+        for (int i = 0; i <= paragraphsIndexes.size(); i++) {
+            styledParagraphs.get(i).updateCss(getParCol(startGlobalPos), getParCol(endGlobalPos), updateWithCss);
+        }
+    }
+
+    public String getParagraphText(int paragraphIndex) {
+        return styledParagraphs.get(paragraphIndex).getPlainText();
+    }
+
+    public void setBusy(boolean busy) {
+        this.busy = busy;
+    }
+
+    public boolean getBusy() {
+        return this.busy;
+    }
+
+    public void setACHandler(ACHandler ac) {
+        this.ac = ac;
+    }
+
+    public ACHandler getAC() {
+        return this.ac;
+    }
+
+    public TextHandler getTextHandler() {
+        return this.textHandler;
+    }
+
+    public boolean isStateChanged() {
+        return this.stateChanged;
+    }
+
+    public void setStateChanged(boolean stateChanged) {
+        this.stateChanged = stateChanged;
+    }
+
+    public void refreshParagraph(Integer paragraphIndex) {
+        if (paragraphIndex == null) {
+            for (int i = 0; i < styledParagraphs.size(); i++) {
+                writeParagraph(i);
+            }
+        } else {
+            writeParagraph(paragraphIndex);
+        }
+        
+        this.stateChanged = true;
+        fixHeight();
+        Platform.runLater(() -> {
+            trackCursorInScrollPane();
+            curCaretPos = this.getCaretPosition();
+        });
+    }
+
+    public void replaceFoundItem(int startGlobalPos, int endGlobalPos, String replaceWith) {
+        int parIndex = getParagraphsIndexes(startGlobalPos, endGlobalPos).get(0);
+        int parCol = getParCol(startGlobalPos);
+        int parColEnd = getParCol(endGlobalPos);
+        this.styledParagraphs.get(parIndex).delete(parCol, parColEnd);
+        this.styledParagraphs.get(parIndex).insertPlainText(parCol, replaceWith, this.cssChar);
+        this.writeParagraph(parIndex);
+        this.stateChanged = true;
+        fixHeight();
+        Platform.runLater(() -> {
+            trackCursorInScrollPane();
+            curCaretPos = this.getCaretPosition();
+        });
+    }
+
+    public void setCurrentCaretPos(int curCaretPos) {
+        this.curCaretPos = curCaretPos;
+    }
+
     // Private methods
+
+    private void setInitialParagraph() {
+        if (styledParagraphs.size() == 0) {
+            styledParagraphs.add(new StyledParagraph(this.cssParagraph, this.cssChar));
+            writeParagraph(0);
+            this.moveTo(0, 1);
+            curCaretPos = 1;
+            this.requestFocus();
+        }
+    }
+
+    private void applyStringStyle(int startGlobalPos, int endGlobalPos, StyleSheetChar styleSheet) {
+        List<Integer> paragraphsIndexes = getParagraphsIndexes(startGlobalPos, endGlobalPos);
+        int caretPos = curCaretPos;
+
+        for (Integer parIndex : paragraphsIndexes) {
+            styledParagraphs.get(parIndex).updateCss(getParCol(startGlobalPos, parIndex), getParCol(endGlobalPos, parIndex), styleSheet.getCss());
+            writeParagraph(parIndex);
+        }
+        this.moveTo(caretPos);
+        curCaretPos = this.getCaretPosition();
+    }
+
+    private void writeParagraph(int styledParagraphsIndex) {
+        if (styledParagraphsIndex >= this.styledParagraphs.size()) {
+            return;
+        }
+        StyledParagraph paragraph = this.styledParagraphs.get(styledParagraphsIndex);
+
+        // this.moveTo(styledParagraphsIndex, 0);
+        ignoreCaretPositionChangePERMANENT = true;
+        this.moveTo(styledParagraphsIndex, 0);
+        curCaretPos = this.getCaretPosition();
+        int length = this.getParagraphLength(styledParagraphsIndex);
+
+        this.replaceText(curCaretPos, curCaretPos + length, paragraph.getPlainText());
+        int pos = curCaretPos;
+        for (int i = 0; i < paragraph.getStyledStringList().size(); i++) {
+            this.setStyle(pos, pos + paragraph.getStyledStringList().get(i).getText().length(), paragraph.getStyledStringList().get(i).getCssCharStyle());
+            pos += paragraph.getStyledStringList().get(i).getText().length();
+        }
+
+        ignoreCaretPositionChangePERMANENT = false;
+        this.moveTo(styledParagraphsIndex, paragraph.getPlainText().length());
+        curCaretPos = this.getCaretPosition();
+
+        this.setParagraphStyle(styledParagraphsIndex, paragraph.getCssParagraphStyle());
+        msgForHandler("QUICK_MARK_PARAGRAPH_NUMBER:" + styledParagraphsIndex);
+    }
+
+    private void applyParagraphStyle(int startGlobalPos, int endGlobalPos, StyleSheetParagraph styleSheet) {
+        List<Integer> paragraphsAffected = getParagraphsIndexes(startGlobalPos, endGlobalPos);
+        for (int i = 0; i < paragraphsAffected.size(); i++) {
+            this.styledParagraphs.get(paragraphsAffected.get(i)).setCssParagraphStyleObject(styleSheet);
+            this.setParagraphStyle(paragraphsAffected.get(i), this.styledParagraphs.get(paragraphsAffected.get(i)).getCssParagraphStyle());
+        }
+    }
+
+    private Integer getParCol(Integer globalPosition) {
+        if (globalPosition == null) {
+            return null;
+        }
+        return this.offsetToPosition(globalPosition, TwoDimensional.Bias.Forward).getMinor();
+    }
+
+    private Integer getParCol(Integer globalPosition, int paragraphIndex) {
+        if (getParIndex(globalPosition) != paragraphIndex) {
+            return null;
+        }
+        return getParCol(globalPosition);
+    }
+
+    private List<Integer> getParagraphsIndexes(int startGlobalPos, int endGlobalPos) {
+        List<Integer> indexes = new ArrayList<>();
+        int startParIndex = getParIndex(startGlobalPos);
+        int endParIndex = getParIndex(endGlobalPos - 1);
+        if (endParIndex < startParIndex) {
+            endParIndex = startParIndex;
+        }
+        for (int i = startParIndex; i <= endParIndex; i++) {
+            indexes.add(i);
+        }
+        return indexes;
+    }
+
+    private void executeActions(List<RTWidgetAction> actions) {
+        busy = true;
+        while (actions.size() > 0) {
+            RTWidgetAction action = actions.remove(0);
+            switch (action.getActionType()) {
+                case TYPED_CHAR:
+                    processKeyEvent(action.getKeyEvent());
+                    break;
+                case PASTE:
+                    actionPASTE();
+                    break;
+                case DELETE:
+                    handleKeyPressed_DELETE();
+                    break;
+                case COPY:
+                    actionCOPY();
+                    break;
+                case CUT:
+                    actionCUT();
+                    break;
+                case SELECT_ALL:
+                    actionSELECT_ALL();
+                    break;
+                case UNDO:
+                    // TODO: Implement
+                    break;
+                case REDO:
+                    // TODO: Implement
+                    break;
+                case SET_FUTURE_CHAR_STYLE:
+                    // TODO: Implement
+                    break;
+                case FORMAT_STRING_SELECTION:
+                    // TODO: Implement
+                    break;
+                case FORMAT_PARAGRAPH_SELECTION:
+                    // TODO: Implement
+                    break;
+                case INSERT_PRESSED:
+                    handleKeyPressed_INSERT();
+                    break;
+                case ENTER_PRESSED:
+                    handleKeyPressed_ENTER();
+                    break;
+                case BACKSPACE_PRESSED:
+                    handleKeyPressed_BACKSPACE();
+                    break;
+            }
+        }
+        busy = false;
+    }
 
     private ScrollBar findVerticalScrollBar(ScrollPane scrollPane) {
         for (Node node : scrollPane.lookupAll(".scroll-bar")) {
@@ -922,14 +1223,32 @@ public class RTWidget extends StyledTextArea<String, String> {
         addToContainerVBox(null);
     }
 
-    private void processKeyEvent(KeyEvent event, boolean isNewChar) {
+    private void actionCUT() {
+        if (!this.getSelectedText().isEmpty()) {
+            copySelectedText();
+            handleKeyPressed_DELETE();
+        }
+    }
+
+    private void actionCOPY() {
+        if (!this.getSelectedText().isEmpty()) {
+            copySelectedText();
+        }
+    }
+
+    private void actionPASTE() {
+        pasteTextFromClipboard();
+    }
+
+
+    
+
+    private void processKeyEvent(KeyEvent event) {
             if (this.readOnly) {
-                event.consume();
                 return;
             }
 
             // msgForHandler("CONTEXT_MENU:HIDE");
-            event.consume();
             if (event.getCharacter().length() == 0 || 
                 event.getCharacter().equals("\n") || 
                 event.getCharacter().equals("\t") ||
@@ -942,44 +1261,16 @@ public class RTWidget extends StyledTextArea<String, String> {
                 return;
             }
 
-            if (this.busy) {
-                if (isNewChar) {
-                    keyEvents.add(event);
-                } else {
-                    keyEvents.add(0, event);
-                }
-                return;
-            }
-            this.busy = true;
-            
-            KeyEvent newEvent;
-            if (isNewChar) {
-                keyEvents.add(event);
-                newEvent = keyEvents.remove(0);
-            } else {
-                newEvent = event;
-            }
-            
-            this.timer.resetInterval();
+            this.timerBetweenTextChanges.resetInterval();
 
             try {
-                handleKeyTyped_CHARACTER(newEvent);
+                handleKeyTyped_CHARACTER(event);
             } catch (Exception e) {
                 UError.exception("handleKeyTyped_CHARACTER", e);
             }
-
-            Platform.runLater(() -> {
-                while (getTextNoAC().length() > cssStyles.size()) {
-                    this.deletePreviousChar();
-                }
-                this.busy = false;
-                if (keyEvents.size() > 0) {
-                    processKeyEvent(keyEvents.remove(0), false);
-                }
-            });
     }
 
-    private void actionBeforeChanges() {
+    private void closeFindReplace() {
         msgForHandler(TextToolbarActionEnum.FIND_CLOSE.name());
     }
 
@@ -994,11 +1285,9 @@ public class RTWidget extends StyledTextArea<String, String> {
             return;
         }
 
-        this.busy = true;
         textHandler.msgFromWidget("TAKE_SNAPSHOT");
         Platform.runLater(() -> {
             stateChanged = false;
-            this.busy = false;
         });
     }
 
@@ -1014,50 +1303,14 @@ public class RTWidget extends StyledTextArea<String, String> {
         pauseAC.setOnFinished(e -> {
             pauseAC = null;
             Platform.runLater(() -> {
-                ac.showAC(this.getCaretPosition(), getParagraphTextNoAC(this.getCurrentParagraph()));
+                ac.showAC(curCaretPos, styledParagraphs.get(this.getCurrentParagraph()).getPlainText());
+                moveTo(curCaretPos);
+                if (!ac.hasCurrentAC()) {
+                    textHandler.markText(null);
+                }
             });
         });
         pauseAC.play();
-    }
-
-    private void fixSafeCharInAllParagraphs() {
-        ignoreCaretPositionChangePERMANENT = true;
-        ignoreTextChangePERMANENT = true;
-        int curCaretPosition = this.getCaretPosition();
-
-        for (int i = this.getParagraphs().size() - 1; i >= 0; i--) {
-            if (getParagraphTextNoAC(i).isEmpty() || !getParagraphTextNoAC(i).startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING)) {
-                int positionToInsert = getPosGlobal(i, 0);
-                this.cssStyles.add(positionToInsert, getPredictedCssChar(positionToInsert));
-                if (curCaretPosition >= getPosGlobal(i, 0)) { curCaretPosition++; }
-                this.insertText(positionToInsert, CONSTANTS.EMPTY_PARAGRAPH_STRING);
-                this.setStyle(positionToInsert, positionToInsert + 1, this.cssStyles.get(positionToInsert).getCss());
-            }
-            boolean hasChanges = true;
-            while (hasChanges) {
-                hasChanges = false;
-                if (getParagraphTextNoAC(i).startsWith(CONSTANTS.EMPTY_PARAGRAPH_STRING.repeat(2))) {
-                    int positionToRemove = getPosGlobal(i, 0);
-                    this.cssStyles.remove(positionToRemove);
-                    if (curCaretPosition >= getPosGlobal(i, 0)) { curCaretPosition--; }
-                    this.deleteText(positionToRemove, positionToRemove + 1);
-                    hasChanges = true;
-                }
-            }
-        }
-        
-        int moveToPos = curCaretPosition;
-        Platform.runLater(() -> {
-            this.moveTo(moveToPos);
-            fixCaretPosition(moveToPos);
-            Platform.runLater(() -> {
-                cssChar = getPredictedCssChar(moveToPos);
-                cssParagraph = this.cssParagraphStyles.get(this.getParIndex(moveToPos)).duplicate();
-                ignoreCaretPositionChangePERMANENT = false;
-                ignoreTextChangePERMANENT = false;
-                sendToHandlerCharAndParagraphCurrentStyle();
-            });
-        });
     }
 
     // Caret positions
@@ -1065,28 +1318,28 @@ public class RTWidget extends StyledTextArea<String, String> {
         return this.position(paragraphIndex, column).toOffset();
     }
     public int getParIndex(int globalPosition) {
+        if (globalPosition < 0) {
+            return 0;
+        }
         return this.offsetToPosition(globalPosition, TwoDimensional.Bias.Forward).getMajor();
     }
-    private String getParPlainText(int paragraphIndex) {
-        return getParagraphTextNoAC(paragraphIndex).replace(CONSTANTS.EMPTY_PARAGRAPH_STRING, "");
-    }
-    private int getColIndex(int globalPosition) {
-        return this.offsetToPosition(globalPosition, TwoDimensional.Bias.Forward).getMinor();
-    }
-    private void fixCaretPosition(int globalPosition) {
-        if (this.getTextNoAC().length() > globalPosition && this.getTextNoAC().charAt(globalPosition) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
-            this.moveTo(globalPosition + 1);
+    private void ensureGoodCaretPosition() {
+        int parIndex = getParIndex(curCaretPos);
+        Integer parCol = getParCol(curCaretPos, parIndex);
+        if (parCol == null || parCol == 0) {
+            moveTo(parIndex, 1);
+            curCaretPos = this.getCaretPosition();
         }
     }
-
+    
     // Overwrite mode
     private void markCharOVERWRITE(int globalPosition) {
         this.requestFollowCaret();
         if (!isOverwriteMode) {
             return;
         }
-        if (this.cssStyles.size() > globalPosition) {
-            StyleSheetChar newStylesheet = this.cssStyles.get(globalPosition).duplicate();
+        if (this.getText().length() > globalPosition) {
+            StyleSheetChar newStylesheet = styledParagraphs.get(getParIndex(globalPosition)).getPredictedCssChar(getParCol(globalPosition), isOverwriteMode);
             newStylesheet.setBgColor("#dfdfdf");
             newStylesheet.setFgColor("#202020");
             this.setStyle(globalPosition, globalPosition + 1, newStylesheet.getCss());
@@ -1096,14 +1349,14 @@ public class RTWidget extends StyledTextArea<String, String> {
         if (!isOverwriteMode) {
             return;
         }
-        if (this.cssStyles.size() > globalPosition) {
-            this.setStyle(globalPosition, globalPosition + 1, this.cssStyles.get(globalPosition).getCss());
+        if (this.getText().length() > globalPosition) {
+            this.setStyle(globalPosition, globalPosition + 1, styledParagraphs.get(getParIndex(globalPosition)).getPredictedCssChar(getParCol(globalPosition), isOverwriteMode).getCss());
         }
     }
 
     // Height
     public void fixHeight() {
-        Platform.runLater(() -> {
+        // Platform.runLater(() -> {
             PauseTransition pause = new PauseTransition(javafx.util.Duration.millis(50));
             pause.setOnFinished(e -> {
                 Double height = this.totalHeightEstimateProperty().getValue();
@@ -1118,39 +1371,7 @@ public class RTWidget extends StyledTextArea<String, String> {
                 }
             });
             pause.play();
-        });
-    }
-
-    private StyleSheetChar getPredictedCssChar(Integer globalPosition) {
-        // Position is at beginning of the text
-        if (globalPosition == 0) {
-            if (this.cssStyles.size() > 0) {
-                return this.cssStyles.get(0).duplicate();
-            }
-            else {
-                return this.cssChar.duplicate();
-            }
-        }
-
-        // Position is at end of the text
-        if (globalPosition == this.getTextNoAC().length()) {
-            if (this.cssStyles.size() > 0) {
-                return this.cssStyles.get(this.cssStyles.size() - 1).duplicate();
-            }
-            else {
-                return this.cssChar.duplicate();
-            }
-        }
-
-        // Position is in the middle of the text
-
-        // Overwrite mode
-        if (isOverwriteMode) {
-            return this.cssStyles.get(globalPosition).duplicate();
-        }
-
-        // Insert mode
-        return this.cssStyles.get(globalPosition - 1).duplicate();
+        // });
     }
 
     private void msgForHandler(StyleSheetChar css) {
@@ -1187,531 +1408,403 @@ public class RTWidget extends StyledTextArea<String, String> {
         }
         int start = this.getSelection().getStart();
         int end = this.getSelection().getEnd();
+
+        if (start == 0) {
+            start = 1;
+        }
+        // if (this.getText().charAt(start - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR && start != 1 && UString.Count(this.getText().substring(start, end), "\n") > 0) {
+        //     start--;
+        // }
+        else if (this.getText().charAt(start) == CONSTANTS.EMPTY_PARAGRAPH_CHAR && UString.Count(this.getText().substring(start, end), "\n") == 0) {
+            start++;
+        }
+        if (this.getText().charAt(end - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+            end--;
+        }
+
+        if (start >= end) {
+            return false;
+        }
         
-        this.cssStyles.subList(start, end).clear();
-        this.cssParagraphStyles.subList(getParIndex(start), getParIndex(end)).clear();
-        
+        List<Integer> emptyParagraphsToDelete = new ArrayList<>();
+        logHelper("Before deleted selection");
+
+        boolean join1and2 = UString.Count(this.getText().substring(start, end), "\n") != 0;
+
+        if (this.getText().charAt(end - 1) == '\n' && end < this.getText().length()) {
+            end++;
+        }
+
+        StyledParagraph join1 = styledParagraphs.get(getParagraphsIndexes(start, start).get(0));
+        StyledParagraph join2 = styledParagraphs.get(getParagraphsIndexes(end - 1, end - 1).get(0));
+
+        for (int i : getParagraphsIndexes(start, end - 1)) {
+            styledParagraphs.get(i).delete(getParCol(start, i), getParCol(end, i));
+            if (styledParagraphs.get(i) != join1) {
+                emptyParagraphsToDelete.add(0, i);
+            }
+        }
+
+        for (int i : emptyParagraphsToDelete) {
+            styledParagraphs.remove(i);
+        }
+
+        if (join1and2) {
+            join1.insertStyledStrings(join1.getPlainText().length(), join2.getStyledStringList());
+            styledParagraphs.remove(join2);
+        }
+
         this.deleteText(start, end);
         this.moveTo(start);
-        fixSafeCharInAllParagraphs();
+        curCaretPos = this.getCaretPosition();
+        logHelper("After deleted selection");
         return true;
     }
 
-    public void pastePlainText(Integer globalPosition, String text, List<StyleSheetChar> cssList, List<StyleSheetParagraph> cssParagraphList) {
-        if (globalPosition == null) {
-            globalPosition = this.getCaretPosition();
-        }
-        
-        text = RTWText.transformToPlainText(text, cssList);
-        if (text.isEmpty()) {
-            return;
-        }
-
-        StyleSheetChar cssC = getPredictedCssChar(globalPosition);
-        StyleSheetParagraph cssP = this.cssParagraphStyles.get(getParIndex(globalPosition)).duplicate();
-
-        for (int i = 0; i < text.length(); i++) {
-            if (cssList != null && cssList.size() > i) {
-                cssC = cssList.get(i).duplicate();
-            }
-            this.cssStyles.add(globalPosition + i, cssC.duplicate());
+    private void logHelper(String message) {
+        System.out.println("***** Log helper *****  " + message);
+        System.out.println("Text: LEN=" + this.getText().length() + "\n" + this.getText());
+        System.out.println("Caret position: " + this.getCaretPosition());
+        System.out.println("-- Paragraphs: LEN=" + styledParagraphs.size());
+        for (int i = 0; i < styledParagraphs.size(); i++) {
+            System.out.println("Index " + i + ": LEN=" + styledParagraphs.get(i).getPlainText().length() + "  TEXT:" + styledParagraphs.get(i).getPlainText());
         }
 
-        int parIndex = getParIndex(globalPosition);
-        int parToInsertCount = UString.Count(text, "\n");
-
-        // If first paragraph is empty then use first paragraph style from cssParagraphList
-        if (cssParagraphList != null && cssParagraphList.size() > 0 && getParPlainText(parIndex).isEmpty()) {
-            cssParagraphStyles.set(parIndex, cssParagraphList.get(0).duplicate());
-        }
-
-        // Set paragraph styles from 1 to parToInsertCount
-        if (cssParagraphList == null || cssParagraphList.size() != parToInsertCount + 1) {
-            // If no paragraph styles are provided then use default paragraph style
-            for (int i = parIndex + 1; i < parIndex + 1 + parToInsertCount; i++) {
-                if (OBJECTS.SETTINGS.getvBOOLEAN("PreserveParagraphStyle")) {
-                    this.cssParagraphStyles.add(i, cssP.duplicate());
-                } else {
-                    this.cssParagraphStyles.add(i, new StyleSheetParagraph(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", textHandler.getBehavior()).getValueSTRING()));
-                }
-            }
-        } else {
-            // If paragraph styles are provided then use them
-            for (int i = 1; i < parToInsertCount + 1; i++) {
-                this.cssParagraphStyles.add(parIndex + i, cssParagraphList.get(i).duplicate());
-            }
-
-        }
-        
-        this.insertText(globalPosition, text);
-
-        for (int i = globalPosition; i < globalPosition + text.length(); i++) {
-            this.setStyle(i, i + 1, this.cssStyles.get(i).getCss());
-        }
-
-        for (int i = getParIndex(globalPosition); i < getParIndex(globalPosition ) + 1 + UString.Count(text, "\n"); i++) {
-            this.setParagraphStyle(i, this.cssParagraphStyles.get(i).getCss());
-        }
-
-        fixSafeCharInAllParagraphs();
-        this.stateChanged = true;
-    }
-
-    private void pastePlainText(Integer globalPosition, String text) {
-        pastePlainText(globalPosition, text, null, null);
+        System.out.println("***** Log helper");
     }
 
     private void handleMousePressed(MouseEvent event) {
-        busy = true;
         ac.removeCurrentAC();
         demarkCharOVERWRITE(this.getCaretPosition());
+        int index = this.hit(event.getX(), event.getY()).getInsertionIndex();
         if (event.isPrimaryButtonDown()) {
             msgForHandler("CONTEXT_MENU:HIDE");
         } else if (event.isSecondaryButtonDown() && this.getSelectedText().isEmpty()) {
-            int index = this.hit(event.getX(), event.getY()).getInsertionIndex();
             this.moveTo(index);
         }
+        curCaretPos = index;
 
-        Platform.runLater(() -> {
-            fixCaretPosition(this.getCaretPosition());
+        // Platform.runLater(() -> {
             markCharOVERWRITE(this.getCaretPosition());
             if (event.isSecondaryButtonDown()) {
                 textHandler.showRTWidgetContextMenu(event);
             }
-            this.busy = false;
-        });
+        // });
     }
 
     private void handleKeyPressed_INSERT() {
-        this.busy = true;
-
-        int curPos = this.getCaretPosition();
+        int curPos = curCaretPos;
 
         demarkCharOVERWRITE(curPos);
         isOverwriteMode = !isOverwriteMode;
         markCharOVERWRITE(curPos);
         msgForHandler("INSERT_MODE:" + CONSTANTS.EMPTY_PARAGRAPH_STRING + isOverwriteMode);
-
-        Platform.runLater(() -> {
-            this.busy = false;
-        });
     }
 
-    private void handleKeyPressed_ENTER(KeyEvent event) {
+    private void handleKeyPressed_ENTER() {
         // Add new paragraph
-        this.busy = true;
-        event.consume();
 
         int selectedTextParagraphsCount = RTWText.countParagraphs(this.getSelectedText()) - 1;
         if (this.getParagraphs().size() - selectedTextParagraphsCount >= this.maxNumberOfParagraphs) {
             msgForHandler("PARAGRAPHS_LIMIT_EXCEEDED");
-            this.busy = false;
             return;
         }
 
         ac.removeCurrentAC();
-        actionBeforeChanges();
+        closeFindReplace();
 
         deleteSelectedText();
 
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
-
-        int caretPos = this.getCaretPosition();
-        int curPar = this.getCurrentParagraph();
-        int parCol = this.getCaretColumn();
-        String parText = getParagraphTextNoAC(curPar);
+        int curPar = getParagraphsIndexes(curCaretPos, curCaretPos).get(0);
+        int parCol = getParCol(curCaretPos);
+        String parText = styledParagraphs.get(curPar).getPlainText();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
-        StyleSheetParagraph prevParCss = this.cssParagraphStyles.get(curPar).duplicate();
+        StyleSheetParagraph prevParCss = styledParagraphs.get(curPar).getCssParagraphStyleObject();
         StyleSheetParagraph newParCss = new StyleSheetParagraph();
+        // newParCss.setCss(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", textHandler.getBehavior()).getValueSTRING());
 
         // If paragraph is last one or caret is at the end of the paragraph
         if (parText.equals(CONSTANTS.EMPTY_PARAGRAPH_STRING) || parCol == parText.length()) {
             if (OBJECTS.SETTINGS.getvBOOLEAN("PreserveParagraphStyle")) {
-                this.cssParagraphStyles.add(curPar + 1, prevParCss);
-                this.insertText(curPar, parCol, "\n");
-                this.cssStyles.add(caretPos, cssChar.duplicate());
-                this.setParagraphStyle(curPar + 1, prevParCss.getCss());
+                styledParagraphs.add(curPar + 1, new StyledParagraph(prevParCss, cssChar));
+                this.insertText(curCaretPos, "\n" + CONSTANTS.EMPTY_PARAGRAPH_STRING);
+                writeParagraph(curPar + 1);
+                moveTo(curPar + 1, 1);
+                curCaretPos = this.getCaretPosition();
             } else {
-                this.cssParagraphStyles.add(curPar + 1, newParCss);
-                this.insertText(curPar, parCol, "\n");
-                this.cssStyles.add(caretPos, cssChar.duplicate());
-                this.setParagraphStyle(curPar + 1, newParCss.getCss());
-            }
+                styledParagraphs.add(curPar + 1, new StyledParagraph(newParCss, cssChar));
+                this.insertText(curCaretPos, "\n" + CONSTANTS.EMPTY_PARAGRAPH_STRING);
+                writeParagraph(curPar + 1);
+                moveTo(curPar + 1, 1);
+                curCaretPos = this.getCaretPosition();
+           }
 
-            Platform.runLater(() -> {
-                fixSafeCharInAllParagraphs();
-                // fix will release permanent ignore
-                Platform.runLater(() -> {
-                    markCharOVERWRITE(this.getCaretPosition());
-                    this.stateChanged = true;
-                    Platform.runLater(() -> {
-                        trackCursorInScrollPane();
-                    });
-                    this.busy = false;
-                });
-            });
+            markCharOVERWRITE(curCaretPos);
+            this.stateChanged = true;
+            trackCursorInScrollPane();
             return;
         }
         
         // if caret is at the beginning of the paragraph
         if (parCol == 0 || parCol == 1) {
-            this.cssParagraphStyles.add(curPar, newParCss);
-            this.insertText(curPar, parCol, "\n");
-            this.cssStyles.add(caretPos, cssChar.duplicate());
-            this.setParagraphStyle(curPar, newParCss.getCss());
-            this.setParagraphStyle(curPar + 1, prevParCss.getCss());
+            if (parCol == 0) {
+                parCol = 1;
+                curCaretPos++;
+                this.moveTo(curCaretPos);
+            }
 
-            Platform.runLater(() -> {
-                fixSafeCharInAllParagraphs();
-                // fix will release permanent ignore
-                Platform.runLater(() -> {
-                    markCharOVERWRITE(this.getCaretPosition());
-                    this.stateChanged = true;
-                    Platform.runLater(() -> {
-                        trackCursorInScrollPane();
-                    });
-                    this.busy = false;
-                });
-            });
+            styledParagraphs.add(curPar, new StyledParagraph(newParCss, cssChar));
+            this.insertText(curCaretPos, "\n" + CONSTANTS.EMPTY_PARAGRAPH_STRING);
+            writeParagraph(curPar);
+            writeParagraph(curPar + 1);
+            moveTo(curPar + 1, 1);
+            curCaretPos = this.getCaretPosition();
+
+            markCharOVERWRITE(this.getCaretPosition());
+            this.stateChanged = true;
+            trackCursorInScrollPane();
             return;
         }
 
         // If caret is in the middle of the paragraph
-        this.cssParagraphStyles.add(curPar + 1, prevParCss);
-        this.insertText(curPar, parCol, "\n");
-        this.cssStyles.add(caretPos, cssChar.duplicate());
-        this.setParagraphStyle(curPar + 1, prevParCss.getCss());
+        StyledParagraph newPar = styledParagraphs.get(curPar).splitOnIndex(parCol);
+        styledParagraphs.add(curPar + 1, newPar);
+        this.insertText(curCaretPos, "\n" + CONSTANTS.EMPTY_PARAGRAPH_STRING);
+        writeParagraph(curPar);
+        writeParagraph(curPar + 1);
+        moveTo(curPar + 1, 1);
+        curCaretPos = this.getCaretPosition();
 
-        Platform.runLater(() -> {
-            fixSafeCharInAllParagraphs();
-            // fix will release permanent ignore
-            Platform.runLater(() -> {
-                markCharOVERWRITE(this.getCaretPosition());
-                this.stateChanged = true;
-                Platform.runLater(() -> {
-                    trackCursorInScrollPane();
-                });
-                this.busy = false;
-            });
-        });
+        markCharOVERWRITE(this.getCaretPosition());
+        this.stateChanged = true;
+        trackCursorInScrollPane();
         return;
     }
 
-    private void handleKeyPressed_DELETE(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_DELETE() {
         ac.removeCurrentAC();
-        actionBeforeChanges();
+        closeFindReplace();
 
         if (!this.getSelectedText().isEmpty()) {
-            if (event != null) event.consume();
             deleteSelectedText();
-            Platform.runLater(() -> {
-                showAC();
-                this.stateChanged = true;
-                this.busy = false;
-            });
+            this.stateChanged = true;
             return;
         }
 
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
-        
-        if (event != null) event.consume();
+        int caretPos = curCaretPos;
+        int curPar = getParagraphsIndexes(caretPos, caretPos).get(0);
+        int parTextLen = styledParagraphs.get(curPar).getPlainText().length();
 
-        int caretPos = this.getCaretPosition();
-        int curPar = this.getCurrentParagraph();
-        int parTextLen = getParagraphTextNoAC(curPar).length();
+        logHelper("Before delete");
 
         demarkCharOVERWRITE(caretPos);
 
         // If caret is at the end of the text then do nothing
-        if (this.getCaretPosition() == this.cssStyles.size()) {
-            Platform.runLater(() -> {
-                showAC();
-                ignoreTextChangePERMANENT = false;
-                ignoreCaretPositionChangePERMANENT = false;
-                this.busy = false;
-            });
-            return;
-        }
+        if (caretPos == this.getText().length()) { return; }
         
         // Check if deleted char is "\n"
-        if (this.getTextNoAC().charAt(caretPos) == '\n') {
+        if (this.getText().charAt(caretPos) == '\n') {
             // If paragraph is empty then remove it
             if (parTextLen == 1) {
-                this.cssParagraphStyles.remove(curPar);
-                this.cssStyles.remove(caretPos - 1);
-                this.cssStyles.remove(caretPos - 1);
+                styledParagraphs.remove(curPar);
                 this.deleteText(caretPos - 1, caretPos + 1);
-
-                Platform.runLater(() -> {
-                    showAC();
-                    ignoreTextChangePERMANENT = false;
-                    ignoreCaretPositionChangePERMANENT = false;
-                    fixCaretPosition(caretPos);
-                    this.cssChar = getPredictedCssChar(caretPos - 1);
-                    sendToHandlerCharAndParagraphCurrentStyle();
-                    markCharOVERWRITE(this.getCaretPosition());
-                    this.stateChanged = true;
-                    this.busy = false;
-                });
+                moveTo(curPar, 1);
+                curCaretPos = this.getCaretPosition();
+                this.cssChar = styledParagraphs.get(curPar).getPredictedCssChar(styledParagraphs.get(curPar).getPlainText().length(), false);
+                sendToHandlerCharAndParagraphCurrentStyle();
+                markCharOVERWRITE(curCaretPos);
+                this.stateChanged = true;
+                logHelper("After delete");
+                showAC();
                 return;
             }
             // If paragraph is not empty then remove "\n" and next paragraph zero width space
             else {
-                this.cssParagraphStyles.remove(curPar + 1);
-                this.cssStyles.remove(caretPos);
-                this.cssStyles.remove(caretPos);
+                styledParagraphs.get(curPar).insertStyledStrings(parTextLen, styledParagraphs.get(curPar + 1).getStyledStringList());
+                styledParagraphs.remove(curPar + 1);
                 this.deleteText(caretPos, caretPos + 2);
-
-                Platform.runLater(() -> {
-                    showAC();
-                    ignoreTextChangePERMANENT = false;
-                    ignoreCaretPositionChangePERMANENT = false;
-                    fixCaretPosition(caretPos);
-                    this.cssChar = getPredictedCssChar(caretPos);
-                    sendToHandlerCharAndParagraphCurrentStyle();
-                    markCharOVERWRITE(this.getCaretPosition());
-                    this.stateChanged = true;
-                    this.busy = false;
-                });
+                writeParagraph(curPar);
+                moveTo(curPar, parTextLen);
+                curCaretPos = this.getCaretPosition();
+                this.cssChar = styledParagraphs.get(curPar).getPredictedCssChar(parTextLen, false);
+                
+                sendToHandlerCharAndParagraphCurrentStyle();
+                markCharOVERWRITE(this.getCaretPosition());
+                this.stateChanged = true;
+                logHelper("After delete");
+                showAC();
                 return;
             }
         }
 
         // If deleted char is not "\n"
 
-        this.cssStyles.remove(caretPos);
+        styledParagraphs.get(curPar).delete(caretPos, caretPos + 1);
         this.deleteText(caretPos, caretPos + 1);
+        writeParagraph(curPar);
+        moveTo(caretPos);
+        curCaretPos = this.getCaretPosition();
 
-        Platform.runLater(() -> {
-            showAC();
-            ignoreTextChangePERMANENT = false;
-            ignoreCaretPositionChangePERMANENT = false;
-            this.cssChar = getPredictedCssChar(caretPos);
-            sendToHandlerCharAndParagraphCurrentStyle();
-            markCharOVERWRITE(this.getCaretPosition());
-            this.stateChanged = true;
-            this.busy = false;
-        });
+        sendToHandlerCharAndParagraphCurrentStyle();
+        markCharOVERWRITE(this.getCaretPosition());
+        this.stateChanged = true;
+        logHelper("After delete");
+        showAC();
     }
 
-    private void handleKeyPressed_BACKSPACE(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_BACKSPACE() {
         ac.removeCurrentAC();
-        actionBeforeChanges();
+        closeFindReplace();
 
         if (!this.getSelectedText().isEmpty()) {
-            event.consume();
             deleteSelectedText();
-            Platform.runLater(() -> {
-                showAC();
-                this.stateChanged = true;
-                this.busy = false;
-            });
+            this.stateChanged = true;
             return;
         }
 
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
-        
-        event.consume();
-
-        int caretPos = this.getCaretPosition();
-        int curPar = this.getCurrentParagraph();
+        int caretPos = curCaretPos;
+        int curPar = getParagraphsIndexes(caretPos, caretPos).get(0);
+        if (getParCol(caretPos, curPar) == 0) {
+            moveTo(curPar, 1);
+            curCaretPos = this.getCaretPosition();
+            caretPos = curCaretPos;
+        }
         int prevParTextLen = -1;
 
         demarkCharOVERWRITE(caretPos);
+        logHelper("Before backspace");
 
         if (curPar > 0) {
-            prevParTextLen = getParagraphTextNoAC(curPar - 1).length();
+            prevParTextLen = styledParagraphs.get(curPar - 1).getPlainText().length();
         }
 
         // If caret is at the beginning of the text then do nothing
         if (caretPos == 0 || caretPos == 1) {
-            Platform.runLater(() -> {
-                showAC();
-                ignoreTextChangePERMANENT = false;
-                ignoreCaretPositionChangePERMANENT = false;
-                markCharOVERWRITE(this.getCaretPosition());
-                this.busy = false;
-            });
+            markCharOVERWRITE(caretPos);
             return;
         }
         
         // Check if deleted char is zero width space
-        if (this.getTextNoAC().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        if (this.getText().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
             // If previous paragraph is empty then remove it
             if (prevParTextLen == 1) {
-                this.cssParagraphStyles.remove(curPar - 1);
-                this.cssStyles.remove(caretPos - 3);
-                this.cssStyles.remove(caretPos - 3);
+                styledParagraphs.remove(curPar - 1);
                 this.deleteText(caretPos - 3, caretPos - 1);
                 this.moveTo(caretPos - 2);
-
-                Platform.runLater(() -> {
-                    showAC();
-                    ignoreTextChangePERMANENT = false;
-                    ignoreCaretPositionChangePERMANENT = false;
-                    fixCaretPosition(this.getCaretPosition());
-                    this.cssChar = getPredictedCssChar(this.getCaretPosition());
-                    sendToHandlerCharAndParagraphCurrentStyle();
-                    markCharOVERWRITE(this.getCaretPosition());
-                    this.stateChanged = true;
-                    this.busy = false;
-                });
+                curCaretPos = this.getCaretPosition();
+                this.cssChar = styledParagraphs.get(curPar - 1).getPredictedCssChar(styledParagraphs.get(curPar - 1).getPlainText().length(), isOverwriteMode);
+                sendToHandlerCharAndParagraphCurrentStyle();
+                markCharOVERWRITE(this.getCaretPosition());
+                this.stateChanged = true;
+                logHelper("After backspace");
+                showAC();
                 return;
             }
             // If previous paragraph is not empty then remove "\n" and current paragraph zero width space
             else {
-                this.cssParagraphStyles.remove(curPar);
-                this.cssStyles.remove(caretPos - 2);
-                this.cssStyles.remove(caretPos - 2);
+                styledParagraphs.get(curPar - 1).insertStyledStrings(prevParTextLen, styledParagraphs.get(curPar).getStyledStringList());
+                styledParagraphs.remove(curPar);
                 this.deleteText(caretPos - 2, caretPos);
+                writeParagraph(curPar - 1);
                 this.moveTo(caretPos - 2);
+                curCaretPos = this.getCaretPosition();
 
-                Platform.runLater(() -> {
-                    showAC();
-                    ignoreTextChangePERMANENT = false;
-                    ignoreCaretPositionChangePERMANENT = false;
-                    fixCaretPosition(this.getCaretPosition());
-                    this.cssChar = getPredictedCssChar(this.getCaretPosition());
-                    this.cssParagraph = this.cssParagraphStyles.get(this.getParIndex(this.getCaretPosition())).duplicate();
-                    this.cssParagraphPrev = null;
-                    sendToHandlerCharAndParagraphCurrentStyle();
-                    markCharOVERWRITE(this.getCaretPosition());
-                    this.stateChanged = true;
-                    this.busy = false;
-                });
+                this.cssChar = styledParagraphs.get(curPar - 1).getPredictedCssChar(prevParTextLen, isOverwriteMode);
+                this.cssParagraph = styledParagraphs.get(curPar - 1).getCssParagraphStyleObject().duplicate();
+                sendToHandlerCharAndParagraphCurrentStyle();
+                markCharOVERWRITE(this.getCaretPosition());
+                this.stateChanged = true;
+                logHelper("After backspace");
+                showAC();
                 return;
             }
         }
 
         // If deleted char is not zero width space
 
-        this.cssStyles.remove(caretPos - 1);
+        styledParagraphs.get(curPar).delete(getParCol(caretPos - 1, curPar), getParCol(caretPos, curPar));
         this.deleteText(caretPos - 1, caretPos);
         this.moveTo(caretPos - 1);
+        curCaretPos = this.getCaretPosition();
 
-        Platform.runLater(() -> {
-            showAC();
-            ignoreTextChangePERMANENT = false;
-            ignoreCaretPositionChangePERMANENT = false;
-            fixCaretPosition(this.getCaretPosition());
-            this.cssChar = getPredictedCssChar(this.getCaretPosition());
-            sendToHandlerCharAndParagraphCurrentStyle();
-            markCharOVERWRITE(this.getCaretPosition());
-            this.stateChanged = true;
-            this.busy = false;
-        });
+        this.cssChar = styledParagraphs.get(curPar).getPredictedCssChar(getParCol(curCaretPos), isOverwriteMode);
+        sendToHandlerCharAndParagraphCurrentStyle();
+        markCharOVERWRITE(this.getCaretPosition());
+        this.stateChanged = true;
+        logHelper("After backspace");
+        showAC();
     }
 
-    private void handleKeyPressed_UP(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_UP() {
         ac.removeCurrentAC();
-
-        int caretPos = this.getCaretPosition();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
         Platform.runLater(() -> {
-            fixCaretPosition(this.getCaretPosition());
             markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-            if (caretPos == this.getCaretPosition()) {
-                if (this.getCurrentParagraph() > 0) {
-                    this.moveTo(this.getCurrentParagraph() - 1, 1);
-                }
-            }
+            ensureGoodCaretPosition();
         });
     }
 
-    private void handleKeyPressed_UP_SHIFT(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_UP_SHIFT() {
         ac.removeCurrentAC();
 
         int anchorPos = this.getAnchor();
         demarkCharOVERWRITE(this.getCaretPosition());
 
         Platform.runLater(() -> {
-            fixCaretPosition(this.getCaretPosition());
             this.selectRange(anchorPos, this.getCaretPosition());
-            this.busy = false;
+            curCaretPos = this.getCaretPosition();
         });
     }
 
-    private void handleKeyPressed_UP_CTRL(KeyEvent event) {
-        this.busy = true;
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
-
-        event.consume();
-
+    private void handleKeyPressed_UP_CTRL() {
         ac.prevAC();
 
         Platform.runLater(() -> {
-            ignoreTextChangePERMANENT = false;
-            ignoreCaretPositionChangePERMANENT = false;
             markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
+            curCaretPos = this.getCaretPosition();
         });
     }
 
-    private void handleKeyPressed_DOWN(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_DOWN() {
         ac.removeCurrentAC();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
         Platform.runLater(() -> {
-            fixCaretPosition(this.getCaretPosition());
             markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
+            ensureGoodCaretPosition();
         });
     }
 
-    private void handleKeyPressed_DOWN_SHIFT(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_DOWN_SHIFT() {
         ac.removeCurrentAC();
 
         int anchorPos = this.getAnchor();
         demarkCharOVERWRITE(this.getCaretPosition());
 
         Platform.runLater(() -> {
-            fixCaretPosition(this.getCaretPosition());
             this.selectRange(anchorPos, this.getCaretPosition());
-            this.busy = false;
+            curCaretPos = this.getCaretPosition();
         });
     }
 
-    private void handleKeyPressed_DOWN_CTRL(KeyEvent event) {
-        this.busy = true;
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
-
-        event.consume();
-
+    private void handleKeyPressed_DOWN_CTRL() {
         ac.nextAC();
 
         Platform.runLater(() -> {
-            ignoreTextChangePERMANENT = false;
-            ignoreCaretPositionChangePERMANENT = false;
             markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
+            curCaretPos = this.getCaretPosition();
         });
     }
 
-    private void handleKeyPressed_LEFT(KeyEvent event) {
-        this.busy = true;
-        event.consume();
-        
-        int caretPos = this.getCaretPosition();
+    private void handleKeyPressed_LEFT() {
+        int caretPos = curCaretPos;
 
         if (caretPos == 0 || caretPos == 1) {
-            this.busy = false;
             return;
         }
 
@@ -1719,103 +1812,83 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         demarkCharOVERWRITE(caretPos);
         
-        if (this.getTextNoAC().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        if (this.getText().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
             this.moveTo(caretPos - 2);
         } else {
             this.moveTo(caretPos - 1);
         }
+        curCaretPos = this.getCaretPosition();
 
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
+        markCharOVERWRITE(this.getCaretPosition());
     }
 
-    private void handleKeyPressed_LEFT_SHIFT(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_LEFT_SHIFT() {
         ac.removeCurrentAC();
-        event.consume();
         
-        int caretPos = this.getCaretPosition();
+        int caretPos = curCaretPos;
         int anchorPos = this.getAnchor();
 
         if (caretPos == 0 || caretPos == 1) {
-            this.busy = false;
             return;
         }
 
         demarkCharOVERWRITE(caretPos);
         
-        if (this.getTextNoAC().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        if (this.getText().charAt(caretPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
             this.moveTo(caretPos - 2);
         } else {
             this.moveTo(caretPos - 1);
         }
+        curCaretPos = this.getCaretPosition();
 
-        Platform.runLater(() -> {
-            this.selectRange(anchorPos, this.getCaretPosition());
-            this.busy = false;
-        });
+        this.selectRange(anchorPos, this.getCaretPosition());
     }
 
-    private void handleKeyPressed_RIGHT(KeyEvent event) {
-        this.busy = true;
-        event.consume();
-        
-        int caretPos = this.getCaretPosition();
+    private void handleKeyPressed_RIGHT() {
+        int caretPos = curCaretPos;
 
-        if (caretPos == this.cssStyles.size()) {
-            this.busy = false;
-            return;
-        }
         ac.removeCurrentAC();
 
+        if (caretPos == this.getText().length()) {
+            return;
+        }
+
         demarkCharOVERWRITE(caretPos);
-        if (this.getTextNoAC().charAt(caretPos) == '\n') {
+        if (this.getText().charAt(caretPos) == '\n') {
             this.moveTo(caretPos + 2);
         } else {
             this.moveTo(caretPos + 1);
         }
+        curCaretPos = this.getCaretPosition();
 
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
-        
+        markCharOVERWRITE(this.getCaretPosition());
     }
 
-    private void handleKeyPressed_RIGHT_SHIFT(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_RIGHT_SHIFT() {
         ac.removeCurrentAC();
-        event.consume();
         
-        int caretPos = this.getCaretPosition();
+        int caretPos = curCaretPos;
         int anchorPos = this.getAnchor();
 
-        if (caretPos == this.cssStyles.size()) {
-            this.busy = false;
+        if (caretPos == this.getText().length()) {
             return;
         }
 
         demarkCharOVERWRITE(caretPos);
-        if (this.getTextNoAC().charAt(caretPos) == '\n') {
+        if (this.getText().charAt(caretPos) == '\n') {
             this.moveTo(caretPos + 2);
         } else {
             this.moveTo(caretPos + 1);
         }
+        curCaretPos = this.getCaretPosition();
 
-        Platform.runLater(() -> {
-            this.selectRange(anchorPos, this.getCaretPosition());
-            this.busy = false;
-        });
+        this.selectRange(anchorPos, this.getCaretPosition());
     }
 
-    private void handleKeyPressed_RIGHT_CTRL(KeyEvent event) {
+    private void handleKeyPressed_RIGHT_CTRL() {
         if (!ac.hasCurrentAC()) return;
 
-        this.busy = true;
-        event.consume();
-        actionBeforeChanges();
+        closeFindReplace();
 
         String acString = ac.getCurrentACClean();
         ac.removeCurrentAC();
@@ -1828,50 +1901,32 @@ public class RTWidget extends StyledTextArea<String, String> {
             strToAdd = acString;
         }
 
-        pastePlainText(null, strToAdd);
-        Platform.runLater(() -> {
-            showAC();
-            stateChanged = true;
-            this.busy = false;
-        });
+        pasteText(null, strToAdd);
+        showAC();
+        stateChanged = true;
     }
 
-    private void handleKeyPressed_TAB(KeyEvent event) {
-        event.consume();
+    private void handleKeyPressed_TAB() {
         if (!ac.hasCurrentAC()) return;
 
-        this.busy = true;
-        actionBeforeChanges();
+        closeFindReplace();
 
         String acString = ac.getCurrentACClean();
         ac.removeCurrentAC();
 
-        pastePlainText(null, acString);
-        Platform.runLater(() -> {
-            showAC();
-            stateChanged = true;
-            this.busy = false;
-        });
+        pasteText(curCaretPos, acString);
+        showAC();
+        stateChanged = true;
     }
 
-    private void handleKeyPressed_ESC(KeyEvent event) {
+    private void handleKeyPressed_ESC() {
         if (!ac.hasCurrentAC()) return;
 
-        this.busy = true;
-        event.consume();
         ac.removeCurrentAC();
-
-        Platform.runLater(() -> {
-            this.busy = false;
-        });
     }
 
-    private void handleKeyPressed_PgUP(KeyEvent event) {
-        this.busy = true;
-        event.consume();
-
+    private void handleKeyPressed_PgUP() {
         if (this.getCurrentParagraph() == 0) {
-            this.busy = false;
             return;
         }
         ac.removeCurrentAC();
@@ -1881,44 +1936,35 @@ public class RTWidget extends StyledTextArea<String, String> {
         boolean start = false;
 
         for (int i = this.getCurrentParagraph() - 1; i >= 0; i--) {
-            if (getParagraphTextNoAC(i).length() == 1) {
+            if (styledParagraphs.get(i).getPlainText().length() == 1) {
                 start = true;
             }
-            if (start && getParagraphTextNoAC(i).length() > 1) {
-                ignoreCaretPositionChange = true;
+            if (start && styledParagraphs.get(i).getPlainText().length() > 1) {
                 this.moveTo(i, 1);
-                this.cssChar = getPredictedCssChar(this.getPosGlobal(i, 1));
-                this.cssParagraph = this.cssParagraphStyles.get(i).duplicate();
+                curCaretPos = this.getCaretPosition();
+                this.cssChar = styledParagraphs.get(i).getPredictedCssChar(1, isOverwriteMode);
+                this.cssParagraph = styledParagraphs.get(i).getCssParagraphStyleObject().duplicate();
                 sendToHandlerCharAndParagraphCurrentStyle();
 
-                Platform.runLater(() -> {
-                    markCharOVERWRITE(this.getCaretPosition());
-                    this.busy = false;
-                });
+                markCharOVERWRITE(this.getCaretPosition());
                 return;
             }
         }
 
-        ignoreCaretPositionChange = true;
         this.moveTo(0, 1);
-        this.cssChar = getPredictedCssChar(this.getPosGlobal(0, 1));
-        this.cssParagraph = this.cssParagraphStyles.get(0).duplicate();
+        curCaretPos = this.getCaretPosition();
+        this.cssChar = styledParagraphs.get(0).getPredictedCssChar(1, isOverwriteMode);
+        this.cssParagraph = styledParagraphs.get(0).getCssParagraphStyleObject().duplicate();
         sendToHandlerCharAndParagraphCurrentStyle();
         
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
+        markCharOVERWRITE(this.getCaretPosition());
 
     }
 
-    private void handleKeyPressed_PgUP_SHIFT(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_PgUP_SHIFT() {
         ac.removeCurrentAC();
-        event.consume();
 
         if (this.getCurrentParagraph() == 0) {
-            this.busy = false;
             return;
         }
 
@@ -1929,34 +1975,26 @@ public class RTWidget extends StyledTextArea<String, String> {
         boolean start = false;
 
         for (int i = this.getCurrentParagraph() - 1; i >= 0; i--) {
-            if (getParagraphTextNoAC(i).length() == 1) {
+            if (styledParagraphs.get(i).getPlainText().length() == 1) {
                 start = true;
             }
-            if (start && getParagraphTextNoAC(i).length() > 1) {
+            if (start && styledParagraphs.get(i).getPlainText().length() > 1) {
                 this.moveTo(i, 1);
+                curCaretPos = this.getCaretPosition();
                 int curPar = i;
-                Platform.runLater(() -> {
-                    this.selectRange(anchorPos, this.getPosGlobal(curPar, 1));
-                    this.busy = false;
-                });
+                this.selectRange(anchorPos, this.getPosGlobal(curPar, 1));
                 return;
             }
         }
 
         this.moveTo(0, 1);
+        curCaretPos = this.getCaretPosition();
         
-        Platform.runLater(() -> {
-            this.selectRange(anchorPos, this.getPosGlobal(0, 1));
-            this.busy = false;
-        });
+        this.selectRange(anchorPos, this.getPosGlobal(0, 1));
     }
 
-    private void handleKeyPressed_PgDOWN(KeyEvent event) {
-        this.busy = true;
-        event.consume();
-
-        if (this.getCurrentParagraph() == this.getParagraphs().size() - 1) {
-            this.busy = false;
+    private void handleKeyPressed_PgDOWN() {
+        if (this.getCurrentParagraph() == styledParagraphs.size() - 1) {
             return;
         }
 
@@ -1966,44 +2004,35 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         boolean start = false;
 
-        for (int i = this.getCurrentParagraph() + 1; i < this.getParagraphs().size(); i++) {
-            if (getParagraphTextNoAC(i).length() == 1) {
+        for (int i = this.getCurrentParagraph() + 1; i < styledParagraphs.size(); i++) {
+            if (styledParagraphs.get(i).getPlainText().length() == 1) {
                 start = true;
             }
-            if (start && getParagraphTextNoAC(i).length() > 1) {
-                ignoreCaretPositionChange = true;
+            if (start && styledParagraphs.get(i).getPlainText().length() > 1) {
                 this.moveTo(i, 1);
-                this.cssChar = getPredictedCssChar(this.getPosGlobal(i, 1));
-                this.cssParagraph = this.cssParagraphStyles.get(i).duplicate();
+                curCaretPos = this.getCaretPosition();
+                this.cssChar = styledParagraphs.get(i).getPredictedCssChar(1, isOverwriteMode);
+                this.cssParagraph = styledParagraphs.get(i).getCssParagraphStyleObject().duplicate();
                 sendToHandlerCharAndParagraphCurrentStyle();
 
-                Platform.runLater(() -> {
-                    markCharOVERWRITE(this.getCaretPosition());
-                    this.busy = false;
-                });
+                markCharOVERWRITE(this.getCaretPosition());
                 return;
             }
         }
 
-        ignoreCaretPositionChange = true;
         this.moveTo(this.getParagraphs().size() - 1, 1);
-        this.cssChar = getPredictedCssChar(this.getPosGlobal(this.getParagraphs().size() - 1, 1));
-        this.cssParagraph = this.cssParagraphStyles.get(this.getParagraphs().size() - 1).duplicate();
+        curCaretPos = this.getCaretPosition();
+        this.cssChar = styledParagraphs.get(this.getParagraphs().size() - 1).getPredictedCssChar(1, isOverwriteMode);
+        this.cssParagraph = styledParagraphs.get(this.getParagraphs().size() - 1).getCssParagraphStyleObject().duplicate();
         sendToHandlerCharAndParagraphCurrentStyle();
         
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
+        markCharOVERWRITE(this.getCaretPosition());
     }
 
-    private void handleKeyPressed_PgDOWN_SHIFT(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_PgDOWN_SHIFT() {
         ac.removeCurrentAC();
-        event.consume();
 
-        if (this.getCurrentParagraph() == this.getParagraphs().size() - 1) {
-            this.busy = false;
+        if (this.getCurrentParagraph() == styledParagraphs.size() - 1) {
             return;
         }
 
@@ -2013,51 +2042,41 @@ public class RTWidget extends StyledTextArea<String, String> {
 
         boolean start = false;
 
-        for (int i = this.getCurrentParagraph() + 1; i < this.getParagraphs().size(); i++) {
-            if (getParagraphTextNoAC(i).length() == 1) {
+        for (int i = this.getCurrentParagraph() + 1; i < styledParagraphs.size(); i++) {
+            if (styledParagraphs.get(i).getPlainText().length() == 1) {
                 start = true;
             }
-            if (start && getParagraphTextNoAC(i).length() > 1) {
+            if (start && styledParagraphs.get(i).getPlainText().length() > 1) {
                 this.moveTo(i, 1);
+                curCaretPos = this.getCaretPosition();
                 int curPar = i;
 
-                Platform.runLater(() -> {
-                    this.selectRange(anchorPos, this.getPosGlobal(curPar, 1));
-                    this.busy = false;
-                });
+                this.selectRange(anchorPos, this.getPosGlobal(curPar, 1));
                 return;
             }
         }
 
-        this.moveTo(this.getParagraphs().size() - 1, 1);
+        this.moveTo(styledParagraphs.size() - 1, 1);
+        curCaretPos = this.getCaretPosition();
         
-        Platform.runLater(() -> {
-            this.selectRange(anchorPos, this.getPosGlobal(this.getParagraphs().size() - 1, 1));
-            this.busy = false;
-        });
+        this.selectRange(anchorPos, this.getPosGlobal(styledParagraphs.size() - 1, 1));
     }
 
-    private void handleKeyPressed_HOME(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_HOME() {
         ac.removeCurrentAC();
-        event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
         int curPar = this.getCurrentParagraph();
 
         this.moveTo(curPar, 1);
+        curCaretPos = this.getCaretPosition();
         
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
+        markCharOVERWRITE(this.getCaretPosition());
     }
 
-    private void handleKeyPressed_HOME_SHIFT(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_HOME_SHIFT() {
         ac.removeCurrentAC();
-        event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
@@ -2065,203 +2084,182 @@ public class RTWidget extends StyledTextArea<String, String> {
         int anchorPos = this.getAnchor();
 
         this.selectRange(anchorPos, this.getPosGlobal(curPar, 1));
-        
-        Platform.runLater(() -> {
-            this.busy = false;
-        });
     }
 
-    private void handleKeyPressed_HOME_CTRL(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_HOME_CTRL() {
         ac.removeCurrentAC();
-        event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
         this.moveTo(0, 1);
+        curCaretPos = this.getCaretPosition();
         
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
+        markCharOVERWRITE(this.getCaretPosition());
     }
 
-    private void handleKeyPressed_END(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_END() {
         ac.removeCurrentAC();
-        event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
         int curPar = this.getCurrentParagraph();
 
-        this.moveTo(curPar, getParagraphTextNoAC(curPar).length());
+        this.moveTo(curPar, styledParagraphs.get(curPar).getPlainText().length());
+        curCaretPos = this.getCaretPosition();
         
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
+        markCharOVERWRITE(this.getCaretPosition());
     }
 
-    private void handleKeyPressed_END_SHIFT(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_END_SHIFT() {
         ac.removeCurrentAC();
-        event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
         int curPar = this.getCurrentParagraph();
         int anchorPos = this.getAnchor();
 
-        this.selectRange(anchorPos, this.getPosGlobal(curPar, getParagraphTextNoAC(curPar).length()));
-        
-        Platform.runLater(() -> {
-            this.busy = false;
-        });
+        this.selectRange(anchorPos, this.getPosGlobal(curPar, styledParagraphs.get(curPar).getPlainText().length()));
     }
 
-    private void handleKeyPressed_END_CTRL(KeyEvent event) {
-        this.busy = true;
+    private void handleKeyPressed_END_CTRL() {
         ac.removeCurrentAC();
-        event.consume();
 
         demarkCharOVERWRITE(this.getCaretPosition());
 
-        this.moveTo(this.getParagraphs().size() - 1, getParagraphTextNoAC(this.getParagraphs().size() - 1).length());
+        this.moveTo(styledParagraphs.size() - 1, styledParagraphs.get(styledParagraphs.size() - 1).getPlainText().length());
+        curCaretPos = this.getCaretPosition();
         
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
+        markCharOVERWRITE(this.getCaretPosition());
     }
 
-    private void handleKeyPressed_CTRL_A(KeyEvent event) {
-        this.busy = true;
+    private void actionSELECT_ALL() {
         ac.removeCurrentAC();
-        if (event != null) event.consume();
 
-        demarkCharOVERWRITE(this.getCaretPosition());
+        demarkCharOVERWRITE(curCaretPos);
 
-        this.selectRange(1, this.getTextNoAC().length());
+        this.selectRange(1, this.getText().length());
         
-        Platform.runLater(() -> {
-            markCharOVERWRITE(this.getCaretPosition());
-            this.busy = false;
-        });
+        markCharOVERWRITE(curCaretPos);
     }
 
     private void handleKeyTyped_CHARACTER(KeyEvent event) {
         ac.removeCurrentAC();
-        actionBeforeChanges();
+        closeFindReplace();
 
         if (this.getSelectedText().length() > 0) {
-            int start = this.getSelection().getStart();
-            int end = this.getSelection().getEnd();
-            
-            this.cssStyles.subList(start, end).clear();
-            this.cssParagraphStyles.subList(getParIndex(start), getParIndex(end)).clear();
-            
-            this.deleteText(start, end);
-            this.moveTo(start);
+            deleteSelectedText();
         }
-
-        ignoreTextChangePERMANENT = true;
-        ignoreCaretPositionChangePERMANENT = true;
 
         String charTyped = event.getCharacter();
 
-        int curPos = this.getCaretPosition();
-        if (curPos <= this.cssStyles.size() && curPos > 0 && !this.cssStyles.get(curPos - 1).equals(this.cssChar) && this.getTextNoAC().charAt(curPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
-            this.cssStyles.set(curPos - 1, this.cssChar.duplicate());
-            this.setStyle(curPos - 1, curPos, this.cssChar.getCss());
+        int curPos = curCaretPos;
+        int currentParagraph = this.getParagraphsIndexes(curPos, curPos).get(0);
+        int parCol = this.getParCol(curPos);
+        if (parCol == 0) {
+            parCol = 1;
+            moveTo(currentParagraph, 1);
+            curCaretPos = this.getCaretPosition();
+            curPos = curCaretPos;
         }
-
         demarkCharOVERWRITE(curPos);
 
-        // Caret is at the end of the text
-        if (curPos == this.cssStyles.size()) {
-            this.insertText(curPos, charTyped);
-            this.cssStyles.add(curPos, cssChar.duplicate());
-            this.setStyle(curPos, curPos + 1, cssChar.getCss());
-            Platform.runLater(() -> {
-                showAC();
-                ignoreTextChangePERMANENT = false;
-                ignoreCaretPositionChangePERMANENT = false;
-                markCharOVERWRITE(this.getCaretPosition());
-                sendToHandlerCharAndParagraphCurrentStyle();
-                this.stateChanged = true;
-                // this.busy = false;
-            });
-            return;
-        }
+        StyleSheetChar typedCharCss = styledParagraphs.get(currentParagraph).getPredictedCssChar(parCol, false);
 
-        // Caret is at end of the paragraph
-        if (curPos < this.getTextNoAC().length() && this.getTextNoAC().charAt(curPos) == '\n') {
-            this.insertText(curPos, charTyped);
-            this.cssStyles.add(curPos, cssChar.duplicate());
-            this.setStyle(curPos, curPos + 1, cssChar.getCss());
-            Platform.runLater(() -> {
-                showAC();
-                ignoreTextChangePERMANENT = false;
-                ignoreCaretPositionChangePERMANENT = false;
-                markCharOVERWRITE(this.getCaretPosition());
-                sendToHandlerCharAndParagraphCurrentStyle();
-                this.stateChanged = true;
-                // this.busy = false;
-            });
-            return;
-        }
+        styledParagraphs.get(currentParagraph).insertPlainText(parCol, charTyped, typedCharCss);
+        insertText(curPos, charTyped);
+        setStyle(curPos, curPos + 1, typedCharCss.getCss());
+        moveTo(currentParagraph, parCol + 1);
+        curCaretPos = this.getCaretPosition();
+        this.cssChar = styledParagraphs.get(currentParagraph).getPredictedCssChar(parCol + 1, isOverwriteMode);
 
-        // Caret is in the middle of the text
-        if (isOverwriteMode) {
-            this.deleteText(curPos, curPos + 1);
-            this.cssStyles.remove(curPos);
-        }
-        this.insertText(curPos, charTyped);
-        this.cssStyles.add(curPos, cssChar.duplicate());
-        this.setStyle(curPos, curPos + 1, cssChar.getCss());
-        Platform.runLater(() -> {
-            showAC();
-            ignoreTextChangePERMANENT = false;
-            ignoreCaretPositionChangePERMANENT = false;
-            markCharOVERWRITE(this.getCaretPosition());
-            this.cssChar = getPredictedCssChar(this.getCaretPosition());
-            sendToHandlerCharAndParagraphCurrentStyle();
-            this.stateChanged = true;
-            // this.busy = false;
-        });
-    }
+        markCharOVERWRITE(curCaretPos);
+        sendToHandlerCharAndParagraphCurrentStyle();
+        this.stateChanged = true;
+        showAC();
+        
 
-    private void handleTextChange(Object obs, String oldText, String newText) {
-        if (this.ignoreTextChange || this.ignoreTextChangePERMANENT) {
-            this.ignoreTextChange = false;
-            return;
-        }
 
-        // Nothing to implement yet
+        // if (curPos <= this.cssStyles.size() && curPos > 0 && !this.cssStyles.get(curPos - 1).equals(this.cssChar) && this.getTextNoAC().charAt(curPos - 1) == CONSTANTS.EMPTY_PARAGRAPH_CHAR) {
+        //     this.cssStyles.set(curPos - 1, this.cssChar.duplicate());
+        //     this.setStyle(curPos - 1, curPos, this.cssChar.getCss());
+        // }
+
+        // demarkCharOVERWRITE(curPos);
+
+        // // Caret is at the end of the text
+        // if (curPos == this.cssStyles.size()) {
+        //     this.insertText(curPos, charTyped);
+        //     this.cssStyles.add(curPos, cssChar.duplicate());
+        //     this.setStyle(curPos, curPos + 1, cssChar.getCss());
+        //     Platform.runLater(() -> {
+        //         showAC();
+        //         ignoreTextChangePERMANENT = false;
+        //         ignoreCaretPositionChangePERMANENT = false;
+        //         markCharOVERWRITE(this.getCaretPosition());
+        //         sendToHandlerCharAndParagraphCurrentStyle();
+        //         this.stateChanged = true;
+        //         // this.busy = false;
+        //     });
+        //     return;
+        // }
+
+        // // Caret is at end of the paragraph
+        // if (curPos < this.getTextNoAC().length() && this.getTextNoAC().charAt(curPos) == '\n') {
+        //     this.insertText(curPos, charTyped);
+        //     this.cssStyles.add(curPos, cssChar.duplicate());
+        //     this.setStyle(curPos, curPos + 1, cssChar.getCss());
+        //     Platform.runLater(() -> {
+        //         showAC();
+        //         ignoreTextChangePERMANENT = false;
+        //         ignoreCaretPositionChangePERMANENT = false;
+        //         markCharOVERWRITE(this.getCaretPosition());
+        //         sendToHandlerCharAndParagraphCurrentStyle();
+        //         this.stateChanged = true;
+        //         // this.busy = false;
+        //     });
+        //     return;
+        // }
+
+        // // Caret is in the middle of the text
+        // if (isOverwriteMode) {
+        //     this.deleteText(curPos, curPos + 1);
+        //     this.cssStyles.remove(curPos);
+        // }
+        // this.insertText(curPos, charTyped);
+        // this.cssStyles.add(curPos, cssChar.duplicate());
+        // this.setStyle(curPos, curPos + 1, cssChar.getCss());
+        // Platform.runLater(() -> {
+        //     showAC();
+        //     ignoreTextChangePERMANENT = false;
+        //     ignoreCaretPositionChangePERMANENT = false;
+        //     markCharOVERWRITE(this.getCaretPosition());
+        //     this.cssChar = getPredictedCssChar(this.getCaretPosition());
+        //     sendToHandlerCharAndParagraphCurrentStyle();
+        //     this.stateChanged = true;
+        //     // this.busy = false;
+        // });
     }
 
     private void handleCaretPositionChange(Object obs, Integer oldPos, Integer newPos) {
-        trackCursorInScrollPane();
-
-        if (this.ignoreCaretPositionChange || this.ignoreCaretPositionChangePERMANENT) {
-            this.ignoreCaretPositionChange = false;
+        if (styledParagraphs.size() == 0 || ignoreCaretPositionChangePERMANENT) {
             return;
         }
 
-        this.busy = true;
+        curCaretPos = newPos;
 
         demarkCharOVERWRITE(oldPos);
         markCharOVERWRITE(newPos);
 
-        this.cssChar = getPredictedCssChar(newPos);
-        this.cssParagraph = this.cssParagraphStyles.get(this.getParIndex(newPos)).duplicate();
+        trackCursorInScrollPane();
+
+        int paragraphIndex = getParagraphsIndexes(curCaretPos, curCaretPos).get(0);
+        this.cssChar = styledParagraphs.get(paragraphIndex).getPredictedCssChar(getParCol(curCaretPos), isOverwriteMode).duplicate();
+        this.cssParagraph = styledParagraphs.get(paragraphIndex).getCssParagraphStyleObject();
 
         sendToHandlerCharAndParagraphCurrentStyle();
 
         Platform.runLater(() -> {
             trackCursorInScrollPane();
-            this.busy = false;
         });
 
     }
@@ -2276,8 +2274,7 @@ public class RTWidget extends StyledTextArea<String, String> {
             double scrollPaneHeight = scrollPane.getViewportBounds().getHeight();
             
             // If scrollPane is not set yet or content is smaller than scrollPane then do nothing
-            if (contentHeight <= scrollPaneHeight || this.getCaretPosition() == prevCaretPosition) {
-                prevCaretPosition = this.getCaretPosition();
+            if (contentHeight <= scrollPaneHeight) {
                 return;
             }
 
@@ -2318,18 +2315,8 @@ public class RTWidget extends StyledTextArea<String, String> {
     }
         
     private void sendToHandlerCharAndParagraphCurrentStyle() {
-        // Send current char style to Handler if it has changed
-        if (this.cssCharPrev == null || !this.cssCharPrev.equals(this.cssChar)) {
-            msgForHandler(this.cssChar);
-            this.cssCharPrev = this.cssChar.duplicate();
-        }
-        
-        // Send current paragraph style to Handler if it has changed
-        if (this.cssParagraphPrev == null || !this.cssParagraphPrev.equals(this.cssParagraph)) {
-            msgForHandler(this.cssParagraph);
-            this.cssParagraphPrev = this.cssParagraph.duplicate();
-        }
-        
+        msgForHandler(this.cssChar);
+        msgForHandler(this.cssParagraph);
     }
 
 

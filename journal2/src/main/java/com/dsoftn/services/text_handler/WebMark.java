@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
-import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.WordExtractor;
 import com.dsoftn.utils.USettings;
@@ -16,8 +14,7 @@ import javafx.concurrent.Task;
 public class WebMark {
     // Variables
     private RTWidget rtWidget = null;
-    private List<StyleSheetChar> cssChars = new ArrayList<>();
-    private List<MarkedItem> foundItems = new ArrayList<>();
+    private List<StyledString> foundItems = new ArrayList<>();
     private boolean allowMarkingWebLinks = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingWebLinks");
     private boolean allowMarkingEmails = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingEmails");
     private String cssMarkedWebLink = OBJECTS.SETTINGS.getvSTRING("CssMarkedWebLink");
@@ -37,32 +34,37 @@ public class WebMark {
     }
 
 
-    public List<StyleSheetChar> calculate(List<StyleSheetChar> cssChars, Task<Boolean> taskHandler) {
-        this.cssChars = cssChars;
+    public boolean calculate(Task<Boolean> taskHandler) {
         foundItems = new ArrayList<>();
 
         String text = rtWidget.getText() + " ";
 
         if (allowMarkingWebLinks) {
-            if (!addWebLinks(text, taskHandler)) { return null; }
+            if (!addWebLinks(text, taskHandler)) { return false; }
         }
         
         if (allowMarkingEmails) {
-            if (!addEmails(text, taskHandler)) { return null; }
+            if (!addEmails(text, taskHandler)) { return false; }
         }
 
-        cssChars = Marker.updateCssList(cssChars, foundItems);
+        return true;
+    }
 
-        return cssChars;
+    public boolean mergeWithRTWidgetStyles(List<StyledString> lastRTWidgetStyledStrings, Task<Boolean> taskHandler) {
+        foundItems = Marker.mergeStyles(foundItems, lastRTWidgetStyledStrings);
+        if (foundItems == null) { return false; }
+        if (taskHandler == null || taskHandler.isCancelled()) {
+            return false;
+        }
+
+        return true;
     }
 
     public void mark() {
-        if (cssChars == null || cssChars.size() != rtWidget.getText().length()) return;
+        if (foundItems == null) return;
 
-        int index = 0;
-        for (StyleSheetChar item : cssChars) {
-            rtWidget.setStyle(index, index + 1, item.getCss());
-            index++;
+        for (StyledString item : foundItems) {
+            rtWidget.setStyle(item.getStart(), item.getEnd(), item.getCssCharStyle());
         }
     }
 
@@ -82,7 +84,7 @@ public class WebMark {
         WordExtractor wordExtractor = new WordExtractor(text, linkPattern);;
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
-        StyleSheetChar webLinkCss = new StyleSheetChar(true);
+        StyleSheetChar webLinkCss = new StyleSheetChar();
         webLinkCss.setCss(cssMarkedWebLink);
 
         for (WordExtractor.WordItem word : words) {
@@ -90,7 +92,7 @@ public class WebMark {
                 return false;
             }
 
-            foundItems.add(new MarkedItem(word.index(), word.index() + word.word().length(), CONSTANTS.INVALID_ID, webLinkCss, MarkedItem.MarkedType.WEB_LINK));
+            foundItems.add(new StyledString(word.index(), word.index() + word.word().length(), word.word(), webLinkCss, StyledString.StyleType.WEB_LINK));
         }
 
         return true;
@@ -102,7 +104,7 @@ public class WebMark {
 
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
-        StyleSheetChar eMailCss = new StyleSheetChar(true);
+        StyleSheetChar eMailCss = new StyleSheetChar();
         eMailCss.setCss(cssMarkedEmail);
 
         for (WordExtractor.WordItem word : words) {
@@ -110,7 +112,7 @@ public class WebMark {
                 return false;
             }
 
-            foundItems.add(new MarkedItem(word.index(), word.index() + word.word().length(), CONSTANTS.INVALID_ID, eMailCss, MarkedItem.MarkedType.EMAIL));
+            foundItems.add(new StyledString(word.index(), word.index() + word.word().length(), word.word(), eMailCss, StyledString.StyleType.EMAIL));
         }
 
         return true;

@@ -9,9 +9,9 @@ import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.events.ClipboardChangedEvent;
 import com.dsoftn.services.MoveResizeWindow;
-import com.dsoftn.models.StyleSheetChar;
-import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
+import com.dsoftn.services.text_handler.StyleSheetChar;
+import com.dsoftn.services.text_handler.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UNumbers;
@@ -49,9 +49,9 @@ public class FormatCharController implements IBaseController, ICustomEventListen
     private Consumer<StyleSheetChar> onExitCallback;
     private String settingsName = null;
     private List<Node> dragNodes = new ArrayList<>();
-    private StyleSheetChar originalCharStyle = new StyleSheetChar(true);
-    private StyleSheetChar curCharStyle = new StyleSheetChar(true);
-    private StyleSheetChar startingCurCharStyle = new StyleSheetChar(true);
+    private StyleSheetChar originalCharStyle = new StyleSheetChar();
+    private StyleSheetChar curCharStyle = new StyleSheetChar();
+    private StyleSheetChar startingCurCharStyle = new StyleSheetChar();
     private boolean ignoreFontChange = false;
     private int sampleStart = 0;
     private int sampleEnd = 0;
@@ -735,7 +735,7 @@ public class FormatCharController implements IBaseController, ICustomEventListen
     private void onBtnCssPasteAction() {
         String css = OBJECTS.CLIP.getClipText();
         if (css != null && css.startsWith("-fx-")) {
-            curCharStyle = new StyleSheetChar(true);
+            curCharStyle = new StyleSheetChar();
             curCharStyle.setCss(css);
             updateCss(curCharStyle);
         }

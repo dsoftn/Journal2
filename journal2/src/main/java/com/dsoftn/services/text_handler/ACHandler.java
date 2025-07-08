@@ -18,7 +18,6 @@ import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
-import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
@@ -76,7 +75,7 @@ public class ACHandler implements ICustomEventListener {
                     if (hasCurrentAC()) {
                         UError.error("ACHandler.onCustomEvent: AC is already shown", "AC is already shown");
                     }
-                    if (hasCurrentAC() || rtWidget.getCaretPosition() != positionInWidgetTMP || !rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()).equals(paragraphTextTMP)) {
+                    if (hasCurrentAC() || rtWidget.getCaretPosition() != positionInWidgetTMP || !rtWidget.getParagraphText(rtWidget.getCurrentParagraph()).equals(paragraphTextTMP)) {
                         clearAC();
                         if (task != null) {
                             task.cancel();
@@ -100,19 +99,15 @@ public class ACHandler implements ICustomEventListener {
                         return;
                     }
                     
-                    rtWidget.busy = true;
-                    rtWidget.ignoreTextChangePERMANENT = true;
-                    rtWidget.ignoreCaretPositionChange = true;
+                    rtWidget.setBusy(true);
                     rtWidget.insertText(positionInWidgetTMP, getCurrentAC());
                     ACisShown = true;
-                    ACStyle = rtWidget.cssChar.duplicate();
+                    ACStyle = rtWidget.getCssChar().duplicate();
                     ACStyle.setCss(USettings.getAppOrUserSettingsItem("CssAutoCompleteStyle", textHandler.getBehavior()).getValueSTRING());
                     rtWidget.setStyle(positionInWidgetTMP, positionInWidgetTMP + getCurrentAC().length(), ACStyle.getCss());
                     rtWidget.moveTo(positionInWidgetTMP);
                     Platform.runLater(() -> {
-                        rtWidget.ignoreTextChangePERMANENT = false;
-                        rtWidget.ignoreCaretPositionChange = false;
-                        rtWidget.busy = false;
+                        rtWidget.setBusy(false);
 
                         if (textHandler != null) {
                             textHandler.msgForToolbar(TextToolbarActionEnum.AC_WORKING.name() + ":" + false);

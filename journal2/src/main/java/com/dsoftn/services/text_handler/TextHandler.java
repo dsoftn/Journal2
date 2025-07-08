@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.dsoftn.DIALOGS;
 import com.dsoftn.OBJECTS;
@@ -14,10 +15,9 @@ import com.dsoftn.controllers.elements.RTSettingsController;
 import com.dsoftn.controllers.elements.TextEditToolbarController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.events.TaskStateEvent;
-import com.dsoftn.models.StyleSheetChar;
-import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.USettings;
+import com.dsoftn.utils.UNumbers;
 
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -85,6 +85,7 @@ public class TextHandler {
     private Map<String, MenuItem> contextRTWidgetMenuItems = new LinkedHashMap<>();
     private Behavior behavior = null;
     private RTSettingsController rtSettingsController = null;
+    private ACHandler ac = null;
 
     // Constructor
     public TextHandler(RTWidget txtWidget, TextEditToolbarController toolbarController, Behavior behavior, Stage stage) {
@@ -107,7 +108,7 @@ public class TextHandler {
     public Behavior getBehavior() { return behavior; }
     
     public void enableAutoComplete(boolean enable) {
-        rtWidget.ac.enableAutoComplete(enable);
+        this.ac.enableAutoComplete(enable);
     }
 
     public void setReceiverID(String receiverID) { this.receiverID = receiverID; }
@@ -117,29 +118,13 @@ public class TextHandler {
             rtWidget.requestFocus();
         }
         else if (messageSTRING.equals(TextToolbarActionEnum.UNDO.name())) {
-            rtWidget.busy = true;
-            rtWidget.ignoreCaretPositionChange = true;
-            rtWidget.ignoreTextChangePERMANENT = true;
             msgForToolbar(TextToolbarActionEnum.FIND_CLOSE.name());
             undoHandler.undo(rtWidget);
-            Platform.runLater(() -> {
-                rtWidget.ignoreCaretPositionChange = false;
-                rtWidget.ignoreTextChangePERMANENT = false;
-                rtWidget.busy = false;
-            });
             rtWidget.requestFocus();
         }
         else if (messageSTRING.equals(TextToolbarActionEnum.REDO.name())) {
-            rtWidget.busy = true;
-            rtWidget.ignoreCaretPositionChange = true;
-            rtWidget.ignoreTextChangePERMANENT = true;
             msgForToolbar(TextToolbarActionEnum.FIND_CLOSE.name());
             undoHandler.redo(rtWidget);
-            Platform.runLater(() -> {
-                rtWidget.ignoreCaretPositionChange = false;
-                rtWidget.ignoreTextChangePERMANENT = false;
-                rtWidget.busy = false;
-            });
             rtWidget.requestFocus();
         }
         else if (messageSTRING.equals("CUT")) {
@@ -165,13 +150,13 @@ public class TextHandler {
             marker.findReplaceALL(messageSTRING);
         }
         else if (messageSTRING.startsWith("FIND/REPLACE ACTION:" + TextToolbarActionEnum.FIND_ALL.name())) {
-            marker.mark(messageSTRING);
+            marker.mark(messageSTRING, true);
         }
         else if (messageSTRING.startsWith("FIND/REPLACE ACTION:" + TextToolbarActionEnum.FIND_MATCH_CASE.name())) {
-            marker.mark(messageSTRING);
+            marker.mark(messageSTRING, true);
         }
         else if (messageSTRING.startsWith("FIND/REPLACE ACTION:" + TextToolbarActionEnum.FIND_WHOLE_WORDS.name())) {
-            marker.mark(messageSTRING);
+            marker.mark(messageSTRING, true);
         }
         else if (messageSTRING.equals(TextToolbarActionEnum.FIND_UP.name())) {
             marker.findReplaceUP();
@@ -260,14 +245,19 @@ public class TextHandler {
         }
         else if (messageSTRING.equals("CONTEXT_MENU:HIDE")) {
             hideRTWidgetContextMenu();
-        } else if (messageSTRING.startsWith("INSERT_MODE:")) {
+        } 
+        else if (messageSTRING.startsWith("INSERT_MODE:")) {
             msgForToolbar(messageSTRING);
+        }
+        else if (messageSTRING.startsWith("QUICK_MARK_PARAGRAPH_NUMBER:")) {
+            // Integer paragraphNumber = UNumbers.toInteger(messageSTRING.split(Pattern.quote(":"), -1)[1]);
+            marker.quickMark();
         }
     }
 
     public void msgFromWidget(StyleSheetChar styleSheet) {
         // Forward message to toolbar
-        rtWidget.ac.updateStyleSheet(styleSheet);
+        this.ac.updateStyleSheet(styleSheet);
         msgForToolbar(styleSheet);
     }
 
@@ -278,7 +268,7 @@ public class TextHandler {
 
     public void updateSettings() {
         marker.updateSettings();
-        rtWidget.ac.updateSettings();
+        this.ac.updateSettings();
         rtWidget.setPadding(null, null, null, null);
     }
 
@@ -296,6 +286,11 @@ public class TextHandler {
         }
 
         return true;
+    }
+
+    public void markText(String messageSTRING) {
+        if (marker == null) return;
+        marker.mark(messageSTRING, true);
     }
 
     // Private methods
@@ -550,15 +545,16 @@ public class TextHandler {
 
 
     private void setBehavior() {
-        this.rtWidget.ac = new ACHandler(rtWidget, this);
-        this.rtWidget.ac.updateSettings();
+        this.ac = new ACHandler(rtWidget, this);
+        this.rtWidget.setACHandler(this.ac);
+        this.ac.updateSettings();
         createRTWidgetContextMenu();
 
         switch (behavior) {
             case BLOCK_NAME:
                 HBox.setHgrow(rtWidget, Priority.ALWAYS);
                 StyleSheetChar css = new StyleSheetChar();
-                css.setCss(USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior, "-fx-font-family: 'Arial';-fx-font-size: 30px;").getValueSTRING());
+                css.setCss(USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior, "-fx-font-family: 'Arial';-fx-font-size: 30px;-fx-fill: #ffff00;").getValueSTRING());
                 rtWidget.setCssChar(css);
                 StyleSheetParagraph cssParagraph = new StyleSheetParagraph();
                 cssParagraph.setCss(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", behavior, "-fx-text-alignment: center;").getValueSTRING());
@@ -569,7 +565,7 @@ public class TextHandler {
             case ACTOR_DESCRIPTION:
                 HBox.setHgrow(rtWidget, Priority.ALWAYS);
                 StyleSheetChar cssActor = new StyleSheetChar();
-                cssActor.setCss(USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior, "-fx-font-family: 'Arial';-fx-font-size: 20px;").getValueSTRING());
+                cssActor.setCss(USettings.getAppOrUserSettingsItem("CssDefaultTextStyle", behavior, "-fx-font-family: 'Arial';-fx-font-size: 20px;-fx-fill: #ffff00;").getValueSTRING());
                 rtWidget.setCssChar(cssActor);
                 StyleSheetParagraph cssParagraphActor = new StyleSheetParagraph();
                 cssParagraphActor.setCss(USettings.getAppOrUserSettingsItem("CssDefaultParagraphStyle", behavior, "-fx-text-alignment: left;").getValueSTRING());
@@ -612,18 +608,16 @@ public class TextHandler {
     private void onRTSettingsExit(Boolean result) {
         if (result) {
             rtWidget.setPadding(null, null, null, null);
-            boolean hasAc = rtWidget.ac.hasCurrentAC();
-            rtWidget.ac.removeCurrentAC();
+            boolean hasAc = this.ac.hasCurrentAC();
+            this.ac.removeCurrentAC();
             marker.updateSettings();
-            rtWidget.ac.updateSettings();
+            this.ac.updateSettings();
 
-            for (int i = 0; i < rtWidget.cssStyles.size(); i++) {
-                rtWidget.setStyle(i, i + 1, rtWidget.cssStyles.get(i).getCss());
-            }
+            rtWidget.refreshParagraph(null);
 
             marker.mark();
             if (hasAc) {
-                rtWidget.ac.showAC(rtWidget.getCaretPosition(), rtWidget.getParagraphTextNoAC(rtWidget.getCurrentParagraph()));
+                this.ac.showAC(rtWidget.getCaretPosition(), rtWidget.getParagraphText(rtWidget.getCurrentParagraph()));
             }
         }
         rtSettingsController = null;

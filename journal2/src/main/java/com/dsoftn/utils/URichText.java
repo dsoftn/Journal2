@@ -8,7 +8,7 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
 
-import com.dsoftn.models.StyleSheetChar;
+import com.dsoftn.services.text_handler.StyleSheetChar;
 
 import javafx.scene.paint.Color;
 

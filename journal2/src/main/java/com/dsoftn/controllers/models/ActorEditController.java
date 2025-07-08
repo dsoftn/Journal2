@@ -18,7 +18,6 @@ import com.dsoftn.models.Actor;
 import com.dsoftn.services.MoveResizeWindow;
 import com.dsoftn.services.RTWText;
 import com.dsoftn.services.RTWidget;
-import com.dsoftn.services.RTWidgetClean;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;

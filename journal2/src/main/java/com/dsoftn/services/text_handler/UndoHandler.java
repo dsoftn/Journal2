@@ -23,7 +23,7 @@ public class UndoHandler {
 
     // Public methods
     public void addSnapshot(RTWidget rtwWidget) {
-        if (!rtwWidget.stateChanged) {
+        if (!rtwWidget.isStateChanged()) {
             return;
         }
 
@@ -31,7 +31,7 @@ public class UndoHandler {
 
         if (undoSnapshots.size() > 0) {
             if (rtwText.getStyledText().equals(undoSnapshots.get(undoSnapshots.size() - 1).styledText)) {
-                rtwWidget.stateChanged = false;
+                rtwWidget.setStateChanged(false);
                 return;
             }
         }
@@ -45,7 +45,7 @@ public class UndoHandler {
 
         undoSnapshots.add(snapshot);
         redoSnapshots.clear();
-        rtwWidget.stateChanged = false;
+        rtwWidget.setStateChanged(false);
     }
 
     public void undo(RTWidget rtwWidget) {
@@ -65,12 +65,14 @@ public class UndoHandler {
         snapshotToRestore = undoSnapshots.get(undoSnapshots.size() - 1);
 
         RTWText rtwText = new RTWText(snapshotToRestore.styledText);
+        
+        rtwWidget.setRTWTextObject(rtwText);
 
-        rtwText.setDataToRTWidget(rtwWidget);
-        if (rtwWidget.getSelection().getStart() != rtwWidget.getSelection().getEnd()) {
+        rtwWidget.moveTo(snapshotToRestore.caretPosition);
+        if (snapshotToRestore.selectionStart != snapshotToRestore.selectionEnd) {
             rtwWidget.selectRange(snapshotToRestore.selectionStart, snapshotToRestore.selectionEnd);
         }
-        rtwWidget.moveTo(snapshotToRestore.caretPosition);
+        rtwWidget.setCurrentCaretPos(snapshotToRestore.caretPosition);
         rtwWidget.requestFocus();
     }
 
@@ -86,11 +88,13 @@ public class UndoHandler {
 
         RTWText rtwText = new RTWText(snapshotToRestore.styledText);
 
-        rtwText.setDataToRTWidget(rtwWidget);
-        if (rtwWidget.getSelection().getStart() != rtwWidget.getSelection().getEnd()) {
+        rtwWidget.setRTWTextObject(rtwText);
+        
+        rtwWidget.moveTo(snapshotToRestore.caretPosition);
+        if (snapshotToRestore.selectionStart != snapshotToRestore.selectionEnd) {
             rtwWidget.selectRange(snapshotToRestore.selectionStart, snapshotToRestore.selectionEnd);
         }
-        rtwWidget.moveTo(snapshotToRestore.caretPosition);
+        rtwWidget.setCurrentCaretPos(snapshotToRestore.caretPosition);
         rtwWidget.requestFocus();
     }
 

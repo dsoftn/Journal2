@@ -9,7 +9,6 @@ import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.enums.models.TaskStateEnum;
 import com.dsoftn.events.TaskStateEvent;
-import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
@@ -28,7 +27,7 @@ public class Marker implements ICustomEventListener {
     private String lastRtWidgetText = "";
     private TextHandler textHandler = null;
     private String lastTextState = "";
-    private List<StyleSheetChar> lastCssList = new ArrayList<>();
+    private List<StyledString> lastRTWidgetStyledStrings = new ArrayList<>();
     private PauseTransition pause = new PauseTransition(Duration.millis(300));
     private Task<Boolean> currentTask = null;
     private boolean ignoreTextChangePERMANENT = false;
@@ -49,7 +48,7 @@ public class Marker implements ICustomEventListener {
         OBJECTS.EVENT_HANDLER.register(this, TaskStateEvent.TASK_STATE_EVENT);
 
         pause.setOnFinished(event -> {
-            if (rtWidget.ac.hasCurrentAC() || rtWidget.busy) {
+            if (rtWidget.getAC().hasCurrentAC() || rtWidget.getBusy()) {
                 pause.playFromStart();
                 return;
             }
@@ -100,14 +99,14 @@ public class Marker implements ICustomEventListener {
         
         Platform.runLater(() -> {
             lastTextState = rtWidget.getText();
-            lastCssList = copyCssList(rtWidget.cssStyles);
+            lastRTWidgetStyledStrings = copyStyledParagraphs(rtWidget.getStyledParagraphs());
             pause.playFromStart();
         });
     }
 
-    public void mark(String messageSTRING) {
+    public void mark(String messageSTRING, boolean force) {
         try {
-            if (lastRtWidgetText.equals(rtWidget.getText())) return;
+            if (lastRtWidgetText.equals(rtWidget.getText()) && !force) return;
             lastRtWidgetText = rtWidget.getText();
 
             if (currentTask != null) {
@@ -135,16 +134,20 @@ public class Marker implements ICustomEventListener {
         }
     }
 
+    public void mark(String messageSTRING) {
+        mark(messageSTRING, false);
+    }
+
     public void mark() {
-        mark(null);
+        mark(null, false);
     }
 
     public void markRepeat() {
-        mark(messageSTRING);
+        mark(messageSTRING, false);
     }
 
     public void unMarkFindReplace() {
-        findReplace.calculate(null, null, null);
+        findReplace.calculate(null, null);
     }
 
     public void findReplaceUP() {
@@ -161,7 +164,7 @@ public class Marker implements ICustomEventListener {
         
         findReplace.replaceOne(lines[2]);
         Platform.runLater(() -> {
-            rtWidget.stateChanged = true;
+            rtWidget.setStateChanged(true);
             textHandler.msgFromWidget("TAKE_SNAPSHOT");
             lastTextState = rtWidget.getText();
             ignoreTextChangePERMANENT = false;
@@ -174,7 +177,7 @@ public class Marker implements ICustomEventListener {
 
         findReplace.replaceAll(lines[2]);
         Platform.runLater(() -> {
-            rtWidget.stateChanged = true;
+            rtWidget.setStateChanged(true);
             textHandler.msgFromWidget("TAKE_SNAPSHOT");
             lastTextState = rtWidget.getText();
             ignoreTextChangePERMANENT = false;
@@ -201,31 +204,45 @@ public class Marker implements ICustomEventListener {
         }
     }
 
+    public List<StyledString> getLastRTWidgetStyledStrings() {
+        return lastRTWidgetStyledStrings;
+    }
+
+    public void quickMark() {
+        boolean rtWidgetIsBusy = rtWidget.getBusy();
+        rtWidget.setBusy(false);
+        markText();
+        rtWidget.setBusy(rtWidgetIsBusy);
+    }
 
     //  Private methods
     private boolean taskMark() {
         // This is Task, marking should be done in specific order
-        lastCssList = copyCssList(rtWidget.cssStyles);
+        lastRTWidgetStyledStrings = copyStyledParagraphs(rtWidget.getStyledParagraphs());
 
-        List<StyleSheetChar> cssChars = copyCssList(this.lastCssList);
-        if (cssChars == null || cssChars.size() != rtWidget.getText().length()) { return false; }
+        String textRTWidgetStyledStrings = "";
+        for (StyledString styledStr : lastRTWidgetStyledStrings) {
+            textRTWidgetStyledStrings += styledStr.getText();
+        }
+        if (!textRTWidgetStyledStrings.equals(rtWidget.getText())) { return false; }
 
         // Numbers, dates, times
-        List<MarkedItem> markedNumbersDatesTimes = NumberDateTimeMarking.getNumbersDatesTimes(rtWidget.getText(),  currentTask, textHandler.getBehavior());
-        if (markedNumbersDatesTimes == null) { return false; }
-        List<StyleSheetChar> cssCharsNDT = numberDateTimeMarking.calculate(cssChars, markedNumbersDatesTimes, currentTask);
-        if (cssCharsNDT == null) { return false; }
-        cssCharsNDT = copyCssList(cssCharsNDT);
+        boolean isMarkedNDT = numberDateTimeMarking.calculate(currentTask);
+        if (!isMarkedNDT) { return false; }
+        isMarkedNDT = numberDateTimeMarking.mergeWithRTWidgetStyles(lastRTWidgetStyledStrings, currentTask);
+        if (!isMarkedNDT) { return false; }
 
         // Web links, e-mail
-        List<StyleSheetChar> cssCharsWeb = webMark.calculate(cssCharsNDT, currentTask);
-        if (cssCharsWeb == null) { return false; }
-        cssCharsWeb = copyCssList(cssCharsWeb);
+        boolean isMarkedWeb = webMark.calculate(currentTask);
+        if (!isMarkedWeb) { return false; }
+        isMarkedWeb = webMark.mergeWithRTWidgetStyles(lastRTWidgetStyledStrings, currentTask);
+        if (!isMarkedWeb) { return false; }
 
         // Find / Replace
-        if (findReplace.calculate(messageSTRING, cssCharsWeb, currentTask) == null) {
-            return false;
-        }
+        boolean isMarkedFR = findReplace.calculate(messageSTRING, currentTask);
+        if (!isMarkedFR) { return false; }
+        isMarkedFR = findReplace.mergeWithRTWidgetStyles(lastRTWidgetStyledStrings, currentTask);
+        if (!isMarkedFR) { return false; }
 
         Platform.runLater(() -> {
             markText();
@@ -242,15 +259,15 @@ public class Marker implements ICustomEventListener {
         }
 
         try {
-            if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
+            if (rtWidget.getText().equals(lastTextState) && !rtWidget.getAC().hasCurrentAC() && !rtWidget.getBusy()) {
                 numberDateTimeMarking.mark();
             } else { return false; }
             
-            if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
+            if (rtWidget.getText().equals(lastTextState) && !rtWidget.getAC().hasCurrentAC() && !rtWidget.getBusy()) {
                 webMark.mark();
             } else { return false; }
             
-            if (rtWidget.getText().equals(lastTextState) && lastCssList.equals(rtWidget.cssStyles) && !rtWidget.ac.hasCurrentAC() && !rtWidget.busy) {
+            if (rtWidget.getText().equals(lastTextState) && !rtWidget.getAC().hasCurrentAC() && !rtWidget.getBusy()) {
                 findReplace.mark();
             } else { return false; }
 
@@ -267,26 +284,56 @@ public class Marker implements ICustomEventListener {
         }
     }
 
-    private List<StyleSheetChar> copyCssList(List<StyleSheetChar> cssList) {
-        List<StyleSheetChar> result = new ArrayList<>();
+    private List<StyledString> copyStyledParagraphs(List<StyledParagraph> styledParagraphs) {
+        List<StyledString> result = new ArrayList<>();
 
-        for (StyleSheetChar css : cssList) {
-            result.add(css.duplicate());
+        int pos = 0;
+        for (StyledParagraph styledParagraph : styledParagraphs) {
+            for (StyledString styledString : styledParagraph.getStyledStringList()) {
+                result.add(new StyledString(pos + styledString.getStart(), pos + styledString.getEnd(), styledString.getText(), styledString.getCssCharStyle()));
+            }
+
+            pos += styledParagraph.getPlainText().length();
+            result.add(new StyledString(pos, pos + 1, "\n", styledParagraph.getStyledStringList().get(0).getCssCharStyle()));
+            pos++;
         }
+
+        result.remove(result.size() - 1);
 
         return result;
     }
 
     // Static methods
-    public static List<StyleSheetChar> updateCssList(List<StyleSheetChar> cssList, List<MarkedItem> markedItems) {
-        for (MarkedItem item : markedItems) {
-            for (int i = item.start; i < item.end; i++) {
-                cssList.get(i).merge(item.cssStyle);
+
+    public static List<StyledString> mergeStyles(List<StyledString> newStyles, List<StyledString> oldStyles) {
+        if (newStyles == null || oldStyles == null) { return new ArrayList<>(); }
+        List<StyledString> result = new ArrayList<>();
+
+        int pos = 0;
+        for (StyledString newStyle : newStyles) {
+            for (int i = pos; i < oldStyles.size(); i++) {
+                StyledString oldStyle = oldStyles.get(i);
+                if (newStyle.getStart() >= oldStyle.getEnd()) {
+                    pos++;
+                    continue;
+                }
+                String newCSS = oldStyle.getCssCharStyleObject().mergeGetNew(newStyle.getCssCharStyle()).getCss();
+                if (newStyle.getEnd() <= oldStyle.getEnd()) {
+                    result.add(new StyledString(newStyle.getStart(), newStyle.getEnd(), newStyle.getText(), newCSS, newStyle.getStyleTypeEnum(), oldStyle.getCssCharStyle()));
+                    break;
+                }
+                result.add(new StyledString(newStyle.getStart(), oldStyle.getEnd(), newStyle.getText().substring(0, oldStyle.getEnd() - newStyle.getStart()), newCSS, newStyle.getStyleTypeEnum(), oldStyle.getCssCharStyle()));
+                newStyle.setStart(oldStyle.getEnd());
+                newStyle.setText(newStyle.getText().substring(oldStyle.getEnd() - newStyle.getStart()));
+                pos++;
             }
         }
-
-        return cssList;
+        
+        return result;
     }
+
+
+
 
 
 }

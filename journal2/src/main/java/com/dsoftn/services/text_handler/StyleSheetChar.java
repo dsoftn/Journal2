@@ -1,4 +1,4 @@
-package com.dsoftn.models;
+package com.dsoftn.services.text_handler;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -8,20 +8,18 @@ import com.dsoftn.utils.UString;
 
 public class StyleSheetChar {
     // Variables
-    private String fontName = OBJECTS.SETTINGS.getvSTRING("DefaultTextToolbarFontName"); // -fx-font-family: 'Arial';
-    private Integer fontSize = OBJECTS.SETTINGS.getvINTEGER("DefaultTextToolbarFontSize"); // -fx-font-size: 12px;
-    private String fgColor = "#ffff00"; // -fx-fill: #ffff00;
-    private String bgColor = "transparent"; // -rtfx-background-color: transparent;
-    private Boolean bold = false; // -fx-font-weight: bold;
-    private Boolean italic = false; // -fx-font-style: italic;
-    private Boolean underline = false; // -fx-underline: true;
-    private Boolean strike = false; // -fx-strikethrough: true;
+    private String fontName = null; //OBJECTS.SETTINGS.getvSTRING("DefaultTextToolbarFontName"); // -fx-font-family: 'Arial';
+    private Integer fontSize = null; //OBJECTS.SETTINGS.getvINTEGER("DefaultTextToolbarFontSize"); // -fx-font-size: 12px;
+    private String fgColor = null; //"#ffff00"; // -fx-fill: #ffff00;
+    private String bgColor = null; //"transparent"; // -rtfx-background-color: transparent;
+    private Boolean bold = null; // false; // -fx-font-weight: bold;
+    private Boolean italic = null; // false; // -fx-font-style: italic;
+    private Boolean underline = null; // false; // -fx-underline: true;
+    private Boolean strike = null; // false; // -fx-strikethrough: true;
 
-    private String stroke = "transparent"; // -fx-stroke: #000000;
-    private Integer strokeWidth = 0; // -fx-stroke-width: 1px;
-    private String strokeType = "outside"; // -fx-stroke-type: (inside, outside, centered)
-
-    private String styleBeforeMerge = "";
+    private String stroke = null; //"transparent"; // -fx-stroke: #000000;
+    private Integer strokeWidth = null; //0; // -fx-stroke-width: 1px;
+    private String strokeType = null; //"outside"; // -fx-stroke-type: (inside, outside, centered)
 
     // Constructors
 
@@ -31,22 +29,6 @@ public class StyleSheetChar {
         setCss(css);
     }
 
-    public StyleSheetChar(boolean nullValues) {
-        if (nullValues) {
-            fontName = null;
-            fontSize = null;
-            fgColor = null;
-            bgColor = null;
-            bold = null;
-            italic = null;
-            underline = null;
-            strike = null;
-            stroke = null;
-            strokeWidth = null;
-            strokeType = null;
-        }
-    }
-    
 
     // Public methods
 
@@ -116,56 +98,6 @@ public class StyleSheetChar {
         return css;
     }
 
-    public String getCssMinimal() {
-        String css = "";
-
-        if (fontName != null && !fontName.isEmpty()) {
-            css += "-fx-font-family: '" + fontName + "';";
-        }
-
-        if (fontSize != null) {
-            css += "-fx-font-size: " + fontSize + "px;";
-        }
-
-        if (fgColor != null && !fgColor.equals("#ffff00")) {
-            css += "-fx-fill: " + fgColor + ";";
-        }
-
-        if (bgColor != null && !bgColor.equals("transparent")) {
-            css += "-rtfx-background-color: " + bgColor + ";";
-        }
-
-        if (bold != null && bold) {
-            css += "-fx-font-weight: bold;";
-        }
-
-        if (italic != null && italic) {
-            css += "-fx-font-style: italic;";
-        }
-
-        if (underline != null && underline) {
-            css += "-fx-underline: true;";
-        }
-
-        if (strike != null && strike) {
-            css += "-fx-strikethrough: true;";
-        }
-
-        if (stroke != null && !stroke.equals("transparent")) {
-            css += "-fx-stroke: " + stroke + ";";
-        }
-
-        if (strokeWidth != null && strokeWidth != 0) {
-            css += "-fx-stroke-width: " + strokeWidth + "px;";
-        }
-
-        if (strokeType != null && !strokeType.equals("outside")) {
-            css += "-fx-stroke-type: " + strokeType + ";";
-        }
-
-        return css;
-    }
-
     public void setCss(String css) {
         // Parse css string
         String[] cssArray = css.split(Pattern.quote(";"));
@@ -227,35 +159,50 @@ public class StyleSheetChar {
         result.stroke = this.stroke;
         result.strokeWidth = this.strokeWidth;
         result.strokeType = this.strokeType;
-        // result.styleBeforeMerge = this.styleBeforeMerge;
 
         return result;
     }
 
     /**
-     * Merge two style sheets, old style will be saved in styleBeforeMerge
-     * @param styleToMergeWith - StyleSheetChar to merge with
+     * Merge two style sheets, old styles will be overwritten by new styles
+     * <p>This method will change current object</p>
+     * @param styleObjectToMerge - StyleSheetChar to merge with
      */
-    public void merge(StyleSheetChar styleToMergeWith) {
-        styleBeforeMerge = getCss();
-        this.setCss(styleToMergeWith.getCss());
+    public void merge(StyleSheetChar styleObjectToMerge) {
+        this.setCss(styleObjectToMerge.getCss());
     }
 
     /**
-     * Merge two style sheets, old style will be saved in styleBeforeMerge
-     * @param cssStyle - Css string to merge with
+     * Merge two style sheets, old styles will be overwritten by new styles
+     * <p>This method will change current object</p>
+     * @param cssStyleToMerge - Css string to merge with
      */
-    public void merge(String cssStyle) {
-        styleBeforeMerge = getCss();
-        this.setCss(cssStyle);
+    public void merge(String cssStyleToMerge) {
+        this.setCss(cssStyleToMerge);
     }
 
     /**
-     * Merge two style sheets, old style will be lost
-     * @param styleToMergeWith - StyleSheetChar to merge with
+     * Merge two style sheets, old styles will be overwritten by new styles
+     * <p>This method will return new object and <b>will not</b> change current object</p>
+     * @param styleObjectToMerge
+     * @return StyleSheetChar - New StyleSheetChar object
      */
-    public void mergeNoSave(StyleSheetChar styleToMergeWith) {
-        this.setCss(styleToMergeWith.getCss());
+    public StyleSheetChar mergeGetNew(StyleSheetChar styleObjectToMerge) {
+        StyleSheetChar result = duplicate();
+        result.merge(styleObjectToMerge);
+        return result;
+    }
+
+    /**
+     * Merge two style sheets, old styles will be overwritten by new styles
+     * <p>This method will return new object and <b>will not</b> change current object</p>
+     * @param cssStyleToMerge
+     * @return StyleSheetChar - New StyleSheetChar object
+     */
+    public StyleSheetChar mergeGetNew(String cssStyleToMerge) {
+        StyleSheetChar result = duplicate();
+        result.merge(cssStyleToMerge);
+        return result;
     }
 
     // Properties getters and setters
@@ -295,8 +242,6 @@ public class StyleSheetChar {
     public void setStrokeWidth(Integer strokeWidth) { this.strokeWidth = strokeWidth; }
     public String getStrokeType() { return strokeType; }
     public void setStrokeType(String strokeType) { this.strokeType = strokeType; }
-    public String getStyleBeforeMerge() { return styleBeforeMerge; }
-    public void setStyleBeforeMerge(String userdata) { this.styleBeforeMerge = userdata; }
 
     // Overrides methods "equals()" and "hashCode()"
     

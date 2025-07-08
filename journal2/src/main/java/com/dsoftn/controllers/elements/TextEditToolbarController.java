@@ -9,8 +9,8 @@ import com.dsoftn.Interfaces.ICustomEventListener;
 import com.dsoftn.Interfaces.IElementController;
 import com.dsoftn.enums.controllers.TextToolbarActionEnum;
 import com.dsoftn.events.ClipboardChangedEvent;
-import com.dsoftn.models.StyleSheetChar;
-import com.dsoftn.models.StyleSheetParagraph;
+import com.dsoftn.services.text_handler.StyleSheetChar;
+import com.dsoftn.services.text_handler.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UError;
 import com.dsoftn.utils.UJavaFX;
@@ -802,7 +802,11 @@ public class TextEditToolbarController implements IElementController, ICustomEve
         }
     }
 
-    private void setButtonSelectedSmall(Button button, boolean isSelected) {
+    private void setButtonSelectedSmall(Button button, Boolean isSelected) {
+        if (isSelected == null) {
+            isSelected = false;
+        }
+        
         button.getStyleClass().remove("button-icon-small");
         button.getStyleClass().remove("button-icon-small-selected");
 

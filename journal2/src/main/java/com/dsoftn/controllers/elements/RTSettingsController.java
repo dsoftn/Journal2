@@ -10,10 +10,10 @@ import com.dsoftn.Interfaces.IBaseController;
 import com.dsoftn.controllers.MsgBoxController;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxButton;
 import com.dsoftn.controllers.MsgBoxController.MsgBoxIcon;
-import com.dsoftn.models.StyleSheetChar;
-import com.dsoftn.models.StyleSheetParagraph;
 import com.dsoftn.services.MoveResizeWindow;
 import com.dsoftn.services.RTWidget;
+import com.dsoftn.services.text_handler.StyleSheetChar;
+import com.dsoftn.services.text_handler.StyleSheetParagraph;
 import com.dsoftn.services.text_handler.TextHandler;
 import com.dsoftn.utils.UJavaFX;
 import com.dsoftn.utils.UNumbers;
@@ -1055,7 +1055,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnAcStyleAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssAutoCompleteStyle);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onAcStyleExitCallback);
@@ -1074,7 +1074,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlIntAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedInteger);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlIntExitCallback);
@@ -1093,7 +1093,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlDecAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedDouble);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlDecExitCallback);
@@ -1112,7 +1112,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlDateAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedDate);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlDateExitCallback);
@@ -1131,7 +1131,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlTimeAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedTime);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlTimeExitCallback);
@@ -1150,7 +1150,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlWebAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedWebLink);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlWebExitCallback);
@@ -1169,7 +1169,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlMailAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedEmail);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlMailExitCallback);
@@ -1188,7 +1188,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlSMPAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedSerbianMobileNumbers);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlSMPExitCallback);
@@ -1207,7 +1207,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlSLPAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedSerbianLandlineNumbers);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlSLPExitCallback);
@@ -1226,7 +1226,7 @@ public class RTSettingsController implements IBaseController {
 
     @FXML
     private void onBtnHlIntPhoneAction(ActionEvent event) {
-        StyleSheetChar css = new StyleSheetChar(true);
+        StyleSheetChar css = new StyleSheetChar();
         css.setCss(cssMarkedInternationalPhoneNumbers);
 
         FormatCharController formatChar = DIALOGS.getFormatCharController(stage, behavior, new StyleSheetChar(cssInitTextStyle), css, this::onHlIntPhoneExitCallback);

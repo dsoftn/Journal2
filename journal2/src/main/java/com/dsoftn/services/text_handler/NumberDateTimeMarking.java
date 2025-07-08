@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
-import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.services.WordExtractor;
 import com.dsoftn.utils.UDate;
@@ -19,8 +17,7 @@ import javafx.concurrent.Task;
 public class NumberDateTimeMarking {
     // Variables
     private RTWidget rtWidget = null;
-    private List<StyleSheetChar> cssChars = new ArrayList<>();
-    private List<MarkedItem> markedItems = new ArrayList<>();
+    private List<StyledString> markedItems = new ArrayList<>();
 
     private boolean allowMarkingIntegers = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingIntegers");
     private boolean allowMarkingDoubles = OBJECTS.SETTINGS.getvBOOLEAN("AllowMarkingDoubles");
@@ -52,61 +49,69 @@ public class NumberDateTimeMarking {
         cssMarkedInternationalPhoneNumbers = USettings.getAppOrUserSettingsItem("CssMarkedInternationalPhoneNumbers", behavior).getValueSTRING();
     }
 
-    public List<StyleSheetChar> calculate(List<StyleSheetChar> cssChars, List<MarkedItem> markedNumDateTime, Task<Boolean> taskHandler) {
-        this.cssChars = cssChars;
+    public boolean calculate(Task<Boolean> taskHandler) {
+        List<StyledString> markedNumDateTime = getNumbersDatesTimes(rtWidget.getText(), taskHandler, rtWidget.getTextHandler().getBehavior());
+        if (markedNumDateTime == null) { return false; }
+
         markedItems = new ArrayList<>();
 
-        for (MarkedItem item : markedNumDateTime) {
+        for (StyledString item : markedNumDateTime) {
             if (taskHandler == null || taskHandler.isCancelled()) {
-                return null;
+                return false;
             }
 
-            if (item.markedType == MarkedItem.MarkedType.INTEGER && allowMarkingIntegers) {
+            if (item.getStyleTypeEnum() == StyledString.StyleType.INTEGER && allowMarkingIntegers) {
                 markedItems.add(item);
             }
-            if (item.markedType == MarkedItem.MarkedType.DOUBLE && allowMarkingDoubles) {
+            if (item.getStyleTypeEnum() == StyledString.StyleType.DOUBLE && allowMarkingDoubles) {
                 markedItems.add(item);
             }
-            if (item.markedType == MarkedItem.MarkedType.DATE && allowMarkingDates) {
+            if (item.getStyleTypeEnum() == StyledString.StyleType.DATE && allowMarkingDates) {
                 markedItems.add(item);
             }
-            if (item.markedType == MarkedItem.MarkedType.TIME && allowMarkingTimes) {
+            if (item.getStyleTypeEnum() == StyledString.StyleType.TIME && allowMarkingTimes) {
                 markedItems.add(item);
             }
         }
 
         // Serbian mobile numbers
         if (allowMarkingSerbianMobileNumbers) {
-            if (!addSerbianMobileNumbers(rtWidget.getText(), markedItems, taskHandler)) { return null; }
+            if (!addSerbianMobileNumbers(rtWidget.getText(), markedItems, taskHandler)) { return false; }
         }
 
         // Serbian landline numbers
         if (allowMarkingSerbianLandlineNumbers) {
-            if (!addSerbianLandlineNumbers(rtWidget.getText(), markedItems, taskHandler)) { return null; }
+            if (!addSerbianLandlineNumbers(rtWidget.getText(), markedItems, taskHandler)) { return false; }
         }
 
         // International phone numbers
         if (allowMarkingInternationalPhoneNumbers) {
-            if (!addInternationalPhoneNumbers(rtWidget.getText(), markedItems, taskHandler)) { return null; }
+            if (!addInternationalPhoneNumbers(rtWidget.getText(), markedItems, taskHandler)) { return false; }
         }
 
-        cssChars = Marker.updateCssList(cssChars, markedItems);
+        return true;
+    }
 
-        return cssChars;
+    public boolean mergeWithRTWidgetStyles(List<StyledString> lastRTWidgetStyledStrings, Task<Boolean> taskHandler) {
+        markedItems = Marker.mergeStyles(markedItems, lastRTWidgetStyledStrings);
+        if (markedItems == null) { return false; }
+        if (taskHandler == null || taskHandler.isCancelled()) {
+            return false;
+        }
+
+        return true;
     }
 
     public void mark() {
-        if (cssChars == null || cssChars.size() != rtWidget.getText().length()) return;
+        if (markedItems == null) return;
 
-        int index = 0;
-        for (StyleSheetChar item : cssChars) {
-            rtWidget.setStyle(index, index + 1, item.getCss());
-            index++;
+        for (StyledString item : markedItems) {
+            rtWidget.setStyle(item.getStart(), item.getEnd(), item.getCssCharStyle());
         }
     }
 
     // Private methods
-    private boolean addSerbianMobileNumbers(String text, List<MarkedItem> markedItems, Task<Boolean> taskHandler) {
+    private boolean addSerbianMobileNumbers(String text, List<StyledString> markedItems, Task<Boolean> taskHandler) {
         Pattern serbianMobilePattern = Pattern.compile(
             "(?:\\+381|00381|\\(0?6[0-6]\\)|0?6[0-6])(?:[\\s/\\-.]*\\d{1,3}){1,4}"
         );
@@ -114,7 +119,7 @@ public class NumberDateTimeMarking {
         WordExtractor wordExtractor = new WordExtractor(text, serbianMobilePattern);;
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
-        StyleSheetChar serbianMobileCss = new StyleSheetChar(true);
+        StyleSheetChar serbianMobileCss = new StyleSheetChar();
         serbianMobileCss.setCss(cssMarkedSerbianMobileNumbers);
 
         boolean hasItem = false;
@@ -138,8 +143,8 @@ public class NumberDateTimeMarking {
                 continue;
             }
 
-            for (MarkedItem item : markedItems) {
-                if (word.index() >= item.start && word.index() < item.end && item.markedType == MarkedItem.MarkedType.DATE) {
+            for (StyledString item : markedItems) {
+                if (word.index() >= item.getStart() && word.index() < item.getEnd() && item.getStyleTypeEnum() == StyledString.StyleType.DATE) {
                     hasItem = true;
                     break;
                 }
@@ -149,13 +154,13 @@ public class NumberDateTimeMarking {
                 continue;
             }
 
-            markedItems.add(new MarkedItem(word.index(), word.index() + word.word().length(), CONSTANTS.INVALID_ID, serbianMobileCss, MarkedItem.MarkedType.SERBIAN_MOBILE_NUMBER));
+            markedItems.add(new StyledString(word.index(), word.index() + word.word().length(), word.word(), serbianMobileCss, StyledString.StyleType.SERBIAN_MOBILE_NUMBER));
         }
 
         return true;
     }
 
-    private boolean addSerbianLandlineNumbers(String text, List<MarkedItem> markedItems, Task<Boolean> taskHandler) {
+    private boolean addSerbianLandlineNumbers(String text, List<StyledString> markedItems, Task<Boolean> taskHandler) {
         Pattern serbianLandlinePattern = Pattern.compile(
             "(?:\\+381|00381|\\(0?[1-3][0-9]\\)|0?[1-3][0-9])(?:[\\s/\\-.]*\\d{1,4}){1,4}"
         );
@@ -163,7 +168,7 @@ public class NumberDateTimeMarking {
         WordExtractor wordExtractor = new WordExtractor(text, serbianLandlinePattern);;
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
-        StyleSheetChar serbianLandlineCss = new StyleSheetChar(true);
+        StyleSheetChar serbianLandlineCss = new StyleSheetChar();
         serbianLandlineCss.setCss(cssMarkedSerbianLandlineNumbers);
 
         boolean hasItem = false;
@@ -187,8 +192,8 @@ public class NumberDateTimeMarking {
                 continue;
             }
 
-            for (MarkedItem item : markedItems) {
-                if (word.index() >= item.start && word.index() < item.end && (item.markedType == MarkedItem.MarkedType.SERBIAN_MOBILE_NUMBER || item.markedType == MarkedItem.MarkedType.DATE)) {
+            for (StyledString item : markedItems) {
+                if (word.index() >= item.getStart() && word.index() < item.getEnd() && (item.getStyleTypeEnum() == StyledString.StyleType.SERBIAN_MOBILE_NUMBER || item.getStyleTypeEnum() == StyledString.StyleType.DATE)) {
                     hasItem = true;
                     break;
                 }
@@ -198,13 +203,13 @@ public class NumberDateTimeMarking {
                 continue;
             }
 
-            markedItems.add(new MarkedItem(word.index(), word.index() + word.word().length(), CONSTANTS.INVALID_ID, serbianLandlineCss, MarkedItem.MarkedType.SERBIAN_LANDLINE_NUMBER));
+            markedItems.add(new StyledString(word.index(), word.index() + word.word().length(), word.word(), serbianLandlineCss, StyledString.StyleType.SERBIAN_LANDLINE_NUMBER));
         }
 
         return true;
     }
 
-    private boolean addInternationalPhoneNumbers(String text, List<MarkedItem> markedItems, Task<Boolean> taskHandler) {
+    private boolean addInternationalPhoneNumbers(String text, List<StyledString> markedItems, Task<Boolean> taskHandler) {
         Pattern internationalPhonePattern = Pattern.compile(
             "(?:\\+|00)\\d{1,3}[\\s/\\-.]*\\(?\\d{1,4}\\)?(?:[\\s/\\-.]*\\d{1,4}){1,6}"
         );
@@ -212,7 +217,7 @@ public class NumberDateTimeMarking {
         WordExtractor wordExtractor = new WordExtractor(text, internationalPhonePattern);;
         List<WordExtractor.WordItem> words = wordExtractor.getWordItems();
 
-        StyleSheetChar internationalPhoneCss = new StyleSheetChar(true);
+        StyleSheetChar internationalPhoneCss = new StyleSheetChar();
         internationalPhoneCss.setCss(cssMarkedInternationalPhoneNumbers);
 
         boolean hasItem = false;
@@ -240,8 +245,8 @@ public class NumberDateTimeMarking {
                 continue;
             }
 
-            for (MarkedItem item : markedItems) {
-                if (word.index() >= item.start && word.index() < item.end && (item.markedType == MarkedItem.MarkedType.SERBIAN_MOBILE_NUMBER || item.markedType == MarkedItem.MarkedType.SERBIAN_LANDLINE_NUMBER || item.markedType == MarkedItem.MarkedType.DATE)) {
+            for (StyledString item : markedItems) {
+                if (word.index() >= item.getStart() && word.index() < item.getEnd() && (item.getStyleTypeEnum() == StyledString.StyleType.SERBIAN_MOBILE_NUMBER || item.getStyleTypeEnum() == StyledString.StyleType.SERBIAN_LANDLINE_NUMBER || item.getStyleTypeEnum() == StyledString.StyleType.DATE)) {
                     hasItem = true;
                     break;
                 }
@@ -251,27 +256,26 @@ public class NumberDateTimeMarking {
                 continue;
             }
 
-            markedItems.add(new MarkedItem(word.index(), word.index() + word.word().length(), CONSTANTS.INVALID_ID, internationalPhoneCss, MarkedItem.MarkedType.INTERNATIONAL_PHONE_NUMBER));
+            markedItems.add(new StyledString(word.index(), word.index() + word.word().length(), word.word(), internationalPhoneCss, StyledString.StyleType.INTERNATIONAL_PHONE_NUMBER));
         }
 
         return true;
     }
 
-    // Static methods
-    public static List<MarkedItem> getNumbersDatesTimes(String text, Task<Boolean> taskHandler, TextHandler.Behavior behavior) {
+    public List<StyledString> getNumbersDatesTimes(String text, Task<Boolean> taskHandler, TextHandler.Behavior behavior) {
         final String numbers = "0123456789";
         final String allowed = numbers + ".,:";
 
-        StyleSheetChar cssDate = new StyleSheetChar(true);
+        StyleSheetChar cssDate = new StyleSheetChar();
         cssDate.setCss(USettings.getAppOrUserSettingsItem("CssMarkedDate", behavior).getValueSTRING());
-        StyleSheetChar cssTime = new StyleSheetChar(true);
+        StyleSheetChar cssTime = new StyleSheetChar();
         cssTime.setCss(USettings.getAppOrUserSettingsItem("CssMarkedTime", behavior).getValueSTRING());
-        StyleSheetChar cssInteger = new StyleSheetChar(true);
+        StyleSheetChar cssInteger = new StyleSheetChar();
         cssInteger.setCss(USettings.getAppOrUserSettingsItem("CssMarkedInteger", behavior).getValueSTRING());
-        StyleSheetChar cssDouble = new StyleSheetChar(true);
+        StyleSheetChar cssDouble = new StyleSheetChar();
         cssDouble.setCss(USettings.getAppOrUserSettingsItem("CssMarkedDouble", behavior).getValueSTRING());
 
-        List<MarkedItem> result = new ArrayList<>();
+        List<StyledString> result = new ArrayList<>();
         text += " ";
         boolean foundItem = false;
         boolean processItem = false;
@@ -324,26 +328,26 @@ public class NumberDateTimeMarking {
 
             // Check is item date
             if (UDate.isStringValidDate(item)) {
-                result.add(new MarkedItem(start, start + item.length(), CONSTANTS.INVALID_ID, cssDate, MarkedItem.MarkedType.DATE));
+                result.add(new StyledString(start, start + item.length(), item, cssDate, StyledString.StyleType.DATE));
                 item = "";
                 continue;
             }
             // Check is item time
             String timeFixed = UString.stripCharacters(item, ".");
             if (UDate.isStringValidTime(timeFixed)) {
-                result.add(new MarkedItem(start, start + timeFixed.length(), CONSTANTS.INVALID_ID, cssTime, MarkedItem.MarkedType.TIME));
+                result.add(new StyledString(start, start + timeFixed.length(), item, cssTime, StyledString.StyleType.TIME));
                 item = "";
                 continue;
             }
             // Check is item integer
             if (UNumbers.isStringIntegerRemoveComa(item)) {
-                result.add(new MarkedItem(start, start + item.length(), CONSTANTS.INVALID_ID, cssInteger, MarkedItem.MarkedType.INTEGER));
+                result.add(new StyledString(start, start + item.length(), item, cssInteger, StyledString.StyleType.INTEGER));
                 item = "";
                 continue;
             }
             // Check is item double
             if (UNumbers.isStringDoubleRemoveComa(item)) {
-                result.add(new MarkedItem(start, start + item.length(), CONSTANTS.INVALID_ID, cssDouble, MarkedItem.MarkedType.DOUBLE));
+                result.add(new StyledString(start, start + item.length(), item, cssDouble, StyledString.StyleType.DOUBLE));
                 item = "";
                 continue;
             }
@@ -363,7 +367,7 @@ public class NumberDateTimeMarking {
 
                 if (foundItem) {
                     foundItem = false;
-                    result.add(new MarkedItem(startSub, startSub + subItem.length(), CONSTANTS.INVALID_ID, cssInteger, MarkedItem.MarkedType.INTEGER));
+                    result.add(new StyledString(startSub, startSub + subItem.length(), item, cssInteger, StyledString.StyleType.INTEGER));
                     subItem = "";
                 }
             }

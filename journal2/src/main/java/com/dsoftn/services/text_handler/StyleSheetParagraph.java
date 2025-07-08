@@ -1,4 +1,4 @@
-package com.dsoftn.models;
+package com.dsoftn.services.text_handler;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -36,8 +36,8 @@ public class StyleSheetParagraph {
 
     public StyleSheetParagraph() {}
 
-    public StyleSheetParagraph(String css) {
-        setCss(css);
+    public StyleSheetParagraph(String paragraphCss) {
+        setCss(paragraphCss);
     }
     
 
@@ -243,6 +243,48 @@ public class StyleSheetParagraph {
         result.strokeType = this.strokeType;
         result.effect = this.effect;
 
+        return result;
+    }
+
+    /**
+     * Merge two style sheets, old styles will be overwritten by new styles
+     * <p>This method will change current object</p>
+     * @param styleObjectToMerge - StyleSheetParagraph to merge with
+     */
+    public void merge(StyleSheetParagraph styleObjectToMerge) {
+        this.setCss(styleObjectToMerge.getCss());
+    }
+
+    /**
+     * Merge two style sheets, old styles will be overwritten by new styles
+     * <p>This method will change current object</p>
+     * @param cssStyleToMerge - Css string to merge with
+     */
+    public void merge(String cssStyleToMerge) {
+        this.setCss(cssStyleToMerge);
+    }
+
+    /**
+     * Merge two style sheets, old styles will be overwritten by new styles
+     * <p>This method will return new object and <b>will not</b> change current object</p>
+     * @param styleObjectToMerge
+     * @return StyleSheetParagraph - New StyleSheetParagraph object
+     */
+    public StyleSheetParagraph mergeGetNew(StyleSheetParagraph styleObjectToMerge) {
+        StyleSheetParagraph result = duplicate();
+        result.merge(styleObjectToMerge);
+        return result;
+    }
+
+    /**
+     * Merge two style sheets, old styles will be overwritten by new styles
+     * <p>This method will return new object and <b>will not</b> change current object</p>
+     * @param cssStyleToMerge
+     * @return StyleSheetParagraph - New StyleSheetParagraph object
+     */
+    public StyleSheetParagraph mergeGetNew(String cssStyleToMerge) {
+        StyleSheetParagraph result = duplicate();
+        result.merge(cssStyleToMerge);
         return result;
     }
 

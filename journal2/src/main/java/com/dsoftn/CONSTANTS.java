@@ -38,10 +38,13 @@ public class CONSTANTS {
     public static final char EMPTY_PARAGRAPH_CHAR = '\u200B'; // Zero-width space at beginning of each paragraph
     public static final String WORD_DELIMITERS = " ~!@#$%^&*()_+=`{}|[]\\:\";'<>?,./-" + EMPTY_PARAGRAPH_STRING;
 
-    public static final String RTW_TEXT_HEADER = EMPTY_PARAGRAPH_STRING.repeat(3) + "RTW"; // RTW = Rich Text Widget header
-    public static final String RTW_TEXT_CHAR_STYLE_START = EMPTY_PARAGRAPH_STRING.repeat(3) + "C"; // RTW = Rich Text Widget characters stylesheets - section start
-    public static final String RTW_TEXT_CHAR_STYLE_END = EMPTY_PARAGRAPH_STRING.repeat(3) + "-C"; // RTW = Rich Text Widget characters stylesheets - section end
-    public static final String RTW_TEXT_PARAGRAPH_STYLE_START = EMPTY_PARAGRAPH_STRING.repeat(3) + "P"; // RTW = Rich Text Widget paragraphs stylesheets - section start
-    public static final String RTW_TEXT_PARAGRAPH_STYLE_END = EMPTY_PARAGRAPH_STRING.repeat(3) + "-P"; // RTW = Rich Text Widget paragraphs stylesheets - section end
-    public static final String RTW_TEXT_CONTENT = EMPTY_PARAGRAPH_STRING.repeat(3) + "T"; // RTW = Rich Text Widget content - section start, this is last section and it does not have end section
+    public static final String RTW_TEXT_START = EMPTY_PARAGRAPH_STRING.repeat(3) + "RTW"; // RTW = Rich Text Widget - section start
+    public static final String RTW_TEXT_END = EMPTY_PARAGRAPH_STRING.repeat(3) + "-RTW"; // RTW = Rich Text Widget - section end
+    // public static final String RTW_TEXT_CHAR_STYLE_START = EMPTY_PARAGRAPH_STRING.repeat(3) + "C"; // RTW = Rich Text Widget characters stylesheets - section start
+    // public static final String RTW_TEXT_CHAR_STYLE_END = EMPTY_PARAGRAPH_STRING.repeat(3) + "-C"; // RTW = Rich Text Widget characters stylesheets - section end
+    public static final String RTW_TEXT_PARAGRAPH_START = EMPTY_PARAGRAPH_STRING.repeat(3) + "P"; // RTW = Rich Text Widget paragraph section start (paragraph css, text1, text1css, text2, text2css...)
+    public static final String RTW_TEXT_PARAGRAPH_END = EMPTY_PARAGRAPH_STRING.repeat(3) + "-P"; // RTW = Rich Text Widget paragraph section end
+    // public static final String RTW_TEXT_PARAGRAPH_STYLE_START = EMPTY_PARAGRAPH_STRING.repeat(3) + "P"; // RTW = Rich Text Widget paragraphs stylesheets - section start
+    // public static final String RTW_TEXT_PARAGRAPH_STYLE_END = EMPTY_PARAGRAPH_STRING.repeat(3) + "-P"; // RTW = Rich Text Widget paragraphs stylesheets - section end
+    // public static final String RTW_TEXT_CONTENT = EMPTY_PARAGRAPH_STRING.repeat(3) + "T"; // RTW = Rich Text Widget content - section start, this is last section and it does not have end section
 }

@@ -755,8 +755,8 @@
   },
   "CssDefaultTextStyle": {
     "key": "CssDefaultTextStyle",
-    "value": "-fx-font-family: \u0027Arial\u0027;-fx-font-size: 30px;",
-    "defaultValue": "-fx-font-family: \u0027Arial\u0027;-fx-font-size: 30px;",
+    "value": "-fx-font-family: \u0027Arial\u0027;-fx-font-size: 30px;-fx-fill: #ffff00;",
+    "defaultValue": "-fx-font-family: \u0027Arial\u0027;-fx-font-size: 30px;-fx-fill: #ffff00;",
     "min": "Null",
     "max": "Null",
     "settingType": 8,

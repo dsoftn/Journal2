@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.dsoftn.CONSTANTS;
 import com.dsoftn.OBJECTS;
-import com.dsoftn.models.StyleSheetChar;
 import com.dsoftn.services.RTWidget;
 import com.dsoftn.utils.USettings;
 
@@ -15,13 +14,12 @@ import javafx.concurrent.Task;
 
 public class FindReplace {
     // Variables
-    private StyleSheetChar foundStyle = new StyleSheetChar(true);
-    private StyleSheetChar selectedStyle = new StyleSheetChar(true);
+    private StyleSheetChar foundStyle = new StyleSheetChar();
+    private StyleSheetChar selectedStyle = new StyleSheetChar();
     private Integer selectedItemIndex = null;
     private RTWidget rtwWidget = null;
     private TextHandler textHandler = null;
-    private List<MarkedItem> foundItems = new ArrayList<>();
-    private List<StyleSheetChar> cssChars = new ArrayList<>();
+    private List<StyledString> foundItems = null;
     private boolean isMatchCase = false;
     private boolean isWholeWords = false;
     private String findText = null;
@@ -41,65 +39,60 @@ public class FindReplace {
         selectedStyle.setCss(USettings.getAppOrUserSettingsItem("CssFindSelected", behavior).getValueSTRING());
     }
 
-    public List<StyleSheetChar> calculate(String messageString, List<StyleSheetChar> cssChars, Task<Boolean> taskHandler) {
+    public boolean calculate(String messageString, Task<Boolean> taskHandler) {
         if (messageString == null || messageString.isEmpty() || messageString.startsWith("FIND/REPLACE ACTION:FIND CLOSED")) {
             if (hasSelectedItem()) unMark();
-            foundItems = new ArrayList<>();
+            foundItems = null;
             selectedItemIndex = null;
             this.messageSTRING = null;
-            this.cssChars = new ArrayList<>();
-            return cssChars;
+            return true;
         }
         if (this.messageSTRING == null || !this.messageSTRING.equals(messageString)) {
             setState(messageString);
-        }
-        if (this.cssChars == null || !this.cssChars.equals(cssChars)) {
-            this.cssChars = cssChars;
         }
 
         this.messageSTRING = messageString;
 
         this.selectedItemIndex = null;
 
-        if (!calculateItems(taskHandler)) { return null; }
+        if (!calculateItems(taskHandler)) { return false; }
 
-        return cssChars;
+        return true;
+    }
+
+    public boolean mergeWithRTWidgetStyles(List<StyledString> lastRTWidgetStyledStrings, Task<Boolean> taskHandler) {
+        foundItems = Marker.mergeStyles(foundItems, lastRTWidgetStyledStrings);
+        if (foundItems == null) { return false; }
+        if (taskHandler == null || taskHandler.isCancelled()) {
+            return false;
+        }
+
+        return true;
     }
 
     public void mark() {
-        if (cssChars == null || cssChars.size() != rtwWidget.getText().length()) return;
+        if (foundItems == null) return;
 
-        int index = 0;
-        for (StyleSheetChar item : cssChars) {
-            rtwWidget.setStyle(index, index + 1, item.getCss());
-            index++;
+        for (StyledString item : foundItems) {
+            rtwWidget.setStyle(item.getStart(), item.getEnd(), item.getCssCharStyle());
         }
+
         msgForToolbar("READY");
     }
 
     public void unMark() {
-        if (cssChars == null) return;
+        if (foundItems == null) return;
 
-        int index = 0;
-        for (StyleSheetChar item : cssChars) {
-            if (item.getStyleBeforeMerge().isEmpty()) {
-                rtwWidget.setStyle(index, index + 1, item.getCss());
-            } else {
-                rtwWidget.setStyle(index, index + 1, item.getStyleBeforeMerge());
-            }
-            
-            index++;
+        for (StyledString item : foundItems) {
+            rtwWidget.setStyle(item.getStart(), item.getEnd(), item.getCss2());
         }
     }
 
     public boolean changeStyle(StyleSheetChar styleSheet) {
-        if (foundItems == null || cssChars == null || cssChars.size() != rtwWidget.getText().length()) return false;
+        if (foundItems == null || foundItems.isEmpty()) return false;
 
-        for (MarkedItem item : foundItems) {
-            for (int i = item.start; i < item.end; i++) {
-                rtwWidget.cssStyles.set(i, styleSheet);
-                rtwWidget.setStyle(i, i + 1, styleSheet.getCss());
-            }
+        for (StyledString item : foundItems) {
+            rtwWidget.setStyle(item.getStart(), item.getEnd(), styleSheet.getCss());
         }
         
         Platform.runLater(() -> {
@@ -156,42 +149,13 @@ public class FindReplace {
             return;
         }
 
-        rtwWidget.replaceText(foundItems.get(selectedItemIndex).start, foundItems.get(selectedItemIndex).end, withString);
+        rtwWidget.replaceFoundItem(foundItems.get(selectedItemIndex).getStart(), foundItems.get(selectedItemIndex).getEnd(), withString);
+        int lenDiff = withString.length() - (foundItems.get(selectedItemIndex).getEnd() - foundItems.get(selectedItemIndex).getStart());
         
-        if (cssChars.get(foundItems.get(selectedItemIndex).start).getStyleBeforeMerge().isEmpty()) {
-            rtwWidget.setStyle(foundItems.get(selectedItemIndex).start, foundItems.get(selectedItemIndex).end, cssChars.get(foundItems.get(selectedItemIndex).start).getCss());
-        } else {
-            rtwWidget.setStyle(foundItems.get(selectedItemIndex).start, foundItems.get(selectedItemIndex).end, cssChars.get(foundItems.get(selectedItemIndex).start).getStyleBeforeMerge());
-        }
-
-        StyleSheetChar css = rtwWidget.getCssChar();
-
-        int start = foundItems.get(selectedItemIndex).start;
-
-        // Remove from widget css list
-        for (int i = foundItems.get(selectedItemIndex).start; i < foundItems.get(selectedItemIndex).end; i++) {
-            rtwWidget.cssStyles.remove(start);
-        }
-
-        // Remove from css list
-        for (int i = foundItems.get(selectedItemIndex).start; i < foundItems.get(selectedItemIndex).end; i++) {
-            cssChars.remove(start);
-        }
-
-        // Add to widget css list
-        for (int i = 0; i < withString.length(); i++) {
-            rtwWidget.cssStyles.add(start, css.duplicate());
-        }
-
-        // Add to css list
-        for (int i = 0; i < withString.length(); i++) {
-            cssChars.add(start, css.duplicate());
-        }
-
         // Update found items
         for (int i = selectedItemIndex + 1; i < foundItems.size(); i++) {
-            foundItems.get(i).start += withString.length() - (foundItems.get(selectedItemIndex).end - foundItems.get(selectedItemIndex).start);
-            foundItems.get(i).end += withString.length() - (foundItems.get(selectedItemIndex).end - foundItems.get(selectedItemIndex).start);
+            foundItems.get(i).setStart(foundItems.get(i).getStart() + lenDiff);
+            foundItems.get(i).setEnd(foundItems.get(i).getEnd() + lenDiff);
         }
 
 
@@ -224,20 +188,15 @@ public class FindReplace {
     private void selectItem(Integer index) {
         if (index == null) return;
         if (foundItems == null || index > foundItems.size() - 1) return;
-        for (int i = foundItems.get(index).start; i < foundItems.get(index).end; i++) {
-            cssChars.get(i).mergeNoSave(selectedStyle);
-            rtwWidget.setStyle(i, i + 1, cssChars.get(i).getCss());
-        }
-        rtwWidget.moveTo(foundItems.get(index).start);
+        foundItems.get(index).setCssCharStyleObject(selectedStyle);
+        rtwWidget.moveTo(foundItems.get(index).getStart());
     }
 
     private void unSelectItem(Integer index) {
         if (index == null) return;
         if (foundItems == null || index > foundItems.size() - 1) return;
-        for (int i = foundItems.get(index).start; i < foundItems.get(index).end; i++) {
-            cssChars.get(i).mergeNoSave(foundStyle);
-            rtwWidget.setStyle(i, i + 1, cssChars.get(i).getCss());
-        }
+        foundItems.get(index).setCssCharStyleObject(foundStyle);
+        rtwWidget.moveTo(foundItems.get(index).getStart());
     }
 
     private void msgForToolbar(String action) {
@@ -303,14 +262,11 @@ public class FindReplace {
                 }
             }
 
-            foundItems.add(new MarkedItem(index, index + findText.length(), CONSTANTS.INVALID_ID, foundStyle, MarkedItem.MarkedType.FIND_REPLACE));
+            foundItems.add(new StyledString(index, index + findText.length(), text.substring(index, index + findText.length()), foundStyle, StyledString.StyleType.FIND_REPLACE));
             pos = index + findText.length();
         }
 
-        cssChars = Marker.updateCssList(cssChars, foundItems);
-
         return true;
-
     }
 
 
